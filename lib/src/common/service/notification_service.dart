@@ -8,7 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logbook/logbook.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../constant/firebase_options.g.dart';
+import '../../../firebase_options.dart';
 
 late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;

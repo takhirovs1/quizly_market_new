@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAGwMAdXI9Z6ws8l_FxJHHCBnb6Xf71zAE</string>
+	<string>AIzaSyA3j_HAwq0dyBi8KnCgPNUeUi7l85tYoOY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>608707985703</string>
+	<string>568369386495</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.quizly.app</string>
 	<key>PROJECT_ID</key>
-	<string>quizly-market-app</string>
+	<string>test-9cf8b</string>
 	<key>STORAGE_BUCKET</key>
-	<string>quizly-market-app.firebasestorage.app</string>
+	<string>test-9cf8b.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:608707985703:ios:7425336c5ccb8015622902</string>
+	<string>1:568369386495:ios:9b83ac266c2e015e1e4dca</string>
 </dict>
 </plist>

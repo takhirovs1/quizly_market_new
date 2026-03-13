@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, Tar
 ///
 /// Example:
 /// ```dart
-/// import 'firebase_options.g.dart';
+/// import 'firebase_options.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
@@ -24,7 +24,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -41,37 +44,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAsLbrEohcJznQ4g1PoCvuXbfVb00VALu8',
-    appId: '1:608707985703:web:53ace9892f38c375622902',
-    messagingSenderId: '608707985703',
-    projectId: 'quizly-market-app',
-    authDomain: 'quizly-market-app.firebaseapp.com',
-    storageBucket: 'quizly-market-app.firebasestorage.app',
+    apiKey: 'AIzaSyB3GZV1tAc8xPTUERhUEcgwYBs5wWcCb1M',
+    appId: '1:568369386495:web:a9943580beaebbfa1e4dca',
+    messagingSenderId: '568369386495',
+    projectId: 'test-9cf8b',
+    authDomain: 'test-9cf8b.firebaseapp.com',
+    storageBucket: 'test-9cf8b.firebasestorage.app',
+    measurementId: 'G-EVNGZGHBE5',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyATFbwhcHSE8sN418BlHDLBOkKGz5ZGpbI',
-    appId: '1:608707985703:android:5aa290f2c0915101622902',
-    messagingSenderId: '608707985703',
-    projectId: 'quizly-market-app',
-    storageBucket: 'quizly-market-app.firebasestorage.app',
+    apiKey: 'AIzaSyAWiCeNXuZh7skW7F9-pWWTt2TABs15IwQ',
+    appId: '1:568369386495:android:dcf3206f6a31f9431e4dca',
+    messagingSenderId: '568369386495',
+    projectId: 'test-9cf8b',
+    storageBucket: 'test-9cf8b.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAGwMAdXI9Z6ws8l_FxJHHCBnb6Xf71zAE',
-    appId: '1:608707985703:ios:7425336c5ccb8015622902',
-    messagingSenderId: '608707985703',
-    projectId: 'quizly-market-app',
-    storageBucket: 'quizly-market-app.firebasestorage.app',
-    iosBundleId: 'com.quizly.app',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAGwMAdXI9Z6ws8l_FxJHHCBnb6Xf71zAE',
-    appId: '1:608707985703:ios:7425336c5ccb8015622902',
-    messagingSenderId: '608707985703',
-    projectId: 'quizly-market-app',
-    storageBucket: 'quizly-market-app.firebasestorage.app',
+    apiKey: 'AIzaSyA3j_HAwq0dyBi8KnCgPNUeUi7l85tYoOY',
+    appId: '1:568369386495:ios:9b83ac266c2e015e1e4dca',
+    messagingSenderId: '568369386495',
+    projectId: 'test-9cf8b',
+    storageBucket: 'test-9cf8b.firebasestorage.app',
     iosBundleId: 'com.quizly.app',
   );
 }

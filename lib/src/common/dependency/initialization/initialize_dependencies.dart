@@ -14,13 +14,13 @@ import 'package:thunder/thunder.dart';
 import 'package:ui/ui.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../../../firebase_options.dart';
 import '../../../feature/authentication/controller/authentication_controller.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';
 import '../../../feature/settings/model/app_settings.dart';
 import '../../constant/config.dart';
-import '../../constant/firebase_options.g.dart';
 import '../../constant/pubspec.yaml.g.dart';
 import '../../service/api_service.dart';
 import '../../service/remote_config_service.dart';

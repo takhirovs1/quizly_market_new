@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "608707985703",
-    "project_id": "quizly-market-app",
-    "storage_bucket": "quizly-market-app.firebasestorage.app"
+    "project_number": "568369386495",
+    "project_id": "test-9cf8b",
+    "storage_bucket": "test-9cf8b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:608707985703:android:5aa290f2c0915101622902",
+        "mobilesdk_app_id": "1:568369386495:android:dcf3206f6a31f9431e4dca",
         "android_client_info": {
           "package_name": "com.quizly.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyATFbwhcHSE8sN418BlHDLBOkKGz5ZGpbI"
+          "current_key": "AIzaSyAWiCeNXuZh7skW7F9-pWWTt2TABs15IwQ"
         }
       ],
       "services": {
