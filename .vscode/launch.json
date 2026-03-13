@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // quizly
+    {
+      "name": "quizly",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}",
+      "args": ["--dart-define-from-file=config/development.json"],
+      "env": {}
+    },
+    {
+      "name": "quizly (profile)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}",
+      "args": ["--dart-define-from-file=config/staging.json"],
+      "env": {}
+    },
+    {
+      "name": "quizly (release)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}",
+      "args": ["--dart-define-from-file=config/production.json"],
+      "env": {}
+    },
+    // ui kit
+    {
+      "name": "ui kit",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/packages/ui/example",
+      "args": [],
+      "env": {}
+    }
+  ]
+}
