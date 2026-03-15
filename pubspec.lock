@@ -321,6 +321,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.3"
+  expandable_page_view:
+    dependency: "direct main"
+    description:
+      name: expandable_page_view
+      sha256: "0dc2f7d5ee2148df424a343daf6434353a5d56d0cd2e64282cb3ac782f769bba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   fake_async:
     dependency: transitive
     description:
@@ -1187,7 +1195,7 @@ packages:
     source: hosted
     version: "1.4.1"
   telegram_web_app:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: telegram_web_app
       sha256: "5c33aaa07d776552ce55b49b401d0e835115fbeb136877c6d19b3b1491000535"

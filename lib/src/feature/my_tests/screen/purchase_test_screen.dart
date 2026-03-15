@@ -19,22 +19,28 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
     backgroundColor: context.x.colors.scaffoldBackground,
     appBar: const QuizAppBar(title: 'Sotib olish'),
     body: ListView(
-      padding: const .symmetric(horizontal: 16),
+      // padding: const .symmetric(horizontal: 16),
       children: [
         const SizedBox(height: 16),
-        TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
+        Padding(
+          padding: const .symmetric(horizontal: 16),
+          child: TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
+        ),
         const SizedBox(height: 28),
         SizedBox(
-          height: 260,
+          height: 240,
           child: PageView.builder(
             controller: pageController,
             itemCount: test.questions.length,
             onPageChanged: (i) => currentTest.value = i,
-            itemBuilder: (context, index) => DecoratedBox(
-              decoration: BoxDecoration(color: context.x.colors.white, borderRadius: .circular(24)),
-              child: Padding(
-                padding: const .symmetric(horizontal: 14, vertical: 12),
-                child: MyTestItemWidget(test: test.questions[index]),
+            itemBuilder: (context, index) => Padding(
+              padding: const .symmetric(horizontal: 16),
+              child: DecoratedBox(
+                decoration: BoxDecoration(color: context.x.colors.white, borderRadius: .circular(24)),
+                child: Padding(
+                  padding: const .symmetric(horizontal: 14, vertical: 12),
+                  child: MyTestItemWidget(test: test.questions[index]),
+                ),
               ),
             ),
           ),
@@ -52,34 +58,40 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         ),
 
         const SizedBox(height: 20),
-        Text('To’lov turi:', style: context.x.textStyle.w700s16.copyWith(fontSize: 22)),
+        Padding(
+          padding: const .symmetric(horizontal: 16),
+          child: Text('To’lov turi:', style: context.x.textStyle.w700s16.copyWith(fontSize: 22)),
+        ),
         const SizedBox(height: 8),
-        ValueListenableBuilder(
-          valueListenable: selectedPayment,
-          builder: (context, payment, child) => PaymentCard(
-            hasShadow: true,
-            title: payment.title,
-            subtitle: payment.subtitle,
-            image: Image.asset(payment.icon, package: 'ui', width: payment.type == .card ? 32 : 54),
-            onTap: onSwitchPaymentPressed,
-            action: const Icon(Icons.unfold_more),
+        Padding(
+          padding: const .symmetric(horizontal: 16),
+          child: ValueListenableBuilder(
+            valueListenable: selectedPayment,
+            builder: (context, payment, child) => PaymentCard(
+              hasShadow: true,
+              title: payment.title,
+              subtitle: payment.subtitle,
+              image: Image.asset(payment.icon, package: 'ui', width: payment.type == .card ? 32 : 54),
+              onTap: onSwitchPaymentPressed,
+              action: const Icon(Icons.unfold_more),
+            ),
           ),
         ),
       ],
     ),
     bottomNavigationBar: DecoratedBox(
       decoration: BoxDecoration(
-        color: ThemeColors.of(context).white,
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+        color: context.x.colors.white,
+        borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const .symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 20000.formatUzs,
-                style: context.x.textStyle.w700s16.copyWith(fontSize: 24, color: ThemeColors.of(context).primary),
+                style: context.x.textStyle.w700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
                 textAlign: .center,
               ),
             ),

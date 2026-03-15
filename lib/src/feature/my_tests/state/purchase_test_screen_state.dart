@@ -84,6 +84,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     pageController = PageController();
     currentTest = ValueNotifier(0);
     selectedPayment = ValueNotifier(
@@ -102,6 +103,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     super.dispose();
     pageController.dispose();
     selectedPayment.dispose();
+    context.teardownTelegramBackButton();
   }
 
   Future<void> onSwitchPaymentPressed() async {
@@ -124,7 +126,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                   PaymentCard(
                     title: paymentModel.first.title,
                     subtitle: paymentModel.first.subtitle,
-                    image: Image.asset(paymentModel.first.icon ?? '', package: 'ui', width: 32),
+                    image: Image.asset(paymentModel.first.icon, package: 'ui', width: 32),
                     isActive: isSelected == paymentModel.first,
                     onTap: () => Navigator.pop<PaymentModel>(ctx, paymentModel.first),
                   ),
@@ -135,7 +137,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: PaymentCard(
                         title: paymentModel[i].title,
-                        image: Image.asset(paymentModel[i].icon ?? '', package: 'ui', width: 54),
+                        image: Image.asset(paymentModel[i].icon, package: 'ui', width: 54),
                         onTap: () {
                           selectedPayment.value = paymentModel[i];
                           Navigator.pop<PaymentModel>(ctx, paymentModel[i]);

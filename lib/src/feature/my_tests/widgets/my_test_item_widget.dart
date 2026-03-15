@@ -10,7 +10,9 @@ class MyTestItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Row(children: [Text(test.question, style: context.x.textStyle.w400s16.copyWith(fontSize: 17))]),
+      Row(
+        children: [Flexible(child: Text(test.question, style: context.x.textStyle.w400s16.copyWith(fontSize: 17)))],
+      ),
       const SizedBox(height: 6),
       for (int i = 0; i < test.answers.length; i++)
         Padding(

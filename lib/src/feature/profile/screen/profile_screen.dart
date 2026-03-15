@@ -8,6 +8,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    body: Center(child: Text('Profile: ${context.x.dependencies.metadata.appVersion}')),
+    body: Center(child: Text('Profile1: ${context.x.dependencies.metadata.appVersion}')),
   );
 }
