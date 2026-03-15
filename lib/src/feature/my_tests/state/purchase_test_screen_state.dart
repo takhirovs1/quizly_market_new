@@ -84,6 +84,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     pageController = PageController();
     currentTest = ValueNotifier(0);
     selectedPayment = ValueNotifier(
@@ -102,6 +103,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     super.dispose();
     pageController.dispose();
     selectedPayment.dispose();
+    context.teardownTelegramBackButton();
   }
 
   Future<void> onSwitchPaymentPressed() async {

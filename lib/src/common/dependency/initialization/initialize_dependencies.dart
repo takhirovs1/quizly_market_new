@@ -115,10 +115,24 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     },
   ),
 
+  // (
+  //   'Wakelock',
+  //   (dependencies) async {
+  //     final wakelockEnabled = dependencies.localSource.wakelockEnabled;
+  //     if (wakelockEnabled) {
+  //       await WakelockPlus.enable();
+  //     } else {
+  //       await WakelockPlus.disable();
+  //     }
+  //   },
+  // ),
   (
     'Wakelock',
     (dependencies) async {
+      if (kIsWeb) return;
+
       final wakelockEnabled = dependencies.localSource.wakelockEnabled;
+
       if (wakelockEnabled) {
         await WakelockPlus.enable();
       } else {

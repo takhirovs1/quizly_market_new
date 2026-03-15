@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:localization/localization.dart';
+import 'package:octopus/octopus.dart';
+import 'package:telegram_web_app/telegram_web_app.dart';
 import 'package:ui/ui.dart';
 
 import '../../feature/settings/bloc/settings_bloc.dart';
@@ -150,4 +154,46 @@ extension type Build(BuildContext context) {
             'a $T of the exact type',
         'out_of_scope',
       ));
+}
+
+extension TelegramWebAppX on BuildContext {
+  TelegramWebApp get telegramWebApp => TelegramWebApp.instance;
+  // WebAppUser? get telegramUser => telegramWebApp.initDataUnsafe?.user;
+
+  void close() => telegramWebApp.close();
+  void ready() => telegramWebApp.ready();
+  void expand() => telegramWebApp.expand();
+  void disableVerticalSwipes() => telegramWebApp.disableVerticalSwipes();
+  void disableClosingConfirmation() => telegramWebApp.disableClosingConfirmation();
+  void enableClosingConfirmation() => telegramWebApp.enableClosingConfirmation();
+
+  void setupTelegramBackButton() {
+    if (!kIsWeb) return;
+    try {
+      if (!telegramWebApp.isSupported) return;
+      telegramWebApp.backButton
+        ..onClick(_handleTelegramBackButtonPressed)
+        ..show();
+    } on Object catch (_) {
+      log('Failed to show Telegram back button');
+    }
+  }
+
+  void teardownTelegramBackButton() {
+    if (!kIsWeb) return;
+    try {
+      if (!telegramWebApp.isSupported) return;
+      telegramWebApp.backButton
+        ..offClick(_handleTelegramBackButtonPressed)
+        ..hide();
+    } on Object catch (_) {
+      log('Failed to hide Telegram back button');
+    }
+  }
+
+  void _handleTelegramBackButtonPressed() {
+    telegramWebApp.hapticFeedback.impactOccurred(.light);
+    if (!mounted) return;
+    octopus.pop();
+  }
 }

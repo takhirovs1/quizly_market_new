@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:localization/localization.dart';
 import 'package:logbook/logbook.dart';
@@ -34,6 +37,12 @@ class App extends StatefulWidget {
 
 /// UI configuration for widget App.
 class _AppState extends AppState {
+  @override
+  void initState() {
+    super.initState();
+    _configureTelegramShell();
+  }
+
   @override
   Widget build(BuildContext context) => MaterialApp(
     restorationScopeId: 'material_app',
@@ -84,4 +93,22 @@ class _AppState extends AppState {
           ),
         ),
   );
+  void _configureTelegramShell() {
+    if (!kIsWeb) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final telegram = context.telegramWebApp;
+        if (!telegram.isSupported) return;
+
+        telegram
+          ..ready()
+          ..expand()
+          ..disableVerticalSwipes();
+        if (!kDebugMode) telegram.requestFullscreen();
+      } on Object catch (_) {
+        log('Telegram Web App configuration failed');
+      }
+    });
+  }
 }
