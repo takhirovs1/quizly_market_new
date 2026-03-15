@@ -14,12 +14,12 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     PaymentModel(
       id: 0,
       title: 340000.formatUzs,
-      type: PaymentType.card,
+      type: .card,
       icon: Assets.lib.images.logoPng.path,
       subtitle: 'QuizlyMarket Card',
     ),
-    PaymentModel(id: 1, title: 'Payme', type: PaymentType.provider, icon: Assets.lib.images.payme2.path),
-    PaymentModel(id: 2, title: 'ClickSuperApp', type: PaymentType.provider, icon: Assets.lib.images.click2.path),
+    PaymentModel(id: 1, title: 'Payme', type: .provider, icon: Assets.lib.images.payme2.path),
+    PaymentModel(id: 2, title: 'ClickSuperApp', type: .provider, icon: Assets.lib.images.click2.path),
   ];
   final TestModel test = TestModel(
     id: 1,
@@ -84,14 +84,13 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   @override
   void initState() {
     super.initState();
-    context.setupTelegramBackButton();
     pageController = PageController();
     currentTest = ValueNotifier(0);
     selectedPayment = ValueNotifier(
       PaymentModel(
         id: 0,
         title: 340000.formatUzs,
-        type: PaymentType.card,
+        type: .card,
         icon: Assets.lib.images.logoPng.path,
         subtitle: 'QuizlyMarket Card',
       ),
@@ -103,51 +102,64 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     super.dispose();
     pageController.dispose();
     selectedPayment.dispose();
-    context.teardownTelegramBackButton();
   }
 
   Future<void> onSwitchPaymentPressed() async {
     final result = await showModalBottomSheet<PaymentModel>(
       context: context,
-      builder: (ctx) => BottomSheetView(
-        isCenterTitle: false,
-        onClose: () => Navigator.pop(ctx),
-        title: 'To‘lov turini tanlang',
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          child: ValueListenableBuilder<PaymentModel?>(
-            valueListenable: selectedPayment,
-            builder: (context, isSelected, child) => SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Hozirgi to‘lov turi', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
-                  const SizedBox(height: 8),
-                  PaymentCard(
-                    title: paymentModel.first.title,
-                    subtitle: paymentModel.first.subtitle,
-                    image: Image.asset(paymentModel.first.icon, package: 'ui', width: 32),
-                    isActive: isSelected == paymentModel.first,
-                    onTap: () => Navigator.pop<PaymentModel>(ctx, paymentModel.first),
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Hoziroq sinab ko’ring', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
-                  for (var i = 1; i < paymentModel.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: PaymentCard(
-                        title: paymentModel[i].title,
-                        image: Image.asset(paymentModel[i].icon, package: 'ui', width: 54),
-                        onTap: () {
-                          selectedPayment.value = paymentModel[i];
-                          Navigator.pop<PaymentModel>(ctx, paymentModel[i]);
-                        },
-                        isActive: isSelected == paymentModel[i],
-                      ),
+      isScrollControlled: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: .7,
+        builder: (context, scrollController) => BottomSheetView(
+          isCenterTitle: false,
+          onClose: () => Navigator.pop(ctx),
+          title: 'To‘lov turini tanlang',
+          child: Padding(
+            padding: const .symmetric(horizontal: 14, vertical: 16),
+            child: ValueListenableBuilder<PaymentModel?>(
+              valueListenable: selectedPayment,
+              builder: (context, isSelected, child) => SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text('Hozirgi to‘lov turi', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+                    const SizedBox(height: 8),
+                    PaymentCard(
+                      imagePadding: isSelected?.id != 0
+                          ? const .symmetric(horizontal: 6, vertical: 14)
+                          : const .symmetric(horizontal: 6, vertical: 8),
+                      title: isSelected!.title,
+                      subtitle: isSelected.subtitle,
+                      image: Image.asset(isSelected.icon, package: 'ui', width: isSelected.type == .card ? 32 : 54),
+                      isActive: true,
                     ),
+                    const SizedBox(height: 16),
+                    Text('Provider orqali to’lov', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+                    for (final payment in paymentModel.where((e) => e != isSelected && e.id != 0))
+                      Padding(
+                        padding: const .only(bottom: 8),
+                        child: PaymentCard(
+                          imagePadding: const .symmetric(horizontal: 6, vertical: 14),
+                          title: payment.title,
+                          image: Image.asset(payment.icon, package: 'ui', width: 54),
+                          onTap: () => Navigator.pop<PaymentModel>(ctx, payment),
+                        ),
+                      ),
 
-                  const SizedBox(height: 20),
-                ],
+                    if (isSelected.id != 0) ...[
+                      const SizedBox(height: 16),
+                      Text('Hamyon', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+                      PaymentCard(
+                        title: paymentModel.first.title,
+                        subtitle: paymentModel.first.subtitle,
+                        image: Image.asset(paymentModel.first.icon, package: 'ui', width: 34),
+                        onTap: () => Navigator.pop<PaymentModel>(ctx, paymentModel.first),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),

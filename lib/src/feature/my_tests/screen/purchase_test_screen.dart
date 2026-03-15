@@ -19,7 +19,6 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
     backgroundColor: context.x.colors.scaffoldBackground,
     appBar: const QuizAppBar(title: 'Sotib olish'),
     body: ListView(
-      // padding: const .symmetric(horizontal: 16),
       children: [
         const SizedBox(height: 16),
         Padding(
@@ -28,7 +27,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         ),
         const SizedBox(height: 28),
         SizedBox(
-          height: 240,
+          height: 260,
           child: PageView.builder(
             controller: pageController,
             itemCount: test.questions.length,
@@ -36,7 +35,18 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             itemBuilder: (context, index) => Padding(
               padding: const .symmetric(horizontal: 16),
               child: DecoratedBox(
-                decoration: BoxDecoration(color: context.x.colors.white, borderRadius: .circular(24)),
+                decoration: BoxDecoration(
+                  color: context.x.colors.white,
+                  borderRadius: .circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: context.x.colors.black.withValues(alpha: .08),
+                      offset: const Offset(0, 12),
+                      blurRadius: 56,
+                    ),
+                    BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: .zero, blurRadius: 3),
+                  ],
+                ),
                 child: Padding(
                   padding: const .symmetric(horizontal: 14, vertical: 12),
                   child: MyTestItemWidget(test: test.questions[index]),
@@ -68,6 +78,9 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           child: ValueListenableBuilder(
             valueListenable: selectedPayment,
             builder: (context, payment, child) => PaymentCard(
+              imagePadding: payment.id != 0
+                  ? const .symmetric(horizontal: 6, vertical: 14)
+                  : const .symmetric(horizontal: 6, vertical: 8),
               hasShadow: true,
               title: payment.title,
               subtitle: payment.subtitle,
@@ -83,6 +96,9 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
       decoration: BoxDecoration(
         color: context.x.colors.white,
         borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
+        boxShadow: [
+          BoxShadow(color: context.x.colors.black.withValues(alpha: .078), offset: const Offset(0, 3), blurRadius: 30),
+        ],
       ),
       child: Padding(
         padding: const .symmetric(horizontal: 16, vertical: 12),
@@ -90,7 +106,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           children: [
             Expanded(
               child: Text(
-                20000.formatUzs,
+                test.price.formatUzs,
                 style: context.x.textStyle.w700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
                 textAlign: .center,
               ),

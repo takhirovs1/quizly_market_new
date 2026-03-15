@@ -16,6 +16,7 @@ class PaymentCard extends StatelessWidget {
     this.backgroundColor,
     this.action,
     this.hasShadow = false,
+    this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 6, vertical: 8),
     super.key,
   });
 
@@ -28,20 +29,22 @@ class PaymentCard extends StatelessWidget {
   final Color? backgroundColor;
   final Widget? action;
   final bool hasShadow;
+  final EdgeInsetsGeometry imagePadding;
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: backgroundColor ?? ThemeColors.of(context).cardBackground,
+        color: backgroundColor ?? context.x.colors.cardBackground,
         borderRadius: BorderRadius.circular(16),
         boxShadow: hasShadow
             ? [
                 BoxShadow(
-                  color: context.x.colors.black.withValues(alpha: .1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  color: context.x.colors.black.withValues(alpha: .08),
+                  offset: const Offset(0, 12),
+                  blurRadius: 56,
                 ),
+                BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: Offset.zero, blurRadius: 3),
               ]
             : null,
         // boxShadow: [
@@ -58,14 +61,14 @@ class PaymentCard extends StatelessWidget {
                 color: context.x.colors.dialogCancelButton,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Padding(padding: const EdgeInsetsGeometry.symmetric(horizontal: 6, vertical: 8), child: image),
+              child: Padding(padding: imagePadding, child: image),
             ),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText.w700s18(title),
-                if (subtitle != null) AppText.w400s14(subtitle!, color: ThemeColors.of(context).gray),
+                if (subtitle != null) AppText.w400s14(subtitle!, color: context.x.colors.gray),
               ],
             ),
             const Spacer(),
