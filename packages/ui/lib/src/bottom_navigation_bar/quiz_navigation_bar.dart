@@ -28,79 +28,55 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
   }
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-      boxShadow: [BoxShadow(color: context.x.colors.gray.withValues(alpha: .1), blurRadius: 10, offset: Offset.zero)],
-    ),
-    child: ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-      child: NavigationBar(
-        overlayColor: WidgetStateColor.transparent,
-        indicatorColor: Colors.transparent,
-        shadowColor: context.x.colors.gray,
-        selectedIndex: selectedIndex,
-        onDestinationSelected: onItemTapped,
-        backgroundColor: context.x.colors.dialogBackground,
-        destinations: [
-          for (final i in [
-            Assets.lib.vectors.home,
-            Assets.lib.vectors.cart,
-            Assets.lib.vectors.upload,
-            Assets.lib.vectors.profile,
-          ])
-            NavigationDestination(
-              icon: SizedBox(
-                width: 24,
-                child: i.svg(
-                  width: 24,
-                  height: 24,
-                  package: 'ui',
-                  colorFilter: ColorFilter.mode(context.x.colors.bottomNavigationBarUnselectedColor, BlendMode.srcIn),
-                ),
-              ),
-              selectedIcon: SizedBox(
+  Widget build(BuildContext context) {
+    final icons = [
+      Assets.lib.vectors.home,
+      Assets.lib.vectors.cart,
+      Assets.lib.vectors.upload,
+      Assets.lib.vectors.profile,
+    ];
+
+    final labels = ['Asosiy', 'Market', 'Yuklash', 'Profil'];
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 30, offset: const Offset(0, -3))],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+        child: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: onItemTapped,
+          backgroundColor: context.x.colors.dialogBackground,
+          indicatorColor: Colors.transparent,
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return context.x.textStyle.w500s14.copyWith(color: context.x.colors.primary);
+            }
+            return context.x.textStyle.w500s14.copyWith(color: context.x.colors.bottomNavigationBarUnselectedColor);
+          }),
+          destinations: List.generate(
+            icons.length,
+            (i) => NavigationDestination(
+              label: labels[i],
+              icon: icons[i].svg(
                 width: 24,
                 height: 24,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Center(
-                        child: i.svg(
-                          width: 24,
-                          height: 24,
-                          package: 'ui',
-                          colorFilter: ColorFilter.mode(context.x.colors.text, BlendMode.srcIn),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: -10,
-                      child: SizedBox(
-                        width: 24,
-                        child: Center(
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            width: bottomNavigationAnimated ? 10 : 0,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: context.x.colors.text,
-                              borderRadius: const BorderRadius.all(Radius.circular(10)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                package: 'ui',
+                colorFilter: ColorFilter.mode(context.x.colors.bottomNavigationBarUnselectedColor, BlendMode.srcIn),
               ),
-              label: '',
+              selectedIcon: icons[i].svg(
+                width: 24,
+                height: 24,
+                package: 'ui',
+                colorFilter: ColorFilter.mode(context.x.colors.primary, BlendMode.srcIn),
+              ),
             ),
-        ],
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

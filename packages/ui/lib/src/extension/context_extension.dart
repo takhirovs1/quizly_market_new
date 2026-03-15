@@ -14,4 +14,5 @@ extension type Build(BuildContext context) {
 
   /// [AppTypography] extension
   AppTypography get textStyle => theme.appTextStyles;
+  
 }
