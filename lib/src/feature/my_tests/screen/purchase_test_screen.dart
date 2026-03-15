@@ -4,6 +4,7 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../state/purchase_test_screen_state.dart';
 import '../widgets/my_test_item_widget.dart';
+import '../widgets/test_description_widget.dart';
 
 class PurchaseTestScreen extends StatefulWidget {
   const PurchaseTestScreen({super.key});
@@ -21,59 +22,33 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
       padding: const .symmetric(horizontal: 16),
       children: [
         const SizedBox(height: 16),
-        Row(
-          crossAxisAlignment: .start,
-          spacing: 8,
-          children: [
-            Flexible(
-              child: Text(
-                'O’zbekistonning eng yangi tarixi fanidan testlar',
-                style: context.x.textStyle.w700s16.copyWith(fontSize: 22),
-              ),
-            ),
-
-            GestureDetector(
-              onTap: () {},
-              child: Assets.lib.vectors.share.svg(
-                package: 'ui',
-                colorFilter: ColorFilter.mode(ThemeColors.of(context).text, BlendMode.srcATop),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: Icon(Icons.favorite_border, color: ThemeColors.of(context).text),
-            ),
-          ],
-        ),
+        TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
         const SizedBox(height: 28),
         SizedBox(
           height: 260,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: context.x.colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: context.x.colors.black.withValues(alpha: .1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const .symmetric(horizontal: 14, vertical: 12),
-              child: PageView.builder(
-                controller: pageController,
-                itemCount: tests.length,
-                onPageChanged: (i) => currentTest.value = i,
-                itemBuilder: (context, index) => ValueListenableBuilder(
-                  valueListenable: currentTest,
-                  builder: (context, test, child) =>
-                      MyTestItemWidget(test: tests[index], testCount: tests.length, currentTest: test),
-                ),
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: test.questions.length,
+            onPageChanged: (i) => currentTest.value = i,
+            itemBuilder: (context, index) => DecoratedBox(
+              decoration: BoxDecoration(color: context.x.colors.white, borderRadius: .circular(24)),
+              child: Padding(
+                padding: const .symmetric(horizontal: 14, vertical: 12),
+                child: MyTestItemWidget(test: test.questions[index]),
               ),
             ),
           ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: .center,
+          children: [
+            ValueListenableBuilder(
+              valueListenable: currentTest,
+              builder: (context, current, child) =>
+                  PageIndicator(selectedPage: current, totalPages: test.questions.length),
+            ),
+          ],
         ),
 
         const SizedBox(height: 20),
@@ -85,7 +60,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             hasShadow: true,
             title: payment.title,
             subtitle: payment.subtitle,
-            image: Image.asset(payment.icon ?? '', package: 'ui', width: payment.type == .card ? 32 : 54),
+            image: Image.asset(payment.icon, package: 'ui', width: payment.type == .card ? 32 : 54),
             onTap: onSwitchPaymentPressed,
             action: const Icon(Icons.unfold_more),
           ),

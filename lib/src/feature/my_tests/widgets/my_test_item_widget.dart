@@ -4,10 +4,8 @@ import '../../../common/extension/context_extension.dart';
 import '../models/test_mode.dart';
 
 class MyTestItemWidget extends StatelessWidget {
-  const MyTestItemWidget({required this.test, required this.testCount, required this.currentTest, super.key});
+  const MyTestItemWidget({required this.test, super.key});
   final QuestionModel test;
-  final int testCount;
-  final int currentTest;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -21,7 +19,7 @@ class MyTestItemWidget extends StatelessWidget {
         ),
 
       const SizedBox(height: 10),
-      PageIndicator(selectedPage: currentTest, totalPages: testCount),
+      // PageIndicator(selectedPage: currentTest, totalPages: testCount),
     ],
   );
 }
