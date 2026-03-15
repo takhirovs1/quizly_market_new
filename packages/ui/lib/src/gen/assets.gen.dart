@@ -87,8 +87,14 @@ class $LibImagesGen {
   /// File path: lib/images/robot_result.png
   AssetGenImage get robotResult => const AssetGenImage('lib/images/robot_result.png');
 
+  /// File path: lib/images/samandar.png
+  AssetGenImage get samandar => const AssetGenImage('lib/images/samandar.png');
+
   /// File path: lib/images/strong.png
   AssetGenImage get strong => const AssetGenImage('lib/images/strong.png');
+
+  /// File path: lib/images/telegram_logo.png
+  AssetGenImage get telegramLogo => const AssetGenImage('lib/images/telegram_logo.png');
 
   /// File path: lib/images/uzum.jpeg
   AssetGenImage get uzum => const AssetGenImage('lib/images/uzum.jpeg');
@@ -117,7 +123,9 @@ class $LibImagesGen {
     referat,
     robot,
     robotResult,
+    samandar,
     strong,
+    telegramLogo,
     uzum,
     xazna,
   ];
@@ -224,6 +232,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/add_user.vec
   SvgGenImage get addUser => const SvgGenImage.vec('lib/vectors/add_user.vec');
 
+  /// File path: lib/vectors/apple.vec
+  SvgGenImage get apple => const SvgGenImage.vec('lib/vectors/apple.vec');
+
   /// File path: lib/vectors/arrow_back.vec
   SvgGenImage get arrowBack => const SvgGenImage.vec('lib/vectors/arrow_back.vec');
 
@@ -248,6 +259,12 @@ class $LibVectorsGen {
   /// File path: lib/vectors/close.vec
   SvgGenImage get close => const SvgGenImage.vec('lib/vectors/close.vec');
 
+  /// File path: lib/vectors/copy_id.vec
+  SvgGenImage get copyId => const SvgGenImage.vec('lib/vectors/copy_id.vec');
+
+  /// File path: lib/vectors/documents.vec
+  SvgGenImage get documents => const SvgGenImage.vec('lib/vectors/documents.vec');
+
   /// File path: lib/vectors/empty_inbox.vec
   SvgGenImage get emptyInbox => const SvgGenImage.vec('lib/vectors/empty_inbox.vec');
 
@@ -269,11 +286,29 @@ class $LibVectorsGen {
   /// File path: lib/vectors/filter.vec
   SvgGenImage get filter => const SvgGenImage.vec('lib/vectors/filter.vec');
 
+  /// File path: lib/vectors/google.vec
+  SvgGenImage get google => const SvgGenImage.vec('lib/vectors/google.vec');
+
+  /// File path: lib/vectors/hide.vec
+  SvgGenImage get hide => const SvgGenImage.vec('lib/vectors/hide.vec');
+
+  /// File path: lib/vectors/history_transaction.vec
+  SvgGenImage get historyTransaction => const SvgGenImage.vec('lib/vectors/history_transaction.vec');
+
   /// File path: lib/vectors/home.vec
   SvgGenImage get home => const SvgGenImage.vec('lib/vectors/home.vec');
 
   /// File path: lib/vectors/ic-external-link.vec
   SvgGenImage get icExternalLink => const SvgGenImage.vec('lib/vectors/ic-external-link.vec');
+
+  /// File path: lib/vectors/language.vec
+  SvgGenImage get language => const SvgGenImage.vec('lib/vectors/language.vec');
+
+  /// File path: lib/vectors/like.vec
+  SvgGenImage get like => const SvgGenImage.vec('lib/vectors/like.vec');
+
+  /// File path: lib/vectors/logout.vec
+  SvgGenImage get logout => const SvgGenImage.vec('lib/vectors/logout.vec');
 
   /// File path: lib/vectors/party.vec
   SvgGenImage get party => const SvgGenImage.vec('lib/vectors/party.vec');
@@ -284,8 +319,14 @@ class $LibVectorsGen {
   /// File path: lib/vectors/question_mark.vec
   SvgGenImage get questionMark => const SvgGenImage.vec('lib/vectors/question_mark.vec');
 
+  /// File path: lib/vectors/referral.vec
+  SvgGenImage get referral => const SvgGenImage.vec('lib/vectors/referral.vec');
+
   /// File path: lib/vectors/search.vec
   SvgGenImage get search => const SvgGenImage.vec('lib/vectors/search.vec');
+
+  /// File path: lib/vectors/set_home.vec
+  SvgGenImage get setHome => const SvgGenImage.vec('lib/vectors/set_home.vec');
 
   /// File path: lib/vectors/share.vec
   SvgGenImage get share => const SvgGenImage.vec('lib/vectors/share.vec');
@@ -299,6 +340,21 @@ class $LibVectorsGen {
   /// File path: lib/vectors/success_dialog.vec
   SvgGenImage get successDialog => const SvgGenImage.vec('lib/vectors/success_dialog.vec');
 
+  /// File path: lib/vectors/support.vec
+  SvgGenImage get support => const SvgGenImage.vec('lib/vectors/support.vec');
+
+  /// File path: lib/vectors/teacher_swap.vec
+  SvgGenImage get teacherSwap => const SvgGenImage.vec('lib/vectors/teacher_swap.vec');
+
+  /// File path: lib/vectors/theme_icon.vec
+  SvgGenImage get themeIcon => const SvgGenImage.vec('lib/vectors/theme_icon.vec');
+
+  /// File path: lib/vectors/top_up_balance.vec
+  SvgGenImage get topUpBalance => const SvgGenImage.vec('lib/vectors/top_up_balance.vec');
+
+  /// File path: lib/vectors/unfold_more.vec
+  SvgGenImage get unfoldMore => const SvgGenImage.vec('lib/vectors/unfold_more.vec');
+
   /// File path: lib/vectors/upload.vec
   SvgGenImage get upload => const SvgGenImage.vec('lib/vectors/upload.vec');
 
@@ -306,6 +362,7 @@ class $LibVectorsGen {
   List<SvgGenImage> get values => [
     addHome,
     addUser,
+    apple,
     arrowBack,
     attachFile,
     bigChevronRight,
@@ -314,6 +371,8 @@ class $LibVectorsGen {
     checkCircle,
     chevronRight,
     close,
+    copyId,
+    documents,
     emptyInbox,
     emptyTestDark,
     emptyTestLight,
@@ -321,16 +380,29 @@ class $LibVectorsGen {
     feedback,
     fileIcon,
     filter,
+    google,
+    hide,
+    historyTransaction,
     home,
     icExternalLink,
+    language,
+    like,
+    logout,
     party,
     profile,
     questionMark,
+    referral,
     search,
+    setHome,
     share,
     sort,
     strong,
     successDialog,
+    support,
+    teacherSwap,
+    themeIcon,
+    topUpBalance,
+    unfoldMore,
     upload,
   ];
 }
