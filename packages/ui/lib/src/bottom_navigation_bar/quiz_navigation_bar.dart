@@ -30,9 +30,9 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
   @override
   Widget build(BuildContext context) {
     final icons = [
-      Assets.lib.vectors.home,
-      Assets.lib.vectors.cart,
-      Assets.lib.vectors.upload,
+      Assets.lib.vectors.home2,
+      Assets.lib.vectors.market,
+      Assets.lib.vectors.upload2,
       Assets.lib.vectors.profile,
     ];
 

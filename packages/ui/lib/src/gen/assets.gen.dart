@@ -298,6 +298,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/home.vec
   SvgGenImage get home => const SvgGenImage.vec('lib/vectors/home.vec');
 
+  /// File path: lib/vectors/home2.vec
+  SvgGenImage get home2 => const SvgGenImage.vec('lib/vectors/home2.vec');
+
   /// File path: lib/vectors/ic-external-link.vec
   SvgGenImage get icExternalLink => const SvgGenImage.vec('lib/vectors/ic-external-link.vec');
 
@@ -310,8 +313,14 @@ class $LibVectorsGen {
   /// File path: lib/vectors/logout.vec
   SvgGenImage get logout => const SvgGenImage.vec('lib/vectors/logout.vec');
 
+  /// File path: lib/vectors/market.vec
+  SvgGenImage get market => const SvgGenImage.vec('lib/vectors/market.vec');
+
   /// File path: lib/vectors/party.vec
   SvgGenImage get party => const SvgGenImage.vec('lib/vectors/party.vec');
+
+  /// File path: lib/vectors/person.vec
+  SvgGenImage get person => const SvgGenImage.vec('lib/vectors/person.vec');
 
   /// File path: lib/vectors/profile.vec
   SvgGenImage get profile => const SvgGenImage.vec('lib/vectors/profile.vec');
@@ -358,6 +367,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/upload.vec
   SvgGenImage get upload => const SvgGenImage.vec('lib/vectors/upload.vec');
 
+  /// File path: lib/vectors/upload2.vec
+  SvgGenImage get upload2 => const SvgGenImage.vec('lib/vectors/upload2.vec');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     addHome,
@@ -384,11 +396,14 @@ class $LibVectorsGen {
     hide,
     historyTransaction,
     home,
+    home2,
     icExternalLink,
     language,
     like,
     logout,
+    market,
     party,
+    person,
     profile,
     questionMark,
     referral,
@@ -404,6 +419,7 @@ class $LibVectorsGen {
     topUpBalance,
     unfoldMore,
     upload,
+    upload2,
   ];
 }
 
