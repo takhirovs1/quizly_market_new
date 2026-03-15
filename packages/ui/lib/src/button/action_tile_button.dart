@@ -9,17 +9,17 @@ import '../../ui.dart';
 class ActionListTile extends StatefulWidget {
   /// {@macro list_tile_button}
   const ActionListTile({
-    required this.icon,
     required this.leading,
     required this.onPressed,
+    this.icon,
     this.iconColor,
     this.textColor,
     super.key, // ignore: unused_element
   });
 
-  final IconData icon;
   final String leading;
   final VoidCallback onPressed;
+  final Widget? icon;
   final Color? iconColor;
   final Color? textColor;
 
@@ -65,14 +65,14 @@ class _ActionListTileState extends ActionListTileState {
             spacing: 6,
             children: [
               DecoratedBox(
-                decoration: BoxDecoration(shape: BoxShape.circle, color: ThemeColors.of(context).divider),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: ThemeColors.of(context).white),
                 child: Padding(
                   padding: const EdgeInsets.all(8),
-                  child: Icon(widget.icon, color: widget.iconColor, size: 20),
+                  child: widget.icon ?? Icon(Icons.person, color: widget.iconColor, size: 20),
                 ),
               ),
 
-              AppText.w500s16(widget.leading, color: widget.textColor),
+              AppText.w600s16(widget.leading, color: widget.textColor),
             ],
           ),
 

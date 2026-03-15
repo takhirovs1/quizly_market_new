@@ -2,6 +2,37 @@ import 'package:flutter/material.dart';
 
 import '../gen/fonts.gen.dart';
 
+/// Typography — barcha matn stillari [FontFamily.nunito] asosida.
+///
+/// **AppTextStyle enum:** displayLarge, displayMedium, displaySmall, headlineLarge,
+/// headlineBold, headlineMedium, headlineSmall, titleLarge, titleBold18, titleBold,
+/// titleSemiBold16, bodyLarge18, titleMedium, titleSmall, bodyLarge, bodyMedium,
+/// bodySmall, labelLarge, labelMedium, labelSmall, small.
+///
+/// **AppTypography (context.x.textStyle) variantlari:**
+/// | Variant   | Size | Weight | Izoh            |
+/// |-----------|------|--------|------------------|
+/// | w400s57   | 57   | 400    | Display Large    |
+/// | w400s45   | 45   | 400    | Display Medium   |
+/// | w400s36   | 36   | 400    | Display Small    |
+/// | w400s32   | 32   | 400    | Headline Large   |
+/// | w700s28   | 28   | 700    | Headline Bold    |
+/// | w400s28   | 28   | 400    | Headline Medium  |
+/// | w400s24   | 24   | 400    | Headline Small   |
+/// | w500s22   | 22   | 400    | Title Large      |
+/// | w700s18   | 18   | 700    | Title Bold 18    |
+/// | w600s16   | 16   | 600    | Title SemiBold   |
+/// | w700s16   | 16   | 700    | Title Bold       |
+/// | w500s16   | 16   | 500    | Title Medium     |
+/// | w500s14   | 14   | 500    | Title Small      |
+/// | w400s18   | 18   | 400    | Body Large 18    |
+/// | w400s16   | 16   | 400    | Body Large       |
+/// | w400s14   | 14   | 400    | Body Medium       |
+/// | w400s12   | 12   | 400    | Body Small        |
+/// | w500s12   | 12   | 500    | Label Medium      |
+/// | w500s11   | 11   | 500    | Label Small       |
+/// | w400s10   | 10   | 400    | Small             |
+///
 /// {@template AppTextStyle}
 /// {@endtemplate}
 enum AppTextStyle {
@@ -109,6 +140,19 @@ enum AppTextStyle {
     ),
   ),
 
+  /// Title Bold 18px w700
+  titleBold18(
+    TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
   /// Title Bold 16px w700
   titleBold(
     TextStyle(
@@ -118,6 +162,32 @@ enum AppTextStyle {
       fontStyle: FontStyle.normal,
       height: 1.5,
       letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
+  /// Title SemiBold 16px w600
+  titleSemiBold16(
+    TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
+  /// Body Large 18px w400
+  bodyLarge18(
+    TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.44,
+      letterSpacing: 0.5,
       package: 'ui',
     ),
   ),
@@ -261,9 +331,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
     required this.w400s28,
     required this.w400s24,
     required this.w500s22,
+    required this.w700s18,
+    required this.w600s16,
     required this.w700s16,
     required this.w500s16,
     required this.w500s14,
+    required this.w400s18,
     required this.w400s16,
     required this.w400s14,
     required this.w400s12,
@@ -282,9 +355,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
     w400s28: byDefault.w400s28.copyWith(color: lightTextColor),
     w400s24: byDefault.w400s24.copyWith(color: lightTextColor),
     w500s22: byDefault.w500s22.copyWith(color: lightTextColor),
+    w700s18: byDefault.w700s18.copyWith(color: lightTextColor),
+    w600s16: byDefault.w600s16.copyWith(color: lightTextColor),
     w700s16: byDefault.w700s16.copyWith(color: lightTextColor),
     w500s16: byDefault.w500s16.copyWith(color: lightTextColor),
     w500s14: byDefault.w500s14.copyWith(color: lightTextColor),
+    w400s18: byDefault.w400s18.copyWith(color: lightTextColor),
     w400s16: byDefault.w400s16.copyWith(color: lightTextColor),
     w400s14: byDefault.w400s14.copyWith(color: lightTextColor),
     w400s12: byDefault.w400s12.copyWith(color: lightTextColor),
@@ -303,9 +379,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
     w400s28: byDefault.w400s28.copyWith(color: darkTextColor),
     w400s24: byDefault.w400s24.copyWith(color: darkTextColor),
     w500s22: byDefault.w500s22.copyWith(color: darkTextColor),
+    w700s18: byDefault.w700s18.copyWith(color: darkTextColor),
+    w600s16: byDefault.w600s16.copyWith(color: darkTextColor),
     w700s16: byDefault.w700s16.copyWith(color: darkTextColor),
     w500s16: byDefault.w500s16.copyWith(color: darkTextColor),
     w500s14: byDefault.w500s14.copyWith(color: darkTextColor),
+    w400s18: byDefault.w400s18.copyWith(color: darkTextColor),
     w400s16: byDefault.w400s16.copyWith(color: darkTextColor),
     w400s14: byDefault.w400s14.copyWith(color: darkTextColor),
     w400s12: byDefault.w400s12.copyWith(color: darkTextColor),
@@ -384,6 +463,22 @@ class AppTypography extends ThemeExtension<AppTypography> {
       height: 1.27,
       package: 'ui',
     ),
+    w700s18: TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      package: 'ui',
+    ),
+    w600s16: TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      package: 'ui',
+    ),
     w700s16: TextStyle(
       fontFamily: FontFamily.nunito,
       fontSize: 16,
@@ -406,6 +501,14 @@ class AppTypography extends ThemeExtension<AppTypography> {
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
       height: 1.42,
+      package: 'ui',
+    ),
+    w400s18: TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.44,
       package: 'ui',
     ),
     w400s16: TextStyle(
@@ -482,6 +585,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
   /// Title Large 22px w400
   final TextStyle w500s22;
 
+  /// Title Bold 18px w700
+  final TextStyle w700s18;
+
+  /// Title SemiBold 16px w600
+  final TextStyle w600s16;
+
   /// Title Bold 16px w700
   final TextStyle w700s16;
 
@@ -490,6 +599,9 @@ class AppTypography extends ThemeExtension<AppTypography> {
 
   /// Title Small 14px w500
   final TextStyle w500s14;
+
+  /// Body Large 18px w400
+  final TextStyle w400s18;
 
   /// Body Large 16px w400
   final TextStyle w400s16;
@@ -522,9 +634,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
     TextStyle? w400s28,
     TextStyle? w400s24,
     TextStyle? w500s22,
+    TextStyle? w700s18,
+    TextStyle? w600s16,
     TextStyle? w700s16,
     TextStyle? w500s16,
     TextStyle? w500s14,
+    TextStyle? w400s18,
     TextStyle? w400s16,
     TextStyle? w400s14,
     TextStyle? w400s12,
@@ -540,9 +655,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
     w400s28: w400s28 ?? this.w400s28,
     w400s24: w400s24 ?? this.w400s24,
     w500s22: w500s22 ?? this.w500s22,
+    w700s18: w700s18 ?? this.w700s18,
+    w600s16: w600s16 ?? this.w600s16,
     w700s16: w700s16 ?? this.w700s16,
     w500s16: w500s16 ?? this.w500s16,
     w500s14: w500s14 ?? this.w500s14,
+    w400s18: w400s18 ?? this.w400s18,
     w400s16: w400s16 ?? this.w400s16,
     w400s14: w400s14 ?? this.w400s14,
     w400s12: w400s12 ?? this.w400s12,
@@ -564,9 +682,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
           w400s28: TextStyle.lerp(w400s28, other.w400s28, t) ?? w400s28,
           w400s24: TextStyle.lerp(w400s24, other.w400s24, t) ?? w400s24,
           w500s22: TextStyle.lerp(w500s22, other.w500s22, t) ?? w500s22,
+          w700s18: TextStyle.lerp(w700s18, other.w700s18, t) ?? w700s18,
+          w600s16: TextStyle.lerp(w600s16, other.w600s16, t) ?? w600s16,
           w700s16: TextStyle.lerp(w700s16, other.w700s16, t) ?? w700s16,
           w500s16: TextStyle.lerp(w500s16, other.w500s16, t) ?? w500s16,
           w500s14: TextStyle.lerp(w500s14, other.w500s14, t) ?? w500s14,
+          w400s18: TextStyle.lerp(w400s18, other.w400s18, t) ?? w400s18,
           w400s16: TextStyle.lerp(w400s16, other.w400s16, t) ?? w400s16,
           w400s14: TextStyle.lerp(w400s14, other.w400s14, t) ?? w400s14,
           w400s12: TextStyle.lerp(w400s12, other.w400s12, t) ?? w400s12,
@@ -587,9 +708,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
         other.w400s28 == w400s28 &&
         other.w400s24 == w400s24 &&
         other.w500s22 == w500s22 &&
+        other.w700s18 == w700s18 &&
+        other.w600s16 == w600s16 &&
         other.w700s16 == w700s16 &&
         other.w500s16 == w500s16 &&
         other.w500s14 == w500s14 &&
+        other.w400s18 == w400s18 &&
         other.w400s16 == w400s16 &&
         other.w400s14 == w400s14 &&
         other.w400s12 == w400s12 &&
@@ -608,9 +732,12 @@ class AppTypography extends ThemeExtension<AppTypography> {
       w400s28.hashCode ^
       w400s24.hashCode ^
       w500s22.hashCode ^
+      w700s18.hashCode ^
+      w600s16.hashCode ^
       w700s16.hashCode ^
       w500s16.hashCode ^
       w500s14.hashCode ^
+      w400s18.hashCode ^
       w400s16.hashCode ^
       w400s14.hashCode ^
       w400s12.hashCode ^
