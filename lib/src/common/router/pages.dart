@@ -24,10 +24,10 @@ enum Routes with OctopusRoute {
 
   @override
   Widget builder(BuildContext context, OctopusState state, OctopusNode node) => switch (this) {
-    Routes.login => const LoginScreen(),
-    Routes.home => const HomeScreen(),
-    Routes.onboarding => const OnboardingScreen(),
-    Routes.moreRecommendation => const MoreRecommendationScreen(),
-    Routes.purchaseTest => const PurchaseTestScreen(),
+    .login => const LoginScreen(),
+    .home => const HomeScreen(),
+    .onboarding => const OnboardingScreen(),
+    .moreRecommendation => const MoreRecommendationScreen(),
+    .purchaseTest => const PurchaseTestScreen(),
   };
 }
