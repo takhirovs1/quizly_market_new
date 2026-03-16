@@ -33,7 +33,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
       Assets.lib.vectors.home2,
       Assets.lib.vectors.market,
       Assets.lib.vectors.upload2,
-      Assets.lib.vectors.profile,
+      Assets.lib.vectors.person,
     ];
 
     final labels = ['Asosiy', 'Market', 'Yuklash', 'Profil'];

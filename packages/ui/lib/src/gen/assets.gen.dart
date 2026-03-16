@@ -69,6 +69,9 @@ class $LibImagesGen {
   /// File path: lib/images/payme2.png
   AssetGenImage get payme2 => const AssetGenImage('lib/images/payme2.png');
 
+  /// File path: lib/images/payme_bg.png
+  AssetGenImage get paymeBg => const AssetGenImage('lib/images/payme_bg.png');
+
   /// File path: lib/images/payme_logo.png
   AssetGenImage get paymeLogo => const AssetGenImage('lib/images/payme_logo.png');
 
@@ -117,6 +120,7 @@ class $LibImagesGen {
     party,
     payme,
     payme2,
+    paymeBg,
     paymeLogo,
     paynet,
     placeholder,

@@ -2,6 +2,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../state/profile_screen_state.dart';
+import '../widget/profile_payment_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -132,7 +133,7 @@ class _ProfileScreenState extends ProfileScreenState {
           padding: const .symmetric(vertical: 16),
           shrinkWrap: true,
           children: [
-            PaymentCard(title: '340 000 UZS', subtitle: 'QuizlyMarket Card', onTap: onWalletCardPressed),
+            const ProfilePaymentCard(),
             Padding(
               padding: menuSliverPadding(context),
               child: ListView.builder(
