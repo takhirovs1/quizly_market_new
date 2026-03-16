@@ -237,8 +237,8 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   Future<void> onLogoutAccountPressed() async {}
 
   // Header sizing
-  // Slightly taller to fit the status badge on small devices.
-  double expandedHeaderHeight(BuildContext context) => (MediaQuery.sizeOf(context).height * 0.32).clamp(220.0, 320.0);
+  double expandedHeaderHeight(BuildContext context) =>
+      (MediaQuery.sizeOf(context).height * 0.26).clamp(150.0, 200.0);
 
   double collapsedHeaderHeight(BuildContext context) => MediaQuery.paddingOf(context).top + kToolbarHeight;
 
