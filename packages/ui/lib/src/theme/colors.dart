@@ -244,7 +244,7 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   static const light = ThemeColors(
     error: Color(0xFFFF2F22),
     onError: Color(0xFFF8F9FA),
-    primary: Color(0xFF1C60E8),
+    primary: Color(0xFF007AFF),
     onPrimary: Color(0xFFF2F7F7),
     secondary: Color(0xFFF8F9FA),
     onSecondary: Color(0xFF1A1F22),
@@ -323,7 +323,7 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   static const dark = ThemeColors(
     error: Color(0xFFFF2F22),
     onError: Color(0xFFF8F9FA),
-    primary: Color(0xFF1C60E8),
+    primary: Color(0xFF1E40AF),
     onPrimary: Color(0xFF1A1F22),
     secondary: Color.fromARGB(255, 44, 51, 56),
     onSecondary: Color(0xFFF8F9FA),

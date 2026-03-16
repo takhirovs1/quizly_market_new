@@ -1,56 +1,93 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../border/smooth_rectangle_border.dart';
-import '../theme/theme.dart';
+import '../extension/context_extension.dart';
 
-/// A widget that displays a notification with a given [message] and [backgroundColor].
+/// A widget that displays a notification message on the screen.
 ///
-/// The notification is displayed at the top of the screen with a fade-in animation.
-/// After the given [duration], the notification is removed with a fade-out animation.
+/// Features:
+/// - Appears temporarily and disappears automatically after a set duration
+/// - Can be dismissed by tapping on it
+/// - Customizable appearance (background color, text style, border radius)
+/// - Supports an optional icon
+/// - Can be positioned at different locations on the screen
+/// - Can add a callback to be called when the notification is tapped
 ///
-/// The notification is displayed with a [Material] widget and a [Container] widget.
-/// The [Material] widget is used to provide a background color and a shadow.
-/// The [Container] widget is used to provide padding and a border radius.
+/// Example usage:
+/// ```dart
+/// CustomNotification.show(
+///   context: context,
+///   message: 'Hello, world!',
+/// );
+/// ```
 ///
-/// The notification is displayed with a [Text] widget.
-/// The [Text] widget is used to display the given [message].
-/// The [Text] widget is styled with the given [textStyle].
-/// The [Text] widget is centered and has a maximum of 2 lines.
-///
-/// The notification is removed after the given [duration].
-/// The notification is removed with a fade-out animation.
+/// or using the context extension:
+/// ```dart
+/// context.showCustomNotification(
+///   message: 'Hello, world!',
+/// );
+/// ```
 class CustomNotification extends StatefulWidget {
+  /// Constructor for the [CustomNotification] widget.
   const CustomNotification({
     required this.message,
     required this.textStyle,
     required this.radius,
     super.key,
-    this.backgroundColor = Colors.black87,
+    this.isError = false,
+    this.iconBackgroundColor,
     this.duration = const Duration(seconds: 3),
-    this.icon,
-    this.errorStatusCode,
+    this.leadingIcon,
+    this.testMode = false,
+    this.padding,
+    this.onNotificationTap,
   });
 
+  /// The message to display in the notification.
   final String message;
-  final Color backgroundColor;
+
+  /// The text style of the notification.
   final TextStyle textStyle;
+
+  /// The duration of the notification.
   final Duration duration;
+
+  /// The radius of the notification.
   final BorderRadius radius;
-  final Widget? icon;
-  final String? errorStatusCode;
+
+  /// Whether the notification is an error notification.
+  final bool isError;
+
+  /// The icon background color of the notification.
+  final Color? iconBackgroundColor;
+
+  /// The icon to display in the notification.
+  final Widget? leadingIcon;
+
+  /// The padding of the notification.
+  final EdgeInsets? padding;
+
+  /// The callback to be called when the notification is tapped.
+  final void Function()? onNotificationTap;
+
+  /// Whether the notification is in test mode.
+  final bool testMode;
 
   static OverlayEntry? _currentOverlay;
 
+  /// Static method to show a notification.
   static OverlayEntry? show({
     required BuildContext context,
     required String message,
-    Color? backgroundColor,
+    Color? iconBackgroundColor,
     TextStyle? textStyle,
     Duration? duration,
-    bool isSuccess = false,
-    Widget? icon,
-    BorderRadius radius = BorderRadius.zero,
-    String? errorStatusCode,
+    Widget? leadingIcon,
+    BorderRadius? radius,
+    bool? isError,
+    EdgeInsets? padding,
+    void Function()? onNotificationTap,
+    bool testMode = false,
   }) {
     _currentOverlay?.remove();
     _currentOverlay = null;
@@ -61,14 +98,15 @@ class CustomNotification extends StatefulWidget {
     overlayEntry = OverlayEntry(
       builder: (context) => CustomNotification(
         message: message,
-        backgroundColor:
-            backgroundColor ?? (isSuccess ? Theme.of(context).appColors.success : Theme.of(context).appColors.error),
-        textStyle:
-            textStyle ?? TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Theme.of(context).appColors.white),
+        iconBackgroundColor: iconBackgroundColor ?? const Color(0xff040A14).withValues(alpha: 0.12),
+        textStyle: textStyle ?? context.x.textStyle.w500s12.copyWith(color: context.x.colors.white),
         duration: duration ?? const Duration(seconds: 3),
-        icon: icon,
-        radius: radius,
-        errorStatusCode: errorStatusCode,
+        leadingIcon: leadingIcon,
+        radius: radius ?? const BorderRadius.all(Radius.circular(16)),
+        isError: isError ?? false,
+        padding: padding,
+        testMode: testMode,
+        onNotificationTap: onNotificationTap,
       ),
     );
 
@@ -78,6 +116,7 @@ class CustomNotification extends StatefulWidget {
     return overlayEntry;
   }
 
+  /// Method to hide the current notification.
   static void hideCurrentNotification() {
     _currentOverlay?.remove();
     _currentOverlay = null;
@@ -88,14 +127,14 @@ class CustomNotification extends StatefulWidget {
 }
 
 class _CustomNotificationState extends State<CustomNotification> with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
 
-    _animationController = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _animationController = AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
 
     _fadeAnimation = Tween<double>(
       begin: 0,
@@ -104,14 +143,16 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
 
     _animationController.forward();
 
-    Future<void>.delayed(widget.duration - const Duration(milliseconds: 300), () {
-      if (mounted) {
-        _animationController.reverse().whenComplete(() {
-          CustomNotification._currentOverlay?.remove();
-          CustomNotification._currentOverlay = null;
-        }).ignore();
-      }
-    }).ignore();
+    if (!widget.testMode) {
+      Future<void>.delayed(widget.duration - const Duration(milliseconds: 150), () {
+        if (mounted) {
+          _animationController.reverse().then((_) {
+            CustomNotification._currentOverlay?.remove();
+            CustomNotification._currentOverlay = null;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -121,91 +162,84 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
   }
 
   @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.topCenter,
-    child: SlideTransition(
-      position: Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(_fadeAnimation),
-      child: Material(
-        color: Colors.transparent,
-        child: DecoratedBox(
-          decoration: ShapeDecoration(
-            color: widget.backgroundColor,
-            shape: SmoothRectangleBorders(borderRadius: widget.radius),
-            shadows: const [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))],
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            child: LayoutBuilder(
-              builder: (context, constraints) => CustomPaint(
-                painter: widget.errorStatusCode != null
-                    ? StatusPainter(size: constraints.biggest, statusCode: widget.errorStatusCode!)
-                    : null,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.paddingOf(context).top + 12,
-                    bottom: 12,
-                    left: 16,
-                    right: 16,
-                  ),
-                  child: switch (widget.icon == null) {
-                    true => Text(
-                      widget.message,
-                      style: widget.textStyle,
-                      textAlign: TextAlign.center,
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                    false => Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        widget.icon ?? const SizedBox(),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.message,
-                          style: widget.textStyle,
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+  Widget build(BuildContext context) => Stack(
+    children: <Widget>[
+      Positioned(
+        top: context.x.telegramWebApp.safeAreaInset.top + 15,
+        left: 20,
+        right: 20,
+        child: GestureDetector(
+          onTap: widget.onNotificationTap ?? CustomNotification.hideCurrentNotification,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Center(
+              child: SizedBox(
+                width: double.infinity,
+                child: Material(
+                  color: Colors.transparent,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: widget.isError ? const Color(0xFFD92D20) : const Color(0xFF14C732),
+                      borderRadius: widget.radius,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: widget.isError
+                              ? const Color(0xFFD92D20).withValues(alpha: 0.24)
+                              : const Color(0xFF14C732).withValues(alpha: 0.24),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                  },
+                    child: Padding(
+                      padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(
+                              color: widget.iconBackgroundColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.all(6),
+                            width: 36,
+                            height: 36,
+                            child: widget.isError
+                                ? widget.leadingIcon ?? Icon(CupertinoIcons.info, color: context.x.colors.white)
+                                : Icon(CupertinoIcons.checkmark_circle, color: context.x.colors.white),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              widget.message,
+                              style: widget.textStyle,
+                              textAlign: TextAlign.start,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ),
+
+                          GestureDetector(
+                            onTap: () {
+                              _animationController.reverse().then((_) {
+                                CustomNotification.hideCurrentNotification();
+                                CustomNotification._currentOverlay = null;
+                              });
+                            },
+                            child: Icon(Icons.close, color: context.x.colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    ),
+    ],
   );
-}
-
-class StatusPainter extends CustomPainter {
-  StatusPainter({required this.size, required this.statusCode});
-
-  final Size size;
-
-  final String statusCode;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: statusCode,
-        style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w400, color: Color.fromARGB(116, 255, 255, 255)),
-      ),
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.center,
-    )..layout(maxWidth: size.width);
-
-    // Paint the text at specific position
-    final offset = Offset(size.width - textPainter.width - 8, size.height - textPainter.height - 4);
-
-    textPainter.paint(canvas, offset);
-  }
-
-  @override
-  bool shouldRepaint(covariant StatusPainter oldDelegate) => oldDelegate.statusCode != statusCode;
 }

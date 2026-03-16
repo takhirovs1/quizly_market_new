@@ -102,18 +102,17 @@ extension type Build(BuildContext context) {
   /// [showNotification] extension from [CustomNotification]
   void showNotification({
     required String message,
-    Color? backgroundColor,
+    Color? iconBackgroundColor,
     Color? textColor,
-    bool isSuccess = false,
+    bool isError = false,
     TextStyle? textStyle,
     String? errorStatusCode,
   }) => CustomNotification.show(
     context: context,
     message: message,
-    backgroundColor: backgroundColor,
-    isSuccess: isSuccess,
+    iconBackgroundColor: iconBackgroundColor,
+    isError: isError,
     textStyle: textStyle,
-    errorStatusCode: errorStatusCode,
   );
 
   /// Obtain the nearest widget of the given type T,

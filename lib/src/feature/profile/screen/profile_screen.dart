@@ -133,7 +133,11 @@ class _ProfileScreenState extends ProfileScreenState {
           padding: const .symmetric(vertical: 16),
           shrinkWrap: true,
           children: [
-            const ProfilePaymentCard(),
+            ProfilePaymentCard(
+              balance: '100 000 000 UZS',
+              cardNumber: '1234567890',
+              onCopyCardNumber: () => onCopyCardNumber('1234567890'),
+            ),
             Padding(
               padding: menuSliverPadding(context),
               child: ListView.builder(

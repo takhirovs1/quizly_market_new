@@ -13,7 +13,7 @@ class OnboardingScreen extends StatelessWidget {
     appBar: const QuizAppBar(),
     body: SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 34),
+        padding: const .symmetric(horizontal: 34),
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
