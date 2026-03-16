@@ -165,7 +165,11 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
   Widget build(BuildContext context) => Stack(
     children: <Widget>[
       Positioned(
-        top: context.x.telegramWebApp.safeAreaInset.top + 15,
+        top:
+            (context.x.telegramWebApp.isSupported
+                ? context.x.telegramWebApp.safeAreaInset.top
+                : MediaQuery.paddingOf(context).top) +
+            56,
         left: 20,
         right: 20,
         child: GestureDetector(

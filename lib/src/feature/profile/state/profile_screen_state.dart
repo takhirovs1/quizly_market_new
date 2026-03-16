@@ -188,7 +188,6 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       Assets.lib.vectors.logout.svg(package: 'ui'),
       isLogout: true,
     ),
-    ProfileListRow.spacer(16),
   ];
 
   // Actions
@@ -258,7 +257,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     final bottom = MediaQuery.paddingOf(context).bottom;
     // NOTE: We don't have direct access to the app's bottom-nav height here,
     // so we use a conservative extra padding that still keeps the logout visible.
-    return EdgeInsets.fromLTRB(16, 0, 16, bottom + 32);
+    return EdgeInsets.fromLTRB(16, 0, 16, bottom);
   }
 
   @override

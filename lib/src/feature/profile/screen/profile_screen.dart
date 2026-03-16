@@ -21,6 +21,7 @@ class _ProfileScreenState extends ProfileScreenState {
           backgroundColor: context.x.colors.scaffoldBackground,
           surfaceTintColor: context.x.colors.transparent,
           expandedHeight: expandedHeaderHeight(context),
+          toolbarHeight: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.top + 56 : 56,
           floating: false,
           pinned: true,
           centerTitle: true,
@@ -98,21 +99,28 @@ class _ProfileScreenState extends ProfileScreenState {
                     bottom: false,
                     child: Align(
                       alignment: .topCenter,
-                      child: SizedBox(
-                        height: kToolbarHeight,
-                        child: Center(
-                          child: Opacity(
-                            opacity: layout.titleAlpha,
-                            child: Padding(
-                              padding: .symmetric(horizontal: collapsedTitleHorizontalPadding(layout.width)),
-                              child: Text(
-                                'Samandar Takhirov',
-                                maxLines: 1,
-                                overflow: .ellipsis,
-                                textAlign: .center,
-                                style: context.x.textStyle.w700s16.copyWith(
-                                  fontSize: nameSizeCollapsed(layout.width),
-                                  color: context.x.colors.primary,
+                      child: Padding(
+                        padding: .only(
+                          top: context.telegramWebApp.isSupported
+                              ? context.telegramWebApp.safeAreaInset.top.toDouble()
+                              : 0,
+                        ),
+                        child: SizedBox(
+                          height: kToolbarHeight,
+                          child: Center(
+                            child: Opacity(
+                              opacity: layout.titleAlpha,
+                              child: Padding(
+                                padding: .symmetric(horizontal: collapsedTitleHorizontalPadding(layout.width)),
+                                child: Text(
+                                  'Samandar Takhirov',
+                                  maxLines: 1,
+                                  overflow: .ellipsis,
+                                  textAlign: .center,
+                                  style: context.x.textStyle.w700s16.copyWith(
+                                    fontSize: nameSizeCollapsed(layout.width),
+                                    color: context.x.colors.primary,
+                                  ),
                                 ),
                               ),
                             ),
@@ -130,7 +138,7 @@ class _ProfileScreenState extends ProfileScreenState {
       body: RefreshIndicator.adaptive(
         onRefresh: onRefresh,
         child: ListView(
-          padding: const .symmetric(vertical: 16),
+          padding: const .only(top: 16),
           shrinkWrap: true,
           children: [
             ProfilePaymentCard(
