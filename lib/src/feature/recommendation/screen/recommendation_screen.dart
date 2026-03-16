@@ -17,7 +17,10 @@ class _RecommendationScreenState extends RecommendationScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: const QuizAppBar(title: 'QuizlyMarket'),
+    appBar: QuizAppBar(
+      title: 'QuizlyMarket',
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+    ),
     body: Column(
       children: [
         const SizedBox(height: 8),

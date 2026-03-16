@@ -15,10 +15,6 @@ class CustomPageView extends StatefulWidget {
 }
 
 class _CustomPageViewState extends State<CustomPageView> {
-  static const minIconSize = 12.0;
-  static const maxIconSize = 46.0;
-  static const overscrollThreshold = 80.0;
-
   late final ValueNotifier<bool> isPageControllerEnded;
   late final ValueNotifier<int> selectedPage;
   late final ValueNotifier<double> overscrollAmount;
@@ -37,12 +33,14 @@ class _CustomPageViewState extends State<CustomPageView> {
     if (!scrollController.hasClients) return;
     final pos = scrollController.position;
     attachScrollingListener();
+    final maxPage = (widget.items.length - 1).clamp(0, widget.items.length);
+    final page = (pos.pixels / 350).floor().clamp(0, maxPage);
+    if (selectedPage.value != page) selectedPage.value = page;
     if (pos.maxScrollExtent <= 0) return;
-
     final overscroll = pos.pixels - pos.maxScrollExtent;
     if (overscroll > 0) {
       overscrollAmount.value = overscroll;
-      if (overscroll >= overscrollThreshold && !hasTriggeredShowMore) {
+      if (overscroll >= 40 && !hasTriggeredShowMore) {
         hasTriggeredShowMore = true;
         widget.onShowMore?.call();
       }
@@ -131,24 +129,20 @@ class _CustomPageViewState extends State<CustomPageView> {
               itemCount: widget.items.length,
             ),
             Positioned(
-              right: 0,
+              right: 16,
               top: 0,
               bottom: 0,
               child: ValueListenableBuilder<double>(
                 valueListenable: overscrollAmount,
                 builder: (context, amount, _) {
                   if (amount <= 0) return const SizedBox.shrink();
-
-                  final size = (minIconSize + amount * 0.4).clamp(minIconSize, maxIconSize);
+                  final size = (12 + amount * 0.4).clamp(12, 46);
                   return Center(
-                    child: Opacity(
-                      opacity: (size - minIconSize) / (maxIconSize - minIconSize),
-                      child: Assets.lib.vectors.bigChevronRight.svg(
-                        package: 'ui',
-                        width: size * 0.26,
-                        height: size,
-                        colorFilter: .mode(context.x.colors.bannerText, .srcATop),
-                      ),
+                    child: Assets.lib.vectors.bigChevronRight.svg(
+                      package: 'ui',
+                      width: size * 0.26,
+                      height: size.toDouble(),
+                      colorFilter: .mode(context.x.colors.bannerText, .srcATop),
                     ),
                   );
                 },
