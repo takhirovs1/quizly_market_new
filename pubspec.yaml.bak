@@ -1,0 +1,94 @@
+name: quizly_market
+description: "A new Flutter project."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+17
+
+environment:
+  sdk: ^3.10.9
+
+workspace:
+  - packages/ui
+  - packages/localization
+  - packages/local_source
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # workspace
+  ui:
+    path: packages/ui
+  localization:
+    path: packages/localization
+  local_source:
+    path: packages/local_source
+
+  intl: 0.20.2
+
+  # annotation
+  meta: any
+
+  # utility
+  collection: any
+  async: any
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  keyboard_dismisser: ^3.0.0
+  platform_info: ^5.0.0
+  device_info_plus: ^12.3.0
+  throttling: ^2.0.1
+  wakelock_plus: ^1.4.0
+  battery_plus: ^7.0.0
+  url_launcher: ^6.3.2
+  logbook: ^0.4.0
+  share_plus: ^12.0.1
+  in_app_review: ^2.0.11
+
+  #state-management
+  flutter_bloc: ^9.1.1
+
+  #network
+  thunder: ^0.2.5
+  dio: ^5.9.1
+  connectivity_plus: ^7.0.0
+
+  # firebase
+  firebase_core: ^4.4.0
+  firebase_messaging: ^16.1.1
+  firebase_remote_config: ^6.1.4
+  firebase_crashlytics: ^5.0.7
+
+  # notifications
+  flutter_local_notifications: ^20.1.0
+
+  cupertino_icons: ^1.0.8
+
+  # navigation
+  octopus: ^0.0.9
+  telegram_web_app: ^0.3.3
+  expandable_page_view: ^1.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  # code generation
+  build_runner: ^2.11.0
+  pubspec_generator: ^5.0.1
+  # dart run flutter_launcher_icons -f flutter_launcher_icons.yaml
+  # flutter_launcher_icons: ^0.14.4
+  # dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+  # flutter_native_splash: ^2.4.7
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  fonts:
+    - family: Monospace
+      fonts:
+        - asset: packages/ui/lib/font/logbook/Monospace.ttf

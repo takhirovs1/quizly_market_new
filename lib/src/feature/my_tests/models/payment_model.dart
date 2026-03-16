@@ -1,9 +1,9 @@
 class PaymentModel {
-  PaymentModel({required this.id, required this.title, required this.type, this.subtitle, this.icon});
+  PaymentModel({required this.id, required this.title, required this.type, this.subtitle, required this.icon});
   final int id;
   final String title;
   final String? subtitle;
-  final String? icon;
+  final String icon;
   final PaymentType type;
 }
 

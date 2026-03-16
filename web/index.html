@@ -33,14 +33,39 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script defer src="telegram_web_app_simulator.js"></script>
+  <script>
+    (function () {
+      const url = new URL(window.location.href);
+    
+      if (url.searchParams.has('tgWebAppData')) {
+        const cleanUrl = url.origin + url.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    })();
+    </script>
+  
+  <script>
+    if (window.Telegram && Telegram.WebApp) {
+      const tg = Telegram.WebApp;
+      
+      tg.ready();
+      
+      tg.expand();
+      
+      tg.disableVerticalSwipes();
+      
+      tg.disableClosingConfirmation();
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+      const theme = tg.themeParams || {};
+      if (theme.bg_color) {
+        document.body.style.backgroundColor = theme.bg_color;
+      }
+    }
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

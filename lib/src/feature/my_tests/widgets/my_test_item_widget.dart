@@ -4,15 +4,24 @@ import '../../../common/extension/context_extension.dart';
 import '../models/test_mode.dart';
 
 class MyTestItemWidget extends StatelessWidget {
-  const MyTestItemWidget({required this.test, required this.testCount, required this.currentTest, super.key});
+  const MyTestItemWidget({required this.test, super.key});
   final QuestionModel test;
-  final int testCount;
-  final int currentTest;
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Row(children: [Text(test.question, style: context.x.textStyle.w400s16.copyWith(fontSize: 17))]),
+      Row(
+        children: [
+          Flexible(
+            child: Text(
+              test.question,
+              style: context.x.textStyle.w400s16.copyWith(fontSize: 17),
+              maxLines: 2,
+              overflow: .ellipsis,
+            ),
+          ),
+        ],
+      ),
       const SizedBox(height: 6),
       for (int i = 0; i < test.answers.length; i++)
         Padding(
@@ -21,7 +30,6 @@ class MyTestItemWidget extends StatelessWidget {
         ),
 
       const SizedBox(height: 10),
-      PageIndicator(selectedPage: currentTest, totalPages: testCount),
     ],
   );
 }

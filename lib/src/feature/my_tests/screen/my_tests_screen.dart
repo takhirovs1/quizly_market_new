@@ -14,7 +14,10 @@ class _MyTestsScreenState extends MyTestsScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: const QuizAppBar(title: 'Testlarim'),
+    appBar: QuizAppBar(
+      title: 'Testlarim',
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top + 56,
+    ),
     body: Padding(
       padding: const .symmetric(horizontal: 16),
       child: ListView(

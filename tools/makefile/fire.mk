@@ -28,6 +28,6 @@ create-fp: ## Create a new Firebase project
 .PHONY: configure
 configure: ## Configure FlutterFire for the project
 	@echo "📦 Activating flutterfire_cli..."
-	@fvm dart pub global activate flutterfire_cli
+	@$(DART) pub global activate flutterfire_cli
 	@echo "🛠️ Running flutterfire configuration..."
 	@flutterfire configure 

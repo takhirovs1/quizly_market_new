@@ -3,6 +3,9 @@ include: package:flutter_lints/flutter.yaml
 formatter:
   page_width: 120
 
+plugins:
+  prefer_shorthands: ^0.4.7
+
 analyzer:
   exclude:
     # Build
@@ -49,7 +52,6 @@ analyzer:
   errors:
     # Allow having TODOs in the code
     todo: ignore
-    fixme: warning
 
     # Info
     directives_ordering: info
@@ -85,6 +87,7 @@ linter:
     avoid_escaping_inner_quotes: false
     curly_braces_in_flow_control_structures: false
     one_member_abstracts: false
+    unawaited_futures: false
 
     # Enabled
     use_named_constants: true
@@ -195,7 +198,6 @@ linter:
     recursive_getters: true
     slash_for_doc_comments: true
     type_init_formals: true
-    unawaited_futures: true
     unnecessary_const: true
     unnecessary_new: true
     unnecessary_null_in_if_null_operators: true

@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'ActionListTile',
                 children: [
                   ActionListTile(
-                    icon: Icons.logout,
+                    icon: const Icon(Icons.logout),
                     leading: 'Log out',
                     onPressed: () {},
                     iconColor: Theme.of(context).appColors.error,
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
                     child: ActionListTile(
-                      icon: Icons.attach_money_rounded,
+                      icon: const Icon(Icons.attach_money_rounded),
                       leading: 'Add money',
                       onPressed: () {},
                       iconColor: Theme.of(context).appColors.onPrimary,
