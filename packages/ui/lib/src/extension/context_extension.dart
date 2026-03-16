@@ -1,4 +1,3 @@
-
 import 'package:telegram_web_app/telegram_web_app.dart';
 
 import '../../ui.dart';
@@ -6,7 +5,6 @@ import '../../ui.dart';
 extension BuildContextX on BuildContext {
   /// [Build] extension
   Build get x => Build(this);
-
 }
 
 extension type Build(BuildContext context) {
