@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -14,17 +15,47 @@ class CustomPageView extends StatefulWidget {
 }
 
 class _CustomPageViewState extends State<CustomPageView> {
+  static const minIconSize = 12.0;
+  static const maxIconSize = 46.0;
+  static const overscrollThreshold = 80.0;
+
   late final ValueNotifier<bool> isPageControllerEnded;
   late final ValueNotifier<int> selectedPage;
-  late final PageController pageController = PageController(viewportFraction: (context.x.width - 24) / context.x.width)
-    ..addListener(pageControllerListener);
+  late final ValueNotifier<double> overscrollAmount;
+  late final ScrollController scrollController;
 
-  void pageControllerListener() {
-    selectedPage.value = (pageController.page ?? 0).round();
-    if ((pageController.page ?? 0) > widget.items.length - 1.13)
-      isPageControllerEnded.value = true;
-    else
-      isPageControllerEnded.value = false;
+  bool hasTriggeredShowMore = false;
+  bool scrollingListenerAttached = false;
+
+  void attachScrollingListener() {
+    if (!scrollController.hasClients || scrollingListenerAttached) return;
+    scrollingListenerAttached = true;
+    scrollController.position.isScrollingNotifier.addListener(onScrollingChanged);
+  }
+
+  void onScroll() {
+    if (!scrollController.hasClients) return;
+    final pos = scrollController.position;
+    attachScrollingListener();
+    if (pos.maxScrollExtent <= 0) return;
+
+    final overscroll = pos.pixels - pos.maxScrollExtent;
+    if (overscroll > 0) {
+      overscrollAmount.value = overscroll;
+      if (overscroll >= overscrollThreshold && !hasTriggeredShowMore) {
+        hasTriggeredShowMore = true;
+        widget.onShowMore?.call();
+      }
+    } else {
+      overscrollAmount.value = 0;
+    }
+  }
+
+  void onScrollingChanged() {
+    if (!scrollController.position.isScrollingNotifier.value) {
+      overscrollAmount.value = 0;
+      hasTriggeredShowMore = false;
+    }
   }
 
   @override
@@ -32,15 +63,21 @@ class _CustomPageViewState extends State<CustomPageView> {
     super.initState();
     isPageControllerEnded = ValueNotifier(false);
     selectedPage = ValueNotifier(0);
+    overscrollAmount = ValueNotifier(0);
+    scrollController = ScrollController();
+    scrollController.addListener(onScroll);
   }
 
   @override
   void dispose() {
+    if (scrollingListenerAttached && scrollController.hasClients) {
+      scrollController.position.isScrollingNotifier.removeListener(onScrollingChanged);
+    }
+    scrollController.removeListener(onScroll);
     isPageControllerEnded.dispose();
     selectedPage.dispose();
-    pageController
-      ..removeListener(pageControllerListener)
-      ..dispose();
+    overscrollAmount.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -68,64 +105,60 @@ class _CustomPageViewState extends State<CustomPageView> {
           ),
         ),
       ),
-      Stack(
-        children: [
-          Row(
-            children: [
-              const SizedBox(width: 12),
-              SizedBox(
-                height: 144,
-                width: context.x.width - 44,
-                child: PageView(
-                  padEnds: false,
-                  controller: pageController,
-                  clipBehavior: .none,
-                  children: [
-                    for (var i = 0; i < widget.items.length; i++)
-                      Padding(
-                        padding: .only(left: 4, right: i == widget.items.length - 1 ? 16 : 4),
-                        child: BannerWidget(
-                          title: 'Test nomi',
-                          companyName: 'Tashkilot nomi',
-                          description: 'Test description Test description Test description Test description',
-                          price: '10 000 UZS',
-                          questionAmount: '100 ta savol',
-                          buyButtonText: 'Sotib olish',
-                          onBuyButtonPressed: () {},
-                          onShareButtonPressed: () {},
-                        ),
-                      ),
-                  ],
+      SizedBox(
+        height: 144,
+        child: Stack(
+          children: [
+            ListView.separated(
+              controller: scrollController,
+              scrollDirection: .horizontal,
+              physics: const BouncingScrollPhysics(),
+              padding: const .symmetric(horizontal: 16),
+              itemBuilder: (context, index) => SizedBox(
+                width: 350,
+                child: BannerWidget(
+                  title: 'Test nomi',
+                  companyName: 'Tashkilot nomi',
+                  description: 'Test description Test description Test description Test description',
+                  price: '10 000 UZS',
+                  questionAmount: '100 ta savol',
+                  buyButtonText: 'Sotib olish',
+                  onBuyButtonPressed: () {},
+                  onShareButtonPressed: () {},
                 ),
               ),
-              const SizedBox(width: 12),
-            ],
-          ),
-          ValueListenableBuilder(
-            valueListenable: isPageControllerEnded,
-            builder: (context, value, child) => !value
-                ? const SizedBox.shrink()
-                : Positioned(
-                    top: 49,
-                    right: 0,
-                    child: InkWell(
-                      onTap: widget.onShowMore,
-                      child: SizedBox(
-                        width: 32,
-                        child: Assets.lib.vectors.bigChevronRight.svg(
-                          package: 'ui',
-                          width: 12,
-                          height: 46,
-                          colorFilter: .mode(context.x.colors.bannerText, .srcATop),
-                        ),
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              itemCount: widget.items.length,
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: ValueListenableBuilder<double>(
+                valueListenable: overscrollAmount,
+                builder: (context, amount, _) {
+                  if (amount <= 0) return const SizedBox.shrink();
+
+                  final size = (minIconSize + amount * 0.4).clamp(minIconSize, maxIconSize);
+                  return Center(
+                    child: Opacity(
+                      opacity: (size - minIconSize) / (maxIconSize - minIconSize),
+                      child: Assets.lib.vectors.bigChevronRight.svg(
+                        package: 'ui',
+                        width: size * 0.26,
+                        height: size,
+                        colorFilter: .mode(context.x.colors.bannerText, .srcATop),
                       ),
                     ),
-                  ),
-          ),
-        ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       const SizedBox(height: 8),
-      ValueListenableBuilder(
+      ValueListenableBuilder<int>(
         valueListenable: selectedPage,
         builder: (context, value, child) => PageIndicator(selectedPage: value, totalPages: widget.items.length),
       ),
