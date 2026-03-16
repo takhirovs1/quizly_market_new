@@ -65,7 +65,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                       mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
-                          'Barcha Testlar',
+                          context.x.l10n.allTests,
                           style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
                         ),
                         Assets.lib.vectors.chevronRight.svg(
