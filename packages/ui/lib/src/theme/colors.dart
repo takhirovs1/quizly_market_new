@@ -82,6 +82,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // indicator background
     required this.indicatorBackground,
+
+    // cardBackground2
+    required this.cardBackground2,
   });
 
   factory ThemeColors.of(BuildContext context) {
@@ -240,6 +243,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// Indicator background color light[0x40000000] dark[0x40FFFFFF]
   final Color indicatorBackground;
 
+  /// cardBackground2 light[0xffFFFFFF] dark[0xff1E293B]
+  final Color cardBackground2;
+
   /// The default light theme colors.
   static const light = ThemeColors(
     error: Color(0xFFFF2F22),
@@ -317,6 +323,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // indicator background
     indicatorBackground: Color(0x40000000),
+
+    // cardBackground2
+    cardBackground2: Color(0xffFFFFFF),
   );
 
   /// The default dark theme colors.
@@ -396,6 +405,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // indicator background
     indicatorBackground: Color(0x40FFFFFF),
+
+    // cardBackground2
+    cardBackground2: Color(0xffFFFFFF),
   );
 
   @override
@@ -473,6 +485,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // indicator background
     Color? indicatorBackground,
+
+    // cardBackground2
+    Color? cardBackground2,
   }) => ThemeColors(
     error: error ?? this.error,
     onError: onError ?? this.onError,
@@ -547,6 +562,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // indicator background
     indicatorBackground: indicatorBackground ?? this.indicatorBackground,
+
+    // cardBackground2
+    cardBackground2: cardBackground2 ?? this.cardBackground2,
   );
 
   @override
@@ -630,6 +648,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
           // indicator background
           indicatorBackground: Color.lerp(indicatorBackground, other.indicatorBackground, t)!,
+
+          // cardBackground2
+          cardBackground2: Color.lerp(cardBackground2, other.cardBackground2, t)!,
         );
 
   @override
