@@ -27,7 +27,7 @@ class BottomSheetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-    color: backgroundColor ?? Theme.of(context).appColors.onPrimary,
+    color: backgroundColor ?? Theme.of(context).appColors.scaffoldBackground,
     shape: const SmoothRectangleBorders(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
     child: Column(
       mainAxisSize: MainAxisSize.min,

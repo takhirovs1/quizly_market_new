@@ -29,6 +29,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         SizedBox(
           height: 260,
           child: PageView.builder(
+            clipBehavior: .none,
             controller: pageController,
             itemCount: test.questions.length,
             onPageChanged: (i) => currentTest.value = i,
@@ -36,7 +37,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
               padding: const .symmetric(horizontal: 16),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.x.colors.white,
+                  color: context.x.colors.cardBackground2,
                   borderRadius: .circular(24),
                   boxShadow: [
                     BoxShadow(
@@ -94,7 +95,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
     ),
     bottomNavigationBar: DecoratedBox(
       decoration: BoxDecoration(
-        color: context.x.colors.white,
+        color: context.x.colors.scaffoldBackground,
         borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
         boxShadow: [
           BoxShadow(color: context.x.colors.black.withValues(alpha: .078), offset: const Offset(0, 3), blurRadius: 30),
