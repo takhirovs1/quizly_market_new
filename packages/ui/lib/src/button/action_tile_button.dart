@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 
 import '../../ui.dart';
+import '../extension/context_extension.dart';
 
 /// {@template list_tile_button}
 /// ActionListTile widget.
@@ -72,7 +73,7 @@ class _ActionListTileState extends ActionListTileState {
                 ),
               ),
 
-              AppText.w600s16(widget.leading, color: widget.textColor),
+              Text(widget.leading, style: context.x.textStyle.sfW600s16.copyWith(color: widget.textColor)),
             ],
           ),
 
