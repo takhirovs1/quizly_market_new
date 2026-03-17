@@ -19,9 +19,9 @@ class ProfilePaymentCard extends StatelessWidget {
             crossAxisAlignment: .start,
             spacing: 4,
             children: [
-              Text('Card Balance', style: context.x.textStyle.sFw500s14.copyWith(color: context.x.colors.white)),
-              Text('100 000 000 UZS', style: context.x.textStyle.sFw700s28.copyWith(color: context.x.colors.white)),
-              Text('QuizlyMarket Card', style: context.x.textStyle.sFw500s14.copyWith(color: context.x.colors.white)),
+              Text('Card Balance', style: context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.white)),
+              Text('100 000 000 UZS', style: context.x.textStyle.sfW700s28.copyWith(color: context.x.colors.white)),
+              Text('QuizlyMarket Card', style: context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.white)),
             ],
           ),
         ),
@@ -31,7 +31,7 @@ class ProfilePaymentCard extends StatelessWidget {
           child: Row(
             spacing: 6,
             children: [
-              Text('ID: 1234567', style: context.x.textStyle.sFw500s16.copyWith(color: context.x.colors.white)),
+              Text('ID: 1234567', style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.white)),
               Assets.lib.vectors.copyId.svg(package: 'ui', width: 16, height: 16),
             ],
           ),

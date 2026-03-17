@@ -66,7 +66,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                     maxLines: 1,
                                     overflow: .ellipsis,
                                     textAlign: .center,
-                                    style: context.x.textStyle.sFw700s28.copyWith(
+                                    style: context.x.textStyle.sfW700s28.copyWith(
                                       fontSize: nameSizeExpanded(layout.width),
                                       color: context.x.colors.primary,
                                     ),
