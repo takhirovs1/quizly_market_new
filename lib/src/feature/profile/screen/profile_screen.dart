@@ -21,13 +21,20 @@ class _ProfileScreenState extends ProfileScreenState {
           backgroundColor: context.x.colors.scaffoldBackground,
           surfaceTintColor: context.x.colors.transparent,
           expandedHeight: expandedHeaderHeight(context),
-          toolbarHeight: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.top + 56 : 56,
+          toolbarHeight:
+              (context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.top.toDouble() : 0.0) + 56,
           floating: false,
           pinned: true,
           centerTitle: true,
           flexibleSpace: LayoutBuilder(
             builder: (context, constraints) {
               final layout = headerLayout(context, constraints);
+              final telegramWebAppSafeAreaInsetTop = context.telegramWebApp.isSupported
+                  ? context.telegramWebApp.safeAreaInset.top.toDouble()
+                  : 0.0;
+              final effectiveTopInset = context.telegramWebApp.isSupported
+                  ? telegramWebAppSafeAreaInsetTop
+                  : MediaQuery.paddingOf(context).top.toDouble();
               return Stack(
                 fit: .expand,
                 children: [
@@ -40,10 +47,7 @@ class _ProfileScreenState extends ProfileScreenState {
                         opacity: layout.headerAlpha,
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxHeight: (constraints.maxHeight - MediaQuery.paddingOf(context).top - 8).clamp(
-                              0.0,
-                              10000.0,
-                            ),
+                            maxHeight: (constraints.maxHeight - effectiveTopInset - 8).clamp(0.0, 10000.0),
                           ),
                           child: FittedBox(
                             fit: .scaleDown,
@@ -100,11 +104,7 @@ class _ProfileScreenState extends ProfileScreenState {
                     child: Align(
                       alignment: .topCenter,
                       child: Padding(
-                        padding: .only(
-                          top: context.telegramWebApp.isSupported
-                              ? context.telegramWebApp.safeAreaInset.top.toDouble()
-                              : 0,
-                        ),
+                        padding: .only(top: telegramWebAppSafeAreaInsetTop),
                         child: SizedBox(
                           height: kToolbarHeight,
                           child: Center(

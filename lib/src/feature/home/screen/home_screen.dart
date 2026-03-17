@@ -55,10 +55,15 @@ class _HomeScreenState extends HomeScreenState {
         children: const [MyTestsScreen(), RecommendationScreen(), UploadScreen(), ProfileScreen()],
       ),
     ),
-    bottomNavigationBar: QuizNavigationBar(
-      labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.downlods, context.x.l10n.profile],
-      currentIndex: currentIndex.value,
-      onTap: (index) => currentIndex.value = index,
+    bottomNavigationBar: Padding(
+      padding: .only(
+        bottom: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0.0,
+      ),
+      child: QuizNavigationBar(
+        labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.downlods, context.x.l10n.profile],
+        currentIndex: currentIndex.value,
+        onTap: (index) => currentIndex.value = index,
+      ),
     ),
   );
 }
