@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../gen/fonts.gen.dart';
 
-/// Typography — barcha matn stillari [FontFamily.nunito] asosida.
+/// Typography — barcha matn stillari [FontFamily.nunito] va [FontFamily.sFProDisplay] asosida.
 ///
 /// **AppTextStyle enum:** displayLarge, displayMedium, displaySmall, headlineLarge,
 /// headlineBold, headlineMedium, headlineSmall, titleLarge, titleBold18, titleBold,
 /// titleSemiBold16, bodyLarge18, titleMedium, titleSmall, bodyLarge, bodyMedium,
 /// bodySmall, labelLarge, labelMedium, labelSmall, small.
 ///
-/// **AppTypography (context.x.textStyle) variantlari:**
+/// **AppTypography (context.x.textStyle) variantlari (Nunito):**
 /// | Variant   | Size | Weight | Izoh            |
 /// |-----------|------|--------|------------------|
 /// | w400s57   | 57   | 400    | Display Large    |
@@ -27,15 +27,41 @@ import '../gen/fonts.gen.dart';
 /// | w500s14   | 14   | 500    | Title Small      |
 /// | w400s18   | 18   | 400    | Body Large 18    |
 /// | w400s16   | 16   | 400    | Body Large       |
-/// | w400s14   | 14   | 400    | Body Medium       |
-/// | w400s12   | 12   | 400    | Body Small        |
-/// | w500s12   | 12   | 500    | Label Medium      |
-/// | w500s11   | 11   | 500    | Label Small       |
-/// | w400s10   | 10   | 400    | Small             |
+/// | w400s14   | 14   | 400    | Body Medium      |
+/// | w400s12   | 12   | 400    | Body Small       |
+/// | w500s12   | 12   | 500    | Label Medium     |
+/// | w500s11   | 11   | 500    | Label Small      |
+/// | w400s10   | 10   | 400    | Small            |
+///
+/// **AppTypography SF Pro variantlari:**
+/// | Variant      | Size | Weight | Izoh            |
+/// |--------------|------|--------|------------------|
+/// |sfW400s57    | 57   | 400    | Display Large    |
+/// |sfW400s45    | 45   | 400    | Display Medium   |
+/// |sfW400s36    | 36   | 400    | Display Small    |
+/// |sfW400s32    | 32   | 400    | Headline Large   |
+/// |sfW700s28    | 28   | 700    | Headline Bold    |
+/// |sfW400s28    | 28   | 400    | Headline Medium  |
+/// |sfW400s24    | 24   | 400    | Headline Small   |
+/// |sfW500s22    | 22   | 500    | Title Large      |
+/// |sfW700s18    | 18   | 700    | Title Bold 18    |
+/// |sfW600s16    | 16   | 600    | Title SemiBold   |
+/// |sfW700s16    | 16   | 700    | Title Bold       |
+/// |sfW500s16    | 16   | 500    | Title Medium     |
+/// |sfW500s14    | 14   | 500    | Title Small      |
+/// |sfW400s18    | 18   | 400    | Body Large 18    |
+/// |sfW400s16    | 16   | 400    | Body Large       |
+/// |sfW400s14    | 14   | 400    | Body Medium      |
+/// |sfW400s12    | 12   | 400    | Body Small       |
+/// |sfW500s12    | 12   | 500    | Label Medium     |
+/// |sfW500s11    | 11   | 500    | Label Small      |
+/// |sfW400s10    | 10   | 400    | Small            |
 ///
 /// {@template AppTextStyle}
 /// {@endtemplate}
 enum AppTextStyle {
+  // ─── Nunito ───────────────────────────────────────────────────────────────
+
   /// Display Large 57px w400
   displayLarge(
     TextStyle(
@@ -307,6 +333,281 @@ enum AppTextStyle {
       letterSpacing: 0.4,
       package: 'ui',
     ),
+  ),
+
+  // ─── SF Pro ───────────────────────────────────────────────────────────────
+
+  /// SF Pro Display Large 57px w400
+  sfDisplayLarge(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 57,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.12,
+      letterSpacing: -0.25,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Display Medium 45px w400
+  sfDisplayMedium(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 45,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.15,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Display Small 36px w400
+  sfDisplaySmall(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 36,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.22,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Headline Large 32px w400
+  sfHeadlineLarge(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 32,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.25,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Headline Bold 28px w700
+  sfHeadlineBold(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 28,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.28,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Headline Medium 28px w400
+  sfHeadlineMedium(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 28,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.28,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Headline Small 24px w400
+  sfHeadlineSmall(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 24,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Title Large 22px w500
+  sfTitleLarge(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 22,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.27,
+      letterSpacing: 0,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Title Bold 18px w700
+  sfTitleBold18(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Title Bold 16px w700
+  sfTitleBold(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Title SemiBold 16px w600
+  sfTitleSemiBold16(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Body Large 18px w400
+  sfBodyLarge18(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.44,
+      letterSpacing: 0.5,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Title Medium 16px w500
+  sfTitleMedium(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      letterSpacing: 0.15,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Title Small 14px w500
+  sfTitleSmall(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.42,
+      letterSpacing: 0.1,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Body Large 16px w400
+  sfBodyLarge(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      letterSpacing: 0.5,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Body Medium 14px w400
+  sfBodyMedium(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.42,
+      letterSpacing: 0.25,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Body Small 12px w400
+  sfBodySmall(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 12,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      letterSpacing: 0.4,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Label Large 14px w500
+  sfLabelLarge(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      letterSpacing: 0.1,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Label Medium 12px w500
+  sfLabelMedium(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      letterSpacing: 0.5,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Label Small 11px w500
+  sfLabelSmall(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.45,
+      letterSpacing: 0.5,
+      package: 'ui',
+    ),
+  ),
+
+  /// SF Pro Small 10px w400
+  sfSmall(
+    TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 10,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.2,
+      letterSpacing: 0.4,
+      package: 'ui',
+    ),
   );
 
   /// AppTextStyle
@@ -323,6 +624,7 @@ enum AppTextStyle {
 class AppTypography extends ThemeExtension<AppTypography> {
   /// {@macro typography}
   const AppTypography({
+    // ─── Nunito ──────────────────────────────────────────────────────────────
     required this.w400s57,
     required this.w400s45,
     required this.w400s36,
@@ -343,10 +645,38 @@ class AppTypography extends ThemeExtension<AppTypography> {
     required this.w500s12,
     required this.w500s11,
     required this.w400s10,
+    // ─── SF Pro ──────────────────────────────────────────────────────────────
+    required thissfW400s57,
+    required thissfW400s45,
+    required thissfW400s36,
+    required thissfW400s32,
+    required thissfW700s28,
+    required thissfW400s28,
+    required thissfW400s24,
+    required thissfW500s22,
+    required thissfW700s18,
+    required thissfW600s16,
+    required thissfW700s16,
+    required thissfW500s16,
+    required thissfW500s14,
+    required thissfW400s18,
+    required thissfW400s16,
+    required thissfW400s14,
+    required thissfW400s12,
+    required thissfW500s12,
+    required thissfW500s11,
+    required thissfW400s10,
   });
+
+  /// The text color
+  static const Color lightTextColor = Color(0xFF202732);
+  static const Color darkTextColor = Color(0xFFF2F2F2);
+
+  // ─── Light theme ───────────────────────────────────────────────────────────
 
   /// {@macro typography}
   static AppTypography textThemeLight = AppTypography(
+    // Nunito
     w400s57: byDefault.w400s57.copyWith(color: lightTextColor),
     w400s45: byDefault.w400s45.copyWith(color: lightTextColor),
     w400s36: byDefault.w400s36.copyWith(color: lightTextColor),
@@ -367,10 +697,34 @@ class AppTypography extends ThemeExtension<AppTypography> {
     w500s12: byDefault.w500s12.copyWith(color: lightTextColor),
     w500s11: byDefault.w500s11.copyWith(color: lightTextColor),
     w400s10: byDefault.w400s10.copyWith(color: lightTextColor),
+    // SF Pro
+  sfW400s57: byDefaultsfW400s57.copyWith(color: lightTextColor),
+  sfW400s45: byDefaultsfW400s45.copyWith(color: lightTextColor),
+  sfW400s36: byDefaultsfW400s36.copyWith(color: lightTextColor),
+  sfW400s32: byDefaultsfW400s32.copyWith(color: lightTextColor),
+  sfW700s28: byDefaultsfW700s28.copyWith(color: lightTextColor),
+  sfW400s28: byDefaultsfW400s28.copyWith(color: lightTextColor),
+  sfW400s24: byDefaultsfW400s24.copyWith(color: lightTextColor),
+  sfW500s22: byDefaultsfW500s22.copyWith(color: lightTextColor),
+  sfW700s18: byDefaultsfW700s18.copyWith(color: lightTextColor),
+  sfW600s16: byDefaultsfW600s16.copyWith(color: lightTextColor),
+  sfW700s16: byDefaultsfW700s16.copyWith(color: lightTextColor),
+  sfW500s16: byDefaultsfW500s16.copyWith(color: lightTextColor),
+  sfW500s14: byDefaultsfW500s14.copyWith(color: lightTextColor),
+  sfW400s18: byDefaultsfW400s18.copyWith(color: lightTextColor),
+  sfW400s16: byDefaultsfW400s16.copyWith(color: lightTextColor),
+  sfW400s14: byDefaultsfW400s14.copyWith(color: lightTextColor),
+  sfW400s12: byDefaultsfW400s12.copyWith(color: lightTextColor),
+  sfW500s12: byDefaultsfW500s12.copyWith(color: lightTextColor),
+  sfW500s11: byDefaultsfW500s11.copyWith(color: lightTextColor),
+  sfW400s10: byDefaultsfW400s10.copyWith(color: lightTextColor),
   );
+
+  // ─── Dark theme ────────────────────────────────────────────────────────────
 
   /// {@macro typography}
   static AppTypography textThemeDark = AppTypography(
+    // Nunito
     w400s57: byDefault.w400s57.copyWith(color: darkTextColor),
     w400s45: byDefault.w400s45.copyWith(color: darkTextColor),
     w400s36: byDefault.w400s36.copyWith(color: darkTextColor),
@@ -391,14 +745,34 @@ class AppTypography extends ThemeExtension<AppTypography> {
     w500s12: byDefault.w500s12.copyWith(color: darkTextColor),
     w500s11: byDefault.w500s11.copyWith(color: darkTextColor),
     w400s10: byDefault.w400s10.copyWith(color: darkTextColor),
+    // SF Pro
+  sfW400s57: byDefaultsfW400s57.copyWith(color: darkTextColor),
+  sfW400s45: byDefaultsfW400s45.copyWith(color: darkTextColor),
+  sfW400s36: byDefaultsfW400s36.copyWith(color: darkTextColor),
+  sfW400s32: byDefaultsfW400s32.copyWith(color: darkTextColor),
+  sfW700s28: byDefaultsfW700s28.copyWith(color: darkTextColor),
+  sfW400s28: byDefaultsfW400s28.copyWith(color: darkTextColor),
+  sfW400s24: byDefaultsfW400s24.copyWith(color: darkTextColor),
+  sfW500s22: byDefaultsfW500s22.copyWith(color: darkTextColor),
+  sfW700s18: byDefaultsfW700s18.copyWith(color: darkTextColor),
+  sfW600s16: byDefaultsfW600s16.copyWith(color: darkTextColor),
+  sfW700s16: byDefaultsfW700s16.copyWith(color: darkTextColor),
+  sfW500s16: byDefaultsfW500s16.copyWith(color: darkTextColor),
+  sfW500s14: byDefaultsfW500s14.copyWith(color: darkTextColor),
+  sfW400s18: byDefaultsfW400s18.copyWith(color: darkTextColor),
+  sfW400s16: byDefaultsfW400s16.copyWith(color: darkTextColor),
+  sfW400s14: byDefaultsfW400s14.copyWith(color: darkTextColor),
+  sfW400s12: byDefaultsfW400s12.copyWith(color: darkTextColor),
+  sfW500s12: byDefaultsfW500s12.copyWith(color: darkTextColor),
+  sfW500s11: byDefaultsfW500s11.copyWith(color: darkTextColor),
+  sfW400s10: byDefaultsfW400s10.copyWith(color: darkTextColor),
   );
 
-  /// The text color
-  static const Color lightTextColor = Color(0xFF202732);
-  static const Color darkTextColor = Color(0xFFF2F2F2);
+  // ─── Default ───────────────────────────────────────────────────────────────
 
   /// {@macro typography}
   static const AppTypography byDefault = AppTypography(
+    // ── Nunito ──
     w400s57: TextStyle(
       fontFamily: FontFamily.nunito,
       fontSize: 57,
@@ -559,7 +933,170 @@ class AppTypography extends ThemeExtension<AppTypography> {
       height: 1.2,
       package: 'ui',
     ),
+    // ── SF Pro ──
+  sfW400s57: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 57,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.12,
+      package: 'ui',
+    ),
+  sfW400s45: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 45,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.15,
+      package: 'ui',
+    ),
+  sfW400s36: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 36,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.22,
+      package: 'ui',
+    ),
+  sfW400s32: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 32,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.25,
+      package: 'ui',
+    ),
+  sfW700s28: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 28,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.28,
+      package: 'ui',
+    ),
+  sfW400s28: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 28,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.28,
+      package: 'ui',
+    ),
+  sfW400s24: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 24,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      package: 'ui',
+    ),
+  sfW500s22: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 22,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.27,
+      package: 'ui',
+    ),
+  sfW700s18: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      package: 'ui',
+    ),
+  sfW600s16: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      package: 'ui',
+    ),
+  sfW700s16: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      package: 'ui',
+    ),
+  sfW500s16: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      package: 'ui',
+    ),
+  sfW500s14: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.42,
+      package: 'ui',
+    ),
+  sfW400s18: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.44,
+      package: 'ui',
+    ),
+  sfW400s16: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 16,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.5,
+      package: 'ui',
+    ),
+  sfW400s14: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.42,
+      package: 'ui',
+    ),
+  sfW400s12: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 12,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      package: 'ui',
+    ),
+  sfW500s12: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.33,
+      package: 'ui',
+    ),
+  sfW500s11: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+      fontStyle: FontStyle.normal,
+      height: 1.45,
+      package: 'ui',
+    ),
+  sfW400s10: TextStyle(
+      fontFamily: FontFamily.sFProDisplay,
+      fontSize: 10,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      height: 1.2,
+      package: 'ui',
+    ),
   );
+
+  // ─── Nunito fields ─────────────────────────────────────────────────────────
 
   /// Display Large 57px w400
   final TextStyle w400s57;
@@ -621,11 +1158,74 @@ class AppTypography extends ThemeExtension<AppTypography> {
   /// Small 10px w400
   final TextStyle w400s10;
 
+  // ─── SF Pro fields ─────────────────────────────────────────────────────────
+
+  /// SF Pro Display Large 57px w400
+  final TextStylesfW400s57;
+
+  /// SF Pro Display Medium 45px w400
+  final TextStylesfW400s45;
+
+  /// SF Pro Display Small 36px w400
+  final TextStylesfW400s36;
+
+  /// SF Pro Headline Large 32px w400
+  final TextStylesfW400s32;
+
+  /// SF Pro Headline Bold 28px w700
+  final TextStylesfW700s28;
+
+  /// SF Pro Headline Medium 28px w400
+  final TextStylesfW400s28;
+
+  /// SF Pro Headline Small 24px w400
+  final TextStylesfW400s24;
+
+  /// SF Pro Title Large 22px w500
+  final TextStylesfW500s22;
+
+  /// SF Pro Title Bold 18px w700
+  final TextStylesfW700s18;
+
+  /// SF Pro Title SemiBold 16px w600
+  final TextStylesfW600s16;
+
+  /// SF Pro Title Bold 16px w700
+  final TextStylesfW700s16;
+
+  /// SF Pro Title Medium 16px w500
+  final TextStylesfW500s16;
+
+  /// SF Pro Title Small 14px w500
+  final TextStylesfW500s14;
+
+  /// SF Pro Body Large 18px w400
+  final TextStylesfW400s18;
+
+  /// SF Pro Body Large 16px w400
+  final TextStylesfW400s16;
+
+  /// SF Pro Body Medium 14px w400
+  final TextStylesfW400s14;
+
+  /// SF Pro Body Small 12px w400
+  final TextStylesfW400s12;
+
+  /// SF Pro Label Medium 12px w500
+  final TextStylesfW500s12;
+
+  /// SF Pro Label Small 11px w500
+  final TextStylesfW500s11;
+
+  /// SF Pro Small 10px w400
+  final TextStylesfW400s10;
+
   @override
   Object get type => 'AppTypography';
 
   @override
   ThemeExtension<AppTypography> copyWith({
+    // Nunito
     TextStyle? w400s57,
     TextStyle? w400s45,
     TextStyle? w400s36,
@@ -646,6 +1246,27 @@ class AppTypography extends ThemeExtension<AppTypography> {
     TextStyle? w500s12,
     TextStyle? w500s11,
     TextStyle? w400s10,
+    // SF Pro
+    TextStyle?sfW400s57,
+    TextStyle?sfW400s45,
+    TextStyle?sfW400s36,
+    TextStyle?sfW400s32,
+    TextStyle?sfW700s28,
+    TextStyle?sfW400s28,
+    TextStyle?sfW400s24,
+    TextStyle?sfW500s22,
+    TextStyle?sfW700s18,
+    TextStyle?sfW600s16,
+    TextStyle?sfW700s16,
+    TextStyle?sfW500s16,
+    TextStyle?sfW500s14,
+    TextStyle?sfW400s18,
+    TextStyle?sfW400s16,
+    TextStyle?sfW400s14,
+    TextStyle?sfW400s12,
+    TextStyle?sfW500s12,
+    TextStyle?sfW500s11,
+    TextStyle?sfW400s10,
   }) => AppTypography(
     w400s57: w400s57 ?? this.w400s57,
     w400s45: w400s45 ?? this.w400s45,
@@ -667,6 +1288,26 @@ class AppTypography extends ThemeExtension<AppTypography> {
     w500s12: w500s12 ?? this.w500s12,
     w500s11: w500s11 ?? this.w500s11,
     w400s10: w400s10 ?? this.w400s10,
+  sfW400s57:sfW400s57 ?? thissfW400s57,
+  sfW400s45:sfW400s45 ?? thissfW400s45,
+  sfW400s36:sfW400s36 ?? thissfW400s36,
+  sfW400s32:sfW400s32 ?? thissfW400s32,
+  sfW700s28:sfW700s28 ?? thissfW700s28,
+  sfW400s28:sfW400s28 ?? thissfW400s28,
+  sfW400s24:sfW400s24 ?? thissfW400s24,
+  sfW500s22:sfW500s22 ?? thissfW500s22,
+  sfW700s18:sfW700s18 ?? thissfW700s18,
+  sfW600s16:sfW600s16 ?? thissfW600s16,
+  sfW700s16:sfW700s16 ?? thissfW700s16,
+  sfW500s16:sfW500s16 ?? thissfW500s16,
+  sfW500s14:sfW500s14 ?? thissfW500s14,
+  sfW400s18:sfW400s18 ?? thissfW400s18,
+  sfW400s16:sfW400s16 ?? thissfW400s16,
+  sfW400s14:sfW400s14 ?? thissfW400s14,
+  sfW400s12:sfW400s12 ?? thissfW400s12,
+  sfW500s12:sfW500s12 ?? thissfW500s12,
+  sfW500s11:sfW500s11 ?? thissfW500s11,
+  sfW400s10:sfW400s10 ?? thissfW400s10,
   );
 
   @override
@@ -674,6 +1315,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       other is! AppTypography
       ? this
       : AppTypography(
+          // Nunito
           w400s57: TextStyle.lerp(w400s57, other.w400s57, t) ?? w400s57,
           w400s45: TextStyle.lerp(w400s45, other.w400s45, t) ?? w400s45,
           w400s36: TextStyle.lerp(w400s36, other.w400s36, t) ?? w400s36,
@@ -694,13 +1336,36 @@ class AppTypography extends ThemeExtension<AppTypography> {
           w500s12: TextStyle.lerp(w500s12, other.w500s12, t) ?? w500s12,
           w500s11: TextStyle.lerp(w500s11, other.w500s11, t) ?? w500s11,
           w400s10: TextStyle.lerp(w400s10, other.w400s10, t) ?? w400s10,
+          // SF Pro
+        sfW400s57: TextStyle.lerpsfW400s57, othersfW400s57, t) ??sfW400s57,
+        sfW400s45: TextStyle.lerpsfW400s45, othersfW400s45, t) ??sfW400s45,
+        sfW400s36: TextStyle.lerpsfW400s36, othersfW400s36, t) ??sfW400s36,
+        sfW400s32: TextStyle.lerpsfW400s32, othersfW400s32, t) ??sfW400s32,
+        sfW700s28: TextStyle.lerpsfW700s28, othersfW700s28, t) ??sfW700s28,
+        sfW400s28: TextStyle.lerpsfW400s28, othersfW400s28, t) ??sfW400s28,
+        sfW400s24: TextStyle.lerpsfW400s24, othersfW400s24, t) ??sfW400s24,
+        sfW500s22: TextStyle.lerpsfW500s22, othersfW500s22, t) ??sfW500s22,
+        sfW700s18: TextStyle.lerpsfW700s18, othersfW700s18, t) ??sfW700s18,
+        sfW600s16: TextStyle.lerpsfW600s16, othersfW600s16, t) ??sfW600s16,
+        sfW700s16: TextStyle.lerpsfW700s16, othersfW700s16, t) ??sfW700s16,
+        sfW500s16: TextStyle.lerpsfW500s16, othersfW500s16, t) ??sfW500s16,
+        sfW500s14: TextStyle.lerpsfW500s14, othersfW500s14, t) ??sfW500s14,
+        sfW400s18: TextStyle.lerpsfW400s18, othersfW400s18, t) ??sfW400s18,
+        sfW400s16: TextStyle.lerpsfW400s16, othersfW400s16, t) ??sfW400s16,
+        sfW400s14: TextStyle.lerpsfW400s14, othersfW400s14, t) ??sfW400s14,
+        sfW400s12: TextStyle.lerpsfW400s12, othersfW400s12, t) ??sfW400s12,
+        sfW500s12: TextStyle.lerpsfW500s12, othersfW500s12, t) ??sfW500s12,
+        sfW500s11: TextStyle.lerpsfW500s11, othersfW500s11, t) ??sfW500s11,
+        sfW400s10: TextStyle.lerpsfW400s10, othersfW400s10, t) ??sfW400s10,
         );
 
   @override
   bool operator ==(covariant AppTypography other) {
     if (identical(this, other)) return true;
 
-    return other.w400s57 == w400s57 &&
+    return
+        // Nunito
+        other.w400s57 == w400s57 &&
         other.w400s45 == w400s45 &&
         other.w400s36 == w400s36 &&
         other.w400s32 == w400s32 &&
@@ -719,11 +1384,33 @@ class AppTypography extends ThemeExtension<AppTypography> {
         other.w400s12 == w400s12 &&
         other.w500s12 == w500s12 &&
         other.w500s11 == w500s11 &&
-        other.w400s10 == w400s10;
+        other.w400s10 == w400s10 &&
+        // SF Pro
+        othersfW400s57 ==sfW400s57 &&
+        othersfW400s45 ==sfW400s45 &&
+        othersfW400s36 ==sfW400s36 &&
+        othersfW400s32 ==sfW400s32 &&
+        othersfW700s28 ==sfW700s28 &&
+        othersfW400s28 ==sfW400s28 &&
+        othersfW400s24 ==sfW400s24 &&
+        othersfW500s22 ==sfW500s22 &&
+        othersfW700s18 ==sfW700s18 &&
+        othersfW600s16 ==sfW600s16 &&
+        othersfW700s16 ==sfW700s16 &&
+        othersfW500s16 ==sfW500s16 &&
+        othersfW500s14 ==sfW500s14 &&
+        othersfW400s18 ==sfW400s18 &&
+        othersfW400s16 ==sfW400s16 &&
+        othersfW400s14 ==sfW400s14 &&
+        othersfW400s12 ==sfW400s12 &&
+        othersfW500s12 ==sfW500s12 &&
+        othersfW500s11 ==sfW500s11 &&
+        othersfW400s10 ==sfW400s10;
   }
 
   @override
   int get hashCode =>
+      // Nunito
       w400s57.hashCode ^
       w400s45.hashCode ^
       w400s36.hashCode ^
@@ -743,5 +1430,26 @@ class AppTypography extends ThemeExtension<AppTypography> {
       w400s12.hashCode ^
       w500s12.hashCode ^
       w500s11.hashCode ^
-      w400s10.hashCode;
+      w400s10.hashCode ^
+      // SF Pro
+    sfW400s57.hashCode ^
+    sfW400s45.hashCode ^
+    sfW400s36.hashCode ^
+    sfW400s32.hashCode ^
+    sfW700s28.hashCode ^
+    sfW400s28.hashCode ^
+    sfW400s24.hashCode ^
+    sfW500s22.hashCode ^
+    sfW700s18.hashCode ^
+    sfW600s16.hashCode ^
+    sfW700s16.hashCode ^
+    sfW500s16.hashCode ^
+    sfW500s14.hashCode ^
+    sfW400s18.hashCode ^
+    sfW400s16.hashCode ^
+    sfW400s14.hashCode ^
+    sfW400s12.hashCode ^
+    sfW500s12.hashCode ^
+    sfW500s11.hashCode ^
+    sfW400s10.hashCode;
 }
