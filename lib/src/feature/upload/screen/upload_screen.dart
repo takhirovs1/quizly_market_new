@@ -56,6 +56,7 @@ class UploadScreen extends StatelessWidget {
           ),
           const Expanded(
             child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 EmptyTestWidget(
                   title: 'Siz hali test yuklamadingiz',
