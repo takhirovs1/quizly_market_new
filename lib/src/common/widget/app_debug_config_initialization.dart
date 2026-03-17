@@ -12,7 +12,7 @@ mixin AppDebugConfigInitialization on State<App> {
   DebugConfig get debugConfig => context.x.dependencies.appDebugSettings.value;
 
   void _setThemeMode(bool isDarkMode) => SettingsScope.of(context).add(
-    SettingsEvent.updateSettings(
+    .updateSettings(
       settings: SettingsScope.settingsOf(context).copyWith(themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light),
     ),
   );
@@ -60,12 +60,13 @@ mixin AppDebugConfigInitialization on State<App> {
     super.initState();
 
     context.x.dependencies.appDebugSettings.addListener(_appSettingsListener);
+    _appSettingsListener();
 
     _logbookConfig = LogbookConfig(
       enabled: debugConfig.debuggerEnabled,
       debugFileName: '${context.x.dependencies.authenticationController.state.user.id ?? 'unauthenticated'}.csv',
       multipartFileFields: {'chat_id': debugConfig.telegramChatId ?? '', 'caption': '#quizly_market'},
-      uri: Uri.parse('${Config.telegramApiBaseUrl}/bot${debugConfig.telegramBotToken ?? ''}/sendDocument'),
+      uri: .parse('${Config.telegramApiBaseUrl}/bot${debugConfig.telegramBotToken ?? ''}/sendDocument'),
     );
   }
 

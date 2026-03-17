@@ -8,7 +8,6 @@ import 'package:octopus/octopus.dart';
 import 'package:telegram_web_app/telegram_web_app.dart';
 import 'package:ui/ui.dart';
 
-import '../../feature/settings/bloc/settings_bloc.dart';
 import '../dependency/model/dependencies.dart';
 import '../dependency/widget/dependencies_scope.dart';
 import '../util/screen_util.dart';
@@ -29,19 +28,17 @@ extension type Build(BuildContext context) {
   AppTypography get textStyle => theme.appTextStyles;
 
   /// [isDarkMode] extension
-  bool get isDarkMode => theme.brightness == Brightness.dark;
+  bool get isDarkMode => theme.brightness == .dark;
 
   /// [Dependencies] extension
   Dependencies get dependencies => DependenciesScope.of(context);
 
   /// [Localization] extension
-  AppLocalization get l10n => AppLocalization.of(context);
+  AppLocalization get l10n => .of(context);
 
   /// [setLocalization] extension
   void setLocalization(Locale localization) => dependencies.settingsBloc.add(
-    SettingsEvent.updateSettings(
-      settings: dependencies.settingsBloc.state.settings.copyWith(localization: localization),
-    ),
+    .updateSettings(settings: dependencies.settingsBloc.state.settings.copyWith(localization: localization)),
   );
 
   /// [kSize] extension
@@ -91,7 +88,7 @@ extension type Build(BuildContext context) {
           dimension: 32,
           child: RepaintBoundary(
             key: ValueKey('loading_dialog'),
-            child: CircularProgressIndicator(strokeCap: StrokeCap.round),
+            child: CircularProgressIndicator(strokeCap: .round),
           ),
         ),
       ),
@@ -105,18 +102,17 @@ extension type Build(BuildContext context) {
   /// [showNotification] extension from [CustomNotification]
   void showNotification({
     required String message,
-    Color? backgroundColor,
+    Color? iconBackgroundColor,
     Color? textColor,
-    bool isSuccess = false,
+    bool isError = false,
     TextStyle? textStyle,
     String? errorStatusCode,
   }) => CustomNotification.show(
     context: context,
     message: message,
-    backgroundColor: backgroundColor,
-    isSuccess: isSuccess,
+    iconBackgroundColor: iconBackgroundColor,
+    isError: isError,
     textStyle: textStyle,
-    errorStatusCode: errorStatusCode,
   );
 
   /// Obtain the nearest widget of the given type T,
@@ -157,7 +153,7 @@ extension type Build(BuildContext context) {
 }
 
 extension TelegramWebAppX on BuildContext {
-  TelegramWebApp get telegramWebApp => TelegramWebApp.instance;
+  TelegramWebApp get telegramWebApp => .instance;
   // WebAppUser? get telegramUser => telegramWebApp.initDataUnsafe?.user;
 
   void close() => telegramWebApp.close();

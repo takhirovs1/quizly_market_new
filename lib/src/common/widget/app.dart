@@ -9,7 +9,6 @@ import 'package:thunder/thunder.dart';
 import 'package:ui/ui.dart';
 
 import '../../feature/authentication/screen/authentication_scope.dart';
-import '../../feature/settings/bloc/settings_bloc.dart';
 import '../../feature/settings/screen/settings_scope.dart';
 import '../constant/config.dart';
 import '../dependency/model/debug_config.dart';
@@ -69,7 +68,7 @@ class _AppState extends AppState {
         /// This scope [MediaQuery] is used to handle the screen size and orientation
         MediaQuery(
           key: _appKey,
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(context).copyWith(textScaler: .noScaling),
           child: KeyboardDismisser(
             child: Logbook(
               config: _logbookConfig,
@@ -80,7 +79,7 @@ class _AppState extends AppState {
                 /// This scope [Overlay] is used to handle the overlay entries
                 child: Overlay(
                   key: _overlayKey,
-                  clipBehavior: Clip.none,
+                  clipBehavior: .none,
                   initialEntries: <OverlayEntry>[
                     _scopes,
 

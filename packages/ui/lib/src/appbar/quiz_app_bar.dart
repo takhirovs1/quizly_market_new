@@ -33,7 +33,8 @@ class QuizAppBar extends StatelessWidget implements PreferredSizeWidget {
   );
 
   @override
-  Size get preferredSize => _PreferredAppBarSize(kToolbarHeight, bottom?.preferredSize.height);
+  Size get preferredSize =>
+      _PreferredAppBarSize((telegramWebAppSafeAreaInsetTop ?? kToolbarHeight) + 56, bottom?.preferredSize.height);
 }
 
 class _PreferredAppBarSize extends Size {

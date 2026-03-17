@@ -112,7 +112,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
       isScrollControlled: true,
       builder: (ctx) => DraggableScrollableSheet(
         expand: false,
-        initialChildSize: .7,
+        initialChildSize: .55,
         builder: (context, scrollController) => BottomSheetView(
           isCenterTitle: false,
           onClose: () => Navigator.pop(ctx),
@@ -128,6 +128,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                     Text('Hozirgi to‘lov turi', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
                     const SizedBox(height: 8),
                     PaymentCard(
+                      hasShadow: true,
                       imagePadding: isSelected?.id != 0
                           ? const .symmetric(horizontal: 6, vertical: 14)
                           : const .symmetric(horizontal: 6, vertical: 8),
@@ -142,6 +143,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                       Padding(
                         padding: const .only(bottom: 8),
                         child: PaymentCard(
+                          hasShadow: true,
                           imagePadding: const .symmetric(horizontal: 6, vertical: 14),
                           title: payment.title,
                           image: Image.asset(payment.icon, package: 'ui', width: 54),
@@ -153,6 +155,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                       const SizedBox(height: 16),
                       Text('Hamyon', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
                       PaymentCard(
+                        hasShadow: true,
                         title: paymentModel.first.title,
                         subtitle: paymentModel.first.subtitle,
                         image: Image.asset(paymentModel.first.icon, package: 'ui', width: 34),

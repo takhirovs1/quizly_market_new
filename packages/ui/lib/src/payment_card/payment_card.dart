@@ -35,21 +35,24 @@ class PaymentCard extends StatelessWidget {
     onTap: onTap,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: backgroundColor ?? context.x.colors.cardBackground,
+        color: backgroundColor ?? context.x.colors.cardBackground2,
         borderRadius: BorderRadius.circular(16),
         boxShadow: hasShadow
             ? [
                 BoxShadow(
-                  color: context.x.colors.black.withValues(alpha: .08),
+                  color: Colors.black.withValues(alpha: .08),
                   offset: const Offset(0, 12),
                   blurRadius: 56,
+                  spreadRadius: 0,
                 ),
-                BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: Offset.zero, blurRadius: 3),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .05),
+                  offset: Offset.zero,
+                  blurRadius: 3,
+                  spreadRadius: 0,
+                ),
               ]
             : null,
-        // boxShadow: [
-        //   BoxShadow(color: context.x.colors.black.withValues(alpha: .1), blurRadius: 10, offset: const Offset(0, 4)),
-        // ],
       ),
       child: Padding(
         padding: const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 12),

@@ -41,7 +41,9 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 30, offset: const Offset(0, -3))],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 30, offset: const Offset(0, -3)),
+        ],
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
