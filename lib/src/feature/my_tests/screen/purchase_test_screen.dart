@@ -17,7 +17,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: const QuizAppBar(title: 'Sotib olish'),
+    appBar: QuizAppBar(title: context.x.l10n.buy),
     body: ListView(
       children: [
         const SizedBox(height: 16),
@@ -71,7 +71,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         const SizedBox(height: 20),
         Padding(
           padding: const .symmetric(horizontal: 16),
-          child: Text('To’lov turi:', style: context.x.textStyle.w700s16.copyWith(fontSize: 22)),
+          child: Text(context.x.l10n.paymentType, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22)),
         ),
         const SizedBox(height: 8),
         Padding(
@@ -108,13 +108,13 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             Expanded(
               child: Text(
                 test.price.formatUzs,
-                style: context.x.textStyle.w700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
+                style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
                 textAlign: .center,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: CustomButton(onTap: onBuyPressed, title: 'Sotib olish'),
+              child: CustomButton(onTap: onBuyPressed, title: context.x.l10n.buy),
             ),
           ],
         ),

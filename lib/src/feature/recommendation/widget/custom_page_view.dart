@@ -120,7 +120,7 @@ class _CustomPageViewState extends State<CustomPageView> {
                   description: 'Test description Test description Test description Test description',
                   price: '10 000 UZS',
                   questionAmount: '100 ta savol',
-                  buyButtonText: 'Sotib olish',
+                  buyButtonText: context.x.l10n.buy,
                   onBuyButtonPressed: () {},
                   onShareButtonPressed: () {},
                 ),

@@ -8,6 +8,6 @@ class UploadScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    body: const Center(child: Text('Upload')),
+    body: Center(child: Text(context.x.l10n.downlods)),
   );
 }

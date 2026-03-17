@@ -255,10 +255,18 @@ class _HomeScreenState extends State<HomeScreen> {
               SectionWidget(
                 title: 'QuizNavigationBar',
                 children: [
-                  QuizNavigationBar(currentIndex: 0, onTap: (index) {}),
+                  QuizNavigationBar(
+                    labels: const ['Home', 'Market', 'Downloads', 'Profile'],
+                    currentIndex: 0,
+                    onTap: (index) {},
+                  ),
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
-                    child: QuizNavigationBar(currentIndex: 1, onTap: (index) {}),
+                    child: QuizNavigationBar(
+                      labels: const ['Home', 'Market', 'Downloads', 'Profile'],
+                      currentIndex: 1,
+                      onTap: (index) {},
+                    ),
                   ),
                 ],
               ),

@@ -35,11 +35,14 @@ class ProfilePaymentCard extends StatelessWidget {
                   crossAxisAlignment: .start,
                   spacing: 4,
                   children: [
-                    Text('Card Balance', style: context.x.textStyle.w500s14.copyWith(color: context.x.colors.white)),
-                    Text(balance, style: context.x.textStyle.w700s28.copyWith(color: context.x.colors.white)),
                     Text(
-                      'QuizlyMarket Card',
-                      style: context.x.textStyle.w500s14.copyWith(color: context.x.colors.white),
+                      context.x.l10n.cardBalance,
+                      style: context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.white),
+                    ),
+                    Text(balance, style: context.x.textStyle.sfW700s28.copyWith(color: context.x.colors.white)),
+                    Text(
+                      context.x.l10n.quizlyMarket,
+                      style: context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.white),
                     ),
                   ],
                 ),
@@ -50,7 +53,7 @@ class ProfilePaymentCard extends StatelessWidget {
             Row(
               spacing: 6,
               children: [
-                Text('ID: $cardNumber', style: context.x.textStyle.w500s16.copyWith(color: context.x.colors.white)),
+                Text('ID: $cardNumber', style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.white)),
                 GestureDetector(
                   onTap: onCopyCardNumber,
                   child: Assets.lib.vectors.copyId.svg(package: 'ui', width: 24, height: 24),

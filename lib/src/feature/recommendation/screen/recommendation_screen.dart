@@ -18,7 +18,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
     appBar: QuizAppBar(
-      title: 'QuizlyMarket',
+      title: context.x.l10n.quizlyMarket,
       telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
     ),
     body: Column(
@@ -32,12 +32,15 @@ class _RecommendationScreenState extends RecommendationScreenState {
               Expanded(
                 child: AppTextField(
                   controller: searchController,
-                  title: 'Search',
-                  prefixWidget: Assets.lib.vectors.search.svg(
-                    package: 'ui',
-                    width: 24,
-                    height: 24,
-                    colorFilter: .mode(context.x.colors.bannerSecondaryText, .srcATop),
+                  title: context.x.l10n.search,
+                  prefixWidget: Padding(
+                    padding: const .all(4),
+                    child: Assets.lib.vectors.search.svg(
+                      package: 'ui',
+                      width: 18,
+                      height: 18,
+                      colorFilter: .mode(context.x.colors.bannerSecondaryText, .srcATop),
+                    ),
                   ),
                 ),
               ),
@@ -55,10 +58,10 @@ class _RecommendationScreenState extends RecommendationScreenState {
             children: [
               CustomPageView(
                 items: const ['Test 1', 'Test 2', 'Test 3'],
-                title: 'Tavsiya',
+                title: context.x.l10n.recommendation,
                 onShowMore: () => context.octopus.pushNamed(Routes.moreRecommendation.name),
               ),
-              const CustomPageView(items: ['Test 1', 'Test 2'], title: 'Mashxurlar'),
+              CustomPageView(items: const ['Test 1', 'Test 2'], title: context.x.l10n.popular),
               Padding(
                 padding: const .symmetric(horizontal: 16),
                 child: Column(
@@ -69,7 +72,10 @@ class _RecommendationScreenState extends RecommendationScreenState {
                       children: [
                         Text(
                           context.x.l10n.allTests,
-                          style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
+                          style: context.x.textStyle.sfW700s28.copyWith(
+                            fontSize: 22,
+                            color: context.x.colors.bannerText,
+                          ),
                         ),
                         Assets.lib.vectors.chevronRight.svg(
                           package: 'ui',
@@ -86,7 +92,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         description: 'Description $i',
                         price: '100000',
                         questionAmount: '10',
-                        buyButtonText: 'Buy',
+                        buyButtonText: context.x.l10n.buy,
                         onBuyButtonPressed: () {},
                         onShareButtonPressed: () {},
                       ),

@@ -81,7 +81,10 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text('Mavzu', style: context.x.textStyle.w700s16.copyWith(color: context.x.colors.black)),
+                    child: Text(
+                      context.x.l10n.thema,
+                      style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.black),
+                    ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(sheetContext).pop(),
@@ -92,7 +95,10 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: Icon(Icons.light_mode_rounded, color: context.x.colors.black),
-              title: Text("Yorug'", style: context.x.textStyle.w600s16.copyWith(color: context.x.colors.black)),
+              title: Text(
+                context.x.l10n.light,
+                style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
+              ),
               trailing: selected == .light
                   ? Icon(Icons.check_rounded, color: context.x.colors.primary)
                   : const SizedBox.shrink(),
@@ -103,7 +109,10 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: Icon(Icons.dark_mode_rounded, color: context.x.colors.black),
-              title: Text("Qorong'u", style: context.x.textStyle.w600s16.copyWith(color: context.x.colors.black)),
+              title: Text(
+                context.x.l10n.dark,
+                style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
+              ),
               trailing: selected == .dark
                   ? Icon(Icons.check_rounded, color: context.x.colors.primary)
                   : const SizedBox.shrink(),
@@ -138,52 +147,72 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onTermsPressed() {}
 
   List<ProfileListRow> get menuRows => [
-    ProfileListRow.header((c) => 'Asosiy'),
+    ProfileListRow.header((c) => context.x.l10n.home),
     ProfileListRow.item(
-      (c) => 'Balansni to\'ldirish',
+      (c) => context.x.l10n.topUpBalance,
       onTopUpBalancePressed,
       Assets.lib.vectors.topUpBalance.svg(package: 'ui'),
     ),
-    ProfileListRow.item((c) => 'Referral', onReferralPressed, Assets.lib.vectors.referral.svg(package: 'ui')),
     ProfileListRow.item(
-      (c) => 'To\'lovlar tarixi',
+      (c) => context.x.l10n.referral,
+      onReferralPressed,
+      Assets.lib.vectors.referral.svg(package: 'ui'),
+    ),
+    ProfileListRow.item(
+      (c) => context.x.l10n.paymentHistory,
       onPaymentHistoryPressed,
       Assets.lib.vectors.historyTransaction.svg(package: 'ui'),
     ),
     ProfileListRow.item(
-      (c) => "Arxivlangan testlar",
+      (c) => context.x.l10n.archivedTests,
       onArchivedTestsPressed,
       Assets.lib.vectors.documents.svg(package: 'ui'),
     ),
-    ProfileListRow.item((c) => 'Teacher', onTeacherPressed, Assets.lib.vectors.teacherSwap.svg(package: 'ui')),
-    ProfileListRow.spacer(16),
-    ProfileListRow.header((c) => "Integratsiyalar"),
-    ProfileListRow.item((c) => 'Google ulash', onGoogleConnectPressed, Assets.lib.vectors.google.svg(package: 'ui')),
-    ProfileListRow.item((c) => 'Apple ID ulash', onAppleConnectPressed, Assets.lib.vectors.apple.svg(package: 'ui')),
     ProfileListRow.item(
-      (c) => 'Telegram ulash',
+      (c) => context.x.l10n.teacher,
+      onTeacherPressed,
+      Assets.lib.vectors.teacherSwap.svg(package: 'ui'),
+    ),
+    ProfileListRow.spacer(16),
+    ProfileListRow.header((c) => context.x.l10n.integrations),
+    ProfileListRow.item(
+      (c) => context.x.l10n.googleConnect,
+      onGoogleConnectPressed,
+      Assets.lib.vectors.google.svg(package: 'ui'),
+    ),
+    ProfileListRow.item(
+      (c) => context.x.l10n.appleIdConnect,
+      onAppleConnectPressed,
+      Assets.lib.vectors.apple.svg(package: 'ui'),
+    ),
+    ProfileListRow.item(
+      (c) => context.x.l10n.telegramConnect,
       onTelegramConnectPressed,
       Assets.lib.images.telegramLogo.image(package: 'ui', width: 20, height: 20),
     ),
     ProfileListRow.spacer(16),
-    ProfileListRow.header((c) => "Ko'rinish"),
-    ProfileListRow.item((c) => 'Til', onLanguagePressed, Assets.lib.vectors.language.svg(package: 'ui')),
-    ProfileListRow.item((c) => 'Mavzu', onThemePressed, Assets.lib.vectors.themeIcon.svg(package: 'ui')),
+    ProfileListRow.header((c) => context.x.l10n.appearance),
     ProfileListRow.item(
-      (c) => "Asosiy ekranga o'rnatish",
+      (c) => context.x.l10n.language,
+      onLanguagePressed,
+      Assets.lib.vectors.language.svg(package: 'ui'),
+    ),
+    ProfileListRow.item((c) => context.x.l10n.thema, onThemePressed, Assets.lib.vectors.themeIcon.svg(package: 'ui')),
+    ProfileListRow.item(
+      (c) => context.x.l10n.installOnHomeScreen,
       onSetHomePressed,
       Assets.lib.vectors.setHome.svg(package: 'ui'),
     ),
     ProfileListRow.spacer(16),
-    ProfileListRow.header((c) => 'Boshqa'),
-    ProfileListRow.item((c) => 'Yordam', onHelpPressed, Assets.lib.vectors.support.svg(package: 'ui')),
+    ProfileListRow.header((c) => context.x.l10n.other),
+    ProfileListRow.item((c) => context.x.l10n.help, onHelpPressed, Assets.lib.vectors.support.svg(package: 'ui')),
     ProfileListRow.item(
-      (c) => "Foydalanish shartlari",
+      (c) => context.x.l10n.termsOfUse,
       onTermsPressed,
       Assets.lib.vectors.documents.svg(package: 'ui'),
     ),
     ProfileListRow.item(
-      (c) => 'Chiqish',
+      (c) => context.x.l10n.logout,
       onLogoutPressed,
       Assets.lib.vectors.logout.svg(package: 'ui'),
       isLogout: true,

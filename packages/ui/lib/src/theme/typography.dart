@@ -1364,8 +1364,8 @@ class AppTypography extends ThemeExtension<AppTypography> {
     if (identical(this, other)) return true;
 
     return
-        // Nunito
-        other.w400s57 == w400s57 &&
+    // Nunito
+    other.w400s57 == w400s57 &&
         other.w400s45 == w400s45 &&
         other.w400s36 == w400s36 &&
         other.w400s32 == w400s32 &&

@@ -14,7 +14,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: const QuizAppBar(title: 'QuizlyMarket'),
+    appBar: QuizAppBar(title: context.x.l10n.quizlyMarket),
     body: Column(
       crossAxisAlignment: .stretch,
       children: [
@@ -27,7 +27,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
               Expanded(
                 child: AppTextField(
                   controller: searchController,
-                  title: 'Search',
+                  title: context.x.l10n.search,
                   prefixWidget: Assets.lib.vectors.search.svg(
                     package: 'ui',
                     width: 24,
@@ -49,7 +49,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                     backgroundColor: context.x.colors.bottomSheetBackground,
                     onClose: () => Navigator.pop(context),
                     isCenterTitle: false,
-                    title: 'Saralash',
+                    title: context.x.l10n.sort,
                     child: Padding(
                       padding: const .symmetric(horizontal: 16, vertical: 20),
                       child: Column(
@@ -68,8 +68,8 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                                   mainAxisAlignment: .spaceBetween,
                                   children: [
                                     Text(
-                                      'Yaqinda qo’shilgan',
-                                      style: context.x.textStyle.w400s14.copyWith(fontSize: 18),
+                                      context.x.l10n.recentlyAdded,
+                                      style: context.x.textStyle.sfW400s14.copyWith(fontSize: 18),
                                     ),
                                     Assets.lib.vectors.checkCircle.svg(package: 'ui', width: 24, height: 24),
                                   ],
@@ -81,7 +81,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                             onTap: () {},
                             color: context.x.colors.primary,
                             textColor: context.x.colors.white,
-                            title: 'Saralash',
+                            title: context.x.l10n.sort,
                           ),
                         ],
                       ),
@@ -112,9 +112,9 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                 title: 'Example test',
                 companyName: 'QuizlyMarket',
                 description: 'Example test description, Example test description, Example test description',
-                price: 'Tekin',
+                price: context.x.l10n.free,
                 questionAmount: '100 ta savol',
-                buyButtonText: 'Sinab ko’rish',
+                buyButtonText: context.x.l10n.tryItNow,
                 onBuyButtonPressed: () {},
                 onShareButtonPressed: () {},
               ),

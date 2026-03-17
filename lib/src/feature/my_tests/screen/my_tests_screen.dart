@@ -23,25 +23,25 @@ class _MyTestsScreenState extends MyTestsScreenState {
       child: ListView(
         children: [
           const SizedBox(height: 16),
-          const EmptyTestWidget(
-            title: 'Sizda hali testlar yo‘q.',
-            description: 'Marketda turli mavzulardagi testlar mavjud. O‘zingizga mosini tanlang.',
+          EmptyTestWidget(
+            title: context.x.l10n.youDontHaveAnyTestsYet,
+            description: context.x.l10n.thereAreTestsOnaVarietyOfTopicsAvailableOnTheMarket,
           ),
           const SizedBox(height: 20),
-          Row(children: [Text('Hoziroq sinab ko’ring', style: context.x.textStyle.w700s16.copyWith(fontSize: 22))]),
+          Row(children: [Text(context.x.l10n.tryItNow, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22))]),
           for (var i = 0; i < 1; i++)
             BannerWidget(
               title: 'Example test',
               companyName: 'QuizlyMarket',
               description: 'Example test description, Example test description, Example test description',
-              price: 'Tekin',
+              price: context.x.l10n.free,
               questionAmount: '100 ta savol',
-              buyButtonText: 'Sinab ko’rish',
+              buyButtonText: context.x.l10n.tryItNow,
               onBuyButtonPressed: () {},
               isFree: true,
             ),
           const SizedBox(height: 24),
-          Text('Tavsiya', style: context.x.textStyle.w700s16.copyWith(fontSize: 22)),
+          Text(context.x.l10n.recommendation, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22)),
           for (var i = 0; i < 4; i++)
             Column(
               children: [
@@ -49,9 +49,9 @@ class _MyTestsScreenState extends MyTestsScreenState {
                   title: 'Example test',
                   companyName: 'QuizlyMarket',
                   description: 'Example test description, Example test description, Example test description',
-                  price: 'Tekin',
+                  price: context.x.l10n.free,
                   questionAmount: '100 ta savol',
-                  buyButtonText: 'Sinab ko’rish',
+                  buyButtonText: context.x.l10n.tryItNow,
                   onBuyButtonPressed: onBuyTestPressed,
                 ),
                 const SizedBox(height: 10),

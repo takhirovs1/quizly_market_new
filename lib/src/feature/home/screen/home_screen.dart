@@ -56,6 +56,7 @@ class _HomeScreenState extends HomeScreenState {
       ),
     ),
     bottomNavigationBar: QuizNavigationBar(
+      labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.downlods, context.x.l10n.profile],
       currentIndex: currentIndex.value,
       onTap: (index) => currentIndex.value = index,
     ),

@@ -81,7 +81,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                     maxLines: 1,
                                     overflow: .ellipsis,
                                     textAlign: .center,
-                                    style: context.x.textStyle.w400s14.copyWith(
+                                    style: context.x.textStyle.sfW400s14.copyWith(
                                       fontSize: phoneSize(layout.width),
                                       color: context.x.colors.gray,
                                     ),
@@ -117,7 +117,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                   maxLines: 1,
                                   overflow: .ellipsis,
                                   textAlign: .center,
-                                  style: context.x.textStyle.w700s16.copyWith(
+                                  style: context.x.textStyle.sfW700s16.copyWith(
                                     fontSize: nameSizeCollapsed(layout.width),
                                     color: context.x.colors.primary,
                                   ),
@@ -142,7 +142,7 @@ class _ProfileScreenState extends ProfileScreenState {
           shrinkWrap: true,
           children: [
             ProfilePaymentCard(
-              balance: '100 000 000 UZS',
+              balance: '100 000 UZS',
               cardNumber: '1234567890',
               onCopyCardNumber: () => onCopyCardNumber('1234567890'),
             ),
@@ -160,7 +160,7 @@ class _ProfileScreenState extends ProfileScreenState {
                       padding: .only(top: index == 0 ? 0 : 8, bottom: 8),
                       child: Text(
                         row.titleBuilder?.call(context) ?? '',
-                        style: context.x.textStyle.w600s16.copyWith(color: context.x.colors.black),
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
                       ),
                     ),
                     .item => Padding(

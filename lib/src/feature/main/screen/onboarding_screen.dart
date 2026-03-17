@@ -20,8 +20,8 @@ class OnboardingScreen extends StatelessWidget {
             const SizedBox(height: 50),
             Center(
               child: Text(
-                'QuizlyMarket',
-                style: context.x.textStyle.w400s45.copyWith(color: context.x.colors.white, fontWeight: .w600),
+                context.x.l10n.quizlyMarket,
+                style: context.x.textStyle.sfW400s45.copyWith(color: context.x.colors.white, fontWeight: .w600),
                 textAlign: .center,
               ),
             ),
@@ -41,12 +41,12 @@ class OnboardingScreen extends StatelessWidget {
                 context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
                 context.octopus.navigate(Routes.home.name);
               },
-              title: 'START',
+              title: context.x.l10n.start,
             ),
             const SizedBox(height: 20),
             Text(
               'Copyright © 2025 FlutterBro',
-              style: context.x.textStyle.w400s12.copyWith(fontWeight: .w200, color: context.x.colors.white),
+              style: context.x.textStyle.sfW400s12.copyWith(fontWeight: .w200, color: context.x.colors.white),
               textAlign: .center,
             ),
             const SizedBox(height: 10),

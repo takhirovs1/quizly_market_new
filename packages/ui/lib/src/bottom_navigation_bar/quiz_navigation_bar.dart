@@ -4,8 +4,9 @@ import '../extension/context_extension.dart';
 import '../gen/assets.gen.dart';
 
 class QuizNavigationBar extends StatefulWidget {
-  const QuizNavigationBar({required this.currentIndex, required this.onTap, super.key});
+  const QuizNavigationBar({required this.labels, required this.currentIndex, required this.onTap, super.key});
 
+  final List<String> labels;
   final int currentIndex;
   final void Function(int) onTap;
 
@@ -36,8 +37,6 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
       Assets.lib.vectors.person,
     ];
 
-    final labels = ['Asosiy', 'Market', 'Yuklash', 'Profil'];
-
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
@@ -55,14 +54,14 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
           overlayColor: WidgetStateProperty.all(Colors.transparent),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return context.x.textStyle.w500s14.copyWith(color: context.x.colors.primary);
+              return context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.primary);
             }
-            return context.x.textStyle.w500s14.copyWith(color: context.x.colors.bottomNavigationBarUnselectedColor);
+            return context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.bottomNavigationBarUnselectedColor);
           }),
           destinations: List.generate(
             icons.length,
             (i) => NavigationDestination(
-              label: labels[i],
+              label: widget.labels[i],
               icon: icons[i].svg(
                 width: 24,
                 height: 24,
