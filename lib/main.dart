@@ -21,7 +21,7 @@ void main([List<String>? args]) => runZonedGuarded<Future<void>>(() async {
   runApp(
     DependenciesScope(
       initialization: $initializeApp(
-      binding: binding,
+        binding: binding,
         onProgress: (progress, message) => initializationProgress.value = (progress: progress, message: message),
         orientations: [.portraitUp, .portraitDown, .landscapeLeft, .landscapeRight],
       ),
