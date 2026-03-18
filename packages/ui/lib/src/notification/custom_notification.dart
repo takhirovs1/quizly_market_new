@@ -169,7 +169,7 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
             (context.x.telegramWebApp.isSupported
                 ? context.x.telegramWebApp.safeAreaInset.top
                 : MediaQuery.paddingOf(context).top) +
-            56,
+            46,
         left: 20,
         right: 20,
         child: GestureDetector(

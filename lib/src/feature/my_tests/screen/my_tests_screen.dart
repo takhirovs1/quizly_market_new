@@ -15,7 +15,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
     appBar: QuizAppBar(
-      title: 'Testlarim 11',
+      title: 'Testlarim',
       telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
     ),
     body: Padding(

@@ -225,9 +225,20 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   Future<void> onLogoutAccountPressed() async {}
 
   // Header sizing
-  double expandedHeaderHeight(BuildContext context) => (MediaQuery.sizeOf(context).height * 0.26).clamp(150.0, 200.0);
+  double expandedHeaderHeight(BuildContext context) {
+    var height = (MediaQuery.sizeOf(context).height * 0.26).clamp(150.0, 200.0);
+    if (context.telegramWebApp.isSupported) {
+      height += context.telegramWebApp.safeAreaInset.top;
+    }
+    return height;
+  }
 
-  double collapsedHeaderHeight(BuildContext context) => MediaQuery.paddingOf(context).top + kToolbarHeight;
+  double collapsedHeaderHeight(BuildContext context) {
+    if (context.telegramWebApp.isSupported) {
+      return context.telegramWebApp.safeAreaInset.top + kToolbarHeight;
+    }
+    return MediaQuery.paddingOf(context).top + kToolbarHeight;
+  }
 
   // 0 -> expanded, 1 -> collapsed
   double collapseT(BuildContext context, BoxConstraints constraints) {

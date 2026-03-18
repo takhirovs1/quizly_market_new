@@ -18,19 +18,24 @@ class OnboardingScreen extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             const SizedBox(height: 50),
-            Center(
-              child: Text(
-                context.x.l10n.quizlyMarket,
-                style: context.x.textStyle.sfW400s45.copyWith(color: context.x.colors.white, fontWeight: .w600),
-                textAlign: .center,
-              ),
-            ),
             Expanded(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400, minWidth: 255),
-                  child: Assets.lib.images.logoPng.image(package: 'ui'),
-                ),
+              child: Column(
+                spacing: 10,
+                children: [
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 350, minWidth: 200),
+                      child: Assets.lib.images.logoPng.image(package: 'ui'),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      context.x.l10n.quizlyMarket,
+                      style: context.x.textStyle.w400s45.copyWith(color: context.x.colors.white, fontWeight: .w600),
+                      textAlign: .center,
+                    ),
+                  ),
+                ],
               ),
             ),
             CustomButton(
@@ -45,7 +50,7 @@ class OnboardingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Copyright © 2025 FlutterBro',
+              context.x.l10n.copyRight,
               style: context.x.textStyle.sfW400s12.copyWith(fontWeight: .w200, color: context.x.colors.white),
               textAlign: .center,
             ),

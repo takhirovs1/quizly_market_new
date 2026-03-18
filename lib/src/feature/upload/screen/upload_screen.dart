@@ -11,7 +11,7 @@ class UploadScreen extends StatelessWidget {
     child: Scaffold(
       backgroundColor: context.x.colors.scaffoldBackground,
       appBar: QuizAppBar(
-        title: context.x.l10n.downlods,
+        title: context.x.l10n.upload,
         telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
       ),
       body: Column(
@@ -58,15 +58,21 @@ class UploadScreen extends StatelessWidget {
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [
-                EmptyTestWidget(
-                  title: 'Siz hali test yuklamadingiz',
-                  description:
-                      'Test yuklash orqali QuizlyMarket’da o’z testingizni yarating va harbir sotuvdan 20% cashback oling',
+                Padding(
+                  padding: .all(16),
+                  child: EmptyTestWidget(
+                    title: 'Siz hali test yuklamadingiz',
+                    description:
+                        'Test yuklash orqali QuizlyMarket’da o’z testingizni yarating va harbir sotuvdan 20% cashback oling',
+                  ),
                 ),
-                EmptyTestWidget(
-                  title: 'Siz hali test yuklamadingiz',
-                  description:
-                      'Test yuklash orqali QuizlyMarket’da o’z testingizni yarating va harbir sotuvdan 20% cashback oling',
+                Padding(
+                  padding: .all(16),
+                  child: EmptyTestWidget(
+                    title: 'Siz hali test yuklamadingiz',
+                    description:
+                        'Test yuklash orqali QuizlyMarket’da o’z testingizni yarating va harbir sotuvdan 20% cashback oling',
+                  ),
                 ),
               ],
             ),

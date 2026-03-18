@@ -16,8 +16,8 @@ mixin AppRouteInitialization on State<App> {
     authGuard = AuthenticationGuard(
       getUser: () => context.x.dependencies.authenticationController.state.user,
       routes: <String>{Routes.login.name},
-      signinNavigation: OctopusState.fromLocation(Routes.login.name),
-      homeNavigation: OctopusState.fromLocation(Routes.home.name),
+      signinNavigation: .fromLocation(Routes.login.name),
+      homeNavigation: .fromLocation(Routes.home.name),
     );
 
     guards = MainGuard();
@@ -25,7 +25,7 @@ mixin AppRouteInitialization on State<App> {
     // ignore: invalid_use_of_internal_member
     navigator = Octopus(
       routes: Routes.values,
-      defaultRoute: context.x.dependencies.localSource.onboardingCompleted ? Routes.home : Routes.onboarding,
+      defaultRoute: context.telegramWebApp.isSupported ? Routes.onboarding : Routes.selectLanguage,
       // guards: <OctopusGuard>[guards],
     );
 

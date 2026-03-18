@@ -41,7 +41,7 @@ class _SplashScreenState extends SplashController {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(bottom: 32),
+                padding: .only(bottom: 32),
                 child: SizedBox(
                   width: 24,
                   height: 24,

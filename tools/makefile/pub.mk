@@ -145,11 +145,13 @@ vec: build_vec fluttergen fcg ## Build vectors and regenerate assets
 # ──────────────────────────────────
 .PHONY: generate-icons
 generate-icons: ## Generate app icons (flutter_launcher_icons)
-	@$(DART) run flutter_launcher_icons -f flutter_launcher_icons.yaml
+	@$(DART) pub global activate flutter_launcher_icons
+	@$(DART) pub global run flutter_launcher_icons -f flutter_launcher_icons.yaml
 
 .PHONY: generate-splash
 generate-splash: ## Generate splash screen (flutter_native_splash)
-	@$(DART) run flutter_native_splash:create --path=flutter_native_splash.yaml
+	@$(FLUTTER) pub get
+	@$(FLUTTER) pub run flutter_native_splash:create --path=flutter_native_splash.yaml
 
 # ──────────────────────────────────
 # 🍎 CocoaPods

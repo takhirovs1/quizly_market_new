@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:ui/ui.dart';
 
@@ -41,6 +42,17 @@ abstract class HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void onTap(int index) {
+    if (currentIndex.value != index) {
+      if (context.telegramWebApp.isSupported) {
+        context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+      } else {
+        HapticFeedback.lightImpact();
+      }
+      currentIndex.value = index;
+    }
+  }
+
   /* #endregion */
 }
 
@@ -56,34 +68,17 @@ class _HomeScreenState extends HomeScreenState {
       ),
     ),
     bottomNavigationBar: ColoredBox(
-      color: context.x.colors.white,
+      color: context.x.colors.dialogBackground,
       child: Padding(
         padding: .only(
           bottom: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0.0,
         ),
         child: QuizNavigationBar(
-          labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.downlods, context.x.l10n.profile],
+          labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.upload, context.x.l10n.profile],
           currentIndex: currentIndex.value,
-          onTap: (index) => currentIndex.value = index,
+          onTap: onTap,
         ),
       ),
     ),
-  );
-}
-
-/// {@template home_screen}
-/// A widget.
-/// {@endtemplate}
-class A extends StatelessWidget {
-  /// {@macro home_screen}
-  const A({
-    super.key, // ignore: unused_element
-  });
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.x.colors.buttonBorder,
-    appBar: AppBar(title: const Text('A')),
-    body: const Center(child: Text('A')),
   );
 }
