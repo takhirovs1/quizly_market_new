@@ -5,6 +5,8 @@ export 'package:flutter_svg/svg.dart';
 export 'package:vector_graphics/vector_graphics.dart';
 
 export 'src/appbar/quiz_app_bar.dart';
+export 'src/auth/policy_text.dart';
+export 'src/auth/social_login_button.dart';
 export 'src/banner/banner_widget.dart';
 export 'src/banner/mini_banner_widget.dart';
 export 'src/border/smooth_rectangle_border.dart';

@@ -63,80 +63,29 @@ class _LoginScreenState extends LoginScreenState {
                 mainAxisAlignment: .center,
                 spacing: 8,
                 children: [
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: context.x.colors.white,
-                      side: BorderSide(color: context.x.colors.gray),
-                      elevation: 0,
-                      fixedSize: const Size(.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: .circular(16)),
-                    ),
+                  SocialLoginButton(
+                    type: .google,
+                    title: 'Google bilan davom etish',
                     onPressed: () {
                       context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
                       context.octopus.navigate(Routes.home.name);
                     },
-                    child: Row(
-                      mainAxisAlignment: .center,
-                      spacing: 8,
-                      children: [
-                        Assets.lib.vectors.google.svg(package: 'ui'),
-                        Text(
-                          'Google bilan davom etish',
-                          style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
-                        ),
-                      ],
-                    ),
                   ),
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: context.x.colors.black,
-                      elevation: 0,
-                      fixedSize: const Size(.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: .circular(16)),
-                    ),
+                  SocialLoginButton(
+                    type: .apple,
+                    title: 'Apple ID bilan davom etish',
                     onPressed: () {
                       context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
                       context.octopus.navigate(Routes.home.name);
                     },
-                    child: Row(
-                      mainAxisAlignment: .center,
-                      spacing: 8,
-                      children: [
-                        Assets.lib.vectors.apple.svg(package: 'ui', colorFilter: .mode(context.x.colors.white, .srcIn)),
-                        Text(
-                          'Apple ID bilan davom etish',
-                          style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white),
-                        ),
-                      ],
-                    ),
                   ),
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: context.x.colors.primary,
-                      elevation: 0,
-                      fixedSize: const Size(.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: .circular(16)),
-                    ),
+                  SocialLoginButton(
+                    type: .telegram,
+                    title: 'Telegram bilan davom etish',
                     onPressed: () {
                       context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
                       context.octopus.navigate(Routes.home.name);
                     },
-                    child: Row(
-                      mainAxisAlignment: .center,
-                      spacing: 8,
-                      children: [
-                        Assets.lib.images.telegramLogo.image(
-                          package: 'ui',
-                          width: 24,
-                          height: 24,
-                          color: context.x.colors.white,
-                        ),
-                        Text(
-                          'Telegram bilan davom etish',
-                          style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),
@@ -146,17 +95,8 @@ class _LoginScreenState extends LoginScreenState {
         ),
       ),
     ),
-    bottomNavigationBar: SafeArea(
-      child: Padding(
-        padding: const .symmetric(horizontal: 32, vertical: 16),
-        child: Text(
-          'Davom etish orqali siz Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz.',
-          maxLines: 2,
-          overflow: .ellipsis,
-          style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-          textAlign: .center,
-        ),
-      ),
+    bottomNavigationBar: const TermsAndPrivacyText(
+      title: 'Davom etish orqali siz Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz.',
     ),
   );
 }
