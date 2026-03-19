@@ -25,7 +25,7 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
   final ApiService apiService;
 
   final StreamController<User> _userController = StreamController<User>.broadcast();
-  User _user = const User.unauthenticated();
+  User _user = const .unauthenticated();
 
   @override
   Stream<User> userChanges() => _userController.stream;

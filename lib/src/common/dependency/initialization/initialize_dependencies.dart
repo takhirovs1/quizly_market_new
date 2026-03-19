@@ -15,7 +15,7 @@ import 'package:ui/ui.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../firebase_options.dart';
-import '../../../feature/authentication/controller/authentication_controller.dart';
+import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';

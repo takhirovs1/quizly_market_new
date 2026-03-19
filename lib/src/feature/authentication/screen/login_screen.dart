@@ -1,10 +1,11 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../../../common/router/pages.dart';
 import '../../main/widget/header_widget.dart';
+import '../cubit/auth_cubit.dart';
+import '../state/login_screen_state.dart';
 
 /// {@template login_screen}
 /// LoginScreen widget.
@@ -15,8 +16,6 @@ class LoginScreen extends StatefulWidget {
     super.key, // ignore: unused_element
   });
 
-  /// The state from the closest instance of this class
-  /// that encloses the given context, if any.
   @internal
   static LoginScreenState? maybeOf(BuildContext context) => context.findAncestorStateOfType<_LoginScreenState>();
 
@@ -24,79 +23,49 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-/// State for widget LoginScreen.
-abstract class LoginScreenState extends State<LoginScreen> {
-  /* #region Lifecycle */
-  @override
-  void initState() {
-    super.initState();
-    // Initial state initialization
-  }
-
-  @override
-  void dispose() {
-    // Permanent removal of a tree stent
-    super.dispose();
-  }
-
-  /* #endregion */
-}
-
 class _LoginScreenState extends LoginScreenState {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.x.colors.white,
-    body: SafeArea(
-      child: Padding(
-        padding: const .all(16),
-        child: Column(
-          children: [
-            HeaderWidget(
-              title: context.x.l10n.quizlyMarket,
-              subtitle: 'QuizlyMarket platformasidan foydalanish uchun ilovaga kirishingiz kerak',
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: .center,
-                mainAxisAlignment: .center,
-                spacing: 8,
-                children: [
-                  SocialLoginButton(
-                    type: .google,
-                    title: 'Google bilan davom etish',
-                    onPressed: () {
-                      context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
-                      context.octopus.navigate(Routes.home.name);
-                    },
-                  ),
-                  SocialLoginButton(
-                    type: .apple,
-                    title: 'Apple ID bilan davom etish',
-                    onPressed: () {
-                      context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
-                      context.octopus.navigate(Routes.home.name);
-                    },
-                  ),
-                  SocialLoginButton(
-                    type: .telegram,
-                    title: 'Telegram bilan davom etish',
-                    onPressed: () {
-                      context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
-                      context.octopus.navigate(Routes.home.name);
-                    },
-                  ),
-                ],
+  Widget build(BuildContext context) => BlocBuilder<AuthCubit, AuthState>(
+    builder: (context, state) => Scaffold(
+      backgroundColor: context.x.colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const .all(16),
+          child: Column(
+            children: [
+              HeaderWidget(title: context.x.l10n.quizlyMarket, subtitle: context.x.l10n.loginTitle),
+              const SizedBox(height: 24),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: .center,
+                  mainAxisAlignment: .center,
+                  spacing: 8,
+                  children: [
+                    SocialLoginButton(type: .google, title: context.x.l10n.loginGoogle, onPressed: signInWithGoogle),
+                    SocialLoginButton(type: .apple, title: context.x.l10n.loginApple, onPressed: signInWithApple),
+                    SocialLoginButton(
+                      type: .telegram,
+                      title: context.x.l10n.loginTelegram,
+                      onPressed: signInWithTelegram,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Spacer(),
-          ],
+              const Spacer(),
+            ],
+          ),
         ),
       ),
-    ),
-    bottomNavigationBar: const TermsAndPrivacyText(
-      title: 'Davom etish orqali siz Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz.',
+      bottomNavigationBar: TermsAndPrivacyText(
+        prefix: '${context.x.l10n.byContinuingYou} ',
+        termsText: context.x.l10n.termsOfUse,
+        middle: ' ${context.x.l10n.and} ',
+        privacyText: context.x.l10n.privacyPolicy,
+        suffix: ' ${context.x.l10n.agreeTo}',
+        onTermsTap: () {},
+        onPrivacyTap: () {},
+      ),
     ),
   );
 }

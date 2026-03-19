@@ -4,8 +4,8 @@ import 'package:local_source/local_source.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
-import '../../../feature/authentication/controller/authentication_controller.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
+import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../service/api_service.dart';
 import 'app_metadata.dart';

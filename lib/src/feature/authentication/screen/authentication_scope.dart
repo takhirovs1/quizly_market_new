@@ -2,7 +2,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/dependency/widget/dependencies_scope.dart';
 import '../../../common/extension/context_extension.dart';
-import '../controller/authentication_controller.dart';
+import '../state/authentication_controller.dart';
 import '../model/user.dart';
 
 /// {@template authentication_scope}
