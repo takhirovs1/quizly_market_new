@@ -13,12 +13,7 @@ class MyTestItemWidget extends StatelessWidget {
       Row(
         children: [
           Flexible(
-            child: Text(
-              test.question,
-              style: context.x.textStyle.w400s16.copyWith(fontSize: 17),
-              maxLines: 2,
-              overflow: .ellipsis,
-            ),
+            child: Text(test.question, style: context.x.textStyle.w500s16, maxLines: 2, overflow: .ellipsis),
           ),
         ],
       ),
@@ -40,15 +35,15 @@ class _AnswerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DecoratedBox(
     decoration: BoxDecoration(
-      color: ThemeColors.of(context).white,
-      border: Border.all(color: ThemeColors.of(context).gray),
+      color: context.x.colors.cardBackground2,
+      border: Border.all(color: context.x.colors.gray),
       borderRadius: .circular(8),
     ),
     child: SizedBox(
       width: .infinity,
       child: Padding(
         padding: const .symmetric(vertical: 8, horizontal: 10),
-        child: Text(answerModel.text, style: context.x.textStyle.w400s14, textAlign: .start),
+        child: Text(answerModel.text, style: context.x.textStyle.w500s14, textAlign: .start),
       ),
     ),
   );

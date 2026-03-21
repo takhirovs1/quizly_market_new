@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/d/fvm/versions/3.41.0"
-export "FLUTTER_APPLICATION_PATH=/Users/d/StudioProjects/quizly_market/quizly_market"
+export "FLUTTER_ROOT=C:\Users\khami\fvm\versions\3.41.0"
+export "FLUTTER_APPLICATION_PATH=C:\Users\khami\Desktop\projects\quizly_market_new"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"

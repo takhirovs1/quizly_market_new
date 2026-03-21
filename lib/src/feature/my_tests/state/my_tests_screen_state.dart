@@ -5,5 +5,6 @@ import '../../../common/router/pages.dart';
 import '../screen/my_tests_screen.dart';
 
 abstract class MyTestsScreenState extends State<MyTestsScreen> {
-  void onBuyTestPressed() => context.octopus.navigate(Routes.purchaseTest.name);
+  void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
+  Future<void> onRefresh() async {}
 }

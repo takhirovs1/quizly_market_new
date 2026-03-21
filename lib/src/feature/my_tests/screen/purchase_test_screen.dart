@@ -3,6 +3,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../state/purchase_test_screen_state.dart';
+import '../widgets/animated_referral_banner.dart';
 import '../widgets/my_test_item_widget.dart';
 import '../widgets/test_description_widget.dart';
 
@@ -17,14 +18,20 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: QuizAppBar(title: context.x.l10n.buy),
+    appBar: QuizAppBar(
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+      title: context.x.l10n.buy,
+    ),
     body: ListView(
+      padding: const .only(bottom: 16),
       children: [
         const SizedBox(height: 16),
         Padding(
           padding: const .symmetric(horizontal: 16),
           child: TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
         ),
+        const SizedBox(height: 22),
+        const Padding(padding: const .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
         const SizedBox(height: 28),
         SizedBox(
           height: 260,
@@ -71,7 +78,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         const SizedBox(height: 20),
         Padding(
           padding: const .symmetric(horizontal: 16),
-          child: Text(context.x.l10n.paymentType, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22)),
+          child: Text(context.x.l10n.paymentType, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18)),
         ),
         const SizedBox(height: 8),
         Padding(
@@ -114,7 +121,11 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: CustomButton(onTap: onBuyPressed, title: context.x.l10n.buy),
+              child: CustomButton(
+                onTap: onBuyPressed,
+                title: context.x.l10n.buy,
+                textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
+              ),
             ),
           ],
         ),

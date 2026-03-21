@@ -18,12 +18,12 @@ class TestDescriptionWidget extends StatelessWidget {
         crossAxisAlignment: .start,
         spacing: 8,
         children: [
-          Expanded(child: Text(test.title, style: context.x.textStyle.w700s16.copyWith(fontSize: 22))),
+          Expanded(child: Text(test.title, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 20))),
           GestureDetector(
             onTap: onPressShare,
             child: Assets.lib.vectors.share.svg(
               package: 'ui',
-              colorFilter: ColorFilter.mode(ThemeColors.of(context).text, BlendMode.srcATop),
+              colorFilter: .mode(ThemeColors.of(context).text, .srcATop),
             ),
           ),
           GestureDetector(

@@ -45,7 +45,10 @@ class BannerWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: context.x.theme.textTheme.titleMedium?.copyWith(color: context.x.colors.bannerText),
+                  style: context.x.textStyle.sfW400s18?.copyWith(
+                    color: context.x.colors.bannerText,
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -56,7 +59,7 @@ class BannerWidget extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Text(
                     companyName,
-                    style: context.x.theme.textTheme.titleMedium?.copyWith(color: context.x.colors.bannerSecondaryText),
+                    style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -67,7 +70,7 @@ class BannerWidget extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             description,
-            style: context.x.theme.textTheme.bodyMedium?.copyWith(color: context.x.colors.bannerSecondaryText),
+            style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -78,7 +81,7 @@ class BannerWidget extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 questionAmount,
-                style: context.x.theme.textTheme.bodyMedium?.copyWith(color: context.x.colors.bannerSecondaryText),
+                style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
               ),
             ],
           ),
@@ -88,16 +91,13 @@ class BannerWidget extends StatelessWidget {
               children: [
                 if (!isFree)
                   Lottie.asset(Assets.lib.lottie.money, width: 16, height: 16, package: 'ui')
+                // Assets.lib.vectors.money.svg(width: 16, height: 16, package: 'ui')
                 else
                   const Icon(Icons.photo_library_outlined),
                 const SizedBox(width: 4),
                 Text(
                   price,
-                  style: context.x.theme.textTheme.labelLarge?.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: context.x.colors.bannerPriceText,
-                  ),
+                  style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(width: 8),
@@ -129,11 +129,16 @@ class BannerWidget extends StatelessWidget {
                             onPressed: onBuyButtonPressed,
                             child: Text(
                               buyButtonText,
-                              style: context.x.theme.textTheme.labelLarge?.copyWith(
+                              // style: context.x.theme.textTheme.labelLarge?.copyWith(
+                              //   fontSize: 15,
+                              //   fontWeight: FontWeight.w600,
+                              //   color: context.x.colors.white,
+                              // ),
+                              style: context.x.textStyle.sfW500s16.copyWith(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w600,
                                 color: context.x.colors.white,
                               ),
+
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
