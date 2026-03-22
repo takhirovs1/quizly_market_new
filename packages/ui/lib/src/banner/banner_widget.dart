@@ -45,7 +45,7 @@ class BannerWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: context.x.textStyle.sfW400s18?.copyWith(
+                  style: context.x.textStyle.sfW400s18.copyWith(
                     color: context.x.colors.bannerText,
                     fontWeight: FontWeight.w500,
                   ),

@@ -14,7 +14,6 @@ abstract class LoginScreenState extends State<LoginScreen> {
     super.initState();
     authCubit = context.read<AuthCubit>();
   }
-  
 
   Future<void> signInWithGoogle() async {
     await authCubit.signInWithGoogle();

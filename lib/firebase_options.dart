@@ -69,5 +69,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'test-9cf8b.firebasestorage.app',
     iosBundleId: 'com.quizly.app',
   );
-
 }

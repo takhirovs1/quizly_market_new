@@ -165,6 +165,9 @@ class $LibLottieGen {
   /// File path: lib/lottie/filter.json
   String get filter => 'lib/lottie/filter.json';
 
+  /// File path: lib/lottie/fire_emoji.json
+  String get fireEmoji => 'lib/lottie/fire_emoji.json';
+
   /// File path: lib/lottie/hourglass.json
   String get hourglass => 'lib/lottie/hourglass.json';
 
@@ -212,6 +215,7 @@ class $LibLottieGen {
     error,
     error2,
     filter,
+    fireEmoji,
     hourglass,
     incorrect,
     laptop,
@@ -320,6 +324,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/market.vec
   SvgGenImage get market => const SvgGenImage.vec('lib/vectors/market.vec');
 
+  /// File path: lib/vectors/money.vec
+  SvgGenImage get money => const SvgGenImage.vec('lib/vectors/money.vec');
+
   /// File path: lib/vectors/party.vec
   SvgGenImage get party => const SvgGenImage.vec('lib/vectors/party.vec');
 
@@ -406,6 +413,7 @@ class $LibVectorsGen {
     like,
     logout,
     market,
+    money,
     party,
     person,
     profile,
