@@ -64,10 +64,10 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
           spacing: 4,
           mainAxisAlignment: .spaceBetween,
           children: [
-            Lottie.asset(Assets.lib.lottie.money, width: 36, height: 36, package: 'ui'),
+            Lottie.asset(Assets.lib.lottie.fireEmoji, width: 36, height: 36, package: 'ui'),
             Expanded(
               child: Column(
-                spacing: 2,
+                // spacing: 2,
                 crossAxisAlignment: .start,
                 children: [
                   Text(
@@ -84,7 +84,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                         overflow: .ellipsis,
                       ),
                       children: [
-                        TextSpan(text: 'Harbir do’st '),
+                        const TextSpan(text: 'Harbir do’st '),
                         TextSpan(
                           text: '1 000',
                           style: context.x.textStyle.w500s16.copyWith(

@@ -16,7 +16,7 @@ class PaymentCard extends StatelessWidget {
     this.backgroundColor,
     this.action,
     this.hasShadow = false,
-    this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 6, vertical: 8),
+    this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 8.5),
     super.key,
   });
 

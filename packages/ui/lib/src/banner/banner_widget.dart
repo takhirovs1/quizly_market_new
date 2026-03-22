@@ -90,8 +90,8 @@ class BannerWidget extends StatelessWidget {
             child: Row(
               children: [
                 if (!isFree)
-                  Lottie.asset(Assets.lib.lottie.money, width: 16, height: 16, package: 'ui')
-                // Assets.lib.vectors.money.svg(width: 16, height: 16, package: 'ui')
+                  // Lottie.asset(Assets.lib.lottie.money, width: 16, height: 16, package: 'ui')
+                Assets.lib.vectors.money.svg(width: 16, height: 16, package: 'ui')
                 else
                   const Icon(Icons.photo_library_outlined),
                 const SizedBox(width: 4),

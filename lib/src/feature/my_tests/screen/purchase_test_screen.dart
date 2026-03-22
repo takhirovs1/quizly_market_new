@@ -3,7 +3,6 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../state/purchase_test_screen_state.dart';
-import '../widgets/animated_referral_banner.dart';
 import '../widgets/my_test_item_widget.dart';
 import '../widgets/test_description_widget.dart';
 
@@ -23,15 +22,12 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
       title: context.x.l10n.buy,
     ),
     body: ListView(
-      padding: const .only(bottom: 16),
       children: [
         const SizedBox(height: 16),
         Padding(
           padding: const .symmetric(horizontal: 16),
           child: TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
         ),
-        const SizedBox(height: 22),
-        const Padding(padding: const .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
         const SizedBox(height: 28),
         SizedBox(
           height: 260,
@@ -87,8 +83,8 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             valueListenable: selectedPayment,
             builder: (context, payment, child) => PaymentCard(
               imagePadding: payment.id != 0
-                  ? const .symmetric(horizontal: 6, vertical: 14)
-                  : const .symmetric(horizontal: 6, vertical: 8),
+                  ? const .symmetric(horizontal: 5, vertical: 16.5)
+                  : const .symmetric(horizontal: 16, vertical: 8.5),
               hasShadow: true,
               title: payment.title,
               subtitle: payment.subtitle,
@@ -109,7 +105,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         ],
       ),
       child: Padding(
-        padding: const .symmetric(horizontal: 16, vertical: 12),
+        padding: const .only(left: 16, right: 16, bottom: 16),
         child: Row(
           children: [
             Expanded(
