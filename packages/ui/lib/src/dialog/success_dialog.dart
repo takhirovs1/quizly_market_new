@@ -39,7 +39,7 @@ class SuccessDialog extends StatelessWidget {
                   const SizedBox(height: 70),
                   Text(
                     title,
-                    style: context.x.textStyle.w700s28.copyWith(fontSize: 24, color: context.x.colors.primary),
+                    style: context.x.textStyle.sfW700s28.copyWith(fontSize: 24, color: context.x.colors.primary),
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -50,7 +50,7 @@ class SuccessDialog extends StatelessWidget {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: context.x.textStyle.w400s16.copyWith(color: context.x.colors.dialogText),
+                    style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.dialogText),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -73,8 +73,7 @@ class SuccessDialog extends StatelessWidget {
                             textAlign: TextAlign.center,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.x.textStyle.w700s16.copyWith(
-                              fontWeight: FontWeight.w600,
+                            style: context.x.textStyle.sfW500s16.copyWith(
                               fontSize: 17,
                               color: context.x.colors.bannerPriceText,
                             ),
@@ -98,11 +97,7 @@ class SuccessDialog extends StatelessWidget {
                             textAlign: TextAlign.center,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.x.textStyle.w700s16.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17,
-                              color: context.x.colors.white,
-                            ),
+                            style: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
                           ),
                         ),
                       ),
