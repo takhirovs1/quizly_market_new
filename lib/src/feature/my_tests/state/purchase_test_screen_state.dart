@@ -183,9 +183,9 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
       child: Center(
         child: SuccessDialog(
           title: 'Test sotib olingan!',
-          description: 'Test description Test description Test description Test description',
+          description: 'Testni istalgan vaqtda o’rganishingiz mumkin.',
           cancelButtonText: 'Chiqish',
-          successButtonText: 'Qayta urinish',
+          successButtonText: 'Kirish',
           onCancelButtonPressed: () => Navigator.pop(context),
           onSuccessButtonPressed: () => Navigator.pop(context),
         ),
