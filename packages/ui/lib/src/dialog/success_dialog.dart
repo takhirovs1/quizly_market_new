@@ -60,10 +60,12 @@ class SuccessDialog extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
-                            shadowColor: Colors.transparent,
+                            shadowColor: context.x.colors.transparent,
+                            overlayColor: context.x.colors.primary,
                             backgroundColor: context.x.colors.dialogCancelButton,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             padding: const EdgeInsets.all(14),
+                            fixedSize: const Size(double.infinity, 50),
                           ),
                           onPressed: onCancelButtonPressed,
                           child: Text(
@@ -83,10 +85,12 @@ class SuccessDialog extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
-                            shadowColor: Colors.transparent,
+                            shadowColor: context.x.colors.transparent,
+                            surfaceTintColor: context.x.colors.transparent,
                             backgroundColor: context.x.colors.bannerButton,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             padding: const EdgeInsets.all(14),
+                            fixedSize: const Size(double.infinity, 50),
                           ),
                           onPressed: onSuccessButtonPressed,
                           child: Text(

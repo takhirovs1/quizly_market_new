@@ -90,41 +90,53 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
               subtitle: payment.subtitle,
               image: Image.asset(payment.icon, package: 'ui', width: payment.type == .card ? 32 : 54),
               onTap: onSwitchPaymentPressed,
-              action: const Icon(Icons.unfold_more),
+              action: IconButton(onPressed: onSwitchPaymentPressed, icon: const Icon(Icons.unfold_more)),
             ),
           ),
         ),
       ],
     ),
-    bottomNavigationBar: DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.x.colors.scaffoldBackground,
-        borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
-        boxShadow: [
-          BoxShadow(color: context.x.colors.black.withValues(alpha: .078), offset: const Offset(0, 3), blurRadius: 30),
-        ],
-      ),
+    bottomNavigationBar: ColoredBox(
+      color: context.x.colors.dialogBackground,
       child: Padding(
-        padding: const .all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                test.price.formatUzs,
-                style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
-                textAlign: .center,
+        padding: .only(
+          bottom: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0.0,
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: context.x.colors.scaffoldBackground,
+            borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
+            boxShadow: [
+              BoxShadow(
+                color: context.x.colors.black.withValues(alpha: .078),
+                offset: const Offset(0, 3),
+                blurRadius: 30,
               ),
+            ],
+          ),
+          child: Padding(
+            padding: const .symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    test.price.formatUzs,
+                    style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
+                    textAlign: .center,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: CustomButton(
+                    borderRadius: 10,
+                    onTap: onBuyPressed,
+                    title: context.x.l10n.buy,
+                    textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: CustomButton(
-                borderRadius: 10,
-                onTap: onBuyPressed,
-                title: context.x.l10n.buy,
-                textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     ),

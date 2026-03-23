@@ -28,25 +28,21 @@ class CustomButton extends StatefulWidget {
 /// State for widget [CustomButton].
 class _CustomButtonState extends State<CustomButton> {
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: widget.onTap,
-    child: SizedBox(
-      width: double.infinity,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: widget.color ?? Theme.of(context).appColors.primary,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-        ),
-        child: Padding(
-          padding: const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 14),
-          child: Text(
-            widget.title,
-            style:
-                widget.textStyle ??
-                TextStyle(color: widget.textColor ?? Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
-            textAlign: TextAlign.center,
-          ),
-        ),
+  Widget build(BuildContext context) => FilledButton(
+    onPressed: widget.onTap,
+    style: FilledButton.styleFrom(
+      backgroundColor: widget.color ?? Theme.of(context).appColors.primary,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(widget.borderRadius)),
+      fixedSize: const Size(double.infinity, 50),
+    ),
+    child: Padding(
+      padding: const EdgeInsetsGeometry.symmetric(horizontal: 12, vertical: 8),
+      child: Text(
+        widget.title,
+        style:
+            widget.textStyle ??
+            TextStyle(color: widget.textColor ?? Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+        textAlign: TextAlign.center,
       ),
     ),
   );

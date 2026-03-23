@@ -74,6 +74,7 @@ dependencies:
   telegram_web_app: ^0.3.3
   expandable_page_view: ^1.2.1
   equatable: ^2.0.8
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:

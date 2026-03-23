@@ -95,7 +95,7 @@ class BannerWidget extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   price,
-                  style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
+                  style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(width: 8),
@@ -106,10 +106,9 @@ class BannerWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        InkWell(
-                          borderRadius: BorderRadius.circular(100),
-                          onTap: onShareButtonPressed,
-                          child: Assets.lib.vectors.share.svg(
+                        IconButton(
+                          onPressed: onShareButtonPressed,
+                          icon: Assets.lib.vectors.share.svg(
                             width: 24,
                             height: 24,
                             package: 'ui',
@@ -118,22 +117,25 @@ class BannerWidget extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
                               backgroundColor: context.x.colors.bannerPriceText,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: EdgeInsetsGeometry.zero,
+                              minimumSize: const Size(100, 36),
                             ),
                             onPressed: onBuyButtonPressed,
-                            child: Text(
-                              buyButtonText,
-                              style: context.x.textStyle.sfW500s16.copyWith(
-                                fontSize: 15,
-                                color: context.x.colors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              child: Text(
+                                buyButtonText,
+                                style: context.x.textStyle.sfW500s16.copyWith(
+                                  fontSize: 15,
+                                  color: context.x.colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),

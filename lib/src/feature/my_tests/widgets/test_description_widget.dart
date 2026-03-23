@@ -19,16 +19,16 @@ class TestDescriptionWidget extends StatelessWidget {
         spacing: 8,
         children: [
           Expanded(child: Text(test.title, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 20))),
-          GestureDetector(
-            onTap: onPressShare,
-            child: Assets.lib.vectors.share.svg(
+          IconButton(
+            onPressed: onPressShare,
+            icon: Assets.lib.vectors.share.svg(
               package: 'ui',
               colorFilter: .mode(ThemeColors.of(context).text, .srcATop),
             ),
           ),
-          GestureDetector(
-            onTap: onPressLike,
-            child: Icon(Icons.favorite_border, color: ThemeColors.of(context).text),
+          IconButton(
+            onPressed: onPressLike,
+            icon: Icon(Icons.favorite_border, color: ThemeColors.of(context).text),
           ),
         ],
       ),

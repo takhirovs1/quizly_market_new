@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ui/ui.dart';
 
@@ -71,7 +72,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                 crossAxisAlignment: .start,
                 children: [
                   Text(
-                    'Do’stlarni taklif qilish orqali bonus olish.',
+                    'Do‘st taklif qiling, bonus oling',
                     style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.black),
                     maxLines: 2,
                     overflow: .ellipsis,
@@ -104,10 +105,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
             ),
             IconButton(
               onPressed: () {},
-              icon: RotatedBox(
-                quarterTurns: 2,
-                child: Assets.lib.vectors.arrowBack.svg(colorFilter: .mode(context.x.colors.black, .srcIn)),
-              ),
+              icon: Icon(CupertinoIcons.chevron_right, color: context.x.colors.black),
             ),
           ],
         ),
