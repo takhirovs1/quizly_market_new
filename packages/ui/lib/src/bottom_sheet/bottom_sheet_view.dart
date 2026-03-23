@@ -40,7 +40,7 @@ class BottomSheetView extends StatelessWidget {
             crossAxisAlignment: headerCrossAxisAlignment,
             children: [
               if (isCenterTitle) Expanded(child: leading ?? const SizedBox.shrink()),
-              Text(title, style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+              Text(title, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18)),
               Expanded(
                 child: onClose == null
                     ? const SizedBox.shrink()

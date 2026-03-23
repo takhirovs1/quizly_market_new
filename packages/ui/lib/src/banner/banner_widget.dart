@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 import '../extension/context_extension.dart';
 import '../gen/assets.gen.dart';
@@ -90,10 +89,9 @@ class BannerWidget extends StatelessWidget {
             child: Row(
               children: [
                 if (!isFree)
-                  // Lottie.asset(Assets.lib.lottie.money, width: 16, height: 16, package: 'ui')
-                Assets.lib.vectors.money.svg(width: 16, height: 16, package: 'ui')
+                  Assets.lib.images.money.image(width: 16, height: 16, package: 'ui')
                 else
-                  const Icon(Icons.photo_library_outlined),
+                  Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui'),
                 const SizedBox(width: 4),
                 Text(
                   price,
@@ -129,11 +127,6 @@ class BannerWidget extends StatelessWidget {
                             onPressed: onBuyButtonPressed,
                             child: Text(
                               buyButtonText,
-                              // style: context.x.theme.textTheme.labelLarge?.copyWith(
-                              //   fontSize: 15,
-                              //   fontWeight: FontWeight.w600,
-                              //   color: context.x.colors.white,
-                              // ),
                               style: context.x.textStyle.sfW500s16.copyWith(
                                 fontSize: 15,
                                 color: context.x.colors.white,

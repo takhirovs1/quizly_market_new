@@ -48,6 +48,9 @@ class $LibImagesGen {
   /// File path: lib/images/default_banner.png
   AssetGenImage get defaultBanner => const AssetGenImage('lib/images/default_banner.png');
 
+  /// File path: lib/images/flexed_biceps.png
+  AssetGenImage get flexedBiceps => const AssetGenImage('lib/images/flexed_biceps.png');
+
   /// File path: lib/images/logo.png
   AssetGenImage get logo => const AssetGenImage('lib/images/logo.png');
 
@@ -57,11 +60,17 @@ class $LibImagesGen {
   /// File path: lib/images/memo.png
   AssetGenImage get memo => const AssetGenImage('lib/images/memo.png');
 
+  /// File path: lib/images/money.png
+  AssetGenImage get money => const AssetGenImage('lib/images/money.png');
+
   /// File path: lib/images/mustaqil.png
   AssetGenImage get mustaqil => const AssetGenImage('lib/images/mustaqil.png');
 
   /// File path: lib/images/party.png
   AssetGenImage get party => const AssetGenImage('lib/images/party.png');
+
+  /// File path: lib/images/party_popper.png
+  AssetGenImage get partyPopper => const AssetGenImage('lib/images/party_popper.png');
 
   /// File path: lib/images/payme.jpeg
   AssetGenImage get payme => const AssetGenImage('lib/images/payme.jpeg');
@@ -96,6 +105,9 @@ class $LibImagesGen {
   /// File path: lib/images/strong.png
   AssetGenImage get strong => const AssetGenImage('lib/images/strong.png');
 
+  /// File path: lib/images/successDialog.png
+  AssetGenImage get successDialog => const AssetGenImage('lib/images/successDialog.png');
+
   /// File path: lib/images/telegram_logo.png
   AssetGenImage get telegramLogo => const AssetGenImage('lib/images/telegram_logo.png');
 
@@ -113,11 +125,14 @@ class $LibImagesGen {
     click2,
     clickLogo,
     defaultBanner,
+    flexedBiceps,
     logo,
     logoPng,
     memo,
+    money,
     mustaqil,
     party,
+    partyPopper,
     payme,
     payme2,
     paymeBg,
@@ -129,6 +144,7 @@ class $LibImagesGen {
     robotResult,
     samandar,
     strong,
+    successDialog,
     telegramLogo,
     uzum,
     xazna,

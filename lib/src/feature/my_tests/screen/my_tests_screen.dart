@@ -30,8 +30,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
               title: context.x.l10n.youDontHaveAnyTestsYet,
               description: context.x.l10n.thereAreTestsOnaVarietyOfTopicsAvailableOnTheMarket,
             ),
-            const SizedBox(height: 22),
-            const AnimatedReferralBanner(),
+
             const SizedBox(height: 20),
             Row(children: [Text(context.x.l10n.tryItNow, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22))]),
             for (var i = 0; i < 1; i++)
@@ -45,6 +44,8 @@ class _MyTestsScreenState extends MyTestsScreenState {
                 onBuyButtonPressed: () {},
                 isFree: true,
               ),
+            const SizedBox(height: 22),
+            const AnimatedReferralBanner(),
             const SizedBox(height: 24),
             Text(context.x.l10n.recommendation, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22)),
             for (var i = 0; i < 4; i++)

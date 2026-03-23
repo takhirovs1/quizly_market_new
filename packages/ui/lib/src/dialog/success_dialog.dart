@@ -113,7 +113,7 @@ class SuccessDialog extends StatelessWidget {
           top: 0,
           left: 0,
           right: 0,
-          child: Assets.lib.vectors.successDialog.svg(width: 124, height: 124, package: 'ui'),
+          child: Assets.lib.images.successDialog.image(width: 124, height: 124, package: 'ui'),
         ),
       ],
     ),

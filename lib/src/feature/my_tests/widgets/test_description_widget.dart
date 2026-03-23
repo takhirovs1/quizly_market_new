@@ -32,8 +32,11 @@ class TestDescriptionWidget extends StatelessWidget {
           ),
         ],
       ),
-      Text(test.author, style: context.x.textStyle.w500s16.copyWith(color: context.x.colors.gray)),
-      Text(test.description, style: context.x.textStyle.w400s14.copyWith(color: context.x.colors.gray)),
+      Text(test.author, style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText)),
+      Text(
+        test.description,
+        style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
+      ),
     ],
   );
 }

@@ -70,8 +70,12 @@ class PaymentCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText.w700s18(title),
-                if (subtitle != null) AppText.w400s16(subtitle!, color: context.x.colors.gray),
+                Text(title, style: context.x.textStyle.sfW700s18),
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                  ),
               ],
             ),
             const Spacer(),

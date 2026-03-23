@@ -52,7 +52,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                   ],
                 ),
                 child: Padding(
-                  padding: const .symmetric(horizontal: 14, vertical: 12),
+                  padding: const .only(left: 14, right: 14, top: 12),
                   child: MyTestItemWidget(test: test.questions[index]),
                 ),
               ),
@@ -105,7 +105,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         ],
       ),
       child: Padding(
-        padding: const .only(left: 16, right: 16, bottom: 16),
+        padding: const .all(16),
         child: Row(
           children: [
             Expanded(
@@ -118,6 +118,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             const SizedBox(width: 16),
             Expanded(
               child: CustomButton(
+                borderRadius: 10,
                 onTap: onBuyPressed,
                 title: context.x.l10n.buy,
                 textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),

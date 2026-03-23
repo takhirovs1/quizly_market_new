@@ -72,27 +72,30 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                 children: [
                   Text(
                     'Do’stlarni taklif qilish orqali bonus olish.',
-                    style: context.x.textStyle.w500s16.copyWith(color: context.x.colors.black),
+                    style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.black),
                     maxLines: 2,
                     overflow: .ellipsis,
                   ),
                   RichText(
                     text: TextSpan(
-                      style: context.x.textStyle.w500s16.copyWith(
-                        color: context.x.colors.gray,
+                      style: context.x.textStyle.sfW500s16.copyWith(
+                        color: context.x.colors.bannerSecondaryText,
                         fontStyle: .normal,
                         overflow: .ellipsis,
                       ),
                       children: [
                         const TextSpan(text: 'Harbir do’st '),
                         TextSpan(
-                          text: '1 000',
-                          style: context.x.textStyle.w500s16.copyWith(
+                          text: ' 1 000 ',
+                          style: context.x.textStyle.sfW500s16.copyWith(
                             color: context.x.colors.primary,
                             fontWeight: .w700,
                           ),
                         ),
-                        const TextSpan(text: ' UZS'),
+                        TextSpan(
+                          text: ' UZS',
+                          style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                        ),
                       ],
                     ),
                   ),
