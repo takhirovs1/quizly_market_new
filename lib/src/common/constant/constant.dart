@@ -6,4 +6,5 @@ class Constant {
   static final appLink = (io.Platform.isIOS || io.Platform.isMacOS) ? '' : '';
 
   static const privacyPolicyUrl = '';
+  static const packageUi = 'ui';
 }

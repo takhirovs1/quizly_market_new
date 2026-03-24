@@ -17,6 +17,11 @@ extension StringX on String {
 
   String ellipsis([int len = 10, bool showDot = true]) =>
       length > len ? '${substring(0, len)}${showDot ? '...' : ''} ' : this;
+
+  String toUZSString() {
+    final s = int.tryParse(this) ?? 0;
+    return '${s.abs().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]} ')} so\'m';
+  }
 }
 
 extension StringNullX on String? {

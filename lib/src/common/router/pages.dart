@@ -6,6 +6,7 @@ import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/screen/onboarding_screen.dart';
 import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
+import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
 
 enum Routes with OctopusRoute {
@@ -14,7 +15,8 @@ enum Routes with OctopusRoute {
   onboarding('onboarding', title: 'Onboarding'),
   selectLanguage('selectLanguage', title: 'Select Language'),
   moreRecommendation('moreRecommendation', title: 'More Recommendation'),
-  purchaseTest('purchaseTest', title: 'PurchaseTest');
+  purchaseTest('purchaseTest', title: 'PurchaseTest'),
+  payment('payment', title: 'Payment');
 
   const Routes(this.name, {this.title});
 
@@ -32,5 +34,6 @@ enum Routes with OctopusRoute {
     .selectLanguage => const SelectLanguage(),
     .moreRecommendation => const MoreRecommendationScreen(),
     .purchaseTest => const PurchaseTestScreen(),
+    .payment => const PaymentScreen(),
   };
 }
