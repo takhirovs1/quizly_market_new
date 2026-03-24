@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../gen/fonts.gen.dart';
 
-/// Typography — barcha matn stillari [FontFamily.nunito] va [FontFamily.sFProDisplay] asosida.
+/// Typography — barcha matn stillari [FontFamily.sFProDisplay] va [FontFamily.sFProDisplay] asosida.
 ///
 /// **AppTextStyle enum:** displayLarge, displayMedium, displaySmall, headlineLarge,
 /// headlineBold, headlineMedium, headlineSmall, titleLarge, titleBold18, titleBold,
 /// titleSemiBold16, bodyLarge18, titleMedium, titleSmall, bodyLarge, bodyMedium,
 /// bodySmall, labelLarge, labelMedium, labelSmall, small.
 ///
-/// **AppTypography (context.x.textStyle) variantlari (Nunito):**
+/// **AppTypography (context.x.textStyle) variantlari (sFProDisplay):**
 /// | Variant   | Size | Weight | Izoh            |
 /// |-----------|------|--------|------------------|
 /// | w400s57   | 57   | 400    | Display Large    |
@@ -60,12 +60,12 @@ import '../gen/fonts.gen.dart';
 /// {@template AppTextStyle}
 /// {@endtemplate}
 enum AppTextStyle {
-  // ─── Nunito ───────────────────────────────────────────────────────────────
+  // ─── sFProDisplay ───────────────────────────────────────────────────────────────
 
   /// Display Large 57px w400
   displayLarge(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 57,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -78,7 +78,7 @@ enum AppTextStyle {
   /// Display Medium 45px w400
   displayMedium(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 45,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -91,7 +91,7 @@ enum AppTextStyle {
   /// Display Small 36px w400
   displaySmall(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 36,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -104,7 +104,7 @@ enum AppTextStyle {
   /// Headline Large 32px w400
   headlineLarge(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 32,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -117,7 +117,7 @@ enum AppTextStyle {
   /// Headline Bold 28px w700
   headlineBold(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 28,
       fontWeight: FontWeight.w700,
       fontStyle: FontStyle.normal,
@@ -130,7 +130,7 @@ enum AppTextStyle {
   /// Headline Medium 28px w400
   headlineMedium(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 28,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -143,7 +143,7 @@ enum AppTextStyle {
   /// Headline Small 24px w400
   headlineSmall(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 24,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -156,7 +156,7 @@ enum AppTextStyle {
   /// Title Large 22px w400
   titleLarge(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 22,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -169,7 +169,7 @@ enum AppTextStyle {
   /// Title Bold 18px w700
   titleBold18(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 18,
       fontWeight: FontWeight.w700,
       fontStyle: FontStyle.normal,
@@ -182,7 +182,7 @@ enum AppTextStyle {
   /// Title Bold 16px w700
   titleBold(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.w700,
       fontStyle: FontStyle.normal,
@@ -195,7 +195,7 @@ enum AppTextStyle {
   /// Title SemiBold 16px w600
   titleSemiBold16(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.w600,
       fontStyle: FontStyle.normal,
@@ -208,7 +208,7 @@ enum AppTextStyle {
   /// Body Large 18px w400
   bodyLarge18(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 18,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -221,7 +221,7 @@ enum AppTextStyle {
   /// Title Medium 16px w500
   titleMedium(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -234,7 +234,7 @@ enum AppTextStyle {
   /// Title Small 14px w500
   titleSmall(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 14,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -247,7 +247,7 @@ enum AppTextStyle {
   /// Body Large 16px w400
   bodyLarge(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -260,7 +260,7 @@ enum AppTextStyle {
   /// Body Medium 14px w400
   bodyMedium(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 14,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -273,7 +273,7 @@ enum AppTextStyle {
   /// Body Small 12px w400
   bodySmall(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 12,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -286,7 +286,7 @@ enum AppTextStyle {
   /// Label Large 14px w500
   labelLarge(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 14,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -299,7 +299,7 @@ enum AppTextStyle {
   /// Label Medium 12px w500
   labelMedium(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 12,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -312,7 +312,7 @@ enum AppTextStyle {
   /// Label Small 11px w500
   labelSmall(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 11,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -325,7 +325,7 @@ enum AppTextStyle {
   /// Small 10px w400
   small(
     TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 10,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -624,7 +624,7 @@ enum AppTextStyle {
 class AppTypography extends ThemeExtension<AppTypography> {
   /// {@macro typography}
   const AppTypography({
-    // ─── Nunito ──────────────────────────────────────────────────────────────
+    // ─── sFProDisplay ──────────────────────────────────────────────────────────────
     required this.w400s57,
     required this.w400s45,
     required this.w400s36,
@@ -676,7 +676,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
 
   /// {@macro typography}
   static AppTypography textThemeLight = AppTypography(
-    // Nunito
+    // sFProDisplay
     w400s57: byDefault.w400s57.copyWith(color: lightTextColor),
     w400s45: byDefault.w400s45.copyWith(color: lightTextColor),
     w400s36: byDefault.w400s36.copyWith(color: lightTextColor),
@@ -724,7 +724,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
 
   /// {@macro typography}
   static AppTypography textThemeDark = AppTypography(
-    // Nunito
+    // sFProDisplay
     w400s57: byDefault.w400s57.copyWith(color: darkTextColor),
     w400s45: byDefault.w400s45.copyWith(color: darkTextColor),
     w400s36: byDefault.w400s36.copyWith(color: darkTextColor),
@@ -772,9 +772,9 @@ class AppTypography extends ThemeExtension<AppTypography> {
 
   /// {@macro typography}
   static const AppTypography byDefault = AppTypography(
-    // ── Nunito ──
+    // ── sFProDisplay ──
     w400s57: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 57,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -782,7 +782,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s45: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 45,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -790,7 +790,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s36: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 36,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -798,7 +798,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s32: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 32,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -806,7 +806,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w700s28: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 28,
       fontWeight: FontWeight.w700,
       fontStyle: FontStyle.normal,
@@ -814,7 +814,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s28: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 28,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -822,7 +822,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s24: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 24,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -830,7 +830,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w500s22: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 22,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -838,7 +838,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w700s18: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 18,
       fontWeight: FontWeight.w700,
       fontStyle: FontStyle.normal,
@@ -846,7 +846,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w600s16: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.w600,
       fontStyle: FontStyle.normal,
@@ -854,7 +854,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w700s16: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.w700,
       fontStyle: FontStyle.normal,
@@ -862,7 +862,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w500s16: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -870,7 +870,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w500s14: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 14,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -878,7 +878,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s18: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 18,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -886,7 +886,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s16: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 16,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -894,7 +894,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s14: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 14,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -902,7 +902,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s12: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 12,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -910,7 +910,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w500s12: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 12,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -918,7 +918,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w500s11: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 11,
       fontWeight: FontWeight.w500,
       fontStyle: FontStyle.normal,
@@ -926,7 +926,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       package: 'ui',
     ),
     w400s10: TextStyle(
-      fontFamily: FontFamily.nunito,
+      fontFamily: FontFamily.sFProDisplay,
       fontSize: 10,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -1096,7 +1096,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
     ),
   );
 
-  // ─── Nunito fields ─────────────────────────────────────────────────────────
+  // ─── sFProDisplay fields ─────────────────────────────────────────────────────────
 
   /// Display Large 57px w400
   final TextStyle w400s57;
@@ -1225,7 +1225,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
 
   @override
   ThemeExtension<AppTypography> copyWith({
-    // Nunito
+    // sFProDisplay
     TextStyle? w400s57,
     TextStyle? w400s45,
     TextStyle? w400s36,
@@ -1315,7 +1315,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
       other is! AppTypography
       ? this
       : AppTypography(
-          // Nunito
+          // sFProDisplay
           w400s57: TextStyle.lerp(w400s57, other.w400s57, t) ?? w400s57,
           w400s45: TextStyle.lerp(w400s45, other.w400s45, t) ?? w400s45,
           w400s36: TextStyle.lerp(w400s36, other.w400s36, t) ?? w400s36,
@@ -1364,7 +1364,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
     if (identical(this, other)) return true;
 
     return
-    // Nunito
+    // sFProDisplay
     other.w400s57 == w400s57 &&
         other.w400s45 == w400s45 &&
         other.w400s36 == w400s36 &&
@@ -1410,7 +1410,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
 
   @override
   int get hashCode =>
-      // Nunito
+      // sFProDisplay
       w400s57.hashCode ^
       w400s45.hashCode ^
       w400s36.hashCode ^

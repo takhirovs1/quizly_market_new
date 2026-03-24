@@ -37,50 +37,56 @@ class BannerWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: context.x.textStyle.sfW400s18.copyWith(
-                    color: context.x.colors.bannerText,
-                    fontWeight: FontWeight.w500,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: context.x.textStyle.sfW400s18.copyWith(
+                        color: context.x.colors.bannerText,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    companyName,
-                    style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        companyName,
+                        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 2),
-          Text(
-            description,
-            style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          Row(
-            children: [
-              Assets.lib.images.memo.image(width: 16, height: 16, package: 'ui'),
-              const SizedBox(width: 4),
+              const SizedBox(height: 2),
               Text(
-                questionAmount,
+                description,
                 style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  Assets.lib.images.memo.image(width: 16, height: 16, package: 'ui'),
+                  const SizedBox(width: 4),
+                  Text(
+                    questionAmount,
+                    style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
+                  ),
+                ],
               ),
             ],
           ),
@@ -122,11 +128,10 @@ class BannerWidget extends StatelessWidget {
                               backgroundColor: context.x.colors.bannerPriceText,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               padding: EdgeInsetsGeometry.zero,
-                              minimumSize: const Size(100, 36),
                             ),
                             onPressed: onBuyButtonPressed,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               child: Text(
                                 buyButtonText,
                                 style: context.x.textStyle.sfW500s16.copyWith(

@@ -14,7 +14,10 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: QuizAppBar(title: context.x.l10n.quizlyMarket),
+    appBar: QuizAppBar(
+      title: context.x.l10n.quizlyMarket,
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+    ),
     body: Column(
       crossAxisAlignment: .stretch,
       children: [
@@ -40,59 +43,15 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                 package: 'ui',
                 width: 24,
                 height: 24,
-                colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                colorFilter: .mode(context.x.colors.primary, .srcATop),
               ),
-              InkWell(
-                onTap: () => showModalBottomSheet<void>(
-                  context: context,
-                  builder: (context) => BottomSheetView(
-                    backgroundColor: context.x.colors.bottomSheetBackground,
-                    onClose: () => Navigator.pop(context),
-                    isCenterTitle: false,
-                    title: context.x.l10n.sort,
-                    child: Padding(
-                      padding: const .symmetric(horizontal: 16, vertical: 20),
-                      child: Column(
-                        crossAxisAlignment: .stretch,
-                        spacing: 10,
-                        children: [
-                          for (var i = 0; i < 2; i++)
-                            DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: context.x.colors.white,
-                                borderRadius: const .all(.circular(16)),
-                              ),
-                              child: Padding(
-                                padding: const .symmetric(horizontal: 16, vertical: 24),
-                                child: Row(
-                                  mainAxisAlignment: .spaceBetween,
-                                  children: [
-                                    Text(
-                                      context.x.l10n.recentlyAdded,
-                                      style: context.x.textStyle.sfW400s14.copyWith(fontSize: 18),
-                                    ),
-                                    Assets.lib.vectors.checkCircle.svg(package: 'ui', width: 24, height: 24),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 10),
-                          CustomButton(
-                            onTap: () {},
-                            color: context.x.colors.primary,
-                            textColor: context.x.colors.white,
-                            title: context.x.l10n.sort,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              GestureDetector(
+                onTap: onSortPressed,
                 child: Assets.lib.vectors.sort.svg(
                   package: 'ui',
                   width: 24,
                   height: 24,
-                  colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                  colorFilter: .mode(context.x.colors.primary, .srcATop),
                 ),
               ),
             ],

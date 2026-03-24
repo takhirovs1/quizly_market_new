@@ -33,6 +33,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/macos/Flutter/ephemeral/flutter_export_environment.sh
+/macos/Flutter/ephemeral/Flutter-Generated.xcconfig
 
 # Symbolication related
 app.*.symbols
