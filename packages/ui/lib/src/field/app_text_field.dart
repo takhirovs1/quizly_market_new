@@ -124,7 +124,7 @@ class _AppTextFieldState extends AppTextFieldController {
                 controller: widget.controller,
                 keyboardType: widget.keyboardType,
                 textInputAction: widget.textInputAction,
-                style: Theme.of(context).appTextStyles.w500s16,
+                style: Theme.of(context).appTextStyles.sfW500s16,
                 onFieldSubmitted: widget.onFieldSubmitted,
                 textCapitalization: TextCapitalization.none,
                 validator: widget.validator,

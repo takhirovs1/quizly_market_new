@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.0+34',
+    representation: r'1.0.0+37',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.0+34',
+    canonical: r'1.0.0+37',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'34'],
+    build: <String>[r'37'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
     3,
-    24,
-    12,
-    8,
-    19,
-    229,
-    952,
+    17,
+    17,
+    1,
+    7,
+    259,
+    562,
   );
 
   /// Name
@@ -444,11 +444,16 @@ sealed class Pubspec {
     'firebase_messaging': r'^16.1.1',
     'firebase_remote_config': r'^6.1.4',
     'firebase_crashlytics': r'^5.0.7',
+    'sign_in_with_apple': r'^7.0.1',
+    'google_sign_in': r'^7.2.0',
+    'firebase_auth': r'^6.1.4',
     'flutter_local_notifications': r'^20.1.0',
     'cupertino_icons': r'^1.0.8',
     'octopus': r'^0.0.9',
     'telegram_web_app': r'^0.3.3',
     'expandable_page_view': r'^1.2.1',
+    'equatable': r'^2.0.8',
+    'lottie': r'^3.3.2',
   };
 
   /// Developer dependencies

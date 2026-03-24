@@ -16,7 +16,7 @@ class PaymentCard extends StatelessWidget {
     this.backgroundColor,
     this.action,
     this.hasShadow = false,
-    this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 6, vertical: 8),
+    this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 8.5),
     super.key,
   });
 
@@ -70,8 +70,12 @@ class PaymentCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText.w700s18(title),
-                if (subtitle != null) AppText.w400s14(subtitle!, color: context.x.colors.gray),
+                Text(title, style: context.x.textStyle.sfW700s18),
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                  ),
               ],
             ),
             const Spacer(),

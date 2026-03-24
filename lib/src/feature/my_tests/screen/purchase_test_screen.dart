@@ -17,7 +17,10 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: QuizAppBar(title: context.x.l10n.buy),
+    appBar: QuizAppBar(
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+      title: context.x.l10n.buy,
+    ),
     body: ListView(
       children: [
         const SizedBox(height: 16),
@@ -49,7 +52,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                   ],
                 ),
                 child: Padding(
-                  padding: const .symmetric(horizontal: 14, vertical: 12),
+                  padding: const .only(left: 14, right: 14, top: 12),
                   child: MyTestItemWidget(test: test.questions[index]),
                 ),
               ),
@@ -71,7 +74,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         const SizedBox(height: 20),
         Padding(
           padding: const .symmetric(horizontal: 16),
-          child: Text(context.x.l10n.paymentType, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22)),
+          child: Text(context.x.l10n.paymentType, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18)),
         ),
         const SizedBox(height: 8),
         Padding(
@@ -80,43 +83,60 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
             valueListenable: selectedPayment,
             builder: (context, payment, child) => PaymentCard(
               imagePadding: payment.id != 0
-                  ? const .symmetric(horizontal: 6, vertical: 14)
-                  : const .symmetric(horizontal: 6, vertical: 8),
+                  ? const .symmetric(horizontal: 5, vertical: 16.5)
+                  : const .symmetric(horizontal: 16, vertical: 8.5),
               hasShadow: true,
               title: payment.title,
               subtitle: payment.subtitle,
               image: Image.asset(payment.icon, package: 'ui', width: payment.type == .card ? 32 : 54),
               onTap: onSwitchPaymentPressed,
-              action: const Icon(Icons.unfold_more),
+              action: IconButton(onPressed: onSwitchPaymentPressed, icon: const Icon(Icons.unfold_more)),
             ),
           ),
         ),
       ],
     ),
-    bottomNavigationBar: DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.x.colors.scaffoldBackground,
-        borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
-        boxShadow: [
-          BoxShadow(color: context.x.colors.black.withValues(alpha: .078), offset: const Offset(0, 3), blurRadius: 30),
-        ],
-      ),
+    bottomNavigationBar: ColoredBox(
+      color: context.x.colors.dialogBackground,
       child: Padding(
-        padding: const .symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                test.price.formatUzs,
-                style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
-                textAlign: .center,
+        padding: .only(
+          bottom: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0.0,
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: context.x.colors.scaffoldBackground,
+            borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
+            boxShadow: [
+              BoxShadow(
+                color: context.x.colors.black.withValues(alpha: .078),
+                offset: const Offset(0, 3),
+                blurRadius: 30,
               ),
+            ],
+          ),
+          child: Padding(
+            padding: const .symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    test.price.formatUzs,
+                    style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
+                    textAlign: .center,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: CustomButton(
+                    borderRadius: 10,
+                    onTap: onBuyPressed,
+                    title: context.x.l10n.buy,
+                    textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: CustomButton(onTap: onBuyPressed, title: context.x.l10n.buy),
-            ),
-          ],
+          ),
         ),
       ),
     ),

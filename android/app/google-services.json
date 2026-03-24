@@ -12,7 +12,20 @@
           "package_name": "com.quizly.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "568369386495-umvco3b8jgp3l3bvdrmh7aj6q35drjsh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quizly.app",
+            "certificate_hash": "14d8b710a878d2df1234f937954d0b1ca2ceba95"
+          }
+        },
+        {
+          "client_id": "568369386495-mhssl36boosa0qjksku66rr9rngk2lvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAWiCeNXuZh7skW7F9-pWWTt2TABs15IwQ"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "568369386495-mhssl36boosa0qjksku66rr9rngk2lvm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "568369386495-atugvfvfqo27nnqr96p2ko26i95o73o2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quizly.app"
+              }
+            }
+          ]
         }
       }
     }

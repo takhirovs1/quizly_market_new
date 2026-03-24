@@ -2,7 +2,7 @@ name: quizly_market
 description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+27
+version: 1.0.0+35
 
 environment:
   sdk: ^3.10.9
@@ -60,6 +60,10 @@ dependencies:
   firebase_remote_config: ^6.1.4
   firebase_crashlytics: ^5.0.7
 
+  sign_in_with_apple: ^7.0.1
+  google_sign_in: ^7.2.0
+  firebase_auth: ^6.1.4
+
   # notifications
   flutter_local_notifications: ^20.1.0
 
@@ -69,6 +73,7 @@ dependencies:
   octopus: ^0.0.9
   telegram_web_app: ^0.3.3
   expandable_page_view: ^1.2.1
+  equatable: ^2.0.8
 
 dev_dependencies:
   flutter_test:
@@ -82,7 +87,7 @@ dev_dependencies:
   # dart run flutter_launcher_icons -f flutter_launcher_icons.yaml
   # flutter_launcher_icons: ^0.14.4
   # dart run flutter_native_splash:create --path=flutter_native_splash.yaml
-  # flutter_native_splash: ^2.4.7
+  flutter_native_splash: ^2.4.7
 
 flutter:
   generate: true

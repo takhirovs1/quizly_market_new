@@ -18,22 +18,25 @@ class TestDescriptionWidget extends StatelessWidget {
         crossAxisAlignment: .start,
         spacing: 8,
         children: [
-          Expanded(child: Text(test.title, style: context.x.textStyle.w700s16.copyWith(fontSize: 22))),
-          GestureDetector(
-            onTap: onPressShare,
-            child: Assets.lib.vectors.share.svg(
+          Expanded(child: Text(test.title, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 20))),
+          IconButton(
+            onPressed: onPressShare,
+            icon: Assets.lib.vectors.share.svg(
               package: 'ui',
-              colorFilter: ColorFilter.mode(ThemeColors.of(context).text, BlendMode.srcATop),
+              colorFilter: .mode(ThemeColors.of(context).text, .srcATop),
             ),
           ),
-          GestureDetector(
-            onTap: onPressLike,
-            child: Icon(Icons.favorite_border, color: ThemeColors.of(context).text),
+          IconButton(
+            onPressed: onPressLike,
+            icon: Icon(Icons.favorite_border, color: ThemeColors.of(context).text),
           ),
         ],
       ),
-      Text(test.author, style: context.x.textStyle.w500s16.copyWith(color: context.x.colors.gray)),
-      Text(test.description, style: context.x.textStyle.w400s14.copyWith(color: context.x.colors.gray)),
+      Text(test.author, style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText)),
+      Text(
+        test.description,
+        style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
+      ),
     ],
   );
 }

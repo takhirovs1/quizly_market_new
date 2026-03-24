@@ -107,6 +107,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   }
 
   Future<void> onSwitchPaymentPressed() async {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
     final result = await showModalBottomSheet<PaymentModel>(
       context: context,
       isScrollControlled: true,
@@ -130,8 +131,8 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                     PaymentCard(
                       hasShadow: true,
                       imagePadding: isSelected?.id != 0
-                          ? const .symmetric(horizontal: 6, vertical: 14)
-                          : const .symmetric(horizontal: 6, vertical: 8),
+                          ? const .symmetric(horizontal: 5, vertical: 16.5)
+                          : const .symmetric(horizontal: 16, vertical: 8.5),
                       title: isSelected!.title,
                       subtitle: isSelected.subtitle,
                       image: Image.asset(isSelected.icon, package: 'ui', width: isSelected.type == .card ? 32 : 54),
@@ -144,7 +145,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                         padding: const .only(bottom: 8),
                         child: PaymentCard(
                           hasShadow: true,
-                          imagePadding: const .symmetric(horizontal: 6, vertical: 14),
+                          imagePadding: const .symmetric(horizontal: 5, vertical: 16.5),
                           title: payment.title,
                           image: Image.asset(payment.icon, package: 'ui', width: 54),
                           onTap: () => Navigator.pop<PaymentModel>(ctx, payment),
@@ -176,23 +177,31 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     }
   }
 
-  void onBuyPressed() => showDialog<void>(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: context.x.colors.transparent,
-      child: Center(
-        child: SuccessDialog(
-          title: 'Test sotib olingan!',
-          description: 'Test description Test description Test description Test description',
-          cancelButtonText: 'Chiqish',
-          successButtonText: 'Qayta urinish',
-          onCancelButtonPressed: () => Navigator.pop(context),
-          onSuccessButtonPressed: () => Navigator.pop(context),
+  void onBuyPressed() {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    showDialog<void>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: context.x.colors.transparent,
+        child: Center(
+          child: SuccessDialog(
+            title: 'Test sotib olindi!',
+            description: 'Testni istalgan vaqtda o’rganishingiz mumkin.',
+            cancelButtonText: 'Chiqish',
+            successButtonText: 'Kirish',
+            onCancelButtonPressed: () => Navigator.pop(context),
+            onSuccessButtonPressed: () => Navigator.pop(context),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
-  void onPressLike() {}
-  void onPressShare() {}
+  void onPressLike() {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+  }
+
+  void onPressShare() {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+  }
 }

@@ -1,6 +1,8 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
+import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/screen/onboarding_screen.dart';
@@ -8,6 +10,7 @@ import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
+import '../extension/context_extension.dart';
 
 enum Routes with OctopusRoute {
   login('login', title: 'Login'),
@@ -28,7 +31,10 @@ enum Routes with OctopusRoute {
 
   @override
   Widget builder(BuildContext context, OctopusState state, OctopusNode node) => switch (this) {
-    .login => const LoginScreen(),
+    .login => BlocProvider(
+      create: (_) => AuthCubit(authenticationRepository: context.x.dependencies.repository.authenticationRepository),
+      child: const LoginScreen(),
+    ),
     .home => const HomeScreen(),
     .onboarding => const OnboardingScreen(),
     .selectLanguage => const SelectLanguage(),
