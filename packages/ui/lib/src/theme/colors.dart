@@ -87,6 +87,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // cardBackground2
     required this.cardBackground2,
+
+    // text field background
+    required this.textFieldBackground,
   });
 
   factory ThemeColors.of(BuildContext context) {
@@ -254,6 +257,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// cardBackground2 light[0xffFFFFFF] dark[0xff1E293B]
   final Color cardBackground2;
 
+  /// text field background color light[0xffF3F4F6] dark[0xff1E293B]
+  final Color textFieldBackground;
+
   /// The default light theme colors.
   static const light = ThemeColors(
     error: Color(0xFFFF2F22),
@@ -336,6 +342,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // cardBackground2
     cardBackground2: Color(0xffFFFFFF),
+
+    // text field background
+    textFieldBackground: Color(0xffF3F4F6),
   );
 
   /// The default dark theme colors.
@@ -420,6 +429,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // cardBackground2
     cardBackground2: Color(0xffFFFFFF),
+
+    // text field background
+    textFieldBackground: Color(0xff1E293B),
   );
 
   @override
@@ -502,6 +514,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // cardBackground2
     Color? cardBackground2,
+
+    // text field background
+    Color? textFieldBackground,
   }) => ThemeColors(
     error: error ?? this.error,
     onError: onError ?? this.onError,
@@ -581,6 +596,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // cardBackground2
     cardBackground2: cardBackground2 ?? this.cardBackground2,
+
+    // text field background
+    textFieldBackground: textFieldBackground ?? this.textFieldBackground,
   );
 
   @override
@@ -669,6 +687,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
           // cardBackground2
           cardBackground2: Color.lerp(cardBackground2, other.cardBackground2, t)!,
+
+          // text field background
+          textFieldBackground: Color.lerp(textFieldBackground, other.textFieldBackground, t)!,
         );
 
   @override

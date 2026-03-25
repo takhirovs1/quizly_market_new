@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -82,29 +81,29 @@ class _CustomPageViewState extends State<CustomPageView> {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      InkWell(
-        onTap: widget.onShowMore,
-        child: Padding(
-          padding: const .symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              Text(
-                widget.title,
-                style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
-              ),
-              Assets.lib.vectors.chevronRight.svg(
+      Padding(
+        padding: const .symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            Text(
+              widget.title,
+              style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
+            ),
+            GestureDetector(
+              onTap: widget.onShowMore,
+              child: Assets.lib.vectors.chevronRight.svg(
                 package: 'ui',
                 width: 24,
                 height: 24,
                 colorFilter: .mode(context.x.colors.bannerText, .srcATop),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       SizedBox(
-        height: 144,
+        height: 158,
         child: Stack(
           children: [
             ListView.separated(

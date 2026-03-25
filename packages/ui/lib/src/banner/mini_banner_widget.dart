@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 import '../extension/context_extension.dart';
 import '../gen/assets.gen.dart';
@@ -75,9 +74,9 @@ class MiniBannerWidget extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Row(
+              spacing: 4,
               children: [
-                Lottie.asset(Assets.lib.lottie.money, width: 16, height: 16, package: 'ui'),
-                const SizedBox(width: 4),
+                Assets.lib.images.money.image(width: 16, height: 16, package: 'ui'),
                 Expanded(
                   child: Text(
                     price,
