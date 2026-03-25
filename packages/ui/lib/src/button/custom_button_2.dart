@@ -4,7 +4,7 @@ import '../extension/context_extension.dart';
 
 class CustomButton2 extends StatelessWidget {
   const CustomButton2({
-    required this.size,
+    required this.width,
     required this.onRightPressed,
     required this.rightText,
     this.leftButtonType = ButtonType.active,
@@ -19,7 +19,7 @@ class CustomButton2 extends StatelessWidget {
   final ButtonType rightButtonType;
   final String? leftText;
   final String rightText;
-  final Size size;
+  final double width;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -40,7 +40,7 @@ class CustomButton2 extends StatelessWidget {
                     : context.x.colors.gray.withValues(alpha: 0.1),
                 elevation: 0,
                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                fixedSize: size,
+                fixedSize: Size(width, 50),
               ),
               onPressed: leftButtonType != ButtonType.disabled ? onLeftPressed : null,
               child: Text(
@@ -63,17 +63,19 @@ class CustomButton2 extends StatelessWidget {
                   ? context.x.colors.error
                   : context.x.colors.gray.withValues(alpha: 0.1),
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-              fixedSize: size,
+              fixedSize: Size(width, 50),
             ),
             onPressed: rightButtonType != ButtonType.disabled ? onRightPressed : null,
-            child: Text(
-              rightText,
-              style: context.x.textStyle.sfW500s16.copyWith(
-                color: context.x.colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 17,
+            child: Center(
+              child: Text(
+                rightText,
+                style: context.x.textStyle.sfW500s16.copyWith(
+                  color: context.x.colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
         ),

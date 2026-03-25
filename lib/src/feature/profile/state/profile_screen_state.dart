@@ -60,7 +60,9 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onMyCardsPressed() {}
 
-  void onPaymentHistoryPressed() {}
+  void onPaymentHistoryPressed() {
+    context.octopus.pushNamed(Routes.paymentHistory.name);
+  }
 
   void onPromoCodesPressed() {}
 
@@ -143,7 +145,10 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     context.octopus.pushNamed(Routes.payment.name);
   }
 
-  void onReferralPressed() {}
+  void onReferralPressed() {
+    context.octopus.pushNamed(Routes.referral.name);
+  }
+
   void onArchivedTestsPressed() {}
   void onTeacherPressed() {}
   void onGoogleConnectPressed() {}

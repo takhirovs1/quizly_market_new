@@ -34,7 +34,7 @@ class _PaymentScreenState extends PaymentScreenState {
           Center(
             child: Text(
               context.x.l10n.topUpUserBalance,
-              style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white),
+              style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white, fontSize: 24),
             ),
           ),
         ],
@@ -61,7 +61,7 @@ class _PaymentScreenState extends PaymentScreenState {
               keyboardType: .number,
               focusNode: amountFocusNode,
               controller: amountController,
-              style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.black),
+              style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.black),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(7),
@@ -191,7 +191,7 @@ class _PaymentScreenState extends PaymentScreenState {
                   ),
                   Text(
                     context.x.l10n.reportErrorAbout,
-                    style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.error, fontWeight: .w700),
+                    style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.error, fontSize: 14),
                   ),
                 ],
               ),
@@ -211,7 +211,7 @@ class _PaymentScreenState extends PaymentScreenState {
       child: ListenableBuilder(
         listenable: .merge([selectedAmount, selectedPayment]),
         builder: (context, child) => CustomButton2(
-          size: Size(context.x.width, 50),
+          width: context.x.width,
           onRightPressed: () {
             //onTopUpButtonPressed,
           },

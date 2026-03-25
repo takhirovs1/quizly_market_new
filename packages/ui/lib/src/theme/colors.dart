@@ -30,6 +30,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     required this.transparent,
     required this.white,
     required this.green,
+    required this.appleGreen,
+    required this.orange,
 
     // Widget-specific colors
     required this.buttonBorder,
@@ -157,6 +159,12 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// Green color light[0xFF099250] dark[0xFF099250]
   final Color green;
 
+  /// Apple Green color light[0xFF34C759] dark[0xFF34C759]
+  final Color appleGreen;
+
+  /// Orange color light[0xFFF97316] dark[0xFFF97316]
+  final Color orange;
+
   /// Button border color light[0xFFE1EBF0] dark[0xFF41484C]
   final Color buttonBorder;
 
@@ -269,6 +277,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     transparent: Color(0x00000000),
     white: Color(0xFFF8F9FA),
     green: Color(0xFF099250),
+    appleGreen: Color(0xFF34C759),
+    orange: Color(0xFFF97316),
 
     // Widget-specific colors
     buttonBorder: Color(0xFFE1EBF0),
@@ -351,6 +361,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     transparent: Color(0x00000000),
     white: Color(0xFFF8F9FA),
     green: Color(0xFF099250),
+    appleGreen: Color(0xFF34C759),
+    orange: Color(0xFFF97316),
 
     // Widget-specific colors
     buttonBorder: Color(0xFF41484C),
@@ -433,6 +445,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     Color? transparent,
     Color? white,
     Color? green,
+    Color? appleGreen,
+    Color? orange,
 
     // Widget-specific colors
     Color? buttonBorder,
@@ -510,6 +524,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     transparent: transparent ?? this.transparent,
     white: white ?? this.white,
     green: green ?? this.green,
+    appleGreen: appleGreen ?? this.appleGreen,
+    orange: orange ?? this.orange,
 
     // Widget-specific colors
     buttonBorder: buttonBorder ?? this.buttonBorder,
@@ -592,6 +608,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
           transparent: Color.lerp(transparent, other.transparent, t)!,
           white: Color.lerp(white, other.white, t)!,
           green: Color.lerp(green, other.green, t)!,
+          appleGreen: Color.lerp(appleGreen, other.appleGreen, t)!,
+          orange: Color.lerp(orange, other.orange, t)!,
 
           // Widget-specific colors
           buttonBorder: Color.lerp(buttonBorder, other.buttonBorder, t)!,
