@@ -1,6 +1,9 @@
 import 'package:flutter/services.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
+import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
+import '../../../common/router/pages.dart';
 import '../../settings/screen/settings_scope.dart';
 import '../screen/profile_screen.dart';
 
@@ -57,7 +60,9 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onMyCardsPressed() {}
 
-  void onPaymentHistoryPressed() {}
+  void onPaymentHistoryPressed() {
+    context.octopus.pushNamed(Routes.paymentHistory.name);
+  }
 
   void onPromoCodesPressed() {}
 
@@ -136,8 +141,14 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onAboutTheAppPressed() {}
 
-  void onTopUpBalancePressed() {}
-  void onReferralPressed() {}
+  void onTopUpBalancePressed() {
+    context.octopus.pushNamed(Routes.payment.name);
+  }
+
+  void onReferralPressed() {
+    context.octopus.pushNamed(Routes.referral.name);
+  }
+
   void onArchivedTestsPressed() {}
   void onTeacherPressed() {}
   void onGoogleConnectPressed() {}
@@ -151,70 +162,78 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     ProfileListRow.item(
       (c) => context.x.l10n.topUpBalance,
       onTopUpBalancePressed,
-      Assets.lib.vectors.topUpBalance.svg(package: 'ui'),
+      Assets.lib.vectors.topUpBalance.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.referral,
       onReferralPressed,
-      Assets.lib.vectors.referral.svg(package: 'ui'),
+      Assets.lib.vectors.referral.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.paymentHistory,
       onPaymentHistoryPressed,
-      Assets.lib.vectors.historyTransaction.svg(package: 'ui'),
+      Assets.lib.vectors.historyTransaction.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.archivedTests,
       onArchivedTestsPressed,
-      Assets.lib.vectors.documents.svg(package: 'ui'),
+      Assets.lib.vectors.documents.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.teacher,
       onTeacherPressed,
-      Assets.lib.vectors.teacherSwap.svg(package: 'ui'),
+      Assets.lib.vectors.teacherSwap.svg(package: Constant.packageUi),
     ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.integrations),
     ProfileListRow.item(
       (c) => context.x.l10n.googleConnect,
       onGoogleConnectPressed,
-      Assets.lib.vectors.google.svg(package: 'ui'),
+      Assets.lib.vectors.google.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.appleIdConnect,
       onAppleConnectPressed,
-      Assets.lib.vectors.apple.svg(package: 'ui'),
+      Assets.lib.vectors.apple.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.telegramConnect,
       onTelegramConnectPressed,
-      Assets.lib.images.telegramLogo.image(package: 'ui', width: 20, height: 20),
+      Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
     ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.appearance),
     ProfileListRow.item(
       (c) => context.x.l10n.language,
       onLanguagePressed,
-      Assets.lib.vectors.language.svg(package: 'ui'),
+      Assets.lib.vectors.language.svg(package: Constant.packageUi),
     ),
-    ProfileListRow.item((c) => context.x.l10n.thema, onThemePressed, Assets.lib.vectors.themeIcon.svg(package: 'ui')),
+    ProfileListRow.item(
+      (c) => context.x.l10n.thema,
+      onThemePressed,
+      Assets.lib.vectors.themeIcon.svg(package: Constant.packageUi),
+    ),
     ProfileListRow.item(
       (c) => context.x.l10n.installOnHomeScreen,
       onSetHomePressed,
-      Assets.lib.vectors.setHome.svg(package: 'ui'),
+      Assets.lib.vectors.setHome.svg(package: Constant.packageUi),
     ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.other),
-    ProfileListRow.item((c) => context.x.l10n.help, onHelpPressed, Assets.lib.vectors.support.svg(package: 'ui')),
+    ProfileListRow.item(
+      (c) => context.x.l10n.help,
+      onHelpPressed,
+      Assets.lib.vectors.support.svg(package: Constant.packageUi),
+    ),
     ProfileListRow.item(
       (c) => context.x.l10n.termsOfUse,
       onTermsPressed,
-      Assets.lib.vectors.documents.svg(package: 'ui'),
+      Assets.lib.vectors.documents.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.logout,
       onLogoutPressed,
-      Assets.lib.vectors.logout.svg(package: 'ui'),
+      Assets.lib.vectors.logout.svg(package: Constant.packageUi),
       isLogout: true,
     ),
   ];

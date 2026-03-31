@@ -3,6 +3,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../my_tests/widgets/animated_referral_banner.dart';
 import '../state/recommendation_screen_state.dart';
 import '../widget/custom_page_view.dart';
 
@@ -37,8 +38,8 @@ class _RecommendationScreenState extends RecommendationScreenState {
                     padding: const .all(4),
                     child: Assets.lib.vectors.search.svg(
                       package: 'ui',
-                      width: 18,
-                      height: 18,
+                      width: 24,
+                      height: 24,
                       colorFilter: .mode(context.x.colors.bannerSecondaryText, .srcATop),
                     ),
                   ),
@@ -48,7 +49,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 package: 'ui',
                 width: 24,
                 height: 24,
-                colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                colorFilter: .mode(context.x.colors.primary, .srcATop),
               ),
             ],
           ),
@@ -61,6 +62,8 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 title: context.x.l10n.recommendation,
                 onShowMore: () => context.octopus.pushNamed(Routes.moreRecommendation.name),
               ),
+              const SizedBox(height: 16),
+              const Padding(padding: .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
               CustomPageView(items: const ['Test 1', 'Test 2'], title: context.x.l10n.popular),
               Padding(
                 padding: const .symmetric(horizontal: 16),
