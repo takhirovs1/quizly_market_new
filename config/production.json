@@ -1,4 +1,4 @@
 {
   "ENVIRONMENT": "production",
-  "TELEGRAM_API_BASE_URL": "https://api.telegram.org"
+  "TELEGRAM_API_BASE_URL": "https://quizly-market-backend-ct7x.onrender.com"
 }
