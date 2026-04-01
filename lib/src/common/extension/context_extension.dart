@@ -152,6 +152,25 @@ extension type Build(BuildContext context) {
       ));
 }
 
+/// Octopus navigation shortcuts.
+extension OctopusNavigationX on Octopus {
+  /// Shorthand for [pop]. So you can call `context.octopus.p()`.
+  Future<OctopusNode?> p() => pop();
+
+  /// Replacement-style navigation for Octopus (replaces the last route).
+  Future<OctopusNode> pushReplacement(OctopusRoute route, {Map<String, String>? arguments}) =>
+      upsertLast(route, arguments: arguments);
+
+  /// Replacement-style navigation for Octopus (replaces the last route).
+  Future<OctopusNode> pushReplacementNamed(String name, {Map<String, String>? arguments}) =>
+      upsertLastNamed(name, arguments: arguments);
+}
+
+extension BottomSheetPopX on BuildContext {
+  /// Pop a modal (bottom sheet / dialog) using Flutter's [Navigator].
+  void bottomSheetPop<T extends Object?>([T? result]) => Navigator.of(this).pop<T>(result);
+}
+
 extension TelegramWebAppX on BuildContext {
   TelegramWebApp get telegramWebApp => .instance;
   // WebAppUser? get telegramUser => telegramWebApp.initDataUnsafe?.user;

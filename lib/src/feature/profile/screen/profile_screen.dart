@@ -16,9 +16,9 @@ class _ProfileScreenState extends ProfileScreenState {
   @override
   Widget build(BuildContext context) => AnnotatedRegion<SystemUiOverlayStyle>(
     value: SystemUiOverlayStyle(
-      statusBarColor: context.x.colors.white,
-      statusBarIconBrightness: .light,
-      statusBarBrightness: .dark,
+      statusBarColor: context.x.colors.scaffoldBackground,
+      statusBarIconBrightness: Theme.of(context).brightness == .dark ? Brightness.light : Brightness.dark,
+      statusBarBrightness: Theme.of(context).brightness,
     ),
     child: Scaffold(
       backgroundColor: context.x.colors.scaffoldBackground,
@@ -172,7 +172,7 @@ class _ProfileScreenState extends ProfileScreenState {
                         padding: .only(top: index == 0 ? 0 : 8, bottom: 8),
                         child: Text(
                           row.titleBuilder?.call(context) ?? '',
-                          style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
+                          style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.text),
                         ),
                       ),
                       .item => Padding(
@@ -181,8 +181,8 @@ class _ProfileScreenState extends ProfileScreenState {
                           leading: row.titleBuilder?.call(context) ?? '',
                           onPressed: row.onTap ?? () {},
                           icon: row.leading,
-                          iconColor: context.x.colors.black,
-                          textColor: context.x.colors.black,
+                          iconColor: context.x.colors.text,
+                          textColor: context.x.colors.text,
                         ),
                       ),
                       .spacer => SizedBox(height: row.spacerHeight),

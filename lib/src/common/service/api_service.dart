@@ -16,20 +16,20 @@ class ApiService {
 
   Future<bool> checkConnection() async {
     final connection = await Connectivity().checkConnectivity();
-    if (connection.any((e) => e == ConnectivityResult.mobile || e == ConnectivityResult.wifi)) return true;
+    if (connection.any((e) => e == .mobile || e == .wifi)) return true;
     return false;
   }
 
   Future<T> request<T>(
     String path, {
-    Method method = Method.get,
+    Method method = .get,
     Object? data,
     Map<String, Object?>? headers,
     Map<String, Object?>? queryParams,
     FormData? formData,
   }) async {
     if (!await checkConnection()) {
-      throw Error.throwWithStackTrace(const ExceptionUtilBase.noConnection(), StackTrace.current);
+      throw Error.throwWithStackTrace(const ExceptionUtilBase.noConnection(), .current);
     }
 
     final newHeaders = <String, Object?>{'content-Type': formData != null ? 'multipart/form-data' : 'application/json'};

@@ -33,7 +33,10 @@ base mixin SettingsDataSourceImpl on PreferenceDao implements SettingsDataSource
   Locale? get localization {
     final locale = readFromCache<String>(_localizationKey);
     if (locale == null || locale.isEmpty) return null;
-    final [languageCode, scriptCode] = locale.split('-');
+    final parts = locale.split('-');
+    final languageCode = parts.isNotEmpty ? parts[0] : '';
+    final scriptCode = parts.length > 1 ? parts[1] : '';
+    if (languageCode.isEmpty) return null;
     return Locale.fromSubtags(languageCode: languageCode, scriptCode: scriptCode.isEmpty ? null : scriptCode);
   }
 

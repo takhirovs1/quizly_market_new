@@ -17,6 +17,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../../firebase_options.dart';
 import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
+import '../../../feature/main/data/main_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';
 import '../../../feature/settings/model/app_settings.dart';
@@ -34,6 +35,8 @@ import '../model/firebase_remote_config_values.dart';
 
 /// Initializes the app and returns a [Dependencies] object
 Future<Dependencies> $initializeDependencies({void Function(int progress, String message)? onProgress}) async {
+  await Config.load();
+
   final dependencies = Dependencies();
   final totalSteps = _initializationSteps.length;
   var currentStep = 0;
@@ -96,14 +99,14 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     'App Initial Settings',
     (dependencies) {
       final localization = dependencies.localSource.localization;
-      final theme = dependencies.localSource.theme == ThemeMode.light ? AppThemeData.light() : AppThemeData.dark();
+      final theme = dependencies.localSource.theme == .light ? AppThemeData.light() : AppThemeData.dark();
       final hapticsEnabled = dependencies.localSource.hapticsEnabled;
 
       HapticsService.isEnabled = hapticsEnabled;
 
       dependencies.settingsBloc = SettingsBloc(
         settingsRepository: SettingsRepositoryImpl(localSource: dependencies.localSource),
-        initialState: SettingsState.idle(
+        initialState: .idle(
           settings: AppSettings(
             localization: localization ?? Locale(Intl.systemLocale),
             appTheme: theme,
@@ -244,6 +247,7 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     (dependencies) {
       dependencies.repository = RepositoryContainer(
         authenticationRepository: AuthenticationRepositoryImpl(apiService: dependencies.apiService),
+        mainRepository: MainRepositoryImpl(dio: dependencies.dios.dio),
       );
     },
   ),

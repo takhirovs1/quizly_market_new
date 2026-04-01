@@ -60,7 +60,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
           overlayColor: WidgetStateProperty.all(Colors.transparent),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.primary);
+              return context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.bottomNavigationBarSelectedColor);
             }
             return context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.bottomNavigationBarUnselectedColor);
           }),
@@ -78,7 +78,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
                 width: 24,
                 height: 24,
                 package: 'ui',
-                colorFilter: ColorFilter.mode(context.x.colors.primary, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(context.x.colors.bottomNavigationBarSelectedColor, BlendMode.srcIn),
               ),
             ),
           ),

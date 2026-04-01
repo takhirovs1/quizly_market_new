@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../screen/payment_history_screen.dart';
+import '../screen/app_info_screen.dart';
 
-abstract class PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
+abstract class AppInfoState extends State<AppInfoScreen> {
   @override
   void initState() {
     super.initState();

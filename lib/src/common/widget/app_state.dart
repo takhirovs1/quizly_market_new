@@ -7,6 +7,7 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
   late final OverlayEntry _scopes = OverlayEntry(
     builder: (context) {
       final locale = SettingsScope.settingsOf(context).localization;
+      final themeMode = SettingsScope.settingsOf(context, listen: true).themeMode;
       return AuthenticationScope(
         authenticationScreens: MaterialApp.router(
           routerConfig: authenticationNavigator.config,
@@ -18,6 +19,9 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
           ],
           supportedLocales: AppLocalization.supportedLocales,
           locale: locale,
+          themeMode: themeMode,
+          darkTheme: AppThemeData.dark(),
+          theme: AppThemeData.light(),
         ),
         child: MaterialApp.router(
           routerConfig: navigator.config,
@@ -29,6 +33,9 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
           ],
           supportedLocales: AppLocalization.supportedLocales,
           locale: locale,
+          themeMode: themeMode,
+          darkTheme: AppThemeData.dark(),
+          theme: AppThemeData.light(),
         ),
       );
     },

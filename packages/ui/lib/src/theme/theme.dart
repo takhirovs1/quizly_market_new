@@ -43,7 +43,7 @@ ThemeData _appLightTheme(String fontFamily) => ThemeData(
   fontFamily: fontFamily,
   brightness: Brightness.light,
   useMaterial3: true,
-  primaryColor: ThemeColors.dark.primary,
+  primaryColor: ThemeColors.light.primary,
   colorScheme: ColorScheme(
     brightness: Brightness.light,
     primary: ThemeColors.light.primary,
@@ -56,14 +56,14 @@ ThemeData _appLightTheme(String fontFamily) => ThemeData(
     onSurface: ThemeColors.light.onSurface,
   ),
   // splashFactory: NoSplash.splashFactory,
-  scaffoldBackgroundColor: ThemeColors.light.onPrimary,
+  scaffoldBackgroundColor: ThemeColors.light.scaffoldBackground,
   tabBarTheme: TabBarThemeData(indicatorColor: ThemeColors.light.primary),
   progressIndicatorTheme: ProgressIndicatorThemeData(color: ThemeColors.light.primary),
   appBarTheme: AppBarTheme(
     centerTitle: true,
     surfaceTintColor: Colors.transparent,
-    backgroundColor: ThemeColors.light.white,
-    titleTextStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.black),
+    backgroundColor: ThemeColors.light.appBarBackground,
+    titleTextStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: ThemeColors.light.text),
   ),
   pageTransitionsTheme: const PageTransitionsTheme(
     builders: <TargetPlatform, PageTransitionsBuilder>{
@@ -99,14 +99,14 @@ ThemeData _appDarkTheme(String fontFamily) => ThemeData(
     onSurface: ThemeColors.dark.onSurface,
   ),
   // splashFactory: NoSplash.splashFactory,
-  scaffoldBackgroundColor: ThemeColors.dark.onPrimary,
+  scaffoldBackgroundColor: ThemeColors.dark.scaffoldBackground,
   tabBarTheme: TabBarThemeData(indicatorColor: ThemeColors.dark.primary),
   progressIndicatorTheme: ProgressIndicatorThemeData(color: ThemeColors.dark.primary),
   appBarTheme: AppBarTheme(
     centerTitle: true,
     surfaceTintColor: Colors.transparent,
-    backgroundColor: ThemeColors.dark.surface,
-    titleTextStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.black),
+    backgroundColor: ThemeColors.dark.appBarBackground,
+    titleTextStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: ThemeColors.dark.text),
   ),
   pageTransitionsTheme: const PageTransitionsTheme(
     builders: <TargetPlatform, PageTransitionsBuilder>{
