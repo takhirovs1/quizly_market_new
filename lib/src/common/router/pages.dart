@@ -12,6 +12,11 @@ import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/profile/screen/referral_screen.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
+import '../../feature/tests/screens/test_custom_mode_screen.dart';
+import '../../feature/tests/screens/test_flashcard_mode.dart';
+import '../../feature/tests/screens/test_group_mode_screen.dart';
+import '../../feature/tests/screens/test_mode_screen.dart';
+import '../../feature/tests/screens/test_university_mode_screen.dart';
 import '../extension/context_extension.dart';
 
 enum Routes with OctopusRoute {
@@ -23,7 +28,12 @@ enum Routes with OctopusRoute {
   purchaseTest('purchaseTest', title: 'PurchaseTest'),
   payment('payment', title: 'Payment'),
   referral('referral', title: 'Referral'),
-  paymentHistory('paymentHistory', title: 'Payment History');
+  paymentHistory('paymentHistory', title: 'Payment History'),
+  testMode('testMode', title: 'Test Mode'),
+  testCustomMode('testCustomMode', title: 'Test Custom Mode'),
+  testUniversityMode('testUniversityMode', title: 'Test University Mode'),
+  testGroupMode('testGroupMode', title: 'Test Group Mode'),
+  testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode');
 
   const Routes(this.name, {this.title});
 
@@ -47,5 +57,10 @@ enum Routes with OctopusRoute {
     .payment => const PaymentScreen(),
     .referral => const ReferralScreen(),
     .paymentHistory => const PaymentHistoryScreen(),
+    .testMode => const TestModeScreen(),
+    .testCustomMode => const TestCustomModeScreen(),
+    .testUniversityMode => const TestUniversityModeScreen(),
+    .testGroupMode => const TestGroupModeScreen(),
+    .testFlashcardMode => const TestFlashcardMode(),
   };
 }

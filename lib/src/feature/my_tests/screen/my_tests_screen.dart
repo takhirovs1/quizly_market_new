@@ -20,6 +20,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
       telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
     ),
     body: RefreshIndicator.adaptive(
+      color: context.x.colors.primary,
       onRefresh: onRefresh,
       child: Padding(
         padding: const .symmetric(horizontal: 16),
