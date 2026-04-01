@@ -78,6 +78,10 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     required this.bottomSheetBackground,
+    required this.bottomSheetSurface,
+
+    // selection pill button
+    required this.selectionPillUnselectedBackground,
 
     // card background
     required this.cardBackground,
@@ -90,6 +94,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // text field background
     required this.textFieldBackground,
+
+    // bottom navigation bar selected icon color
+    required this.bottomNavigationBarSelectedColor,
   });
 
   factory ThemeColors.of(BuildContext context) {
@@ -236,6 +243,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// bottom navigation bar unselected icon color light[0xFFBBBFD0] dark[0xFFBBBFD0]
   final Color bottomNavigationBarUnselectedColor;
 
+  /// bottom navigation bar selected icon color light[0xFF007AFF] dark[0xFF007AFF]
+  final Color bottomNavigationBarSelectedColor;
+
   /// Scaffold background color light[0xFFFFFFFF] dark[0xFF0F172A]
   final Color scaffoldBackground;
 
@@ -247,6 +257,12 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
   /// Bottom sheet background color light[0xFFECEDF0] dark[0xFF1E293B]
   final Color bottomSheetBackground;
+
+  /// Bottom sheet surface color light[0xFFF4F4F4] dark[0xFF0F172A]
+  final Color bottomSheetSurface;
+
+  /// Selection pill button unselected background light[0xFFE6E6E6] dark[0xFF1E293B]
+  final Color selectionPillUnselectedBackground;
 
   /// Card background color light[0xff0F172A] dark[0xffFFFFFF]
   final Color cardBackground;
@@ -322,7 +338,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     appBarBackground: Color(0xFF007AFF),
 
     // bottom navigation bar colors
-    bottomNavigationBarUnselectedColor: Color(0xFFBBBFD0),
+    bottomNavigationBarUnselectedColor: Color(0xFF64748B),
+
+    bottomNavigationBarSelectedColor: Color(0xFF0E7FF1),
 
     // scaffold colors
     scaffoldBackground: Color(0xFFFFFFFF),
@@ -333,6 +351,10 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     bottomSheetBackground: Color(0xFFECEDF0),
+    bottomSheetSurface: Color(0xFFF4F4F4),
+
+    // selection pill button
+    selectionPillUnselectedBackground: Color(0xFFE6E6E6),
 
     // card background
     cardBackground: Color(0xffFBFCF6),
@@ -396,7 +418,7 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     bannerBackground: Color(0xFF1E293B),
     bannerText: Color(0xFFF8FAFC),
     bannerSecondaryText: Color(0xFFCBD5E1),
-    bannerPriceText: Color(0xFF3B82F6),
+    bannerPriceText: Color(0xFF1E40AF),
     bannerButton: Color(0xFF1E40AF),
     bannerIcon: Color(0xFFFFFFFF),
 
@@ -411,6 +433,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     // bottom navigation bar colors
     bottomNavigationBarUnselectedColor: Color(0xFFBBBFD0),
 
+    bottomNavigationBarSelectedColor: Color(0xFFF5F9FF),
+
     // scaffold colors
     scaffoldBackground: Color(0xFF0F172A),
 
@@ -420,6 +444,10 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     bottomSheetBackground: Color(0xFF1E293B),
+    bottomSheetSurface: Color(0xFF0F172A),
+
+    // selection pill button
+    selectionPillUnselectedBackground: Color(0xFF1E293B),
 
     // card background
     cardBackground: Color(0xff0F172A),
@@ -496,6 +524,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     // bottom navigation bar colors
     Color? bottomNavigationBarUnselectedColor,
 
+    Color? bottomNavigationBarSelectedColor,
+
     // scaffold colors
     Color? scaffoldBackground,
 
@@ -505,6 +535,10 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     Color? bottomSheetBackground,
+    Color? bottomSheetSurface,
+
+    // selection pill button
+    Color? selectionPillUnselectedBackground,
 
     // card background
     Color? cardBackground,
@@ -578,6 +612,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     // bottom navigation bar colors
     bottomNavigationBarUnselectedColor: bottomNavigationBarUnselectedColor ?? this.bottomNavigationBarUnselectedColor,
 
+    bottomNavigationBarSelectedColor: bottomNavigationBarSelectedColor ?? this.bottomNavigationBarSelectedColor,
+
     // scaffold colors
     scaffoldBackground: scaffoldBackground ?? this.scaffoldBackground,
 
@@ -587,6 +623,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     bottomSheetBackground: bottomSheetBackground ?? this.bottomSheetBackground,
+    bottomSheetSurface: bottomSheetSurface ?? this.bottomSheetSurface,
+    selectionPillUnselectedBackground: selectionPillUnselectedBackground ?? this.selectionPillUnselectedBackground,
 
     // card background
     cardBackground: cardBackground ?? this.cardBackground,
@@ -669,6 +707,13 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
             t,
           )!,
 
+          // bottom navigation bar selected icon color
+          bottomNavigationBarSelectedColor: Color.lerp(
+            bottomNavigationBarSelectedColor,
+            other.bottomNavigationBarSelectedColor,
+            t,
+          )!,
+
           // scaffold colors
           scaffoldBackground: Color.lerp(scaffoldBackground, other.scaffoldBackground, t)!,
 
@@ -678,6 +723,12 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
           // bottom sheet colors
           bottomSheetBackground: Color.lerp(bottomSheetBackground, other.bottomSheetBackground, t)!,
+          bottomSheetSurface: Color.lerp(bottomSheetSurface, other.bottomSheetSurface, t)!,
+          selectionPillUnselectedBackground: Color.lerp(
+            selectionPillUnselectedBackground,
+            other.selectionPillUnselectedBackground,
+            t,
+          )!,
 
           // card background
           cardBackground: Color.lerp(cardBackground, other.cardBackground, t)!,

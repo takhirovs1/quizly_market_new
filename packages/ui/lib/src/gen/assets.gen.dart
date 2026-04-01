@@ -57,6 +57,9 @@ class $LibImagesGen {
   /// File path: lib/images/logo_png.png
   AssetGenImage get logoPng => const AssetGenImage('lib/images/logo_png.png');
 
+  /// File path: lib/images/logout_quizbot.png
+  AssetGenImage get logoutQuizbot => const AssetGenImage('lib/images/logout_quizbot.png');
+
   /// File path: lib/images/memo.png
   AssetGenImage get memo => const AssetGenImage('lib/images/memo.png');
 
@@ -128,6 +131,7 @@ class $LibImagesGen {
     flexedBiceps,
     logo,
     logoPng,
+    logoutQuizbot,
     memo,
     money,
     mustaqil,
@@ -334,6 +338,12 @@ class $LibVectorsGen {
   /// File path: lib/vectors/ic-external-link.vec
   SvgGenImage get icExternalLink => const SvgGenImage.vec('lib/vectors/ic-external-link.vec');
 
+  /// File path: lib/vectors/information_app.vec
+  SvgGenImage get informationApp => const SvgGenImage.vec('lib/vectors/information_app.vec');
+
+  /// File path: lib/vectors/instagram.vec
+  SvgGenImage get instagram => const SvgGenImage.vec('lib/vectors/instagram.vec');
+
   /// File path: lib/vectors/language.vec
   SvgGenImage get language => const SvgGenImage.vec('lib/vectors/language.vec');
 
@@ -439,6 +449,8 @@ class $LibVectorsGen {
     home,
     home2,
     icExternalLink,
+    informationApp,
+    instagram,
     language,
     like,
     logout,

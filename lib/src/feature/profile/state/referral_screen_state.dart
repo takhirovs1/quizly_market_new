@@ -18,4 +18,16 @@ abstract class ReferralScreenState extends State<ReferralScreen> {
     Clipboard.setData(ClipboardData(text: referralLink));
     context.x.showNotification(message: 'Link copied to clipboard');
   }
+
+  @override
+  void initState() {
+    super.initState();
+    context.setupTelegramBackButton();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    context.teardownTelegramBackButton();
+  }
 }

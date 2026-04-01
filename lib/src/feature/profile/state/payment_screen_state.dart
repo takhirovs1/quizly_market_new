@@ -197,6 +197,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     amountController = TextEditingController();
     amountFocusNode = FocusNode()..requestFocus();
     selectedPayment = ValueNotifier<PaymentResponseModel?>(paymentResponseModels.first);
@@ -211,6 +212,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
 
   @override
   void dispose() {
+    super.dispose();
     amountController.dispose();
     selectedPayment.dispose();
     selectedAmount.dispose();
@@ -219,7 +221,6 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
     _reportLoading.dispose();
     _reportButtonType.dispose();
     context.teardownTelegramBackButton();
-    super.dispose();
   }
 }
 

@@ -28,7 +28,12 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> onRefresh() async {}
 
-  void selectLanguage(Locale locale) {}
+  Locale get currentLocale => SettingsScope.settingsOf(context, listen: true).localization ?? const Locale('en');
+
+  void selectLanguage(Locale locale) {
+    if (locale.languageCode == currentLocale.languageCode) return;
+    context.x.setLocalization(locale);
+  }
 
   String themeLabel(ThemeMode mode) => switch (mode) {
     .system => 'System',
@@ -54,83 +59,122 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onWalletCardPressed() {}
 
+  void onAppInfoPressed() => context.octopus.push(Routes.appInfo);
+
   void onSubscriptionCardPressed() {}
 
   void onMyInformationPressed() {}
 
   void onMyCardsPressed() {}
 
-  void onPaymentHistoryPressed() {
-    context.octopus.pushNamed(Routes.paymentHistory.name);
-  }
+  void onPaymentHistoryPressed() => context.octopus.push(Routes.paymentHistory);
 
   void onPromoCodesPressed() {}
 
   void onTransferHistoryPressed() {}
 
-  Future<void> onLanguagePressed() async {}
+  Future<void> onLanguagePressed() async {
+    final selected = currentLocale.languageCode;
+    final textColor = context.x.colors.text;
+
+    await showModalBottomSheet<void>(
+      backgroundColor: context.x.colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => CustomBottomSheet(
+        maxHeightFactor: .45,
+        isScrollable: true,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(context.x.l10n.appLanguage, style: context.x.textStyle.sfW700s18.copyWith(color: textColor)),
+            ),
+            IconButton(
+              onPressed: () => context.bottomSheetPop(),
+              icon: Icon(Icons.close_rounded, color: textColor),
+            ),
+          ],
+        ),
+        children: [
+          SelectionPillButton(
+            label: context.x.l10n.uzbekLatin,
+            isSelected: currentLocale.languageCode == 'uz',
+            onTap: () => _onLanguageSelected(const Locale('uz')),
+          ),
+          const SizedBox(height: 8),
+          SelectionPillButton(
+            label: context.x.l10n.uzbekKril,
+            isSelected: currentLocale.languageCode == 'kk',
+            onTap: () => _onLanguageSelected(const Locale('kk')),
+          ),
+          const SizedBox(height: 8),
+          SelectionPillButton(
+            label: context.x.l10n.english,
+            isSelected: selected == 'en',
+            onTap: () => _onLanguageSelected(const Locale('en')),
+          ),
+          const SizedBox(height: 8),
+          SelectionPillButton(
+            label: context.x.l10n.russian,
+            isSelected: selected == 'ru',
+            onTap: () => _onLanguageSelected(const Locale('ru')),
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
 
   Future<void> onThemePressed() async {
     final selected = currentThemeMode;
+    final textColor = context.x.colors.text;
 
     await showModalBottomSheet<void>(
+      backgroundColor: context.x.colors.transparent,
       context: context,
-      showDragHandle: true,
-      backgroundColor: context.x.colors.scaffoldBackground,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: .min,
+      isScrollControlled: true,
+      builder: (sheetContext) => CustomBottomSheet(
+        maxHeightFactor: .3,
+        isScrollable: true,
+        title: Row(
           children: [
-            Padding(
-              padding: const .fromLTRB(16, 8, 16, 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.x.l10n.thema,
-                      style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.black),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(sheetContext).pop(),
-                    icon: Icon(Icons.close_rounded, color: context.x.colors.black),
-                  ),
-                ],
-              ),
+            Expanded(
+              child: Text(context.x.l10n.appTheme, style: context.x.textStyle.sfW700s18.copyWith(color: textColor)),
             ),
-            ListTile(
-              leading: Icon(Icons.light_mode_rounded, color: context.x.colors.black),
-              title: Text(
-                context.x.l10n.light,
-                style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
-              ),
-              trailing: selected == .light
-                  ? Icon(Icons.check_rounded, color: context.x.colors.primary)
-                  : const SizedBox.shrink(),
-              onTap: () {
-                selectThemeMode(.light);
-                Navigator.of(sheetContext).pop();
-              },
+            IconButton(
+              onPressed: () => context.bottomSheetPop(),
+              icon: Icon(Icons.close_rounded, color: textColor),
             ),
-            ListTile(
-              leading: Icon(Icons.dark_mode_rounded, color: context.x.colors.black),
-              title: Text(
-                context.x.l10n.dark,
-                style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.black),
-              ),
-              trailing: selected == .dark
-                  ? Icon(Icons.check_rounded, color: context.x.colors.primary)
-                  : const SizedBox.shrink(),
-              onTap: () {
-                selectThemeMode(.dark);
-                Navigator.of(sheetContext).pop();
-              },
-            ),
-            const SizedBox(height: 12),
           ],
         ),
+        children: [
+          SelectionPillButton(
+            label: context.x.l10n.dark,
+            isSelected: selected == .dark,
+            onTap: () => onThemeModePressed(.dark),
+          ),
+          const SizedBox(height: 8),
+          SelectionPillButton(
+            label: context.x.l10n.light,
+            isSelected: selected == .light,
+            onTap: () => onThemeModePressed(.light),
+          ),
+          const SizedBox(height: 12),
+        ],
       ),
     );
+  }
+
+  void onThemeModePressed(ThemeMode mode) {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    selectThemeMode(mode);
+    context.bottomSheetPop();
+  }
+
+  void _onLanguageSelected(Locale locale) {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    selectLanguage(locale);
+    context.bottomSheetPop();
   }
 
   void onHelpPressed() {}
@@ -141,20 +185,21 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onAboutTheAppPressed() {}
 
-  void onTopUpBalancePressed() {
-    context.octopus.pushNamed(Routes.payment.name);
-  }
+  void onTopUpBalancePressed() => context.octopus.push(Routes.payment);
 
-  void onReferralPressed() {
-    context.octopus.pushNamed(Routes.referral.name);
-  }
+  void onReferralPressed() => context.octopus.push(Routes.referral);
 
   void onArchivedTestsPressed() {}
   void onTeacherPressed() {}
   void onGoogleConnectPressed() {}
   void onAppleConnectPressed() {}
   void onTelegramConnectPressed() {}
-  void onSetHomePressed() {}
+
+  void onSetHomePressed() {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.addToHomeScreen();
+  }
+
   void onTermsPressed() {}
 
   List<ProfileListRow> get menuRows => [
@@ -209,15 +254,16 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       Assets.lib.vectors.language.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
-      (c) => context.x.l10n.thema,
+      (c) => context.x.l10n.theme,
       onThemePressed,
       Assets.lib.vectors.themeIcon.svg(package: Constant.packageUi),
     ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.installOnHomeScreen,
-      onSetHomePressed,
-      Assets.lib.vectors.setHome.svg(package: Constant.packageUi),
-    ),
+    if (context.telegramWebApp.isSupported)
+      ProfileListRow.item(
+        (c) => context.x.l10n.installOnHomeScreen,
+        onSetHomePressed,
+        Assets.lib.vectors.setHome.svg(package: Constant.packageUi),
+      ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.other),
     ProfileListRow.item(
@@ -229,6 +275,11 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       (c) => context.x.l10n.termsOfUse,
       onTermsPressed,
       Assets.lib.vectors.documents.svg(package: Constant.packageUi),
+    ),
+    ProfileListRow.item(
+      (c) => context.x.l10n.app_info,
+      onAppInfoPressed,
+      Assets.lib.vectors.informationApp.svg(package: Constant.packageUi),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.logout,

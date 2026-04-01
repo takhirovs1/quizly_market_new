@@ -5,68 +5,82 @@ import '../extension/context_extension.dart';
 class CustomBottomSheet extends StatelessWidget {
   const CustomBottomSheet({
     required this.children,
-    this.initialChildSize = .5,
     super.key,
-    this.maxChildSize = .9,
+    this.maxHeightFactor = .9,
     this.isScrollable = true,
     this.bottomNavigationBar,
     this.title,
   });
 
   final List<Widget> children;
-  final double initialChildSize;
-  final double maxChildSize;
+  final double maxHeightFactor;
   final bool isScrollable;
   final Widget? bottomNavigationBar;
   final Widget? title;
 
   @override
-  Widget build(BuildContext context) => DraggableScrollableSheet(
-    initialChildSize: initialChildSize,
-    minChildSize: initialChildSize,
-    maxChildSize: maxChildSize,
-    builder: (ctx, scrollController) => Column(
-      children: [
-        Center(
-          child: Container(
-            width: 44,
-            height: 5,
-            margin: const EdgeInsets.only(bottom: 8),
-            decoration: BoxDecoration(color: context.x.colors.gray, borderRadius: BorderRadius.circular(100)),
-          ),
-        ),
-        Expanded(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: context.x.colors.dialogBackground,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (title != null)
-                  Padding(padding: const EdgeInsets.only(left: 16, top: 20, bottom: 16), child: title!),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    controller: scrollController,
-                    physics: isScrollable ? null : const NeverScrollableScrollPhysics(),
-                    children: children,
-                  ),
+  Widget build(BuildContext context) {
+    final maxHeight = MediaQuery.sizeOf(context).height * maxHeightFactor;
+
+    final content = DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.x.colors.bottomSheetSurface,
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Center(
+              child: SizedBox(
+                width: 60,
+                height: 5,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: context.x.colors.gray, borderRadius: BorderRadius.circular(100)),
                 ),
+              ),
+            ),
+          ),
+          if (title != null)
+            Column(
+              children: [
+                Padding(padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4), child: title!),
+                Divider(color: context.x.colors.divider),
               ],
             ),
+          Flexible(
+            child: isScrollable
+                ? ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), children: children)
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: children),
+                  ),
           ),
+        ],
+      ),
+    );
+
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: content),
+            if (bottomNavigationBar != null)
+              ColoredBox(
+                color: context.x.colors.white,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(padding: const EdgeInsets.all(16), child: bottomNavigationBar!),
+                ),
+              ),
+          ],
         ),
-        if (bottomNavigationBar != null)
-          ColoredBox(
-            color: context.x.colors.white,
-            child: SafeArea(
-              top: false,
-              child: Padding(padding: const EdgeInsets.all(16), child: bottomNavigationBar!),
-            ),
-          ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }

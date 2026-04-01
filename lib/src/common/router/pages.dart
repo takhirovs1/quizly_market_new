@@ -5,9 +5,11 @@ import 'package:ui/ui.dart';
 import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
+import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/main/screen/onboarding_screen.dart';
 import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
+import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/profile/screen/referral_screen.dart';
@@ -28,6 +30,8 @@ enum Routes with OctopusRoute {
   purchaseTest('purchaseTest', title: 'PurchaseTest'),
   payment('payment', title: 'Payment'),
   referral('referral', title: 'Referral'),
+  paymentHistory('paymentHistory', title: 'Payment History'),
+  appInfo('appInfo', title: 'App Info');
   paymentHistory('paymentHistory', title: 'Payment History'),
   testMode('testMode', title: 'Test Mode'),
   testCustomMode('testCustomMode', title: 'Test Custom Mode'),
@@ -50,13 +54,17 @@ enum Routes with OctopusRoute {
       child: const LoginScreen(),
     ),
     .home => const HomeScreen(),
-    .onboarding => const OnboardingScreen(),
+    .onboarding => BlocProvider(
+      create: (_) => MainCubit(mainRepository: context.x.dependencies.repository.mainRepository),
+      child: const OnboardingScreen(),
+    ),
     .selectLanguage => const SelectLanguage(),
     .moreRecommendation => const MoreRecommendationScreen(),
     .purchaseTest => const PurchaseTestScreen(),
     .payment => const PaymentScreen(),
     .referral => const ReferralScreen(),
     .paymentHistory => const PaymentHistoryScreen(),
+    .appInfo => const AppInfoScreen(),
     .testMode => const TestModeScreen(),
     .testCustomMode => const TestCustomModeScreen(),
     .testUniversityMode => const TestUniversityModeScreen(),

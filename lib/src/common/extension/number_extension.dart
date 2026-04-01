@@ -1,3 +1,14 @@
+/// JSON / dynamic map values (int, double, num, string) → [int?].
+extension ObjectJsonInt on Object? {
+  int? get toIntOrNull {
+    final v = this;
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString());
+  }
+}
+
 extension NumberExtension on num {
   String get splitPerThree => toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]} ');
 }

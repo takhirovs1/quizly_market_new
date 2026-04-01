@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.0+38',
+    representation: r'1.0.0+42',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.0+38',
+    canonical: r'1.0.0+42',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'38'],
+    build: <String>[r'42'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
     3,
-    17,
-    17,
-    1,
+    31,
+    9,
     7,
-    259,
-    562,
+    18,
+    692,
+    792,
   );
 
   /// Name
@@ -527,6 +527,9 @@ sealed class Pubspec {
     'flutter': <String, Object>{
       'generate': true,
       'uses-material-design': true,
+      'assets': <Object>[
+        r'config/',
+      ],
       'fonts': <Object>[
         r'{family: Monospace, fonts: [{asset: packages/ui/lib/font/logbook/Monospace.ttf}]}',
       ],

@@ -1,12 +1,16 @@
-import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../../../common/router/pages.dart';
+import '../state/onboarding_state.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends OnboardingState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.appBarBackground,
@@ -42,10 +46,7 @@ class OnboardingScreen extends StatelessWidget {
               borderRadius: 100,
               color: context.x.colors.customButtonBackground,
               textColor: context.x.colors.customButtonText,
-              onTap: () {
-                context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
-                context.octopus.navigate(Routes.home.name);
-              },
+              onTap: onStartApp,
               title: context.x.l10n.start,
             ),
             const SizedBox(height: 20),
