@@ -2,8 +2,8 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
+import '../models/test_mode.dart';
 import '../state/purchase_test_screen_state.dart';
-import '../widgets/my_test_item_widget.dart';
 import '../widgets/test_description_widget.dart';
 
 class PurchaseTestScreen extends StatefulWidget {
@@ -26,7 +26,11 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
         const SizedBox(height: 16),
         Padding(
           padding: const .symmetric(horizontal: 16),
-          child: TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
+          child: TestDescriptionWidget(
+            test: TestModel(id: 1, name: 'Test 1', description: 'Description 1', price: 10000),
+            onPressLike: onPressLike,
+            onPressShare: onPressShare,
+          ),
         ),
         const SizedBox(height: 28),
         SizedBox(
@@ -34,7 +38,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           child: PageView.builder(
             clipBehavior: .none,
             controller: pageController,
-            itemCount: test.questions.length,
+            itemCount: 10,
             onPageChanged: (i) => currentTest.value = i,
             itemBuilder: (context, index) => Padding(
               padding: const .symmetric(horizontal: 16),
@@ -51,10 +55,10 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                     BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: .zero, blurRadius: 3),
                   ],
                 ),
-                child: Padding(
-                  padding: const .only(left: 14, right: 14, top: 12),
-                  child: MyTestItemWidget(test: test.questions[index]),
-                ),
+                // child: Padding(
+                //   padding: const .only(left: 14, right: 14, top: 12),
+                //   child: MyTestItemWidget(test: [index]),
+                // ),
               ),
             ),
           ),
@@ -65,8 +69,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           children: [
             ValueListenableBuilder(
               valueListenable: currentTest,
-              builder: (context, current, child) =>
-                  PageIndicator(selectedPage: current, totalPages: test.questions.length),
+              builder: (context, current, child) => PageIndicator(selectedPage: current, totalPages: 10),
             ),
           ],
         ),
@@ -120,7 +123,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
               children: [
                 Expanded(
                   child: Text(
-                    test.price.formatUzs,
+                    10000.formatUzs,
                     style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
                     textAlign: .center,
                   ),

@@ -2,31 +2,33 @@
 (function telegramWebAppSimulator(global) {
   'use strict';
 
-  /** Fixed init-data fields for local simulator (Telegram `auth_date` = Unix seconds, `hash` = HMAC). */
-  const MOCK_AUTH_DATE = 1774935140;
-  const MOCK_HASH =
-    '938642aedb4c71827d51629bd425a2658bce5c9fed0030695b04e829d16dade3';
-
   /**
-   * Default Telegram Mini App user for local / debug runs (matches
-   * `LoginWithTelegramRequest` fields: id, first/last name, username, photo_url).
-   * In real Telegram, `window.Telegram.WebApp.initDataUnsafe.user` is the live user;
-   * this object is only used when simulating (localhost / ?tgDebug=1).
-   *
-   * Field names: snake_case — same as WebApp `user`
-   * @see https://core.telegram.org/bots/webapps#user
+   * Default `initData` query string (same shape as Telegram WebApp `Telegram.WebApp.initData` / `raw`).
+   * Override with `?tgUser=...` or `localStorage tgDebugUser` (JSON user only); then `initData` is rebuilt
+   * using `auth_date` / `hash` from this default string.
    */
-  const DEFAULT_TELEGRAM_MOCK_USER = Object.freeze({
-    id: 1251798314,
+  const DEFAULT_TELEGRAM_INIT_DATA =
+    "user=%7B%22id%22%3A1251798314%2C%22first_name%22%3A%22Takhirov%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Takhirovs%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPv8sJMzN7dZuMSud-i2sgBEsm1XHx-1alxOrHEO5BX8.svg%22%7D&chat_instance=3624369482635394789&chat_type=private&auth_date=1775057970&signature=OOh2C88ggKSApZX9r_2fHMTKocWhEgO4R1zW8f3AErzp016ZwqlBY5SCzqMK3NREkrp5iWP8CV6pn__xsODzCQ&hash=34cbb317d4b0dc5636cea2b74d0791faedd71e5b62f52035f9ebbfc72b28c28c";
+
+  const parseDefaultInitData = (raw) => {
+    const sp = new URLSearchParams(raw);
+    return {
+      authDate: sp.get('auth_date'),
+      hash: sp.get('hash'),
+      signature: sp.get('signature'),
+      chatInstance: sp.get('chat_instance'),
+      chatType: sp.get('chat_type'),
+      userParam: sp.get('user'),
+    };
+  };
+
+  const defaultInitParts = parseDefaultInitData(DEFAULT_TELEGRAM_INIT_DATA);
+
+  /** WebApp `user` object (snake_case + flags Telegram sends). */
+  const webAppUserFromParsed = (u) => ({
+    ...u,
     is_bot: false,
-    first_name: 'Takhirov',
-    last_name: '',
-    username: 'Takhirovs',
-    language_code: 'uz',
     is_premium: false,
-    photo_url:
-      'https://t.me/i/userpic/320/Pv8sJMzN7dZuMSud-i2sgBEsm1XHx-1alxOrHEO5BX8.svg',
-    allows_write_to_pm: true,
     added_to_attachment_menu: false,
   });
 
@@ -110,9 +112,20 @@
 
   const parseUser = (raw) => tryJson(raw) ?? tryBase64Json(raw);
 
-  const mockUser =
-    parseUser(params.get('tgUser')) ??
-    parseUser(readStorage('tgDebugUser')) ?? { ...DEFAULT_TELEGRAM_MOCK_USER };
+  const defaultUserParsed = () =>
+    webAppUserFromParsed(JSON.parse(decodeURIComponent(defaultInitParts.userParam)));
+
+  const defaultUserJson = JSON.stringify(defaultUserParsed());
+
+  const fromQueryUser = parseUser(params.get('tgUser'));
+  const storedUserRaw = readStorage('tgDebugUser');
+  const fromStorageUser = parseUser(storedUserRaw);
+
+  const mockUser = fromQueryUser ?? fromStorageUser ?? defaultUserParsed();
+
+  // Rebuild `initData` only when user differs from default (URL `tgUser` or persisted custom `tgDebugUser`).
+  const storedDiffersFromDefault = Boolean(storedUserRaw && storedUserRaw !== defaultUserJson);
+  const hasUserOverride = Boolean(fromQueryUser) || storedDiffersFromDefault;
 
   console.log('mockUser', mockUser);
 
@@ -152,11 +165,13 @@
     };
   };
 
-  // Must match Telegram format: `user` = URL-encoded JSON, plus `auth_date` and `hash`.
+  // Must match Telegram format: `user` = URL-encoded JSON, plus `auth_date`, `hash`, optional `signature`, etc.
   // `telegram_web_app` parses this in TelegramInitData.fromRawString (see package source).
   const userJson = JSON.stringify(mockUser);
   const userQueryValue = encodeURIComponent(userJson);
-  const initDataQueryString = `user=${userQueryValue}&auth_date=${MOCK_AUTH_DATE}&hash=${MOCK_HASH}`;
+  const initDataQueryString = hasUserOverride
+    ? `user=${userQueryValue}&auth_date=${defaultInitParts.authDate}&hash=${defaultInitParts.hash}`
+    : DEFAULT_TELEGRAM_INIT_DATA;
 
   const simulator = {
     version: '7.9',
@@ -168,8 +183,11 @@
       query_id: 'debug',
       user: mockUser,
       // String: `telegram_web_app` parses with int.tryParse(auth_date)
-      auth_date: String(MOCK_AUTH_DATE),
-      hash: MOCK_HASH,
+      auth_date: String(defaultInitParts.authDate),
+      hash: defaultInitParts.hash,
+      signature: defaultInitParts.signature,
+      chat_instance: defaultInitParts.chatInstance,
+      chat_type: defaultInitParts.chatType,
       start_param: params.get('tgStartParam') ?? '',
     },
     isExpanded: true,

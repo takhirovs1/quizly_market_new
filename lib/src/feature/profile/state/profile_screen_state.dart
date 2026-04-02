@@ -1,13 +1,16 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../settings/screen/settings_scope.dart';
+import '../bloc/profile_cubit.dart';
 import '../screen/profile_screen.dart';
 
 abstract class ProfileScreenState extends State<ProfileScreen> {
+  late final ProfileCubit profileCubit;
   String formatProfileName(String? apiName) {
     final raw = (apiName ?? '').trim();
     if (raw.isEmpty) return '';
@@ -26,7 +29,9 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     return '${lower[0].toUpperCase()}${lower.substring(1)}';
   }
 
-  Future<void> onRefresh() async {}
+  Future<void> onRefresh() async {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.heavy);
+  }
 
   Locale get currentLocale => SettingsScope.settingsOf(context, listen: true).localization ?? const Locale('en');
 
@@ -372,6 +377,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
+    profileCubit = context.read<ProfileCubit>()..loadProfile();
     super.initState();
   }
 

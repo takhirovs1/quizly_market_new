@@ -1,11 +1,21 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../bloc/my_test_cubit.dart';
 import '../screen/my_tests_screen.dart';
 
 abstract class MyTestsScreenState extends State<MyTestsScreen> {
+  late final MyTestCubit myTestCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    myTestCubit = context.read<MyTestCubit>()..getMyTests();
+  }
+
   void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
   Future<void> onRefresh() async {
     context.telegramWebApp.hapticFeedback.impactOccurred(.light);

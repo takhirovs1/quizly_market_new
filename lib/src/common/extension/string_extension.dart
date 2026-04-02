@@ -1,5 +1,19 @@
 import 'package:logbook/logbook.dart';
 
+extension ParseStringToDateTime on String {
+  DateTime? toDateTimeOrNull() => DateTime.tryParse(this);
+}
+
+/// JSON map values (`String` ISO-8601) → [DateTime?].
+extension ObjectJsonDateTime on Object? {
+  DateTime? get toDateTimeOrNull {
+    final v = this;
+    if (v == null) return null;
+    if (v is String) return v.toDateTimeOrNull();
+    return null;
+  }
+}
+
 extension ParseToInt on String {
   /// Parse the string to an integer.
   int? toIntOrNull() => int.tryParse(this);

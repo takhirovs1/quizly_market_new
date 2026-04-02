@@ -1,10 +1,10 @@
+// {"id":1,"first_name":"Akbarshoh","last_name":"Ismoilov","father_name":null,"status":"active","phone":"+998901234567","gender":"male","role":"customer","username":"akbar","avatar_url":"/uploads/abc123.jpg","premium":false,"balance":150000,"created_at":"2026-01-15T10:00:00Z","updated_at":"2026-03-20T12:00:00Z"}
+
 import '../../../common/extension/number_extension.dart';
 import '../../../common/extension/string_extension.dart';
 
-class UserModelRequest {}
-
-class UserModelResponse {
-  UserModelResponse({
+class ProfileModelResponse {
+  ProfileModelResponse({
     this.id,
     this.firstName,
     this.lastName,
@@ -21,7 +21,7 @@ class UserModelResponse {
     this.updatedAt,
   });
 
-  factory UserModelResponse.fromJson(Map<String, Object?> json) => UserModelResponse(
+  factory ProfileModelResponse.fromJson(Map<String, Object?> json) => ProfileModelResponse(
     id: json['id'].toIntOrNull,
     firstName: json['first_name'] as String?,
     lastName: json['last_name'] as String?,

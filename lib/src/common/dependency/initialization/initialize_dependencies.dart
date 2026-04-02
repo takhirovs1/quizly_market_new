@@ -15,9 +15,11 @@ import 'package:ui/ui.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../firebase_options.dart';
-import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
+import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/main/data/main_repository.dart';
+import '../../../feature/my_tests/data/my_test_repository.dart';
+import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';
 import '../../../feature/settings/model/app_settings.dart';
@@ -248,6 +250,8 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
       dependencies.repository = RepositoryContainer(
         authenticationRepository: AuthenticationRepositoryImpl(apiService: dependencies.apiService),
         mainRepository: MainRepositoryImpl(dio: dependencies.dios.dio),
+        myTestRepository: MyTestRepositoryImpl(dio: dependencies.dios.dio),
+        profileRepository: ProfileRepositoryImpl(dio: dependencies.dios.dio),
       );
     },
   ),
