@@ -11,6 +11,7 @@ import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
+import '../../feature/profile/screen/app_documents_screen.dart';
 import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
@@ -28,7 +29,8 @@ enum Routes with OctopusRoute {
   payment('payment', title: 'Payment'),
   referral('referral', title: 'Referral'),
   paymentHistory('paymentHistory', title: 'Payment History'),
-  appInfo('appInfo', title: 'App Info');
+  appInfo('appInfo', title: 'App Info'),
+  appDocuments('appDocuments', title: 'App Documents');
 
   const Routes(this.name, {this.title});
 
@@ -67,5 +69,6 @@ enum Routes with OctopusRoute {
     .referral => const ReferralScreen(),
     .paymentHistory => const PaymentHistoryScreen(),
     .appInfo => const AppInfoScreen(),
+    .appDocuments => const AppDocumentsScreen(),
   };
 }

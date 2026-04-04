@@ -42,6 +42,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   }
 
   void onSelectAmount(String amount) {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
     final digits = amount.replaceAll(RegExp(r'\D'), '');
     final formatted = "${NumberFormat('#,###', 'uz').format(int.parse(digits)).replaceAll(',', ' ')} so'm";
 

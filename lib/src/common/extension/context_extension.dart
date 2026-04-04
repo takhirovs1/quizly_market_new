@@ -62,6 +62,8 @@ extension type Build(BuildContext context) {
   /// [double] extension.
   double get bottomViewInsets => MediaQuery.viewInsetsOf(context).bottom + MediaQuery.paddingOf(context).bottom;
 
+  dynamic get appMetadata => null;
+
   /// [showCustomDialog] extension from [showGeneralDialog]
   Future<void> showCustomDialog({required Widget dialog, bool barrierDismissible = true}) => showGeneralDialog(
     context: context,
