@@ -49,6 +49,7 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
 
   void onPressLike() {}
   void onPressShare() {}
+
   void onPressTestMode(TestModeModel testMode) => context.octopus.push(switch (testMode.type) {
     .custom => Routes.testCustomMode,
     .university => Routes.testUniversityMode,

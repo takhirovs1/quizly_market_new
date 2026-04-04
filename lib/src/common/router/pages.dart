@@ -36,8 +36,7 @@ enum Routes with OctopusRoute {
   referral('referral', title: 'Referral'),
   appInfo('appInfo', title: 'App Info'),
   paymentHistory('paymentHistory', title: 'Payment History'),
-  appInfo('appInfo', title: 'App Info'),
-  appDocuments('appDocuments', title: 'App Documents');
+  appDocuments('appDocuments', title: 'App Documents'),
   testMode('testMode', title: 'Test Mode'),
   testCustomMode('testCustomMode', title: 'Test Custom Mode'),
   testUniversityMode('testUniversityMode', title: 'Test University Mode'),
