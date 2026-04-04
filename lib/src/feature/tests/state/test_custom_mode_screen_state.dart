@@ -14,19 +14,9 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
   int minQuestions = 0;
   int questionStep = 5;
 
-  int get totalQuestions {
-    final n = test.questions.length;
-    return n > 0 ? n : 100;
-  }
+  int totalQuestions = 100;
 
-  final TestModel test = TestModel(
-    id: 1,
-    title: 'O’zbekistonning eng yangi tarixi fanidan testlar',
-    description: 'O’zbekiston tarixi bo‘yicha test savollari',
-    author: 'Toshkent Davlat Iqtisodiyot Universiteti',
-    price: 20000,
-    questions: [],
-  );
+  final TestModel test = TestModel(id: 1, description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
 
   final List<QuestionTimeOption> questionTimeOptions = [
     .seconds15,

@@ -9,11 +9,8 @@ import '../screens/test_mode_screen.dart';
 abstract class TestModeScreenState extends State<TestModeScreen> {
   final TestModel test = TestModel(
     id: 1,
-    title: 'O’zbekistonning eng yangi tarixi fanidan testlar',
     description: 'O’zbekiston tarixi bo‘yicha test savollari',
-    author: 'Toshkent Davlat Iqtisodiyot Universiteti',
     price: 20000,
-    questions: [],
   );
 
   final List<TestModeModel> testModes = [
