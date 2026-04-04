@@ -16,24 +16,9 @@ class _PaymentHistoryScreenState extends PaymentHistoryScreenState {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
     resizeToAvoidBottomInset: false,
-    appBar: AppBar(
-      backgroundColor: context.x.colors.primary,
-      automaticallyImplyLeading: false,
-      scrolledUnderElevation: 0,
-      elevation: 0,
-      toolbarHeight: context.telegramWebApp.safeAreaInset.top + 56,
-      surfaceTintColor: context.x.colors.transparent,
-      title: Column(
-        children: [
-          SizedBox(height: context.telegramWebApp.safeAreaInset.top.toDouble()),
-          Center(
-            child: Text(
-              'Payment History',
-              style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white, fontSize: 24),
-            ),
-          ),
-        ],
-      ),
+    appBar: QuizAppBar(
+      title: context.x.l10n.paymentHistory,
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
     ),
     body: const PaymentHistory(),
   );

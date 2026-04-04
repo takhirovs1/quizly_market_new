@@ -1,13 +1,16 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../settings/screen/settings_scope.dart';
+import '../bloc/profile_cubit.dart';
 import '../screen/profile_screen.dart';
 
 abstract class ProfileScreenState extends State<ProfileScreen> {
+  late final ProfileCubit profileCubit;
   String formatProfileName(String? apiName) {
     final raw = (apiName ?? '').trim();
     if (raw.isEmpty) return '';
@@ -26,9 +29,16 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     return '${lower[0].toUpperCase()}${lower.substring(1)}';
   }
 
-  Future<void> onRefresh() async {}
+  Future<void> onRefresh() async {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.heavy);
+  }
 
-  Locale get currentLocale => SettingsScope.settingsOf(context, listen: true).localization ?? const Locale('en');
+  /// Saved preference, or the locale [MaterialApp] actually resolved when none is saved (system / supported match).
+  Locale get currentLocale {
+    final saved = SettingsScope.settingsOf(context, listen: true).localization;
+    if (saved != null) return saved;
+    return Localizations.localeOf(context);
+  }
 
   void selectLanguage(Locale locale) {
     if (locale.languageCode == currentLocale.languageCode) return;
@@ -46,7 +56,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onCopyCardNumber(String cardNumber) {
     Clipboard.setData(ClipboardData(text: cardNumber));
     context.telegramWebApp.hapticFeedback.impactOccurred(.light);
-    context.x.showNotification(message: 'Card number copied to clipboard');
+    context.x.showNotification(message: context.x.l10n.copyCardID);
   }
 
   void selectThemeMode(ThemeMode mode) {
@@ -181,8 +191,6 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onFrequentlyAskedQuestionsPressed() {}
 
-  void onDocumentsPressed() {}
-
   void onAboutTheAppPressed() {}
 
   void onTopUpBalancePressed() => context.octopus.push(Routes.payment);
@@ -200,35 +208,50 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     context.telegramWebApp.addToHomeScreen();
   }
 
-  void onTermsPressed() {}
+  void onTermsPressed() => context.octopus.push(Routes.appDocuments);
 
   List<ProfileListRow> get menuRows => [
-    ProfileListRow.header((c) => context.x.l10n.home),
+    ProfileListRow.header((c) => context.x.l10n.profileMain),
     ProfileListRow.item(
       (c) => context.x.l10n.topUpBalance,
       onTopUpBalancePressed,
-      Assets.lib.vectors.topUpBalance.svg(package: Constant.packageUi),
+      Assets.lib.vectors.topUpBalance.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.referral,
       onReferralPressed,
-      Assets.lib.vectors.referral.svg(package: Constant.packageUi),
+      Assets.lib.vectors.referral.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.paymentHistory,
       onPaymentHistoryPressed,
-      Assets.lib.vectors.historyTransaction.svg(package: Constant.packageUi),
+      Assets.lib.vectors.historyTransaction.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.archivedTests,
       onArchivedTestsPressed,
-      Assets.lib.vectors.documents.svg(package: Constant.packageUi),
+      Assets.lib.vectors.documents.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.teacher,
-      onTeacherPressed,
-      Assets.lib.vectors.teacherSwap.svg(package: Constant.packageUi),
-    ),
+    // ProfileListRow.item(
+    //   (c) => context.x.l10n.teacher,
+    //   onTeacherPressed,
+    //   Assets.lib.vectors.teacherSwap.svg(
+    //     package: Constant.packageUi,
+    //     colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+    //   ),
+    // ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.integrations),
     ProfileListRow.item(
@@ -239,47 +262,73 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     ProfileListRow.item(
       (c) => context.x.l10n.appleIdConnect,
       onAppleConnectPressed,
-      Assets.lib.vectors.apple.svg(package: Constant.packageUi),
+      Assets.lib.vectors.apple.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.telegramConnect,
       onTelegramConnectPressed,
-      Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
+      Assets.lib.images.telegramLogo.image(
+        package: Constant.packageUi,
+        width: 20,
+        height: 20,
+        // color: context.x.colors.profileIcon,
+      ),
     ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.appearance),
     ProfileListRow.item(
       (c) => context.x.l10n.language,
       onLanguagePressed,
-      Assets.lib.vectors.language.svg(package: Constant.packageUi),
+      Assets.lib.vectors.language.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.theme,
       onThemePressed,
-      Assets.lib.vectors.themeIcon.svg(package: Constant.packageUi),
+      Assets.lib.vectors.themeIcon.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     if (context.telegramWebApp.isSupported)
       ProfileListRow.item(
         (c) => context.x.l10n.installOnHomeScreen,
         onSetHomePressed,
-        Assets.lib.vectors.setHome.svg(package: Constant.packageUi),
+        Assets.lib.vectors.setHome.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
       ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.other),
     ProfileListRow.item(
       (c) => context.x.l10n.help,
       onHelpPressed,
-      Assets.lib.vectors.support.svg(package: Constant.packageUi),
+      Assets.lib.vectors.support.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
-      (c) => context.x.l10n.termsOfUse,
+      (c) => context.x.l10n.documents,
       onTermsPressed,
-      Assets.lib.vectors.documents.svg(package: Constant.packageUi),
+      Assets.lib.vectors.documents.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.app_info,
       onAppInfoPressed,
-      Assets.lib.vectors.informationApp.svg(package: Constant.packageUi),
+      Assets.lib.vectors.informationApp.svg(
+        package: Constant.packageUi,
+        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ),
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.logout,
@@ -290,7 +339,36 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   ];
 
   // Actions
-  Future<void> onLogoutPressed() async {}
+
+  Future<void> onLogoutPressed() async {
+    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    final screenContext = context;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: dialogContext.x.colors.transparent,
+        child: Center(
+          child: LogoutDialog(
+            title: dialogContext.x.l10n.logoutText,
+            description: dialogContext.x.l10n.logoutDescription,
+            cancelButtonText: dialogContext.x.l10n.cancel,
+            successButtonText: dialogContext.x.l10n.logout,
+            onCancelButtonPressed: () => context.bottomSheetPop(),
+            onSuccessButtonPressed: () async {
+              context.bottomSheetPop();
+              await screenContext.x.dependencies.authenticationController.signOut();
+              if (!screenContext.mounted) return;
+              if (screenContext.telegramWebApp.isSupported) {
+                screenContext.telegramWebApp.close();
+              } else {
+                screenContext.octopus.navigate(Routes.login.name);
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
   Future<void> onLogoutAccountPressed() async {}
 
@@ -372,6 +450,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
+    profileCubit = context.read<ProfileCubit>()..loadProfile();
     super.initState();
   }
 

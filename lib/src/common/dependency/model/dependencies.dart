@@ -7,6 +7,8 @@ import 'package:ui/ui.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
 import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/main/data/main_repository.dart';
+import '../../../feature/my_tests/data/my_test_repository.dart';
+import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../service/api_service.dart';
 import 'app_metadata.dart';
@@ -83,11 +85,22 @@ final class DioContainer {
 
 /// [RepositoryContainer] is a container for Repository instances.
 final class RepositoryContainer {
-  RepositoryContainer({required this.authenticationRepository, required this.mainRepository});
+  RepositoryContainer({
+    required this.authenticationRepository,
+    required this.mainRepository,
+    required this.myTestRepository,
+    required this.profileRepository,
+  });
 
   /// [IAuthenticationRepository] for authentication
   final IAuthenticationRepository authenticationRepository;
 
   /// [IMainRepository] for main
   final IMainRepository mainRepository;
+
+  /// [IMyTestRepository] for my tests
+  final IMyTestRepository myTestRepository;
+
+  /// [IProfileRepository] for profile / current user
+  final IProfileRepository profileRepository;
 }

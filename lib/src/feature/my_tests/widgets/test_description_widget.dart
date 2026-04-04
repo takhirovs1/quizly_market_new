@@ -18,7 +18,7 @@ class TestDescriptionWidget extends StatelessWidget {
         crossAxisAlignment: .start,
         spacing: 8,
         children: [
-          Expanded(child: Text(test.title, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 20))),
+          Expanded(child: Text(test.name ?? '', style: context.x.textStyle.sfW700s16.copyWith(fontSize: 20))),
           IconButton(
             onPressed: onPressShare,
             icon: Assets.lib.vectors.share.svg(
@@ -32,9 +32,12 @@ class TestDescriptionWidget extends StatelessWidget {
           ),
         ],
       ),
-      Text(test.author, style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText)),
       Text(
-        test.description,
+        test.createdBy?.toString() ?? '',
+        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+      ),
+      Text(
+        test.description ?? '',
         style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
       ),
     ],

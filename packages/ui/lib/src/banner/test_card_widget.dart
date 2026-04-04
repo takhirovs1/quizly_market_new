@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../extension/context_extension.dart';
 import '../gen/assets.gen.dart';
 
-class BannerWidget extends StatelessWidget {
-  const BannerWidget({
+class TestCardWidget extends StatelessWidget {
+  const TestCardWidget({
     required this.title,
     required this.companyName,
     required this.description,

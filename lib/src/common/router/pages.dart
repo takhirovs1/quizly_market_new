@@ -8,7 +8,10 @@ import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/main/screen/onboarding_screen.dart';
 import '../../feature/main/screen/select_language.dart';
+import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
+import '../../feature/profile/bloc/profile_cubit.dart';
+import '../../feature/profile/screen/app_documents_screen.dart';
 import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
@@ -33,6 +36,8 @@ enum Routes with OctopusRoute {
   referral('referral', title: 'Referral'),
   appInfo('appInfo', title: 'App Info'),
   paymentHistory('paymentHistory', title: 'Payment History'),
+  appInfo('appInfo', title: 'App Info'),
+  appDocuments('appDocuments', title: 'App Documents');
   testMode('testMode', title: 'Test Mode'),
   testCustomMode('testCustomMode', title: 'Test Custom Mode'),
   testUniversityMode('testUniversityMode', title: 'Test University Mode'),
@@ -54,9 +59,20 @@ enum Routes with OctopusRoute {
       create: (_) => AuthCubit(authenticationRepository: context.x.dependencies.repository.authenticationRepository),
       child: const LoginScreen(),
     ),
-    .home => const HomeScreen(),
+    .home => MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository)),
+        BlocProvider(
+          create: (_) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
+        ),
+      ],
+      child: const HomeScreen(),
+    ),
     .onboarding => BlocProvider(
-      create: (_) => MainCubit(mainRepository: context.x.dependencies.repository.mainRepository),
+      create: (_) => MainCubit(
+        mainRepository: context.x.dependencies.repository.mainRepository,
+        localSource: context.x.dependencies.localSource,
+      ),
       child: const OnboardingScreen(),
     ),
     .selectLanguage => const SelectLanguage(),
@@ -66,6 +82,7 @@ enum Routes with OctopusRoute {
     .referral => const ReferralScreen(),
     .paymentHistory => const PaymentHistoryScreen(),
     .appInfo => const AppInfoScreen(),
+    .appDocuments => const AppDocumentsScreen(),
     .testMode => const TestModeScreen(),
     .testCustomMode => const TestCustomModeScreen(),
     .testUniversityMode => const TestUniversityModeScreen(),

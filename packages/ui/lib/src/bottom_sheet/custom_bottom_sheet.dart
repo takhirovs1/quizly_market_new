@@ -62,25 +62,39 @@ class CustomBottomSheet extends StatelessWidget {
       ),
     );
 
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(child: content),
-            if (bottomNavigationBar != null)
-              ColoredBox(
-                color: context.x.colors.white,
-                child: SafeArea(
-                  top: false,
-                  child: Padding(padding: const EdgeInsets.all(16), child: bottomNavigationBar!),
-                ),
-              ),
-          ],
+    // Full-screen barrier: modal route child fills the screen; without this, taps on the
+    // transparent area above the sheet never reach the route barrier and do not dismiss.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context).maybePop(),
+            child: const ColoredBox(color: Colors.transparent),
+          ),
         ),
-      ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(child: content),
+                if (bottomNavigationBar != null)
+                  ColoredBox(
+                    color: context.x.colors.white,
+                    child: SafeArea(
+                      top: false,
+                      child: Padding(padding: const EdgeInsets.all(16), child: bottomNavigationBar!),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

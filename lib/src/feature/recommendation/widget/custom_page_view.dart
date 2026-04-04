@@ -3,11 +3,19 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 
 class CustomPageView extends StatefulWidget {
-  const CustomPageView({required this.items, required this.title, super.key, this.onShowMore});
+  const CustomPageView({
+    required this.items,
+    required this.title,
+    super.key,
+    this.onShowMore,
+    this.onShareButtonPressed,
+  });
 
   final String title;
   final VoidCallback? onShowMore;
   final List<String> items;
+  final void Function(String title, String companyName, String description, String price, String questionAmount)?
+  onShareButtonPressed;
 
   @override
   State<CustomPageView> createState() => _CustomPageViewState();
@@ -113,7 +121,7 @@ class _CustomPageViewState extends State<CustomPageView> {
               padding: const .symmetric(horizontal: 16),
               itemBuilder: (context, index) => SizedBox(
                 width: 350,
-                child: BannerWidget(
+                child: TestCardWidget(
                   title: 'Test nomi',
                   companyName: 'Tashkilot nomi',
                   description: 'Test description Test description Test description Test description',
@@ -121,7 +129,13 @@ class _CustomPageViewState extends State<CustomPageView> {
                   questionAmount: '100 ta savol',
                   buyButtonText: context.x.l10n.buy,
                   onBuyButtonPressed: () {},
-                  onShareButtonPressed: () {},
+                  onShareButtonPressed: () => widget.onShareButtonPressed?.call(
+                    'Test nomi',
+                    'Tashkilot nomi',
+                    'Test description Test description Test description Test description',
+                    '10 000 UZS',
+                    '100 ta savol',
+                  ),
                 ),
               ),
               separatorBuilder: (context, index) => const SizedBox(width: 12),

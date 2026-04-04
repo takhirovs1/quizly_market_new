@@ -10,13 +10,14 @@ class PaymentItemWidget extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 12),
     super.key,
     this.width,
+    this.backgroundColor,
   });
   final Widget child;
   final bool isSelected;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
   final double? width;
-
+  final Color? backgroundColor;
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
@@ -24,9 +25,9 @@ class PaymentItemWidget extends StatelessWidget {
       width: width,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.x.colors.white,
+          color: backgroundColor ?? context.x.colors.white,
           borderRadius: .circular(8),
-          border: .all(color: isSelected ? context.x.colors.primary : context.x.colors.gray, width: 1),
+          border: .all(color: isSelected ? context.x.colors.primary : context.x.colors.gray, width: isSelected ? 2 : 1),
         ),
         child: Padding(padding: padding, child: child),
       ),
