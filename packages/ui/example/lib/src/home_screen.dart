@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'BannerWidget',
                 children: [
                   Center(
-                    child: BannerWidget(
+                    child: TestCardWidget(
                       title: 'Test nomi',
                       companyName: 'Tashkilot nomi',
                       description: 'Test description Test description Test description Test description',
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
                     child: Center(
-                      child: BannerWidget(
+                      child: TestCardWidget(
                         title: 'Test nomi',
                         companyName: 'Tashkilot nomi',
                         description: 'Test description Test description Test description Test description',
@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 12,
                     spacing: 12,
                     children: [
-                      MiniBannerWidget(
+                      MiniTestCardWidget(
                         title: 'Test nomi',
                         companyName: 'Tashkilot nomi',
                         description: 'Test description Test description Test description Test description ',
@@ -220,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Theme(
                         data: Theme.of(context).copyWith(brightness: Brightness.dark),
-                        child: MiniBannerWidget(
+                        child: MiniTestCardWidget(
                           title: 'Test nomi',
                           companyName: 'Tashkilot nomi',
                           description: 'Test description Test description Test description Test description ',

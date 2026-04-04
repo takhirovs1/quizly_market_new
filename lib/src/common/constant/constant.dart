@@ -7,4 +7,6 @@ class Constant {
 
   static const privacyPolicyUrl = '';
   static const packageUi = 'ui';
+
+  static const botUrl = 'https://t.me/prjkttest_bot';
 }

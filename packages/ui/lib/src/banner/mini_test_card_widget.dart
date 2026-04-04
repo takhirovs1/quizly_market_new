@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../extension/context_extension.dart';
 import '../gen/assets.gen.dart';
 
-class MiniBannerWidget extends StatelessWidget {
-  const MiniBannerWidget({
+class MiniTestCardWidget extends StatelessWidget {
+  const MiniTestCardWidget({
     required this.title,
     required this.companyName,
     required this.description,
@@ -12,7 +12,6 @@ class MiniBannerWidget extends StatelessWidget {
     required this.questionAmount,
     required this.buyButtonText,
     required this.onBuyButtonPressed,
-    required this.onShareButtonPressed,
     super.key,
   });
 
@@ -23,7 +22,6 @@ class MiniBannerWidget extends StatelessWidget {
   final String questionAmount;
   final String buyButtonText;
   final VoidCallback onBuyButtonPressed;
-  final VoidCallback onShareButtonPressed;
 
   @override
   Widget build(BuildContext context) => ConstrainedBox(
@@ -90,7 +88,7 @@ class MiniBannerWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.x.colors.bannerPriceText,

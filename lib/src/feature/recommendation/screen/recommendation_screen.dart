@@ -61,6 +61,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 items: const ['Test 1', 'Test 2', 'Test 3'],
                 title: context.x.l10n.recommendation,
                 onShowMore: () => context.octopus.pushNamed(Routes.moreRecommendation.name),
+                onShareButtonPressed: onShareButtonPressed,
               ),
               const SizedBox(height: 16),
               const Padding(padding: .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
@@ -89,7 +90,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                       ],
                     ),
                     for (var i = 0; i < 10; i++)
-                      BannerWidget(
+                      TestCardWidget(
                         title: 'Test $i',
                         companyName: 'Company $i',
                         description: 'Description $i',
@@ -97,7 +98,9 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         questionAmount: '10',
                         buyButtonText: context.x.l10n.buy,
                         onBuyButtonPressed: () {},
-                        onShareButtonPressed: () {},
+                        onShareButtonPressed: () {
+                          onShareButtonPressed('Test $i', 'Company $i', 'Description $i', '100000', '10');
+                        },
                       ),
                   ],
                 ),
