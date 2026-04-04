@@ -18,6 +18,7 @@ import '../../feature/tests/screens/test_custom_mode_screen.dart';
 import '../../feature/tests/screens/test_flashcard_mode.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
+import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
 import '../extension/context_extension.dart';
 
@@ -36,7 +37,8 @@ enum Routes with OctopusRoute {
   testCustomMode('testCustomMode', title: 'Test Custom Mode'),
   testUniversityMode('testUniversityMode', title: 'Test University Mode'),
   testGroupMode('testGroupMode', title: 'Test Group Mode'),
-  testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode');
+  testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode'),
+  testResult('testResult', title: 'Test Result');
 
   const Routes(this.name, {this.title});
 
@@ -69,5 +71,6 @@ enum Routes with OctopusRoute {
     .testUniversityMode => const TestUniversityModeScreen(),
     .testGroupMode => const TestGroupModeScreen(),
     .testFlashcardMode => const TestFlashcardMode(),
+    .testResult => const TestResultScreen(),
   };
 }

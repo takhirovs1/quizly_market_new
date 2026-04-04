@@ -3,6 +3,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../my_tests/widgets/test_description_widget.dart';
 import '../state/test_university_mode_screen.dart';
+import '../widgets/test_result_item_widget.dart';
 import '../widgets/test_title_box_widget.dart';
 
 class TestUniversityModeScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _TestUniversityModeScreenState extends TestUniversityModeScreenState {
     ),
     bottomNavigationBar: SafeArea(
       child: Padding(
-        padding: const .all(20),
+        padding: const .symmetric(horizontal: 20, vertical: 16),
         child: CustomButton(onTap: onPressStartTest, title: 'Testni boshlash', borderRadius: 10),
       ),
     ),
@@ -50,13 +51,21 @@ class _TestUniversityModeScreenState extends TestUniversityModeScreenState {
             ],
           ),
         ),
+        const SizedBox(height: 8),
         Text(
           '100 ta savol orasidan 25 tasi almashib tushadi.',
           style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
         ),
-        const SizedBox(height: 8),
         const SizedBox(height: 14),
-        Text('Javoblar tarixi:', style: context.x.textStyle.sfW500s22),
+        if (result != null && result!.isNotEmpty) ...[
+          Text('Javoblar tarixi:', style: context.x.textStyle.sfW500s16),
+          const SizedBox(height: 8),
+          for (final result in result!)
+            Padding(
+              padding: const .only(bottom: 8),
+              child: TestAttemptWidget(result: result),
+            ),
+        ],
       ],
     ),
   );

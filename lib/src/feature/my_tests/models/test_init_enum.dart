@@ -6,7 +6,8 @@ enum QuestionTimeOption {
   seconds45('45s', Duration(seconds: 45)),
   minute1('1min', Duration(minutes: 1)),
   minutes2('2min', Duration(minutes: 2)),
-  minutes3('3min', Duration(minutes: 3));
+  minutes3('3min', Duration(minutes: 3)),
+  hour1('1h', Duration(hours: 1));
 
   const QuestionTimeOption(this.label, this.duration);
 
