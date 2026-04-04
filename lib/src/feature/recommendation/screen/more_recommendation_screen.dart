@@ -63,11 +63,11 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
               padding: const .symmetric(horizontal: 16),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 210,
-                mainAxisExtent: 215,
+                mainAxisExtent: 230,
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
               ),
-              itemBuilder: (context, index) => MiniBannerWidget(
+              itemBuilder: (context, index) => MiniTestCardWidget(
                 title: 'Example test',
                 companyName: 'QuizlyMarket',
                 description: 'Example test description, Example test description, Example test description',
@@ -75,7 +75,6 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                 questionAmount: '100 ta savol',
                 buyButtonText: context.x.l10n.tryItNow,
                 onBuyButtonPressed: () {},
-                onShareButtonPressed: () {},
               ),
             ),
           ),

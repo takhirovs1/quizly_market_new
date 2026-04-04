@@ -39,7 +39,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                 children: [Text(context.x.l10n.tryItNow, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22))],
               ),
               for (var i = 0; i < 1; i++)
-                BannerWidget(
+                TestCardWidget(
                   title: 'Example test',
                   companyName: 'QuizlyMarket',
                   description: 'Example test description, Example test description, Example test description',
@@ -57,7 +57,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
               for (var i = 0; i < 4; i++)
                 Column(
                   children: [
-                    BannerWidget(
+                    TestCardWidget(
                       title: 'Example test',
                       companyName: 'QuizlyMarket',
                       description: 'Example test description, Example test description, Example test description',
