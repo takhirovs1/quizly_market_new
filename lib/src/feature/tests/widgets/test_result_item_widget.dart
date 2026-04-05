@@ -5,9 +5,10 @@ import '../../../common/extension/context_extension.dart';
 import '../model/test_result_response_model.dart';
 
 class TestAttemptWidget extends StatefulWidget {
-  const TestAttemptWidget({required this.result, this.backgroundColor, super.key});
+  const TestAttemptWidget({required this.result, this.backgroundColor, this.isResultScreen = false, super.key});
   final TestResultResponseModel? result;
   final Color? backgroundColor;
+  final bool isResultScreen;
   @override
   State<TestAttemptWidget> createState() => _TestAttemptWidgetState();
 }
@@ -32,14 +33,16 @@ class _TestAttemptWidgetState extends State<TestAttemptWidget> {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: .circular(16),
-        color: widget.backgroundColor ?? context.x.colors.bannerBackground,
+        color: widget.isResultScreen
+            ? context.x.colors.transparent
+            : (widget.backgroundColor ?? context.x.colors.bannerBackground),
       ),
       child: Padding(
         padding: const .all(12),
         child: Column(
           spacing: 4,
           children: [
-            if (a?.startedAt != null)
+            if (a?.startedAt != null && !widget.isResultScreen)
               Row(
                 mainAxisAlignment: .spaceBetween,
                 children: [
@@ -54,22 +57,22 @@ class _TestAttemptWidgetState extends State<TestAttemptWidget> {
                 ],
               ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.cart.svg(),
+              leadingIcon: Assets.lib.vectors.correct.svg(package: 'ui'),
               leadingTitle: 'context.l10n.correct',
               trailingTitle: correct.toString(),
             ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.check.svg(),
+              leadingIcon: Assets.lib.vectors.wrong.svg(package: 'ui'),
               leadingTitle: 'context.l10n.wrong',
               trailingTitle: wrong.toString(),
             ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.addUser.svg(),
+              leadingIcon: Assets.lib.vectors.timer.svg(package: 'ui'),
               leadingTitle: 'context.l10n.skipped',
               trailingTitle: skipped.toString(),
             ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.home.svg(),
+              leadingIcon: Assets.lib.vectors.timer2.svg(package: 'ui'),
               leadingTitle: 'context.l10n.time',
               trailingTitle: format(Duration(seconds: a?.timeSpentSec ?? 0)),
             ),

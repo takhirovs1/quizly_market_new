@@ -20,7 +20,7 @@ class TestTitleBoxWidget extends StatelessWidget {
       ),
       child: Padding(
         padding: const .symmetric(horizontal: 12, vertical: 6),
-        child: Text(title, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18)),
+        child: Text(title, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 14)),
       ),
     ),
   );

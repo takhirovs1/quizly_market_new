@@ -21,7 +21,7 @@ class _TestResultScreenState extends TestResultScreenState {
     body: ListView(
       padding: const .all(16),
       children: [
-        // Assets.lib.images.testResult.image(width: 100, height: 100),
+        // Assets.lib.images.robotResult.image(package: 'ui'),
         Text('University rejim uchun testni sozlang:', style: context.x.textStyle.sfW500s22, textAlign: .center),
         const SizedBox(height: 12),
         Text(
@@ -30,7 +30,7 @@ class _TestResultScreenState extends TestResultScreenState {
           textAlign: .center,
         ),
         const SizedBox(height: 20),
-        TestAttemptWidget(result: result?.first, backgroundColor: context.x.colors.transparent),
+        TestAttemptWidget(result: result?.first, isResultScreen: true),
         const SizedBox(height: 20),
         if (result != null && result!.isNotEmpty) ...[
           Text('Javoblar tarixi:', style: context.x.textStyle.sfW500s16),
