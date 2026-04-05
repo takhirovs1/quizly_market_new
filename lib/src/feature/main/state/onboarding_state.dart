@@ -12,9 +12,9 @@ abstract class OnboardingState extends State<OnboardingScreen> {
   late final MainCubit mainCubit;
 
   Future<void> onStartApp() async {
-    if (!context.x.dependencies.localSource.isUserAuthenticated) return;
+    // if (!context.x.dependencies.localSource.isUserAuthenticated) return;
     await context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
-    if (!mounted) return;
+    // if (!mounted) return;
     context.octopus.navigate(Routes.home.name);
   }
 
