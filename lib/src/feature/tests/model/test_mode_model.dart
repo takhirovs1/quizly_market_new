@@ -12,7 +12,7 @@ class TestModeModel {
   final int id;
   final String title;
   final String description;
-  final SvgGenImage  image;
+  final SvgGenImage image;
   final TestMode type;
 }
 

@@ -45,6 +45,9 @@ class $LibImagesGen {
   /// File path: lib/images/click_logo.png
   AssetGenImage get clickLogo => const AssetGenImage('lib/images/click_logo.png');
 
+  /// File path: lib/images/cup.png
+  AssetGenImage get cup => const AssetGenImage('lib/images/cup.png');
+
   /// File path: lib/images/default_banner.png
   AssetGenImage get defaultBanner => const AssetGenImage('lib/images/default_banner.png');
 
@@ -127,6 +130,7 @@ class $LibImagesGen {
     click,
     click2,
     clickLogo,
+    cup,
     defaultBanner,
     flexedBiceps,
     logo,
@@ -290,6 +294,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/copy_id.vec
   SvgGenImage get copyId => const SvgGenImage.vec('lib/vectors/copy_id.vec');
 
+  /// File path: lib/vectors/correct.vec
+  SvgGenImage get correct => const SvgGenImage.vec('lib/vectors/correct.vec');
+
   /// File path: lib/vectors/documents.vec
   SvgGenImage get documents => const SvgGenImage.vec('lib/vectors/documents.vec');
 
@@ -356,9 +363,6 @@ class $LibVectorsGen {
   /// File path: lib/vectors/market.vec
   SvgGenImage get market => const SvgGenImage.vec('lib/vectors/market.vec');
 
-  /// File path: lib/vectors/money.vec
-  SvgGenImage get money => const SvgGenImage.vec('lib/vectors/money.vec');
-
   /// File path: lib/vectors/party.vec
   SvgGenImage get party => const SvgGenImage.vec('lib/vectors/party.vec');
 
@@ -404,6 +408,12 @@ class $LibVectorsGen {
   /// File path: lib/vectors/theme_icon.vec
   SvgGenImage get themeIcon => const SvgGenImage.vec('lib/vectors/theme_icon.vec');
 
+  /// File path: lib/vectors/timer.vec
+  SvgGenImage get timer => const SvgGenImage.vec('lib/vectors/timer.vec');
+
+  /// File path: lib/vectors/timer2.vec
+  SvgGenImage get timer2 => const SvgGenImage.vec('lib/vectors/timer2.vec');
+
   /// File path: lib/vectors/top_up_balance.vec
   SvgGenImage get topUpBalance => const SvgGenImage.vec('lib/vectors/top_up_balance.vec');
 
@@ -419,6 +429,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/upload2.vec
   SvgGenImage get upload2 => const SvgGenImage.vec('lib/vectors/upload2.vec');
 
+  /// File path: lib/vectors/wrong.vec
+  SvgGenImage get wrong => const SvgGenImage.vec('lib/vectors/wrong.vec');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     addHome,
@@ -433,6 +446,7 @@ class $LibVectorsGen {
     chevronRight,
     close,
     copyId,
+    correct,
     documents,
     emptyInbox,
     emptyTestDark,
@@ -455,7 +469,6 @@ class $LibVectorsGen {
     like,
     logout,
     market,
-    money,
     party,
     person,
     personSelected,
@@ -471,11 +484,14 @@ class $LibVectorsGen {
     support,
     teacherSwap,
     themeIcon,
+    timer,
+    timer2,
     topUpBalance,
     unfoldMore,
     university,
     upload,
     upload2,
+    wrong,
   ];
 }
 

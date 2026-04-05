@@ -39,11 +39,14 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                   ),
                 ),
               ),
-              Assets.lib.vectors.filter.svg(
-                package: 'ui',
-                width: 24,
-                height: 24,
-                colorFilter: .mode(context.x.colors.primary, .srcATop),
+              GestureDetector(
+                onTap: () => context.telegramWebApp.hapticFeedback.impactOccurred(.medium),
+                child: Assets.lib.vectors.filter.svg(
+                  package: 'ui',
+                  width: 24,
+                  height: 24,
+                  colorFilter: .mode(context.x.colors.primary, .srcATop),
+                ),
               ),
               GestureDetector(
                 onTap: onSortPressed,
@@ -63,7 +66,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
               padding: const .symmetric(horizontal: 16),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 210,
-                mainAxisExtent: 230,
+                mainAxisExtent: 245,
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
               ),
@@ -74,7 +77,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                 price: context.x.l10n.free,
                 questionAmount: '100 ta savol',
                 buyButtonText: context.x.l10n.tryItNow,
-                onBuyButtonPressed: () {},
+                onBuyButtonPressed: () => context.telegramWebApp.hapticFeedback.impactOccurred(.medium),
               ),
             ),
           ),

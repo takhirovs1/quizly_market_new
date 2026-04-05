@@ -9,11 +9,7 @@ import '../screens/test_university_mode_screen.dart';
 
 abstract class TestUniversityModeScreenState extends State<TestUniversityModeScreen> {
   late final ValueNotifier<QuestionTimeOption?> selectedQuestionTime;
-  final TestModel test = TestModel(
-    id: 1,
-    description: 'O’zbekiston tarixi bo‘yicha test savollari',
-    price: 20000,
-  );
+  final TestModel test = TestModel(id: 1, description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
   final List<TestResultResponseModel>? result = [
     TestResultResponseModel(
       id: 1,
@@ -82,7 +78,6 @@ abstract class TestUniversityModeScreenState extends State<TestUniversityModeScr
   ];
   final List<QuestionTimeOption> questionTimeOptions = [.seconds30, .seconds45, .hour1];
   void onPressStartTest() => context.octopus.push(Routes.testResult);
-  
 
   void onPressLike() {}
   void onPressShare() {}
