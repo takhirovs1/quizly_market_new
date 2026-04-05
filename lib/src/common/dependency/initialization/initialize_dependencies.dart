@@ -216,7 +216,6 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
               if (dependencies.localSource.accessToken.isNotEmpty) ...{
                 io.HttpHeaders.authorizationHeader: 'Bearer ${dependencies.localSource.accessToken}',
               },
-
               'Content-Language': dependencies.localSource.localization?.languageCode ?? 'en',
             });
 
