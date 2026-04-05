@@ -666,6 +666,8 @@ class AppTypography extends ThemeExtension<AppTypography> {
     required this.sfW500s12,
     required this.sfW500s11,
     required this.sfW400s10,
+    // Nunito
+    required this.nunitoW600s24,
   });
 
   /// The text color
@@ -718,6 +720,8 @@ class AppTypography extends ThemeExtension<AppTypography> {
     sfW500s12: byDefault.sfW500s12.copyWith(color: lightTextColor),
     sfW500s11: byDefault.sfW500s11.copyWith(color: lightTextColor),
     sfW400s10: byDefault.sfW400s10.copyWith(color: lightTextColor),
+    // Nunito
+    nunitoW600s24: byDefault.nunitoW600s24.copyWith(color: lightTextColor),
   );
 
   // ─── Dark theme ────────────────────────────────────────────────────────────
@@ -766,6 +770,8 @@ class AppTypography extends ThemeExtension<AppTypography> {
     sfW500s12: byDefault.sfW500s12.copyWith(color: darkTextColor),
     sfW500s11: byDefault.sfW500s11.copyWith(color: darkTextColor),
     sfW400s10: byDefault.sfW400s10.copyWith(color: darkTextColor),
+    // Nunito
+    nunitoW600s24: byDefault.nunitoW600s24.copyWith(color: darkTextColor),
   );
 
   // ─── Default ───────────────────────────────────────────────────────────────
@@ -1094,6 +1100,15 @@ class AppTypography extends ThemeExtension<AppTypography> {
       height: 1.2,
       package: 'ui',
     ),
+    // Nunito
+    nunitoW600s24: TextStyle(
+      fontFamily: FontFamily.nunito,
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      fontStyle: FontStyle.normal,
+      height: 1.2,
+      package: 'ui',
+    ),
   );
 
   // ─── sFProDisplay fields ─────────────────────────────────────────────────────────
@@ -1220,6 +1235,9 @@ class AppTypography extends ThemeExtension<AppTypography> {
   /// SF Pro Small 10px w400
   final TextStyle sfW400s10;
 
+  /// Nunito Title SemiBold 20px w600
+  final TextStyle nunitoW600s24;
+
   @override
   Object get type => 'AppTypography';
 
@@ -1267,6 +1285,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
     TextStyle? sfW500s12,
     TextStyle? sfW500s11,
     TextStyle? sfW400s10,
+    TextStyle? nunitoW600s24,
   }) => AppTypography(
     w400s57: w400s57 ?? this.w400s57,
     w400s45: w400s45 ?? this.w400s45,
@@ -1308,6 +1327,7 @@ class AppTypography extends ThemeExtension<AppTypography> {
     sfW500s12: sfW500s12 ?? this.sfW500s12,
     sfW500s11: sfW500s11 ?? this.sfW500s11,
     sfW400s10: sfW400s10 ?? this.sfW400s10,
+    nunitoW600s24: nunitoW600s24 ?? this.nunitoW600s24,
   );
 
   @override
@@ -1357,6 +1377,8 @@ class AppTypography extends ThemeExtension<AppTypography> {
           sfW500s12: TextStyle.lerp(sfW500s12, other.sfW500s12, t) ?? sfW500s12,
           sfW500s11: TextStyle.lerp(sfW500s11, other.sfW500s11, t) ?? sfW500s11,
           sfW400s10: TextStyle.lerp(sfW400s10, other.sfW400s10, t) ?? sfW400s10,
+          // Nunito
+          nunitoW600s24: TextStyle.lerp(nunitoW600s24, other.nunitoW600s24, t) ?? nunitoW600s24,
         );
 
   @override
