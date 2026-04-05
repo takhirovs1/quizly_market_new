@@ -1,6 +1,7 @@
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
+import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/models/test_mode.dart';
 import '../model/test_mode_model.dart';
@@ -41,7 +42,15 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
   ];
 
   void onPressLike() {}
-  void onPressShare() {}
+  void onPressShare() {
+    context.shareTest(
+      'Example test',
+      'QuizlyMarket',
+      'Example test description, Example test description, Example test description',
+      '100000',
+      '100',
+    );
+  }
 
   void onPressTestMode(TestModeModel testMode) => context.octopus.push(switch (testMode.type) {
     .custom => Routes.testCustomMode,

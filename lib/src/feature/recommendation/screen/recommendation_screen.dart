@@ -67,7 +67,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                   context.octopus.pushNamed(Routes.moreRecommendation.name);
                   context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
                 },
-                onShareButtonPressed: onShareButtonPressed,
+                onShareButtonPressed: context.shareTest,
               ),
               const SizedBox(height: 16),
               const Padding(padding: .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
@@ -106,7 +106,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         onBuyButtonPressed: () {},
                         onShareButtonPressed: () {
                           context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
-                          onShareButtonPressed('Test $i', 'Company $i', 'Description $i', '100000', '10');
+                          context.shareTest('Test $i', 'Company $i', 'Description $i', '100000', '10');
                         },
                       ),
                   ],

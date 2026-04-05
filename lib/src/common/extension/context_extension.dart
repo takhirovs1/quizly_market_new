@@ -8,6 +8,7 @@ import 'package:octopus/octopus.dart';
 import 'package:telegram_web_app/telegram_web_app.dart';
 import 'package:ui/ui.dart';
 
+import '../constant/constant.dart';
 import '../dependency/model/dependencies.dart';
 import '../dependency/widget/dependencies_scope.dart';
 import '../util/screen_util.dart';
@@ -212,5 +213,13 @@ extension TelegramWebAppX on BuildContext {
     telegramWebApp.hapticFeedback.impactOccurred(.light);
     if (!mounted) return;
     octopus.pop();
+  }
+
+  void shareTest(String title, String companyName, String description, String price, String questionAmount) {
+    const fallbackProductId = '1234567';
+    const link = '${Constant.botUrl}?startapp=$fallbackProductId';
+    final message = x.l10n.shareTestCopy(companyName, description, title, questionAmount, link);
+    final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
+    telegramWebApp.openTelegramLink(shareLink);
   }
 }

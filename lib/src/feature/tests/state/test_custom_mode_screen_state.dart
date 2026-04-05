@@ -1,6 +1,7 @@
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
+import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/models/test_init_enum.dart';
 import '../../my_tests/models/test_mode.dart';
@@ -45,7 +46,15 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
     ),
   ];
   void onPressLike() {}
-  void onPressShare() {}
+  void onPressShare() {
+    context.shareTest(
+      'Example test',
+      'QuizlyMarket',
+      'Example test description, Example test description, Example test description',
+      '100000',
+      '100',
+    );
+  }
 
   RangeValues snapRange(RangeValues values) {
     final min = minQuestions.toDouble();
