@@ -49,7 +49,9 @@ void main(List<String> args) async {
   // Iterate through all SVG files
   for (final file in svgFiles) {
     final inputFile = file.path;
-    final baseName = inputFile.split('.').firstOrNull?.split('/').lastOrNull;
+    final normalized = inputFile.replaceAll('\\', '/');
+    final baseName = normalized.split('/').last.split('.').first;
+
     final outputFile = '${vecDirectory.path}/$baseName.vec';
 
     // Skipping if the .vec file already exists
@@ -92,8 +94,25 @@ Future<List<File>> _getSvgFiles({required Directory dir}) async {
 /// [inputFile] The path to the input SVG file
 /// [outputFile] The path where the output VEC file should be saved
 Future<void> _compileVector({required String inputFile, required String outputFile}) async {
-  final result = await Process.run('dart', ['run', 'vector_graphics_compiler', '-i', inputFile, '-o', outputFile]);
+  final input = inputFile.replaceAll('\\', '/');
+  final output = outputFile.replaceAll('\\', '/');
 
+  // papkani yaratish (MUHIM!)
+  final outDir = Directory(output).parent;
+  if (!outDir.existsSync()) {
+    outDir.createSync(recursive: true);
+  }
+
+  final result = await Process.run('dart', [
+    'pub',
+    'global',
+    'run',
+    'vector_graphics_compiler',
+    '-i',
+    input,
+    '-o',
+    output,
+  ]);
   // Print the result of the compilation process
   if (result.exitCode == 0) {
     _newGeneratedVecFilesCount++;

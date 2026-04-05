@@ -314,8 +314,14 @@ class $LibVectorsGen {
   /// File path: lib/vectors/filter.vec
   SvgGenImage get filter => const SvgGenImage.vec('lib/vectors/filter.vec');
 
+  /// File path: lib/vectors/flashcards.vec
+  SvgGenImage get flashcards => const SvgGenImage.vec('lib/vectors/flashcards.vec');
+
   /// File path: lib/vectors/google.vec
   SvgGenImage get google => const SvgGenImage.vec('lib/vectors/google.vec');
+
+  /// File path: lib/vectors/group.vec
+  SvgGenImage get group => const SvgGenImage.vec('lib/vectors/group.vec');
 
   /// File path: lib/vectors/hide.vec
   SvgGenImage get hide => const SvgGenImage.vec('lib/vectors/hide.vec');
@@ -359,6 +365,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/person.vec
   SvgGenImage get person => const SvgGenImage.vec('lib/vectors/person.vec');
 
+  /// File path: lib/vectors/person_selected.vec
+  SvgGenImage get personSelected => const SvgGenImage.vec('lib/vectors/person_selected.vec');
+
   /// File path: lib/vectors/profile.vec
   SvgGenImage get profile => const SvgGenImage.vec('lib/vectors/profile.vec');
 
@@ -401,6 +410,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/unfold_more.vec
   SvgGenImage get unfoldMore => const SvgGenImage.vec('lib/vectors/unfold_more.vec');
 
+  /// File path: lib/vectors/university.vec
+  SvgGenImage get university => const SvgGenImage.vec('lib/vectors/university.vec');
+
   /// File path: lib/vectors/upload.vec
   SvgGenImage get upload => const SvgGenImage.vec('lib/vectors/upload.vec');
 
@@ -429,7 +441,9 @@ class $LibVectorsGen {
     feedback,
     fileIcon,
     filter,
+    flashcards,
     google,
+    group,
     hide,
     historyTransaction,
     home,
@@ -444,6 +458,7 @@ class $LibVectorsGen {
     money,
     party,
     person,
+    personSelected,
     profile,
     questionMark,
     referral,
@@ -458,6 +473,7 @@ class $LibVectorsGen {
     themeIcon,
     topUpBalance,
     unfoldMore,
+    university,
     upload,
     upload2,
   ];

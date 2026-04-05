@@ -66,7 +66,7 @@ class _ActionListTileState extends ActionListTileState {
             spacing: 6,
             children: [
               DecoratedBox(
-                decoration: BoxDecoration(shape: BoxShape.circle, color: ThemeColors.of(context).white),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: context.x.colors.scaffoldBackground),
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: widget.icon ?? Icon(Icons.person, color: widget.iconColor, size: 20),

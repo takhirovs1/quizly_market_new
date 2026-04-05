@@ -97,6 +97,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom navigation bar selected icon color
     required this.bottomNavigationBarSelectedColor,
+
+    // profile icon color
+    required this.profileIcon,
   });
 
   factory ThemeColors.of(BuildContext context) {
@@ -276,6 +279,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// text field background color light[0xffF3F4F6] dark[0xff1E293B]
   final Color textFieldBackground;
 
+  /// profile icon color light[0xFF007AFF] dark[0xFF007AFF]
+  final Color profileIcon;
+
   /// The default light theme colors.
   static const light = ThemeColors(
     error: Color(0xFFFF2F22),
@@ -367,6 +373,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // text field background
     textFieldBackground: Color(0xffF3F4F6),
+
+    // profile icon color
+    profileIcon: Color(0xFF000000),
   );
 
   /// The default dark theme colors.
@@ -460,6 +469,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // text field background
     textFieldBackground: Color(0xff1E293B),
+
+    // profile icon color
+    profileIcon: Color(0xFFFFFFFF),
   );
 
   @override
@@ -551,6 +563,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // text field background
     Color? textFieldBackground,
+
+    // profile icon color
+    Color? profileIcon,
   }) => ThemeColors(
     error: error ?? this.error,
     onError: onError ?? this.onError,
@@ -637,6 +652,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // text field background
     textFieldBackground: textFieldBackground ?? this.textFieldBackground,
+
+    // profile icon color
+    profileIcon: profileIcon ?? this.profileIcon,
   );
 
   @override
@@ -741,6 +759,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
           // text field background
           textFieldBackground: Color.lerp(textFieldBackground, other.textFieldBackground, t)!,
+
+          // profile icon color
+          profileIcon: Color.lerp(profileIcon, other.profileIcon, t)!,
         );
 
   @override

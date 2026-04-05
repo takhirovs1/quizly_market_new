@@ -7,8 +7,10 @@
    * Override with `?tgUser=...` or `localStorage tgDebugUser` (JSON user only); then `initData` is rebuilt
    * using `auth_date` / `hash` from this default string.
    */
+
   const DEFAULT_TELEGRAM_INIT_DATA =
-    "user=%7B%22id%22%3A1251798314%2C%22first_name%22%3A%22Takhirov%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Takhirovs%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPv8sJMzN7dZuMSud-i2sgBEsm1XHx-1alxOrHEO5BX8.svg%22%7D&chat_instance=3624369482635394789&chat_type=private&auth_date=1775057970&signature=OOh2C88ggKSApZX9r_2fHMTKocWhEgO4R1zW8f3AErzp016ZwqlBY5SCzqMK3NREkrp5iWP8CV6pn__xsODzCQ&hash=34cbb317d4b0dc5636cea2b74d0791faedd71e5b62f52035f9ebbfc72b28c28c";
+    "user=%7B%22id%22%3A1251798314%2C%22first_name%22%3A%22Takhirov%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Takhirovs%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPv8sJMzN7dZuMSud-i2sgBEsm1XHx-1alxOrHEO5BX8.svg%22%7D&chat_instance=995270295019096179&chat_type=sender&auth_date=1775315100&signature=FZ5zb4-mXM3vckCWS7KppcvFnRsJfMkBOos6Due45Hlp7j1wYlXTvroFUA_nOuJe8nr5MbsNsGtW2dSD-eQsCg&hash=846a31496ceef73c9177f36c840875454900319a5def44226aa4efe3e8404cce";
+
 
   const parseDefaultInitData = (raw) => {
     const sp = new URLSearchParams(raw);
