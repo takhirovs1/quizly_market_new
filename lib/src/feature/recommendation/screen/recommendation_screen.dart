@@ -45,11 +45,14 @@ class _RecommendationScreenState extends RecommendationScreenState {
                   ),
                 ),
               ),
-              Assets.lib.vectors.filter.svg(
-                package: 'ui',
-                width: 24,
-                height: 24,
-                colorFilter: .mode(context.x.colors.primary, .srcATop),
+              GestureDetector(
+                onTap: () => context.telegramWebApp.hapticFeedback.impactOccurred(.medium),
+                child: Assets.lib.vectors.filter.svg(
+                  package: 'ui',
+                  width: 24,
+                  height: 24,
+                  colorFilter: .mode(context.x.colors.primary, .srcATop),
+                ),
               ),
             ],
           ),
@@ -60,7 +63,10 @@ class _RecommendationScreenState extends RecommendationScreenState {
               CustomPageView(
                 items: const ['Test 1', 'Test 2', 'Test 3'],
                 title: context.x.l10n.recommendation,
-                onShowMore: () => context.octopus.pushNamed(Routes.moreRecommendation.name),
+                onShowMore: () {
+                  context.octopus.pushNamed(Routes.moreRecommendation.name);
+                  context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
+                },
                 onShareButtonPressed: onShareButtonPressed,
               ),
               const SizedBox(height: 16),
@@ -99,6 +105,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         buyButtonText: context.x.l10n.buy,
                         onBuyButtonPressed: () {},
                         onShareButtonPressed: () {
+                          context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
                           onShareButtonPressed('Test $i', 'Company $i', 'Description $i', '100000', '10');
                         },
                       ),

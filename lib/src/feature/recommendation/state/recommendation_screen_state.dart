@@ -10,8 +10,7 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
   void onShareButtonPressed(String title, String companyName, String description, String price, String questionAmount) {
     const fallbackProductId = '1234567';
     const link = '${Constant.botUrl}?startapp=$fallbackProductId';
-    final message =
-        'Решайте тесты удобно и быстро в QuizlyMarket 😊.\n\nУниверситет: $companyName\nКурс: $description\nПредмет: $title\nКоличество вопросов: $questionAmount ta\n\nСсылка: $link';
+    final message = context.x.l10n.shareTestCopy(companyName, description, title, questionAmount, link);
     final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
     context.telegramWebApp.openTelegramLink(shareLink);
   }

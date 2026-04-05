@@ -216,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         questionAmount: '100 ta savol',
                         buyButtonText: 'Sotib olish',
                         onBuyButtonPressed: () {},
-                        onShareButtonPressed: () {},
                       ),
                       Theme(
                         data: Theme.of(context).copyWith(brightness: Brightness.dark),
@@ -228,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           questionAmount: '100 ta savol',
                           buyButtonText: 'Sotib olish',
                           onBuyButtonPressed: () {},
-                          onShareButtonPressed: () {},
                         ),
                       ),
                     ],

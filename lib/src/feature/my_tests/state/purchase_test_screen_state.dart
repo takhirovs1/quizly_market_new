@@ -1,7 +1,9 @@
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/router/pages.dart';
 import '../models/payment_model.dart';
 import '../screen/purchase_test_screen.dart';
 
@@ -130,7 +132,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
             cancelButtonText: 'Chiqish',
             successButtonText: 'Kirish',
             onCancelButtonPressed: () => Navigator.pop(context),
-            onSuccessButtonPressed: () => Navigator.pop(context),
+            onSuccessButtonPressed: () => context.octopus.push(Routes.testMode),
           ),
         ),
       ),
