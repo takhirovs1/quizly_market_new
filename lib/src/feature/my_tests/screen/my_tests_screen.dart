@@ -59,7 +59,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
               const SizedBox(height: 12),
               if (state.topTests.isEmpty && state.status.isLoading)
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
+                  padding: .symmetric(vertical: 24),
                   child: Center(child: CircularProgressIndicator.adaptive()),
                 )
               else ...[
@@ -71,7 +71,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                         companyName: test.categoryName ?? '',
                         description: test.description ?? '',
                         price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
-                        questionAmount: '${test.questionCount ?? 0} ta savol',
+                        questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
                         buyButtonText: test.isPurchased == true ? context.x.l10n.tryItNow : context.x.l10n.buy,
                         onBuyButtonPressed: onBuyTestPressed,
                         isFree: test.price == 0 || test.price == null,

@@ -93,15 +93,7 @@ fluttergen: ## Generate assets with flutter_gen
 
 .PHONY: l10n
 l10n: ## Generate localization files
-	@dart pub global activate sheety_localization
-	@dart pub global run sheety_localization:generate \
-		--credentials=packages/localization/credentials.json \
-		--sheet=1_tACbV1NUU-7-AmZNYWXkHbZHM9PN2WjjSfNYr0tZhQ \
-		--lib=./packages/localization/lib/ \
-		--arb=src/l10n \
-		--gen=src/generated \
-		--prefix=intl \
-	  --format
+	@cd packages/localization && flutter gen-l10n
 
 .PHONY: l10n-untranslated
 l10n-untranslated: ## Generate untranslated localization files

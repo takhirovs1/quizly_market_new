@@ -5,5 +5,4 @@ library;
 export 'package:flutter_localizations/flutter_localizations.dart';
 
 export 'src/generated/app/app_localization.dart';
-export 'src/generated/Sheet2/Sheet2_localization.dart';
-export 'src/generated/locales.dart';
+
