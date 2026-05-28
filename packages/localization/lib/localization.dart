@@ -5,4 +5,3 @@ library;
 export 'package:flutter_localizations/flutter_localizations.dart';
 
 export 'src/generated/app/app_localization.dart';
-
