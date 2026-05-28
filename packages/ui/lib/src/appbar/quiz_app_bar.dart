@@ -24,7 +24,10 @@ class QuizAppBar extends StatelessWidget implements PreferredSizeWidget {
         Center(
           child: Text(
             title,
-            style: context.x.textStyle.w400s24.copyWith(color: context.x.colors.white, fontWeight: FontWeight.w600),
+            style: context.x.textStyle.nunitoW600s24.copyWith(
+              color: context.x.colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],

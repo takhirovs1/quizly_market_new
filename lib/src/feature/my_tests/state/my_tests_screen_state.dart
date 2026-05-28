@@ -43,5 +43,12 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
 
   void onShareTestPressed() {
     context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.shareTest(
+      'Example test',
+      'QuizlyMarket',
+      'Example test description, Example test description, Example test description',
+      '100000',
+      '100',
+    );
   }
 }

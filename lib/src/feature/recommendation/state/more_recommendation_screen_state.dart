@@ -11,7 +11,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     showModalBottomSheet<void>(
       context: context,
       builder: (context) => BottomSheetView(
-        backgroundColor: context.x.colors.white,
+        backgroundColor: context.x.colors.bottomSheetSurface,
         onClose: () => Navigator.pop(context),
         isCenterTitle: false,
         title: context.x.l10n.sort,
@@ -24,7 +24,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
               for (var i = 0; i < 2; i++)
                 DecoratedBox(
                   decoration: BoxDecoration(
-                    color: context.x.colors.white,
+                    color: context.x.colors.scaffoldBackground,
                     borderRadius: const .all(.circular(16)),
                     boxShadow: [
                       BoxShadow(
