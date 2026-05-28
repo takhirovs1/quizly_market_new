@@ -1,5 +1,6 @@
 // {"items":[{"id":1,"category_id":1,"created_by":2,"name":"Basic Science Quiz","description":"A quiz about basic science topics.","price":0,"is_purchased":false,"created_at":"2026-01-10T09:00:00Z"},{"id":2,"category_id":1,"created_by":3,"name":"Advanced Physics","description":"Deep-dive into physics concepts.","price":5000000,"is_purchased":true,"created_at":"2026-02-05T11:00:00Z"}],"limit":20,"offset":0}
 
+import '../../../common/extension/number_extension.dart';
 import '../../../common/extension/string_extension.dart';
 
 class TestModelRequest {
@@ -19,16 +20,23 @@ class TestModel {
     this.description,
     this.price,
     this.isPurchased,
+    this.questionCount,
+    this.likeCount,
+    this.categoryName,
     this.createdAt,
   });
+
   factory TestModel.fromJson(Map<String, Object?> json) => TestModel(
-    id: json['id'] as int,
-    categoryId: json['category_id'] as int,
-    createdBy: json['created_by'] as int,
-    name: json['name'] as String,
-    description: json['description'] as String,
-    price: json['price'] as int,
-    isPurchased: json['is_purchased'] as bool,
+    id: json['id'].toIntOrNull,
+    categoryId: json['category_id'].toIntOrNull,
+    createdBy: json['created_by'].toIntOrNull,
+    name: json['name'] as String?,
+    description: json['description'] as String?,
+    price: json['price'].toIntOrNull,
+    isPurchased: json['is_purchased'] as bool?,
+    questionCount: json['question_count'].toIntOrNull,
+    likeCount: json['like_count'].toIntOrNull,
+    categoryName: json['category_name'] as String?,
     createdAt: json['created_at'].toDateTimeOrNull,
   );
 
@@ -39,5 +47,8 @@ class TestModel {
   final String? description;
   final int? price;
   final bool? isPurchased;
+  final int? questionCount;
+  final int? likeCount;
+  final String? categoryName;
   final DateTime? createdAt;
 }

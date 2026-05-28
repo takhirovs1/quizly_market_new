@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
 import '../bloc/profile_cubit.dart';
 import '../state/profile_screen_state.dart';
 import '../widget/profile_payment_card.dart';
@@ -23,119 +24,188 @@ class _ProfileScreenState extends ProfileScreenState {
       statusBarBrightness: Theme.of(context).brightness,
     ),
     child: BlocBuilder<ProfileCubit, ProfileState>(
-      builder: (context, state) => Scaffold(
-        backgroundColor: context.x.colors.scaffoldBackground,
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxScrolled) => [
-            SliverAppBar(
+      builder: (context, state) {
+        final user = state.user;
+
+        if (user == null) {
+          if (state.status.isLoading) {
+            return Scaffold(
               backgroundColor: context.x.colors.scaffoldBackground,
-              surfaceTintColor: context.x.colors.transparent,
-              expandedHeight: expandedHeaderHeight(context),
-              toolbarHeight: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.top + 56 : 56,
-              floating: false,
-              pinned: true,
-              centerTitle: true,
-              flexibleSpace: LayoutBuilder(
-                builder: (context, constraints) {
-                  final layout = headerLayout(context, constraints);
-                  return Stack(
-                    fit: .expand,
+              body: const Center(child: CircularProgressIndicator.adaptive()),
+            );
+          } else if (state.status.isError) {
+            final code = currentLocale.languageCode;
+            final errorText = switch (code) {
+              'uz' => 'Profil yuklashda xatolik yuz berdi',
+              'kk' => 'Профил юклашда хатолик юз берди',
+              'ru' => 'Произошла ошибка при загрузке профиля',
+              _ => 'Failed to load profile',
+            };
+            final retryText = switch (code) {
+              'uz' => 'Qayta urinish',
+              'kk' => 'Қайта уриниш',
+              'ru' => 'Повторить попытку',
+              _ => 'Retry',
+            };
+            return Scaffold(
+              backgroundColor: context.x.colors.scaffoldBackground,
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ColoredBox(color: context.x.colors.scaffoldBackground),
-                      SafeArea(
-                        bottom: false,
-                        child: Align(
-                          alignment: Alignment(0, -0.25 * (1 - layout.t)),
-                          child: Opacity(
-                            opacity: layout.headerAlpha,
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxHeight: (constraints.maxHeight - MediaQuery.paddingOf(context).top - 8).clamp(
-                                  0.0,
-                                  10000.0,
-                                ),
-                              ),
-                              child: FittedBox(
-                                fit: .scaleDown,
-                                alignment: .bottomCenter,
-                                child: Column(
-                                  mainAxisSize: .min,
-                                  children: [
-                                    SizedBox(
-                                      height: context.telegramWebApp.isSupported
-                                          ? context.telegramWebApp.safeAreaInset.top.toDouble()
-                                          : 0,
-                                    ),
-                                    ClipRRect(
-                                      borderRadius: .circular(layout.avatar / 2),
-                                      child: SizedBox(
-                                        width: 100,
-                                        height: 100,
-                                        child: Assets.lib.images.samandar.image(package: 'ui', fit: .cover),
-                                      ),
-                                    ),
-                                    SizedBox(height: headerNameSpacing(layout.expandedHeight)),
-                                    Padding(
-                                      padding: .symmetric(horizontal: nameHorizontalPadding(layout.width)),
-                                      child: Text(
-                                        'Samandar Takhirov',
-                                        maxLines: 1,
-                                        overflow: .ellipsis,
-                                        textAlign: .center,
-                                        style: context.x.textStyle.sfW700s28.copyWith(
-                                          fontSize: nameSizeExpanded(layout.width),
-                                          color: context.x.colors.primary,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Padding(
-                                      padding: .symmetric(horizontal: phoneHorizontalPadding(layout.width)),
-                                      child: Text(
-                                        'ID: 1234567890 User: @Takhirovs',
-                                        maxLines: 1,
-                                        overflow: .ellipsis,
-                                        textAlign: .center,
-                                        style: context.x.textStyle.sfW400s14.copyWith(
-                                          fontSize: phoneSize(layout.width),
-                                          color: context.x.colors.gray,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      Text(
+                        state.errorMessage ?? errorText,
+                        textAlign: TextAlign.center,
+                        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.error),
                       ),
-                      SafeArea(
-                        bottom: false,
-                        child: Align(
-                          alignment: .topCenter,
-                          child: SizedBox(
-                            height: kToolbarHeight,
-                            child: Center(
-                              child: Opacity(
-                                opacity: layout.titleAlpha,
-                                child: Padding(
-                                  padding: .symmetric(horizontal: collapsedTitleHorizontalPadding(layout.width)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.read<ProfileCubit>().loadProfile(),
+                        child: Text(retryText),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+        }
+
+        // If user is null but not loading or error (e.g. idle/initial state),
+        // fallback to loader while the initState trigger runs.
+        if (user == null) {
+          return Scaffold(
+            backgroundColor: context.x.colors.scaffoldBackground,
+            body: const Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: context.x.colors.scaffoldBackground,
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxScrolled) => [
+              SliverAppBar(
+                backgroundColor: context.x.colors.scaffoldBackground,
+                surfaceTintColor: context.x.colors.transparent,
+                expandedHeight: expandedHeaderHeight(context),
+                toolbarHeight: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.top + 56 : 56,
+                floating: false,
+                pinned: true,
+                centerTitle: true,
+                flexibleSpace: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final layout = headerLayout(context, constraints);
+
+                    final displayNameStr = formatProfileName(user.displayName);
+                    final idStr = 'ID: ${user.telegramChatId ?? user.id ?? ""}';
+                    final usernameStr = user.username != null && user.username!.isNotEmpty
+                        ? ' User: @${user.username}'
+                        : '';
+                    final subtitleStr = '$idStr$usernameStr';
+
+                    final firstLetter = displayNameStr.isNotEmpty ? displayNameStr[0].toUpperCase() : '';
+                    final fallbackAvatar = Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: context.x.colors.primary.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        firstLetter,
+                        style: context.x.textStyle.sfW700s28.copyWith(color: context.x.colors.primary, fontSize: 36),
+                      ),
+                    );
+
+                    final avatarUrl = user.avatarUrl;
+                    Widget avatarWidget;
+                    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+                      avatarWidget = Image.network(
+                        avatarUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator.adaptive());
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          if (avatarUrl.toLowerCase().contains('.svg') || avatarUrl.toLowerCase().contains('userpic')) {
+                            return SvgPicture.network(
+                              avatarUrl,
+                              fit: BoxFit.cover,
+                              placeholderBuilder: (context) => fallbackAvatar,
+                            );
+                          }
+                          return fallbackAvatar;
+                        },
+                      );
+                    } else {
+                      avatarWidget = fallbackAvatar;
+                    }
+
+                    return Stack(
+                      fit: .expand,
+                      children: [
+                        ColoredBox(color: context.x.colors.scaffoldBackground),
+                        SafeArea(
+                          bottom: false,
+                          child: Align(
+                            alignment: Alignment(0, -0.25 * (1 - layout.t)),
+                            child: Opacity(
+                              opacity: layout.headerAlpha,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxHeight: (constraints.maxHeight - MediaQuery.paddingOf(context).top - 8).clamp(
+                                    0.0,
+                                    10000.0,
+                                  ),
+                                ),
+                                child: FittedBox(
+                                  fit: .scaleDown,
+                                  alignment: Alignment.bottomCenter,
                                   child: Column(
-                                    crossAxisAlignment: .center,
-                                    mainAxisAlignment: .center,
+                                    mainAxisSize: .min,
                                     children: [
-                                      SizedBox(height: context.telegramWebApp.safeAreaInset.top.toDouble() + 10),
-                                      Text(
-                                        'Samandar Takhirov',
-                                        maxLines: 1,
-                                        overflow: .ellipsis,
-                                        textAlign: .center,
-                                        style: context.x.textStyle.sfW700s16.copyWith(
-                                          fontSize: nameSizeCollapsed(layout.width),
-                                          color: context.x.colors.primary,
+                                      SizedBox(
+                                        height: context.telegramWebApp.isSupported
+                                            ? context.telegramWebApp.safeAreaInset.top.toDouble()
+                                            : 0,
+                                      ),
+                                      ClipRRect(
+                                        borderRadius: .circular(layout.avatar / 2),
+                                        child: SizedBox(width: 100, height: 100, child: avatarWidget),
+                                      ),
+                                      SizedBox(height: headerNameSpacing(layout.expandedHeight)),
+                                      Padding(
+                                        padding: .symmetric(horizontal: nameHorizontalPadding(layout.width)),
+                                        child: Text(
+                                          displayNameStr,
+                                          maxLines: 1,
+                                          overflow: .ellipsis,
+                                          textAlign: .center,
+                                          style: context.x.textStyle.sfW700s28.copyWith(
+                                            fontSize: nameSizeExpanded(layout.width),
+                                            color: context.x.colors.primary,
+                                          ),
                                         ),
                                       ),
+                                      const SizedBox(height: 4),
+                                      Padding(
+                                        padding: .symmetric(horizontal: phoneHorizontalPadding(layout.width)),
+                                        child: Text(
+                                          subtitleStr,
+                                          maxLines: 1,
+                                          overflow: .ellipsis,
+                                          textAlign: .center,
+                                          style: context.x.textStyle.sfW400s14.copyWith(
+                                            fontSize: phoneSize(layout.width),
+                                            color: context.x.colors.gray,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
                                     ],
                                   ),
                                 ),
@@ -143,61 +213,95 @@ class _ProfileScreenState extends ProfileScreenState {
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                        SafeArea(
+                          bottom: false,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: SizedBox(
+                              height: kToolbarHeight,
+                              child: Center(
+                                child: Opacity(
+                                  opacity: layout.titleAlpha,
+                                  child: Padding(
+                                    padding: .symmetric(horizontal: collapsedTitleHorizontalPadding(layout.width)),
+                                    child: Column(
+                                      crossAxisAlignment: .center,
+                                      mainAxisAlignment: .center,
+                                      children: [
+                                        SizedBox(height: context.telegramWebApp.safeAreaInset.top.toDouble() + 10),
+                                        Text(
+                                          displayNameStr,
+                                          maxLines: 1,
+                                          overflow: .ellipsis,
+                                          textAlign: .center,
+                                          style: context.x.textStyle.sfW700s16.copyWith(
+                                            fontSize: nameSizeCollapsed(layout.width),
+                                            color: context.x.colors.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+            body: RefreshIndicator.adaptive(
+              onRefresh: onRefresh,
+              child: ListView(
+                padding: const .only(top: 16),
+                shrinkWrap: true,
+                children: [
+                  ProfilePaymentCard(
+                    balance: user.balance?.formatUzs ?? '0 UZS',
+                    cardNumber: '${user.telegramChatId ?? user.id ?? ""}',
+                    onCopyCardNumber: () => onCopyCardNumber('${user.telegramChatId ?? user.id ?? ""}'),
+                  ),
+                  Padding(
+                    padding: menuSliverPadding(context),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const .symmetric(vertical: 16),
+                      itemCount: menuRows.length,
+                      itemBuilder: (context, index) {
+                        final row = menuRows[index];
+                        return switch (row.type) {
+                          .header => Padding(
+                            padding: .only(top: index == 0 ? 0 : 8, bottom: 8),
+                            child: Text(
+                              row.titleBuilder?.call(context) ?? '',
+                              style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.text),
+                            ),
+                          ),
+                          .item => Padding(
+                            padding: const .only(bottom: 6),
+                            child: ActionListTile(
+                              leading: row.titleBuilder?.call(context) ?? '',
+                              onPressed: row.onTap ?? () {},
+                              icon: row.leading,
+                              iconColor: context.x.colors.text,
+                              textColor: context.x.colors.text,
+                            ),
+                          ),
+                          .spacer => SizedBox(height: row.spacerHeight),
+                        };
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-          body: RefreshIndicator.adaptive(
-            onRefresh: onRefresh,
-            child: ListView(
-              padding: const .only(top: 16),
-              shrinkWrap: true,
-              children: [
-                ProfilePaymentCard(
-                  balance: '100 000 000 UZS',
-                  cardNumber: '1234567890',
-                  onCopyCardNumber: () => onCopyCardNumber('1234567890'),
-                ),
-                Padding(
-                  padding: menuSliverPadding(context),
-                  child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: const .symmetric(vertical: 16),
-                    itemCount: menuRows.length,
-                    itemBuilder: (context, index) {
-                      final row = menuRows[index];
-                      return switch (row.type) {
-                        .header => Padding(
-                          padding: .only(top: index == 0 ? 0 : 8, bottom: 8),
-                          child: Text(
-                            row.titleBuilder?.call(context) ?? '',
-                            style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.text),
-                          ),
-                        ),
-                        .item => Padding(
-                          padding: const .only(bottom: 6),
-                          child: ActionListTile(
-                            leading: row.titleBuilder?.call(context) ?? '',
-                            onPressed: row.onTap ?? () {},
-                            icon: row.leading,
-                            iconColor: context.x.colors.text,
-                            textColor: context.x.colors.text,
-                          ),
-                        ),
-                        .spacer => SizedBox(height: row.spacerHeight),
-                      };
-                    },
-                  ),
-                ),
-              ],
-            ),
           ),
-        ),
-      ),
+        );
+      },
     ),
   );
 }

@@ -31,6 +31,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> onRefresh() async {
     context.telegramWebApp.hapticFeedback.impactOccurred(.heavy);
+    await profileCubit.loadProfile();
   }
 
   /// Saved preference, or the locale [MaterialApp] actually resolved when none is saved (system / supported match).

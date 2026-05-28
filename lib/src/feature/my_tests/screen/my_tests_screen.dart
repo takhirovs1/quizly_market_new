@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
 import '../bloc/my_test_cubit.dart';
 import '../state/my_tests_screen_state.dart';
 import '../widgets/animated_referral_banner.dart';
@@ -27,6 +28,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
         child: Padding(
           padding: const .symmetric(horizontal: 16),
           child: ListView(
+            controller: scrollController,
             children: [
               const SizedBox(height: 16),
               EmptyTestWidget(
@@ -54,22 +56,36 @@ class _MyTestsScreenState extends MyTestsScreenState {
               const AnimatedReferralBanner(),
               const SizedBox(height: 24),
               Text(context.x.l10n.recommendation, style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22)),
-              for (var i = 0; i < 4; i++)
-                Column(
-                  children: [
-                    TestCardWidget(
-                      title: 'Example test',
-                      companyName: 'QuizlyMarket',
-                      description: 'Example test description, Example test description, Example test description',
-                      price: '10 000 UZS',
-                      questionAmount: '100 ta savol',
-                      buyButtonText: context.x.l10n.buy,
-                      onBuyButtonPressed: onBuyTestPressed,
-                      onShareButtonPressed: onShareTestPressed,
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                ),
+              const SizedBox(height: 12),
+              if (state.topTests.isEmpty && state.status.isLoading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: CircularProgressIndicator.adaptive()),
+                )
+              else ...[
+                for (final test in state.topTests)
+                  Column(
+                    children: [
+                      TestCardWidget(
+                        title: test.name ?? '',
+                        companyName: test.categoryName ?? '',
+                        description: test.description ?? '',
+                        price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
+                        questionAmount: '${test.questionCount ?? 0} ta savol',
+                        buyButtonText: test.isPurchased == true ? context.x.l10n.tryItNow : context.x.l10n.buy,
+                        onBuyButtonPressed: onBuyTestPressed,
+                        isFree: test.price == 0 || test.price == null,
+                        onShareButtonPressed: onShareTestPressed,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                if (state.isTopTestsLoadingMore)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator.adaptive()),
+                  ),
+              ],
             ],
           ),
         ),

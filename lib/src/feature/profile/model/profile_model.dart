@@ -6,6 +6,7 @@ import '../../../common/extension/string_extension.dart';
 class ProfileModelResponse {
   ProfileModelResponse({
     this.id,
+    this.name,
     this.firstName,
     this.lastName,
     this.fatherName,
@@ -17,12 +18,14 @@ class ProfileModelResponse {
     this.avatarUrl,
     this.premium,
     this.balance,
+    this.telegramChatId,
     this.createdAt,
     this.updatedAt,
   });
 
   factory ProfileModelResponse.fromJson(Map<String, Object?> json) => ProfileModelResponse(
     id: json['id'].toIntOrNull,
+    name: json['name'] as String?,
     firstName: json['first_name'] as String?,
     lastName: json['last_name'] as String?,
     fatherName: json['father_name'] as String?,
@@ -34,11 +37,13 @@ class ProfileModelResponse {
     avatarUrl: json['avatar_url'] as String?,
     premium: json['premium'] as bool?,
     balance: json['balance'].toIntOrNull,
+    telegramChatId: json['telegram_chat_id'].toIntOrNull,
     createdAt: json['created_at'].toDateTimeOrNull,
     updatedAt: json['updated_at'].toDateTimeOrNull,
   );
 
   final int? id;
+  final String? name;
   final String? firstName;
   final String? lastName;
   final String? fatherName;
@@ -50,6 +55,15 @@ class ProfileModelResponse {
   final String? avatarUrl;
   final bool? premium;
   final int? balance;
+  final int? telegramChatId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+
+  String get displayName {
+    if (name != null && name!.isNotEmpty) return name!;
+    final first = firstName ?? '';
+    final last = lastName ?? '';
+    if (first.isEmpty && last.isEmpty) return '';
+    return '$first $last'.trim();
+  }
 }
