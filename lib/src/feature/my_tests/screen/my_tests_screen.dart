@@ -71,7 +71,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                         companyName: test.categoryName ?? '',
                         description: test.description ?? '',
                         price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
-                        questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
+                        questionAmount: '${test.questionCount ?? 0} ta saval',
                         buyButtonText: test.isPurchased == true ? context.x.l10n.tryItNow : context.x.l10n.buy,
                         onBuyButtonPressed: onBuyTestPressed,
                         isFree: test.price == 0 || test.price == null,
@@ -82,7 +82,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                   ),
                 if (state.isTopTestsLoadingMore)
                   const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: .symmetric(vertical: 16),
                     child: Center(child: CircularProgressIndicator.adaptive()),
                   ),
               ],
