@@ -30,7 +30,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.heavy);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.heavy);
     await profileCubit.loadProfile();
   }
 
@@ -56,7 +56,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onCopyCardNumber(String cardNumber) {
     Clipboard.setData(ClipboardData(text: cardNumber));
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     context.x.showNotification(message: context.x.l10n.copyCardID);
   }
 
@@ -177,13 +177,13 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void onThemeModePressed(ThemeMode mode) {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     selectThemeMode(mode);
     context.bottomSheetPop();
   }
 
   void _onLanguageSelected(Locale locale) {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     selectLanguage(locale);
     context.bottomSheetPop();
   }
@@ -205,7 +205,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onTelegramConnectPressed() {}
 
   void onSetHomePressed() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     context.telegramWebApp.addToHomeScreen();
   }
 
@@ -342,7 +342,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   // Actions
 
   Future<void> onLogoutPressed() async {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     final screenContext = context;
     showDialog<void>(
       context: context,

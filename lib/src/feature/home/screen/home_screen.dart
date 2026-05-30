@@ -45,7 +45,7 @@ abstract class HomeScreenState extends State<HomeScreen> {
   void onTap(int index) {
     if (currentIndex.value != index) {
       if (context.telegramWebApp.isSupported) {
-        context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+        context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
       } else {
         HapticFeedback.lightImpact();
       }

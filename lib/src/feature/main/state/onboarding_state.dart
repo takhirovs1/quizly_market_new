@@ -21,7 +21,7 @@ abstract class OnboardingState extends State<OnboardingScreen> {
   @override
   void initState() {
     final tg = context.telegramWebApp;
-    mainCubit = context.read<MainCubit>()..signInWithTelegram(LoginWithTelegramRequest(initData: tg.initData.raw));
+    mainCubit = context.read<MainCubit>()..signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw));
     super.initState();
   }
 }

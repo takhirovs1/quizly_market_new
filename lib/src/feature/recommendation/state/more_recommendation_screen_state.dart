@@ -7,7 +7,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
   late final TextEditingController searchController;
 
   void onSortPressed() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium);
     showModalBottomSheet<void>(
       context: context,
       builder: (context) => BottomSheetView(

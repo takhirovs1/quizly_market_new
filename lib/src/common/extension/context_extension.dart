@@ -5,9 +5,10 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:localization/localization.dart';
 import 'package:octopus/octopus.dart';
-import 'package:telegram_web_app/telegram_web_app.dart';
 import 'package:ui/ui.dart';
 
+import '../../../core/telegram/telegram_service.dart';
+export '../../../core/telegram/telegram_service.dart';
 import '../constant/constant.dart';
 import '../dependency/model/dependencies.dart';
 import '../dependency/widget/dependencies_scope.dart';
@@ -175,8 +176,7 @@ extension BottomSheetPopX on BuildContext {
 }
 
 extension TelegramWebAppX on BuildContext {
-  TelegramWebApp get telegramWebApp => .instance;
-  // WebAppUser? get telegramUser => telegramWebApp.initDataUnsafe?.user;
+  TelegramService get telegramWebApp => TelegramService.instance;
 
   void close() => telegramWebApp.close();
   void ready() => telegramWebApp.ready();
@@ -189,9 +189,7 @@ extension TelegramWebAppX on BuildContext {
     if (!kIsWeb) return;
     try {
       if (!telegramWebApp.isSupported) return;
-      telegramWebApp.backButton
-        ..onClick(_handleTelegramBackButtonPressed)
-        ..show();
+      telegramWebApp.showBackButton(_handleTelegramBackButtonPressed);
     } on Object catch (_) {
       log('Failed to show Telegram back button');
     }
@@ -201,16 +199,14 @@ extension TelegramWebAppX on BuildContext {
     if (!kIsWeb) return;
     try {
       if (!telegramWebApp.isSupported) return;
-      telegramWebApp.backButton
-        ..offClick(_handleTelegramBackButtonPressed)
-        ..hide();
+      telegramWebApp.hideBackButton(_handleTelegramBackButtonPressed);
     } on Object catch (_) {
       log('Failed to hide Telegram back button');
     }
   }
 
   void _handleTelegramBackButtonPressed() {
-    telegramWebApp.hapticFeedback.impactOccurred(.light);
+    telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     if (!mounted) return;
     octopus.pop();
   }

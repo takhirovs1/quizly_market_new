@@ -46,7 +46,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 ),
               ),
               GestureDetector(
-                onTap: () => context.telegramWebApp.hapticFeedback.impactOccurred(.medium),
+                onTap: () => context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium),
                 child: Assets.lib.vectors.filter.svg(
                   package: 'ui',
                   width: 24,
@@ -65,7 +65,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 title: context.x.l10n.recommendation,
                 onShowMore: () {
                   context.octopus.pushNamed(Routes.moreRecommendation.name);
-                  context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
+                  context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium);
                 },
                 onShareButtonPressed: context.shareTest,
               ),
@@ -105,7 +105,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         buyButtonText: context.x.l10n.buy,
                         onBuyButtonPressed: () {},
                         onShareButtonPressed: () {
-                          context.telegramWebApp.hapticFeedback.impactOccurred(.medium);
+                          context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium);
                           context.shareTest('Test $i', 'Company $i', 'Description $i', '100000', '10');
                         },
                       ),

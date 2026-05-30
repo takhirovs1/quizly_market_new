@@ -49,7 +49,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   }
 
   Future<void> onSwitchPaymentPressed() async {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     final result = await showModalBottomSheet<PaymentModel>(
       context: context,
       isScrollControlled: true,
@@ -120,7 +120,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   }
 
   void onBuyPressed() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     showDialog<void>(
       context: context,
       builder: (context) => Dialog(
@@ -140,11 +140,11 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   }
 
   void onPressLike() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
   }
 
   void onPressShare() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     context.shareTest(
       'Example test',
       'QuizlyMarket',

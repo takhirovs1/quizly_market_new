@@ -71,7 +71,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                         companyName: test.categoryName ?? '',
                         description: test.description ?? '',
                         price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
-                        questionAmount: '${test.questionCount ?? 0} ta saval',
+                        questionAmount: '${test.questionCount ?? 0} ta savol',
                         buyButtonText: test.isPurchased == true ? context.x.l10n.tryItNow : context.x.l10n.buy,
                         onBuyButtonPressed: onBuyTestPressed,
                         isFree: test.price == 0 || test.price == null,

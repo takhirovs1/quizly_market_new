@@ -37,12 +37,12 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
 
   void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     await Future.wait([myTestCubit.getMyTests(), myTestCubit.getTopTests()]);
   }
 
   void onShareTestPressed() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     context.shareTest(
       'Example test',
       'QuizlyMarket',

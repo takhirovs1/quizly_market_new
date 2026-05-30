@@ -8,7 +8,7 @@ abstract class ReferralScreenState extends State<ReferralScreen> {
   String get referralLink => 'https://t.me/quizlymarketbot?startapp=r';
 
   void onShareReferralLink() {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     final message = referralLink;
     final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
     context.telegramWebApp.openTelegramLink(shareLink);

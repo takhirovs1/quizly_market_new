@@ -40,7 +40,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                 ),
               ),
               GestureDetector(
-                onTap: () => context.telegramWebApp.hapticFeedback.impactOccurred(.medium),
+                onTap: () => context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium),
                 child: Assets.lib.vectors.filter.svg(
                   package: 'ui',
                   width: 24,
@@ -77,7 +77,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                 price: context.x.l10n.free,
                 questionAmount: '100 ta savol',
                 buyButtonText: context.x.l10n.tryItNow,
-                onBuyButtonPressed: () => context.telegramWebApp.hapticFeedback.impactOccurred(.medium),
+                onBuyButtonPressed: () => context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium),
               ),
             ),
           ),

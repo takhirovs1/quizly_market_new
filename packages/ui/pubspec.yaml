@@ -22,8 +22,6 @@ dependencies:
   vector_graphics: ^1.1.19
   lottie: ^3.0.0
 
-  telegram_web_app: ^0.3.3
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

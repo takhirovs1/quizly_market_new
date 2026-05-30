@@ -104,7 +104,7 @@ class _PaymentScreenState extends PaymentScreenState {
                   isSelected: value == defaultAmounts[index],
                   onTap: () {
                     onSelectAmount(defaultAmounts[index]);
-                    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+                    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
                   },
                   child: Center(
                     child: Text(
@@ -142,7 +142,7 @@ class _PaymentScreenState extends PaymentScreenState {
                   isSelected: value?.paymentId == paymentResponseModels[index].paymentId,
                   onTap: () {
                     selectedPayment.value = paymentResponseModels[index];
-                    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+                    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
                   },
                   child: Image.asset(paymentResponseModels[index].paymentLink, package: Constant.packageUi),
                 ),
@@ -164,7 +164,7 @@ class _PaymentScreenState extends PaymentScreenState {
             padding: const .symmetric(horizontal: 16),
             child: GestureDetector(
               onTap: () {
-                context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+                context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
                 // onTapReport(parentContext: context);
               },
               child: Row(
@@ -198,7 +198,7 @@ class _PaymentScreenState extends PaymentScreenState {
         listenable: .merge([selectedAmount, selectedPayment]),
         builder: (context, child) => CustomButton(
           onTap: () {
-            context.telegramWebApp.hapticFeedback.notificationOccurred(.success);
+            context.telegramWebApp.hapticNotification(TelegramHapticNotification.success);
           },
 
           title: context.x.l10n.filling,

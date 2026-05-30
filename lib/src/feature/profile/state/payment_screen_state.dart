@@ -42,7 +42,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   }
 
   void onSelectAmount(String amount) {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     final digits = amount.replaceAll(RegExp(r'\D'), '');
     final formatted = "${NumberFormat('#,###', 'uz').format(int.parse(digits)).replaceAll(',', ' ')} so'm";
 
@@ -54,7 +54,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   //   final amount = parsedAmount;
   //   if (amount == null || amount < minAmount || amount > maxAmount) return;
 
-  //   context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+  //   context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
   //   final userId = context.user?.userID;
   //   context.read<PaymentBloc>().add(CreateClickPaymentEvent(amount: amount, userId: userId));
   // }
@@ -155,7 +155,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   //                 if (!context.mounted) return;
   //                 ctx.pop();
   //                 if (success && parentContext.mounted) {
-  //                   context.telegramWebApp.hapticFeedback.notificationOccurred(.success);
+  //                   context.telegramWebApp.hapticNotification(TelegramHapticNotification.success);
   //                   parentContext.showCustomDialog(
   //                     dialog: CustomPrimaryDialog(
   //                       onRightPressed: parentContext.pop,

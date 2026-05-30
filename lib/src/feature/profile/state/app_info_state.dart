@@ -18,12 +18,12 @@ abstract class AppInfoState extends State<AppInfoScreen> {
   }
 
   Future<void> openLink(String url) async {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     await launchUrl(.parse(url));
   }
 
   Future<void> openTelegramLink(String url) async {
-    context.telegramWebApp.hapticFeedback.impactOccurred(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     if (context.telegramWebApp.isSupported) {
       context.telegramWebApp.openLink(url, tryInstantView: false);
       return;
