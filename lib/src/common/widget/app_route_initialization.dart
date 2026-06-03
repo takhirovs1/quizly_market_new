@@ -25,9 +25,7 @@ mixin AppRouteInitialization on State<App> {
     // ignore: invalid_use_of_internal_member
     navigator = Octopus(
       routes: Routes.values,
-      defaultRoute: context.telegramWebApp.isSupported
-          ? (context.x.dependencies.localSource.isUserAuthenticated ? Routes.home : Routes.onboarding)
-          : Routes.selectLanguage,
+      defaultRoute: context.telegramWebApp.isSupported ? Routes.onboarding : Routes.selectLanguage,
       // guards: <OctopusGuard>[guards],
     );
 

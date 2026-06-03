@@ -44,15 +44,17 @@ class TestCardWidget extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
+                    flex: 2,
                     child: Text(
                       title,
                       style: context.x.textStyle.sfW400s18.copyWith(
                         color: context.x.colors.bannerText,
                         fontWeight: FontWeight.w500,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -63,8 +65,9 @@ class TestCardWidget extends StatelessWidget {
                       child: Text(
                         companyName,
                         style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
                       ),
                     ),
                   ),

@@ -72,7 +72,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                 crossAxisAlignment: .start,
                 children: [
                   Text(
-                    'Do‘st taklif qiling, bonus oling',
+                    context.x.l10n.inviteFriendGetBonus,
                     style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.black),
                     maxLines: 2,
                     overflow: .ellipsis,
@@ -85,7 +85,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                         overflow: .ellipsis,
                       ),
                       children: [
-                        const TextSpan(text: 'Harbir do’st '),
+                        TextSpan(text: '${context.x.l10n.forEachFriend} '),
                         TextSpan(
                           text: ' 1 000 ',
                           style: context.x.textStyle.sfW500s16.copyWith(
@@ -94,7 +94,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                           ),
                         ),
                         TextSpan(
-                          text: ' UZS',
+                          text: ' ${context.x.l10n.uzs}',
                           style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
                         ),
                       ],

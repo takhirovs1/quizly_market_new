@@ -5,6 +5,10 @@ class MyTestState extends Equatable {
     this.status = StateStatus.idle,
     this.errorMessage,
     this.myTests = const [],
+    this.myTestsLimit = 20,
+    this.myTestsOffset = 0,
+    this.myTestsTotal = 0,
+    this.isMyTestsLoadingMore = false,
     this.topTests = const [],
     this.topTestsLimit = 20,
     this.topTestsOffset = 0,
@@ -15,6 +19,10 @@ class MyTestState extends Equatable {
   final StateStatus status;
   final String? errorMessage;
   final List<TestModel> myTests;
+  final int myTestsLimit;
+  final int myTestsOffset;
+  final int myTestsTotal;
+  final bool isMyTestsLoadingMore;
   final List<TestModel> topTests;
   final int topTestsLimit;
   final int topTestsOffset;
@@ -25,6 +33,10 @@ class MyTestState extends Equatable {
     StateStatus? status,
     String? errorMessage,
     List<TestModel>? myTests,
+    int? myTestsLimit,
+    int? myTestsOffset,
+    int? myTestsTotal,
+    bool? isMyTestsLoadingMore,
     List<TestModel>? topTests,
     int? topTestsLimit,
     int? topTestsOffset,
@@ -34,6 +46,10 @@ class MyTestState extends Equatable {
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
     myTests: myTests ?? this.myTests,
+    myTestsLimit: myTestsLimit ?? this.myTestsLimit,
+    myTestsOffset: myTestsOffset ?? this.myTestsOffset,
+    myTestsTotal: myTestsTotal ?? this.myTestsTotal,
+    isMyTestsLoadingMore: isMyTestsLoadingMore ?? this.isMyTestsLoadingMore,
     topTests: topTests ?? this.topTests,
     topTestsLimit: topTestsLimit ?? this.topTestsLimit,
     topTestsOffset: topTestsOffset ?? this.topTestsOffset,
@@ -46,6 +62,10 @@ class MyTestState extends Equatable {
     status,
     errorMessage,
     myTests,
+    myTestsLimit,
+    myTestsOffset,
+    myTestsTotal,
+    isMyTestsLoadingMore,
     topTests,
     topTestsLimit,
     topTestsOffset,

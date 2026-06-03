@@ -10,7 +10,7 @@ TelegramService createTelegramService() => _WebTelegramService();
 /// This file is only compiled on web thanks to the conditional
 /// import in [telegram_service.dart].
 class _WebTelegramService extends TelegramService {
-  final TelegramWebApp _tg = TelegramWebApp.instance;
+  final TelegramWebApp _tg = .instance;
 
   // ── Identity ──────────────────────────────────────────────────────
 
@@ -76,17 +76,17 @@ class _WebTelegramService extends TelegramService {
   }
 
   static HapticFeedbackImpact _mapImpact(TelegramHapticImpact impact) => switch (impact) {
-    TelegramHapticImpact.light => HapticFeedbackImpact.light,
-    TelegramHapticImpact.medium => HapticFeedbackImpact.medium,
-    TelegramHapticImpact.heavy => HapticFeedbackImpact.heavy,
-    TelegramHapticImpact.rigid => HapticFeedbackImpact.rigid,
-    TelegramHapticImpact.soft => HapticFeedbackImpact.soft,
+    .light => .light,
+    .medium => .medium,
+    .heavy => .heavy,
+    .rigid => .rigid,
+    .soft => .soft,
   };
 
   static HapticFeedbackNotificationType _mapNotification(TelegramHapticNotification type) => switch (type) {
-    TelegramHapticNotification.error => HapticFeedbackNotificationType.error,
-    TelegramHapticNotification.success => HapticFeedbackNotificationType.success,
-    TelegramHapticNotification.warning => HapticFeedbackNotificationType.warning,
+    .error => .error,
+    .success => .success,
+    .warning => .warning,
   };
 
   // ── Back button ───────────────────────────────────────────────────

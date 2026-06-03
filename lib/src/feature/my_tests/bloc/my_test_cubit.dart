@@ -12,11 +12,70 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
   final IMyTestRepository myTestRepository;
 
-  Future<void> getMyTests({TestModelRequest? request}) => handle<void>((emit) async {
-    emit(state.copyWith(status: .loading));
-    final myTests = await myTestRepository.getMyTests(request ?? TestModelRequest());
-    emit(state.copyWith(status: .success, myTests: myTests));
-  }, errorHandler: (emit, error, stackTrace) => emit(state.copyWith(status: .error, errorMessage: error.toString())));
+  Future<void> initialize() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: .loading));
+      final results = await Future.wait([
+        myTestRepository.getMyTests(TestModelRequest(limit: 20, offset: 0)),
+        myTestRepository.getTopTests(TestModelRequest(limit: 20, offset: 0)),
+      ]);
+      final myResult = results[0];
+      final topResult = results[1];
+      emit(
+        state.copyWith(
+          status: .success,
+          myTests: myResult.items,
+          myTestsOffset: myResult.offset,
+          myTestsLimit: myResult.limit,
+          myTestsTotal: myResult.total,
+          topTests: topResult.items,
+          topTestsOffset: topResult.offset,
+          topTestsLimit: topResult.limit,
+          topTestsTotal: topResult.total,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: .error, errorMessage: error.toString()));
+    },
+  );
+
+  Future<void> getMyTests({bool loadMore = false}) => handle<void>(
+    (emit) async {
+      if (loadMore) {
+        if (state.myTests.length >= state.myTestsTotal || state.isMyTestsLoadingMore) return;
+        emit(state.copyWith(isMyTestsLoadingMore: true));
+        final nextOffset = state.myTestsOffset + state.myTestsLimit;
+        final result = await myTestRepository.getMyTests(
+          TestModelRequest(limit: state.myTestsLimit, offset: nextOffset),
+        );
+        emit(
+          state.copyWith(
+            isMyTestsLoadingMore: false,
+            myTests: [...state.myTests, ...result.items],
+            myTestsOffset: result.offset,
+            myTestsLimit: result.limit,
+            myTestsTotal: result.total,
+          ),
+        );
+      } else {
+        emit(state.copyWith(status: .loading));
+        final result = await myTestRepository.getMyTests(TestModelRequest(limit: 20, offset: 0));
+        emit(
+          state.copyWith(
+            status: .success,
+            myTests: result.items,
+            myTestsOffset: result.offset,
+            myTestsLimit: result.limit,
+            myTestsTotal: result.total,
+          ),
+        );
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: .error, isMyTestsLoadingMore: false, errorMessage: error.toString()));
+    },
+  );
 
   Future<void> getTopTests({bool loadMore = false}) => handle<void>(
     (emit) async {

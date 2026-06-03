@@ -15,17 +15,20 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   void initState() {
     super.initState();
     scrollController = ScrollController()..addListener(_onScroll);
-    myTestCubit = context.read<MyTestCubit>()
-      ..getMyTests()
-      ..getTopTests();
+    myTestCubit = context.read<MyTestCubit>()..initialize();
   }
 
+  var _isLoadingMore = false;
+
   void _onScroll() {
-    if (!scrollController.hasClients) return;
+    if (_isLoadingMore || !scrollController.hasClients) return;
     final maxScroll = scrollController.position.maxScrollExtent;
     final currentScroll = scrollController.position.pixels;
     if (maxScroll - currentScroll <= 200) {
-      myTestCubit.getTopTests(loadMore: true);
+      _isLoadingMore = true;
+      myTestCubit.state.myTests.isNotEmpty
+          ? myTestCubit.getMyTests(loadMore: true)
+          : myTestCubit.getTopTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
     }
   }
 
@@ -37,12 +40,12 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
 
   void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
-    await Future.wait([myTestCubit.getMyTests(), myTestCubit.getTopTests()]);
+    context.telegramWebApp.hapticImpact(.light);
+    await myTestCubit.initialize();
   }
 
   void onShareTestPressed() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     context.shareTest(
       'Example test',
       'QuizlyMarket',
