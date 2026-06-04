@@ -4,6 +4,7 @@ class MyTestState extends Equatable {
   const MyTestState({
     this.status = StateStatus.idle,
     this.errorMessage,
+    this.search = '',
     this.myTests = const [],
     this.myTestsLimit = 20,
     this.myTestsOffset = 0,
@@ -18,6 +19,7 @@ class MyTestState extends Equatable {
 
   final StateStatus status;
   final String? errorMessage;
+  final String search;
   final List<TestModel> myTests;
   final int myTestsLimit;
   final int myTestsOffset;
@@ -32,6 +34,7 @@ class MyTestState extends Equatable {
   MyTestState copyWith({
     StateStatus? status,
     String? errorMessage,
+    String? search,
     List<TestModel>? myTests,
     int? myTestsLimit,
     int? myTestsOffset,
@@ -45,6 +48,7 @@ class MyTestState extends Equatable {
   }) => MyTestState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
+    search: search ?? this.search,
     myTests: myTests ?? this.myTests,
     myTestsLimit: myTestsLimit ?? this.myTestsLimit,
     myTestsOffset: myTestsOffset ?? this.myTestsOffset,
@@ -61,6 +65,7 @@ class MyTestState extends Equatable {
   List<Object?> get props => [
     status,
     errorMessage,
+    search,
     myTests,
     myTestsLimit,
     myTestsOffset,

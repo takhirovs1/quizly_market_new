@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
@@ -10,42 +12,43 @@ import '../screen/my_tests_screen.dart';
 abstract class MyTestsScreenState extends State<MyTestsScreen> {
   late final MyTestCubit myTestCubit;
   late final ScrollController scrollController;
+  late final TextEditingController searchController;
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController()..addListener(_onScroll);
-    myTestCubit = context.read<MyTestCubit>()..initialize();
+    scrollController = ScrollController();
+    myTestCubit = context.read<MyTestCubit>()..initialize(limit: 5);
+    searchController = TextEditingController()..addListener(_onSearchChanged);
   }
 
-  var _isLoadingMore = false;
+  void _onSearchChanged() {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+    final query = searchController.text.trim();
+    if (query.isNotEmpty && query.length <= 3) return;
 
-  void _onScroll() {
-    if (_isLoadingMore || !scrollController.hasClients) return;
-    final maxScroll = scrollController.position.maxScrollExtent;
-    final currentScroll = scrollController.position.pixels;
-    if (maxScroll - currentScroll <= 200) {
-      _isLoadingMore = true;
-      myTestCubit.state.myTests.isNotEmpty
-          ? myTestCubit.getMyTests(loadMore: true)
-          : myTestCubit.getTopTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
-    }
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      myTestCubit.initialize(search: query, limit: 5);
+    });
   }
 
   @override
   void dispose() {
+    searchController.dispose();
+    _debounceTimer?.cancel();
     scrollController.dispose();
     super.dispose();
   }
 
   void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticImpact(.light);
-    await myTestCubit.initialize();
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    await myTestCubit.initialize(search: searchController.text, limit: 5);
   }
 
   void onShareTestPressed() {
-    context.telegramWebApp.hapticImpact(.light);
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     context.shareTest(
       'Example test',
       'QuizlyMarket',

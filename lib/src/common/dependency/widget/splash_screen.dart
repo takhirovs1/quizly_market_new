@@ -2,19 +2,20 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../../extension/context_extension.dart';
+import '../../util/helpers.dart';
 
 /// {@template splash_screen}
 /// Splash screen widget.
 /// {@endtemplate}
 class SplashScreen extends StatefulWidget {
   /// {@macro splash_screen}
-  const SplashScreen({required this.logo, required this.progress, super.key});
+  const SplashScreen({this.logo, this.progress, super.key});
 
   /// Logo to display.
   final ({String path, double scale})? logo;
 
   /// Progress notifier.
-  final ValueNotifier<({int progress, String message})> progress;
+  final ValueNotifier<({int progress, String message})>? progress;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -64,12 +65,13 @@ abstract class SplashController extends State<SplashScreen> with SingleTickerPro
   SvgPicture? svgImage;
   double logoScale = 1;
   bool _vibrated = false;
+  ({String path, double scale})? _logo;
 
   late AnimationController controller;
   late Animation<double> opacityAnimation;
 
   Widget _buildLogo() {
-    final logoPath = widget.logo?.path;
+    final logoPath = _logo?.path;
     if (logoPath == null || logoPath.isEmpty) return const SizedBox.shrink();
 
     final normalizedPath = logoPath.toLowerCase();
@@ -93,7 +95,7 @@ abstract class SplashController extends State<SplashScreen> with SingleTickerPro
   }
 
   void _onAppInitializedListener() {
-    if (widget.progress.value.progress == 100) {
+    if (widget.progress?.value.progress == 100) {
       controller.forward();
     }
   }
@@ -103,8 +105,6 @@ abstract class SplashController extends State<SplashScreen> with SingleTickerPro
   void initState() {
     super.initState();
 
-    widget.progress.addListener(_onAppInitializedListener);
-
     controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 2000));
 
     opacityAnimation = Tween<double>(
@@ -113,12 +113,31 @@ abstract class SplashController extends State<SplashScreen> with SingleTickerPro
     ).animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
 
     controller.addListener(_providePreciseHapticFeedback);
+
+    _logo = widget.logo;
+    if (_logo == null) {
+      Helpers.getPlatformSpecificLogo().then((logo) {
+        if (mounted) {
+          setState(() {
+            _logo = logo;
+          });
+        }
+      });
+    }
+
+    if (widget.progress != null) {
+      widget.progress!.addListener(_onAppInitializedListener);
+    } else {
+      controller.forward();
+    }
   }
 
   @override
   void dispose() {
     controller.dispose();
-    widget.progress.removeListener(_onAppInitializedListener);
+    if (widget.progress != null) {
+      widget.progress!.removeListener(_onAppInitializedListener);
+    }
     super.dispose();
   }
 

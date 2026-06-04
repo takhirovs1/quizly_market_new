@@ -1,13 +1,51 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/router/pages.dart';
+import '../../my_tests/bloc/my_test_cubit.dart';
+import '../../my_tests/models/test_mode.dart';
 import '../screen/more_recommendation_screen.dart';
+import '../widget/test_view_mode_toggle.dart';
 
 abstract class MoreRecommendationScreenState extends State<MoreRecommendationScreen> {
+  late final MyTestCubit myTestCubit;
+  late final ScrollController scrollController;
   late final TextEditingController searchController;
+  late final ValueNotifier<TestViewMode> viewModeNotifier;
+  Timer? _debounceTimer;
+  var _isLoadingMore = false;
+
+  /// Max card width for list view mode (in logical pixels).
+  static const double maxCardWidth = 300;
+
+  /// Horizontal padding (left + right) applied to the grid/list.
+  static const double horizontalPadding = 32; // 16 * 2
+
+  /// Computes the adaptive layout for the list view mode.
+  ({int crossAxisCount, double mainAxisExtent}) computeListLayout(double screenWidth) {
+    final availableWidth = screenWidth - horizontalPadding;
+    final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
+    const mainAxisExtent = 160.0;
+    return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
+  }
+
+  /// Min card width for grid view mode (in logical pixels).
+  static const double minGridCardWidth = 180;
+
+  /// Computes the adaptive layout for the grid view mode.
+  ({int crossAxisCount, double mainAxisExtent}) computeGridLayout(double screenWidth) {
+    final availableWidth = screenWidth - horizontalPadding;
+    final crossAxisCount = (availableWidth / minGridCardWidth).floor().clamp(2, 4);
+    const mainAxisExtent = 220.0;
+    return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
+  }
 
   void onSortPressed() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.medium);
+    context.telegramWebApp.hapticImpact(.medium);
     showModalBottomSheet<void>(
       context: context,
       builder: (context) => BottomSheetView(
@@ -25,7 +63,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
                 DecoratedBox(
                   decoration: BoxDecoration(
                     color: context.x.colors.scaffoldBackground,
-                    borderRadius: const .all(.circular(16)),
+                    borderRadius: const .all(Radius.circular(16)),
                     boxShadow: [
                       BoxShadow(
                         offset: const Offset(0, 12),
@@ -40,7 +78,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
                     ],
                   ),
                   child: Padding(
-                    padding: const .symmetric(horizontal: 16, vertical: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                     child: Row(
                       mainAxisAlignment: .spaceBetween,
                       children: [
@@ -67,13 +105,62 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController();
+    viewModeNotifier = ValueNotifier<TestViewMode>(TestViewMode.grid);
+    scrollController = ScrollController()..addListener(_onScroll);
+    myTestCubit = context.read<MyTestCubit>();
+    if (widget.type == .myTests) {
+      myTestCubit.getMyTests();
+    } else {
+      myTestCubit.getTopTests();
+    }
+    searchController = TextEditingController()..addListener(_onSearchChanged);
     context.setupTelegramBackButton();
+  }
+
+  void _onSearchChanged() {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+    final query = searchController.text.trim();
+    if (query.isNotEmpty && query.length <= 3) return;
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (widget.type == .myTests) {
+        myTestCubit.getMyTests(search: query);
+      } else {
+        myTestCubit.getTopTests(search: query);
+      }
+    });
+  }
+
+  void _onScroll() {
+    if (_isLoadingMore || !scrollController.hasClients) return;
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.position.pixels;
+    if (maxScroll - currentScroll <= 200) {
+      _isLoadingMore = true;
+      (widget.type == .myTests ? myTestCubit.getMyTests(loadMore: true) : myTestCubit.getTopTests(loadMore: true))
+          .whenComplete(() => _isLoadingMore = false);
+    }
+  }
+
+  void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
+
+  void onShareTestPressed(TestModel test) {
+    context.telegramWebApp.hapticImpact(.light);
+    context.shareTest(
+      test.name ?? '',
+      test.categoryName ?? '',
+      test.description ?? '',
+      test.price?.toString() ?? '0',
+      test.questionCount?.toString() ?? '0',
+    );
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    _debounceTimer?.cancel();
+    scrollController.dispose();
+    viewModeNotifier.dispose();
     context.teardownTelegramBackButton();
     super.dispose();
   }

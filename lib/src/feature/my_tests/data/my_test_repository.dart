@@ -17,7 +17,10 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>(Urls.getMyTests, queryParameters: request.toJson());
+      final response = await dio.get<Map<String, Object?>>(
+        Urls.getMyTests,
+        queryParameters: <String, Object?>{...request.toJson(), 'purchased': true},
+      );
       final root = response.data ?? {};
       final dataList = root['data'] as List<Object?>? ?? [];
       final items = dataList.map((e) => TestModel.fromJson(e as Map<String, Object?>)).toList();

@@ -12,12 +12,12 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
   final IMyTestRepository myTestRepository;
 
-  Future<void> initialize() => handle<void>(
+  Future<void> initialize({String? search, int limit = 5}) => handle<void>(
     (emit) async {
-      emit(state.copyWith(status: .loading));
+      emit(state.copyWith(status: .loading, search: search ?? ''));
       final results = await Future.wait([
-        myTestRepository.getMyTests(TestModelRequest(limit: 20, offset: 0)),
-        myTestRepository.getTopTests(TestModelRequest(limit: 20, offset: 0)),
+        myTestRepository.getMyTests(TestModelRequest(limit: limit, offset: 0, search: search)),
+        myTestRepository.getTopTests(TestModelRequest(limit: limit, offset: 0, search: search)),
       ]);
       final myResult = results[0];
       final topResult = results[1];
@@ -40,14 +40,19 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
     },
   );
 
-  Future<void> getMyTests({bool loadMore = false}) => handle<void>(
+  Future<void> getMyTests({bool loadMore = false, String? search}) => handle<void>(
     (emit) async {
+      final currentSearch = search ?? state.search;
       if (loadMore) {
         if (state.myTests.length >= state.myTestsTotal || state.isMyTestsLoadingMore) return;
         emit(state.copyWith(isMyTestsLoadingMore: true));
         final nextOffset = state.myTestsOffset + state.myTestsLimit;
         final result = await myTestRepository.getMyTests(
-          TestModelRequest(limit: state.myTestsLimit, offset: nextOffset),
+          TestModelRequest(
+            limit: state.myTestsLimit,
+            offset: nextOffset,
+            search: currentSearch.isEmpty ? null : currentSearch,
+          ),
         );
         emit(
           state.copyWith(
@@ -59,8 +64,10 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
           ),
         );
       } else {
-        emit(state.copyWith(status: .loading));
-        final result = await myTestRepository.getMyTests(TestModelRequest(limit: 20, offset: 0));
+        emit(state.copyWith(status: .loading, search: currentSearch));
+        final result = await myTestRepository.getMyTests(
+          TestModelRequest(limit: 20, offset: 0, search: currentSearch.isEmpty ? null : currentSearch),
+        );
         emit(
           state.copyWith(
             status: .success,
@@ -77,14 +84,19 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
     },
   );
 
-  Future<void> getTopTests({bool loadMore = false}) => handle<void>(
+  Future<void> getTopTests({bool loadMore = false, String? search}) => handle<void>(
     (emit) async {
+      final currentSearch = search ?? state.search;
       if (loadMore) {
         if (state.topTests.length >= state.topTestsTotal || state.isTopTestsLoadingMore) return;
         emit(state.copyWith(isTopTestsLoadingMore: true));
         final nextOffset = state.topTestsOffset + state.topTestsLimit;
         final result = await myTestRepository.getTopTests(
-          TestModelRequest(limit: state.topTestsLimit, offset: nextOffset),
+          TestModelRequest(
+            limit: state.topTestsLimit,
+            offset: nextOffset,
+            search: currentSearch.isEmpty ? null : currentSearch,
+          ),
         );
         emit(
           state.copyWith(
@@ -96,8 +108,10 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
           ),
         );
       } else {
-        emit(state.copyWith(status: .loading));
-        final result = await myTestRepository.getTopTests(TestModelRequest(limit: 20, offset: 0));
+        emit(state.copyWith(status: .loading, search: currentSearch));
+        final result = await myTestRepository.getTopTests(
+          TestModelRequest(limit: 20, offset: 0, search: currentSearch.isEmpty ? null : currentSearch),
+        );
         emit(
           state.copyWith(
             status: .success,

@@ -71,8 +71,66 @@ class TestCardShimmer extends StatelessWidget {
   }
 }
 
+class MiniTestCardShimmer extends StatelessWidget {
+  const MiniTestCardShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 200, minHeight: 180),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.x.colors.bannerBackground,
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          child: Shimmer.fromColors(
+            baseColor: baseColor,
+            highlightColor: highlightColor,
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ShimmerBox(height: 18, radius: 4),
+                SizedBox(height: 6),
+                ShimmerBox(width: 80, height: 14, radius: 4),
+                SizedBox(height: 6),
+                ShimmerBox(height: 12, radius: 4),
+                SizedBox(height: 4),
+                ShimmerBox(width: 120, height: 12, radius: 4),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    ShimmerBox(width: 16, height: 16, radius: 4),
+                    SizedBox(width: 4),
+                    ShimmerBox(width: 60, height: 12, radius: 4),
+                  ],
+                ),
+                SizedBox(height: 6),
+                Row(
+                  children: [
+                    ShimmerBox(width: 16, height: 16, radius: 4),
+                    SizedBox(width: 4),
+                    ShimmerBox(width: 70, height: 14, radius: 4),
+                  ],
+                ),
+                Spacer(),
+                ShimmerBox(height: 36, radius: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class ShimmerBox extends StatelessWidget {
-  const ShimmerBox({required this.height, this.width, this.radius = 4});
+  const ShimmerBox({required this.height, this.width, this.radius = 4, super.key});
 
   final double? width;
   final double height;

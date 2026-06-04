@@ -6,7 +6,7 @@ import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
-import '../../feature/main/screen/onboarding_screen.dart';
+import '../../feature/main/model/login_with_telegram.dart';
 import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
@@ -23,12 +23,13 @@ import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
 import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
+import '../dependency/widget/splash_screen.dart';
 import '../extension/context_extension.dart';
 
 enum Routes with OctopusRoute {
   login('login', title: 'Login'),
   home('home', title: 'Home'),
-  onboarding('onboarding', title: 'Onboarding'),
+  splash('splash', title: 'Splash'),
   selectLanguage('selectLanguage', title: 'Select Language'),
   moreRecommendation('moreRecommendation', title: 'More Recommendation'),
   purchaseTest('purchaseTest', title: 'PurchaseTest'),
@@ -67,15 +68,20 @@ enum Routes with OctopusRoute {
       ],
       child: const HomeScreen(),
     ),
-    .onboarding => BlocProvider(
+    .splash => BlocProvider(
       create: (_) => MainCubit(
         mainRepository: context.x.dependencies.repository.mainRepository,
         localSource: context.x.dependencies.localSource,
       ),
-      child: const OnboardingScreen(),
+      child: const SplashRouteWrapper(),
     ),
     .selectLanguage => const SelectLanguage(),
-    .moreRecommendation => const MoreRecommendationScreen(),
+    .moreRecommendation => BlocProvider(
+      create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
+      child: MoreRecommendationScreen(
+        type: TestCategoryType.values.byName(node.arguments['type'] ?? TestCategoryType.topTests.name),
+      ),
+    ),
     .purchaseTest => const PurchaseTestScreen(),
     .payment => const PaymentScreen(),
     .referral => const ReferralScreen(),
@@ -89,4 +95,34 @@ enum Routes with OctopusRoute {
     .testFlashcardMode => const TestFlashcardMode(),
     .testResult => const TestResultScreen(),
   };
+}
+
+class SplashRouteWrapper extends StatefulWidget {
+  const SplashRouteWrapper({super.key});
+
+  @override
+  State<SplashRouteWrapper> createState() => _SplashRouteWrapperState();
+}
+
+class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    final tg = context.telegramWebApp;
+    if (tg.isSupported) {
+      context.read<MainCubit>().signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocListener<MainCubit, MainState>(
+    listenWhen: (previous, current) => current.status.isSuccess && previous.status != current.status,
+    listener: (context, state) async {
+      await context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
+      if (context.mounted) {
+        context.octopus.navigate(Routes.home.name);
+      }
+    },
+    child: const SplashScreen(),
+  );
 }

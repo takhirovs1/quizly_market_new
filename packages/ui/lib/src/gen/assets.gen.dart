@@ -345,6 +345,12 @@ class $LibVectorsGen {
   /// File path: lib/vectors/ic-external-link.vec
   SvgGenImage get icExternalLink => const SvgGenImage.vec('lib/vectors/ic-external-link.vec');
 
+  /// File path: lib/vectors/icon_map.vec
+  SvgGenImage get iconMap => const SvgGenImage.vec('lib/vectors/icon_map.vec');
+
+  /// File path: lib/vectors/icon_slider.vec
+  SvgGenImage get iconSlider => const SvgGenImage.vec('lib/vectors/icon_slider.vec');
+
   /// File path: lib/vectors/information_app.vec
   SvgGenImage get informationApp => const SvgGenImage.vec('lib/vectors/information_app.vec');
 
@@ -463,6 +469,8 @@ class $LibVectorsGen {
     home,
     home2,
     icExternalLink,
+    iconMap,
+    iconSlider,
     informationApp,
     instagram,
     language,
