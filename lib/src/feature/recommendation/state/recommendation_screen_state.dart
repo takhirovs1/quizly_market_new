@@ -17,17 +17,24 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
   Timer? _debounceTimer;
   var _isLoadingMore = false;
 
+  String _lastText = '';
+
   @override
   void initState() {
     super.initState();
     searchController = TextEditingController()..addListener(_onSearchChanged);
+    _lastText = searchController.text;
     scrollController = ScrollController()..addListener(_onScroll);
     recommendationCubit = context.read<RecommendationCubit>()..initialize();
   }
 
   void _onSearchChanged() {
+    final text = searchController.text;
+    if (text == _lastText) return;
+    _lastText = text;
+
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    final query = searchController.text.trim();
+    final query = text.trim();
     if (query.isNotEmpty && query.length <= 3) return;
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {

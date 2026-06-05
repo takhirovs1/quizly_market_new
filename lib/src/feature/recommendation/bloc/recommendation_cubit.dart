@@ -14,7 +14,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
 
   Future<void> initialize({String? search, int limit = 20}) => handle<void>(
     (emit) async {
-      emit(state.copyWith(status: StateStatus.loading, search: search ?? ''));
+      emit(state.copyWith(status: .loading, search: search ?? ''));
       final results = await Future.wait([
         recommendationRepository.getRecommendationTests(TestModelRequest(limit: 5, offset: 0, search: search)),
         recommendationRepository.getLikedTests(TestModelRequest(limit: 5, offset: 0, search: search)),

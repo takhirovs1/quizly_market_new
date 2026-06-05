@@ -42,7 +42,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
   ({int crossAxisCount, double mainAxisExtent}) computeGridLayout(double screenWidth) {
     final availableWidth = screenWidth - horizontalPadding;
     final crossAxisCount = (availableWidth / minGridCardWidth).floor().clamp(2, 4);
-    const mainAxisExtent = 220.0;
+    const mainAxisExtent = 260.0;
     return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
   }
 
@@ -123,12 +123,19 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     }
 
     searchController = TextEditingController()..addListener(_onSearchChanged);
+    _lastText = searchController.text;
     context.setupTelegramBackButton();
   }
 
+  String _lastText = '';
+
   void _onSearchChanged() {
+    final text = searchController.text;
+    if (text == _lastText) return;
+    _lastText = text;
+
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    final query = searchController.text.trim();
+    final query = text.trim();
     if (query.isNotEmpty && query.length <= 3) return;
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {

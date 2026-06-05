@@ -17,4 +17,8 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     final user = await profileRepository.getProfile();
     emit(state.copyWith(status: .success, user: user));
   }, errorHandler: (emit, error, stackTrace) => emit(state.copyWith(status: .error, errorMessage: error.toString())));
+
+  Future<void> updateLanguage(String language) => handle<void>((emit) async {
+    await profileRepository.updateLanguage(language);
+  });
 }

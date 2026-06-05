@@ -55,18 +55,7 @@ final class RecommendationRepositoryImpl implements IRecommendationRepository {
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getAllTests(TestModelRequest request) async {
     try {
-      final Map<String, Object?> query = {};
-      if (request.offset != null && request.offset! > 0) {
-        query['limit'] = request.limit;
-        query['offset'] = request.offset;
-      }
-      if (request.search != null && request.search!.isNotEmpty) {
-        query['search'] = request.search;
-      }
-      final response = await dio.get<Map<String, Object?>>(
-        '/api/tests/my',
-        queryParameters: query.isEmpty ? null : query,
-      );
+      final response = await dio.get<Map<String, Object?>>('/api/tests', queryParameters: request.toJson());
       final root = response.data ?? {};
       final dataList = root['data'] as List<Object?>? ?? [];
       final items = dataList.map((e) => TestModel.fromJson(e as Map<String, Object?>)).toList();

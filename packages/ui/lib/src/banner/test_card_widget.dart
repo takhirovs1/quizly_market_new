@@ -14,6 +14,7 @@ class TestCardWidget extends StatelessWidget {
     this.onBuyButtonPressed,
     this.onShareButtonPressed,
     this.isFree = false,
+    this.isPurchased = false,
     super.key,
   });
 
@@ -26,6 +27,7 @@ class TestCardWidget extends StatelessWidget {
   final VoidCallback? onBuyButtonPressed;
   final VoidCallback? onShareButtonPressed;
   final bool isFree;
+  final bool isPurchased;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -97,13 +99,15 @@ class TestCardWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
               children: [
-                if (!isFree)
+                if (isPurchased)
+                  Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui')
+                else if (!isFree)
                   Assets.lib.images.money.image(width: 16, height: 16, package: 'ui')
                 else
                   Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui'),
                 const SizedBox(width: 4),
                 Text(
-                  price,
+                  isPurchased ? 'Sotib olingan' : price,
                   style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
                   overflow: TextOverflow.ellipsis,
                 ),

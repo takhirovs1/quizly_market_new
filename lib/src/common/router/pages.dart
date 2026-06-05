@@ -6,7 +6,6 @@ import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
-import '../../feature/main/model/login_with_telegram.dart';
 import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
@@ -111,34 +110,4 @@ enum Routes with OctopusRoute {
     .testFlashcardMode => const TestFlashcardMode(),
     .testResult => const TestResultScreen(),
   };
-}
-
-class SplashRouteWrapper extends StatefulWidget {
-  const SplashRouteWrapper({super.key});
-
-  @override
-  State<SplashRouteWrapper> createState() => _SplashRouteWrapperState();
-}
-
-class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
-  @override
-  void initState() {
-    super.initState();
-    final tg = context.telegramWebApp;
-    if (tg.isSupported) {
-      context.read<MainCubit>().signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => BlocListener<MainCubit, MainState>(
-    listenWhen: (previous, current) => current.status.isSuccess && previous.status != current.status,
-    listener: (context, state) async {
-      await context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
-      if (context.mounted) {
-        context.octopus.navigate(Routes.home.name);
-      }
-    },
-    child: const SplashScreen(),
-  );
 }

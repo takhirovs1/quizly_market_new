@@ -12,15 +12,17 @@ class LoginWithTelegramRequest {
 }
 
 class LoginWithTelegramResponse {
-  LoginWithTelegramResponse({required this.accessToken, required this.refreshToken});
+  LoginWithTelegramResponse({required this.accessToken, required this.refreshToken, this.language});
 
   factory LoginWithTelegramResponse.fromJson(Map<String, Object?> json) {
     final data = json['data'] as Map<String, Object?>? ?? json;
     return LoginWithTelegramResponse(
       accessToken: data['access_token'] as String? ?? '',
       refreshToken: data['refresh_token'] as String? ?? '',
+      language: data['language'] as String?,
     );
   }
   final String accessToken;
   final String refreshToken;
+  final String? language;
 }

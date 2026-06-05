@@ -1,6 +1,10 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
+import '../../../feature/main/bloc/main_cubit.dart';
+import '../../../feature/main/model/login_with_telegram.dart';
 import '../../extension/context_extension.dart';
 import '../../util/helpers.dart';
 
@@ -37,9 +41,7 @@ class _SplashScreenState extends SplashController {
           body: Column(
             children: [
               Expanded(
-                child: Center(
-                  child: SizedBox(width: context.x.width * 0.5, height: context.x.width * 0.5, child: _buildLogo()),
-                ),
+                child: Center(child: SizedBox(width: 180, height: 180, child: _buildLogo())),
               ),
               const Padding(
                 padding: .only(bottom: 32),
@@ -142,4 +144,38 @@ abstract class SplashController extends State<SplashScreen> with SingleTickerPro
   }
 
   // --- End of Lifecycle --- //
+}
+
+class SplashRouteWrapper extends StatefulWidget {
+  const SplashRouteWrapper({super.key});
+
+  @override
+  State<SplashRouteWrapper> createState() => _SplashRouteWrapperState();
+}
+
+class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    final tg = context.telegramWebApp;
+    if (tg.isSupported) {
+      context.read<MainCubit>().signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocListener<MainCubit, MainState>(
+    listenWhen: (previous, current) => current.status.isSuccess && previous.status != current.status,
+    listener: (context, state) async {
+      final language = state.loginWithTelegramResponse?.language;
+      if (language != null && language.isNotEmpty) {
+        context.x.setLocalization(Locale(language));
+      }
+      await context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
+      if (context.mounted) {
+        context.octopus.navigate('home');
+      }
+    },
+    child: const SplashScreen(),
+  );
 }

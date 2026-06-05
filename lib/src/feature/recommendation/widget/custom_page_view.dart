@@ -95,11 +95,14 @@ class _CustomPageViewState extends State<CustomPageView> {
     title: test.name ?? '',
     companyName: test.categoryName ?? '',
     description: test.description ?? '',
-    price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
+    price: test.isPurchased == true
+        ? context.x.l10n.purchased
+        : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
     questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
     buyButtonText: test.isPurchased == true ? context.x.l10n.enterTest : context.x.l10n.buy,
     onBuyButtonPressed: widget.onBuyButtonPressed ?? () {},
     isFree: test.price == 0 || test.price == null,
+    isPurchased: test.isPurchased == true,
     onShareButtonPressed: () => widget.onShareButtonPressed?.call(test),
   );
 

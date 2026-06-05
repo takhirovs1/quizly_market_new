@@ -31,12 +31,15 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
       title: test.name ?? '',
       companyName: test.categoryName ?? '',
       description: test.description ?? '',
-      price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
+      price: isPurchased
+          ? context.x.l10n.purchased
+          : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
       questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
       buyButtonText: buyText,
       onBuyButtonPressed: onBuyTestPressed,
       onShareButtonPressed: () => onShareTestPressed(test),
       isFree: test.price == 0 || test.price == null,
+      isPurchased: isPurchased,
     );
   }
 
@@ -50,10 +53,13 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
       title: test.name ?? '',
       companyName: test.categoryName ?? '',
       description: test.description ?? '',
-      price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
+      price: isPurchased
+          ? context.x.l10n.purchased
+          : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
       questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
       buyButtonText: buyText,
       onBuyButtonPressed: onBuyTestPressed,
+      isPurchased: isPurchased,
     );
   }
 
@@ -64,7 +70,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
       if (layout.crossAxisCount == 1) {
         return ListView.separated(
           controller: scrollController,
-          padding: const .symmetric(horizontal: 16),
+          padding: const .only(left: 16, right: 16, bottom: 16),
           itemCount: tests.length,
           separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (_, index) => _buildTestCard(tests[index]),
@@ -73,7 +79,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
 
       return GridView.builder(
         controller: scrollController,
-        padding: const .symmetric(horizontal: 16),
+        padding: const .only(left: 16, right: 16, bottom: 16),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: layout.crossAxisCount,
           mainAxisExtent: layout.mainAxisExtent,
@@ -124,7 +130,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
     required bool hasMoreLoading,
   }) {
     if (isLoading) {
-      if (viewMode == TestViewMode.grid) {
+      if (viewMode == .grid) {
         return LayoutBuilder(
           builder: (context, constraints) {
             final layout = computeGridLayout(constraints.maxWidth + MoreRecommendationScreenState.horizontalPadding);
@@ -146,10 +152,16 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
     }
 
     if (tests.isEmpty) {
+      final isSearching = searchController.text.trim().isNotEmpty;
       return Center(
         child: Padding(
-          padding: const .all(16),
-          child: Text(context.x.l10n.youDontHaveAnyTestsYet, style: context.x.textStyle.sfW500s16, textAlign: .center),
+          padding: const .symmetric(horizontal: 16, vertical: 24),
+          child: EmptyTestWidget(
+            title: isSearching
+                ? context.x.l10n.noTestsFound
+                : (widget.type == .myTests ? context.x.l10n.youDontHaveAnyTestsYet : context.x.l10n.noTestsFound),
+            description: isSearching ? context.x.l10n.trySearchingWithOtherKeywords : '',
+          ),
         ),
       );
     }
@@ -165,7 +177,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                     );
                     return GridView.builder(
                       controller: scrollController,
-                      padding: const .symmetric(horizontal: 16),
+                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: layout.crossAxisCount,
                         mainAxisExtent: layout.mainAxisExtent,
@@ -190,9 +202,13 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.type == TestCategoryType.myTests
-        ? context.x.l10n.myTestsHeader
-        : context.x.l10n.recommendationsHeader;
+    final title = switch (widget.type) {
+      .myTests => context.x.l10n.myTestsHeader,
+      .topTests => context.x.l10n.topTests,
+      .recommendation => context.x.l10n.recommendationsHeader,
+      .liked => context.x.l10n.likedTests,
+      .allTests => context.x.l10n.allTests,
+    };
 
     return Scaffold(
       backgroundColor: context.x.colors.scaffoldBackground,
@@ -210,10 +226,13 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
               spacing: 8,
               children: [
                 Expanded(
-                  child: AppTextField(
-                    controller: searchController,
-                    title: context.x.l10n.search,
-                    prefixWidget: Assets.lib.vectors.search.svg(package: 'ui', width: 24, height: 24),
+                  child: SizedBox(
+                    height: 56,
+                    child: AppTextField(
+                      controller: searchController,
+                      title: context.x.l10n.search,
+                      prefixWidget: Assets.lib.vectors.search.svg(package: 'ui', width: 24, height: 24),
+                    ),
                   ),
                 ),
                 TestViewModeToggle(notifier: viewModeNotifier),
@@ -224,16 +243,14 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
             child: ValueListenableBuilder<TestViewMode>(
               valueListenable: viewModeNotifier,
               builder: (context, viewMode, _) {
-                if (widget.type == TestCategoryType.myTests) {
+                if (widget.type == .myTests) {
                   return BlocBuilder<MyTestCubit, MyTestState>(
-                    builder: (context, state) {
-                      return _buildContent(
-                        viewMode: viewMode,
-                        tests: state.myTests,
-                        isLoading: state.status.isLoading,
-                        hasMoreLoading: state.isMyTestsLoadingMore,
-                      );
-                    },
+                    builder: (context, state) => _buildContent(
+                      viewMode: viewMode,
+                      tests: state.myTests,
+                      isLoading: state.status.isLoading,
+                      hasMoreLoading: state.isMyTestsLoadingMore,
+                    ),
                   );
                 } else {
                   return BlocBuilder<RecommendationCubit, RecommendationState>(
@@ -241,10 +258,10 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                       final List<TestModel> tests;
                       final bool hasMoreLoading;
                       switch (widget.type) {
-                        case TestCategoryType.recommendation || TestCategoryType.topTests:
+                        case .recommendation || .topTests:
                           tests = state.recommendations;
                           hasMoreLoading = false;
-                        case TestCategoryType.liked:
+                        case .liked:
                           tests = state.liked;
                           hasMoreLoading = false;
                         default:
@@ -263,7 +280,6 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
               },
             ),
           ),
-          SizedBox(height: context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16),
         ],
       ),
     );

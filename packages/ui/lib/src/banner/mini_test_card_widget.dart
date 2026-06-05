@@ -12,6 +12,7 @@ class MiniTestCardWidget extends StatelessWidget {
     required this.questionAmount,
     required this.buyButtonText,
     required this.onBuyButtonPressed,
+    this.isPurchased = false,
     super.key,
   });
 
@@ -22,6 +23,7 @@ class MiniTestCardWidget extends StatelessWidget {
   final String questionAmount;
   final String buyButtonText;
   final VoidCallback onBuyButtonPressed;
+  final bool isPurchased;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -36,21 +38,24 @@ class MiniTestCardWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: context.x.theme.textTheme.titleMedium?.copyWith(color: context.x.colors.bannerText),
-            maxLines: 1,
+            style: context.x.textStyle.sfW400s18.copyWith(
+              color: context.x.colors.bannerText,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             companyName,
-            style: context.x.theme.textTheme.titleMedium?.copyWith(color: context.x.colors.bannerSecondaryText),
-            maxLines: 1,
+            style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             description,
-            style: context.x.theme.textTheme.bodyMedium?.copyWith(color: context.x.colors.bannerSecondaryText),
+            style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -63,7 +68,7 @@ class MiniTestCardWidget extends StatelessWidget {
                 child: Text(
                   questionAmount,
                   overflow: TextOverflow.ellipsis,
-                  style: context.x.theme.textTheme.bodyMedium?.copyWith(color: context.x.colors.bannerSecondaryText),
+                  style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
                 ),
               ),
             ],
@@ -72,15 +77,14 @@ class MiniTestCardWidget extends StatelessWidget {
           Row(
             spacing: 4,
             children: [
-              Assets.lib.images.money.image(width: 16, height: 16, package: 'ui'),
+              if (isPurchased)
+                Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui')
+              else
+                Assets.lib.images.money.image(width: 16, height: 16, package: 'ui'),
               Expanded(
                 child: Text(
                   price,
-                  style: context.x.theme.textTheme.labelLarge?.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: context.x.colors.bannerPriceText,
-                  ),
+                  style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -88,22 +92,21 @@ class MiniTestCardWidget extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           const Spacer(),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
+          FilledButton(
+            style: FilledButton.styleFrom(
               backgroundColor: context.x.colors.bannerPriceText,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsetsGeometry.zero,
             ),
             onPressed: onBuyButtonPressed,
-            child: Text(
-              buyButtonText,
-              style: context.x.theme.textTheme.labelLarge?.copyWith(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: context.x.colors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                buyButtonText,
+                style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.white),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

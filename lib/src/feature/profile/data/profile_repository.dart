@@ -5,6 +5,7 @@ import '../model/profile_model.dart';
 
 abstract interface class IProfileRepository {
   Future<ProfileModelResponse> getProfile();
+  Future<void> updateLanguage(String language);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -17,5 +18,10 @@ final class ProfileRepositoryImpl implements IProfileRepository {
     final root = response.data ?? {};
     final data = root['data'] as Map<String, Object?>? ?? root;
     return ProfileModelResponse.fromJson(data);
+  }
+
+  @override
+  Future<void> updateLanguage(String language) async {
+    await dio.put<void>(Urls.updateLanguage, data: {'language': language});
   }
 }

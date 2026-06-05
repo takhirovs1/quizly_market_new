@@ -77,7 +77,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 );
               }
 
-              // Search mode: search results from /api/tests/my
+              // Search mode: search results from /api/tests
               if (state.search.isNotEmpty) {
                 if (state.allTests.isEmpty) {
                   return ListView(
@@ -178,6 +178,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
 
                   // All tests section
                   if (state.allTests.isNotEmpty) ...[
+                    const SizedBox(height: 16),
                     Padding(
                       padding: const .symmetric(horizontal: 16),
                       child: SectionHeaderWidget(

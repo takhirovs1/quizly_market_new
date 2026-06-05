@@ -44,6 +44,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void selectLanguage(Locale locale) {
     if (locale.languageCode == currentLocale.languageCode) return;
     context.x.setLocalization(locale);
+    profileCubit.updateLanguage(locale.languageCode);
   }
 
   String themeLabel(ThemeMode mode) => switch (mode) {

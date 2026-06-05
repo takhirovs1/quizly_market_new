@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -18,9 +17,9 @@ class TestViewModeToggle extends StatelessWidget {
   final Duration duration;
   final Curve curve;
 
-  void _select(TestViewMode mode) {
+  void _select(BuildContext context, TestViewMode mode) {
     if (notifier.value == mode) return;
-    HapticFeedback.selectionClick();
+    context.telegramWebApp.hapticImpact(.light);
     notifier.value = mode;
   }
 
@@ -75,7 +74,7 @@ class TestViewModeToggle extends StatelessWidget {
                           child: Material(
                             color: context.x.colors.transparent,
                             child: InkWell(
-                              onTap: () => _select(.grid),
+                              onTap: () => _select(context, .grid),
                               borderRadius: .circular(innerRadius),
                               splashColor: context.x.colors.primary.withValues(alpha: 0.12),
                               highlightColor: context.x.colors.primary.withValues(alpha: 0.06),
@@ -96,7 +95,7 @@ class TestViewModeToggle extends StatelessWidget {
                           child: Material(
                             color: context.x.colors.transparent,
                             child: InkWell(
-                              onTap: () => _select(.list),
+                              onTap: () => _select(context, .list),
                               borderRadius: .circular(innerRadius),
                               splashColor: context.x.colors.primary.withValues(alpha: 0.12),
                               highlightColor: context.x.colors.primary.withValues(alpha: 0.06),
