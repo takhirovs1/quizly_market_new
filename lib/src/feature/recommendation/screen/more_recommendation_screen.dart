@@ -5,10 +5,11 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../my_tests/bloc/my_test_cubit.dart';
 import '../../my_tests/models/test_mode.dart';
+import '../bloc/recommendation_cubit.dart';
 import '../state/more_recommendation_screen_state.dart';
 import '../widget/test_view_mode_toggle.dart';
 
-enum TestCategoryType { myTests, topTests }
+enum TestCategoryType { myTests, topTests, recommendation, liked, allTests }
 
 class MoreRecommendationScreen extends StatefulWidget {
   const MoreRecommendationScreen({required this.type, super.key});
@@ -116,9 +117,82 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
     },
   );
 
+  Widget _buildContent({
+    required TestViewMode viewMode,
+    required List<TestModel> tests,
+    required bool isLoading,
+    required bool hasMoreLoading,
+  }) {
+    if (isLoading) {
+      if (viewMode == TestViewMode.grid) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final layout = computeGridLayout(constraints.maxWidth + MoreRecommendationScreenState.horizontalPadding);
+            return GridView.builder(
+              padding: const .symmetric(horizontal: 16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: layout.crossAxisCount,
+                mainAxisExtent: layout.mainAxisExtent,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+              ),
+              itemCount: 6,
+              itemBuilder: (_, _) => const MiniTestCardShimmer(),
+            );
+          },
+        );
+      }
+      return _buildListShimmer();
+    }
+
+    if (tests.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const .all(16),
+          child: Text(context.x.l10n.youDontHaveAnyTestsYet, style: context.x.textStyle.sfW500s16, textAlign: .center),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          child: viewMode == .grid
+              ? LayoutBuilder(
+                  builder: (context, constraints) {
+                    final layout = computeGridLayout(
+                      constraints.maxWidth + MoreRecommendationScreenState.horizontalPadding,
+                    );
+                    return GridView.builder(
+                      controller: scrollController,
+                      padding: const .symmetric(horizontal: 16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: layout.crossAxisCount,
+                        mainAxisExtent: layout.mainAxisExtent,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                      ),
+                      itemCount: tests.length,
+                      itemBuilder: (_, index) => _buildMiniTestCard(tests[index]),
+                    );
+                  },
+                )
+              : _buildListContent(tests),
+        ),
+        if (hasMoreLoading)
+          const Padding(
+            padding: .symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator.adaptive()),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final title = widget.type == .myTests ? context.x.l10n.myTestsHeader : context.x.l10n.recommendationsHeader;
+    final title = widget.type == TestCategoryType.myTests
+        ? context.x.l10n.myTestsHeader
+        : context.x.l10n.recommendationsHeader;
 
     return Scaffold(
       backgroundColor: context.x.colors.scaffoldBackground,
@@ -149,85 +223,44 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
           Expanded(
             child: ValueListenableBuilder<TestViewMode>(
               valueListenable: viewModeNotifier,
-              builder: (context, viewMode, _) => BlocBuilder<MyTestCubit, MyTestState>(
-                builder: (context, state) {
-                  final tests = widget.type == .myTests ? state.myTests : state.topTests;
-                  final isLoading = state.status.isLoading;
-                  final hasMoreLoading = widget.type == .myTests
-                      ? state.isMyTestsLoadingMore
-                      : state.isTopTestsLoadingMore;
-
-                  if (isLoading) {
-                    if (viewMode == .grid) {
-                      return LayoutBuilder(
-                        builder: (context, constraints) {
-                          final layout = computeGridLayout(
-                            constraints.maxWidth + MoreRecommendationScreenState.horizontalPadding,
-                          );
-                          return GridView.builder(
-                            padding: const .symmetric(horizontal: 16),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: layout.crossAxisCount,
-                              mainAxisExtent: layout.mainAxisExtent,
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                            ),
-                            itemCount: 6,
-                            itemBuilder: (_, _) => const MiniTestCardShimmer(),
-                          );
-                        },
+              builder: (context, viewMode, _) {
+                if (widget.type == TestCategoryType.myTests) {
+                  return BlocBuilder<MyTestCubit, MyTestState>(
+                    builder: (context, state) {
+                      return _buildContent(
+                        viewMode: viewMode,
+                        tests: state.myTests,
+                        isLoading: state.status.isLoading,
+                        hasMoreLoading: state.isMyTestsLoadingMore,
                       );
-                    }
-                    return _buildListShimmer();
-                  }
-
-                  if (tests.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const .all(16),
-                        child: Text(
-                          context.x.l10n.youDontHaveAnyTestsYet,
-                          style: context.x.textStyle.sfW500s16,
-                          textAlign: .center,
-                        ),
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: viewMode == .grid
-                            ? LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final layout = computeGridLayout(
-                                    constraints.maxWidth + MoreRecommendationScreenState.horizontalPadding,
-                                  );
-                                  return GridView.builder(
-                                    controller: scrollController,
-                                    padding: const .symmetric(horizontal: 16),
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: layout.crossAxisCount,
-                                      mainAxisExtent: layout.mainAxisExtent,
-                                      mainAxisSpacing: 10,
-                                      crossAxisSpacing: 10,
-                                    ),
-                                    itemCount: tests.length,
-                                    itemBuilder: (_, index) => _buildMiniTestCard(tests[index]),
-                                  );
-                                },
-                              )
-                            : _buildListContent(tests),
-                      ),
-                      if (hasMoreLoading)
-                        const Padding(
-                          padding: .symmetric(vertical: 16),
-                          child: Center(child: CircularProgressIndicator.adaptive()),
-                        ),
-                    ],
+                    },
                   );
-                },
-              ),
+                } else {
+                  return BlocBuilder<RecommendationCubit, RecommendationState>(
+                    builder: (context, state) {
+                      final List<TestModel> tests;
+                      final bool hasMoreLoading;
+                      switch (widget.type) {
+                        case TestCategoryType.recommendation || TestCategoryType.topTests:
+                          tests = state.recommendations;
+                          hasMoreLoading = false;
+                        case TestCategoryType.liked:
+                          tests = state.liked;
+                          hasMoreLoading = false;
+                        default:
+                          tests = state.allTests;
+                          hasMoreLoading = state.isAllTestsLoadingMore;
+                      }
+                      return _buildContent(
+                        viewMode: viewMode,
+                        tests: tests,
+                        isLoading: state.status.isLoading,
+                        hasMoreLoading: hasMoreLoading,
+                      );
+                    },
+                  );
+                }
+              },
             ),
           ),
           SizedBox(height: context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16),

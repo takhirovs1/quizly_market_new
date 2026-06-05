@@ -1,34 +1,40 @@
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
+import '../../my_tests/models/test_mode.dart';
 
 class CustomPageView extends StatefulWidget {
   const CustomPageView({
-    required this.items,
+    required this.tests,
     required this.title,
     super.key,
     this.onShowMore,
+    this.onBuyButtonPressed,
     this.onShareButtonPressed,
   });
 
   final String title;
   final VoidCallback? onShowMore;
-  final List<String> items;
-  final void Function(String title, String companyName, String description, String price, String questionAmount)?
-  onShareButtonPressed;
+  final List<TestModel> tests;
+  final VoidCallback? onBuyButtonPressed;
+  final void Function(TestModel test)? onShareButtonPressed;
 
   @override
   State<CustomPageView> createState() => _CustomPageViewState();
 }
 
 class _CustomPageViewState extends State<CustomPageView> {
-  late final ValueNotifier<bool> isPageControllerEnded;
   late final ValueNotifier<int> selectedPage;
   late final ValueNotifier<double> overscrollAmount;
   late final ScrollController scrollController;
 
   bool hasTriggeredShowMore = false;
   bool scrollingListenerAttached = false;
+
+  static const double _cardWidth = 350;
+  static const double _cardSpacing = 12;
+  static const double _horizontalPadding = 16;
 
   void attachScrollingListener() {
     if (!scrollController.hasClients || scrollingListenerAttached) return;
@@ -40,8 +46,9 @@ class _CustomPageViewState extends State<CustomPageView> {
     if (!scrollController.hasClients) return;
     final pos = scrollController.position;
     attachScrollingListener();
-    final maxPage = (widget.items.length - 1).clamp(0, widget.items.length);
-    final page = (pos.pixels / 350).floor().clamp(0, maxPage);
+    final maxPage = (widget.tests.length - 1).clamp(0, widget.tests.length);
+    final cardWidth = pos.viewportDimension > 0 ? pos.viewportDimension * 0.95 : _cardWidth;
+    final page = (pos.pixels / (cardWidth + _cardSpacing)).round().clamp(0, maxPage);
     if (selectedPage.value != page) selectedPage.value = page;
     if (pos.maxScrollExtent <= 0) return;
     final overscroll = pos.pixels - pos.maxScrollExtent;
@@ -66,11 +73,9 @@ class _CustomPageViewState extends State<CustomPageView> {
   @override
   void initState() {
     super.initState();
-    isPageControllerEnded = ValueNotifier(false);
     selectedPage = ValueNotifier(0);
     overscrollAmount = ValueNotifier(0);
-    scrollController = ScrollController();
-    scrollController.addListener(onScroll);
+    scrollController = ScrollController()..addListener(onScroll);
   }
 
   @override
@@ -78,97 +83,152 @@ class _CustomPageViewState extends State<CustomPageView> {
     if (scrollingListenerAttached && scrollController.hasClients) {
       scrollController.position.isScrollingNotifier.removeListener(onScrollingChanged);
     }
-    scrollController.removeListener(onScroll);
-    isPageControllerEnded.dispose();
+    scrollController
+      ..removeListener(onScroll)
+      ..dispose();
     selectedPage.dispose();
     overscrollAmount.dispose();
-    scrollController.dispose();
     super.dispose();
   }
 
+  Widget _buildTestCard(TestModel test) => TestCardWidget(
+    title: test.name ?? '',
+    companyName: test.categoryName ?? '',
+    description: test.description ?? '',
+    price: test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs,
+    questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
+    buyButtonText: test.isPurchased == true ? context.x.l10n.enterTest : context.x.l10n.buy,
+    onBuyButtonPressed: widget.onBuyButtonPressed ?? () {},
+    isFree: test.price == 0 || test.price == null,
+    onShareButtonPressed: () => widget.onShareButtonPressed?.call(test),
+  );
+
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      Padding(
-        padding: const .symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          mainAxisAlignment: .spaceBetween,
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final availableWidth = constraints.maxWidth;
+      final visibleCards = ((availableWidth - _horizontalPadding * 2 + _cardSpacing) / (_cardWidth + _cardSpacing))
+          .floor()
+          .clamp(1, widget.tests.length);
+      final isMultiCard = visibleCards > 1;
+
+      // If multiple cards fit, show them in a responsive grid row instead of a horizontal PageView
+      if (isMultiCard) {
+        return Column(
           children: [
-            Text(
-              widget.title,
-              style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
+            Padding(
+              padding: const .symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Text(
+                    widget.title,
+                    style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
+                  ),
+                  GestureDetector(
+                    onTap: widget.onShowMore,
+                    child: Assets.lib.vectors.chevronRight.svg(
+                      package: 'ui',
+                      width: 24,
+                      height: 24,
+                      colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            GestureDetector(
-              onTap: widget.onShowMore,
-              child: Assets.lib.vectors.chevronRight.svg(
-                package: 'ui',
-                width: 24,
-                height: 24,
-                colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+            Padding(
+              padding: const .symmetric(horizontal: 16),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    for (var i = 0; i < widget.tests.take(visibleCards).length; i++) ...[
+                      if (i > 0) const SizedBox(width: 12),
+                      Expanded(child: _buildTestCard(widget.tests[i])),
+                    ],
+                  ],
+                ),
               ),
             ),
           ],
-        ),
-      ),
-      SizedBox(
-        height: 158,
-        child: Stack(
-          children: [
-            ListView.separated(
-              controller: scrollController,
-              scrollDirection: .horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding: const .symmetric(horizontal: 16),
-              itemBuilder: (context, index) => SizedBox(
-                width: 350,
-                child: TestCardWidget(
-                  title: 'Test nomi',
-                  companyName: 'Tashkilot nomi',
-                  description: 'Test description Test description Test description Test description',
-                  price: '10 000 UZS',
-                  questionAmount: '100 ta savol',
-                  buyButtonText: context.x.l10n.buy,
-                  onBuyButtonPressed: () {},
-                  onShareButtonPressed: () => widget.onShareButtonPressed?.call(
-                    'Test nomi',
-                    'Tashkilot nomi',
-                    'Test description Test description Test description Test description',
-                    '10 000 UZS',
-                    '100 ta savol',
+        );
+      }
+
+      // Single card visible — use horizontal scrolling PageView with indicator
+      return Column(
+        children: [
+          Padding(
+            padding: const .symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  widget.title,
+                  style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
+                ),
+                GestureDetector(
+                  onTap: widget.onShowMore,
+                  child: Assets.lib.vectors.chevronRight.svg(
+                    package: 'ui',
+                    width: 24,
+                    height: 24,
+                    colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Stack(
+            children: [
+              SingleChildScrollView(
+                controller: scrollController,
+                scrollDirection: .horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Padding(
+                  padding: const .symmetric(horizontal: 16),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: .stretch,
+                      children: [
+                        for (var i = 0; i < widget.tests.length; i++) ...[
+                          if (i > 0) const SizedBox(width: 12),
+                          SizedBox(width: availableWidth * 0.95, child: _buildTestCard(widget.tests[i])),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-              separatorBuilder: (context, index) => const SizedBox(width: 12),
-              itemCount: widget.items.length,
-            ),
-            Positioned(
-              right: 16,
-              top: 0,
-              bottom: 0,
-              child: ValueListenableBuilder<double>(
-                valueListenable: overscrollAmount,
-                builder: (context, amount, _) {
-                  if (amount <= 0) return const SizedBox.shrink();
-                  final size = (12 + amount * 0.4).clamp(12, 46);
-                  return Center(
-                    child: Assets.lib.vectors.bigChevronRight.svg(
-                      package: 'ui',
-                      width: size * 0.26,
-                      height: size.toDouble(),
-                      colorFilter: .mode(context.x.colors.bannerText, .srcATop),
-                    ),
-                  );
-                },
+              Positioned(
+                right: 16,
+                top: 0,
+                bottom: 0,
+                child: ValueListenableBuilder<double>(
+                  valueListenable: overscrollAmount,
+                  builder: (context, amount, _) {
+                    if (amount <= 0) return const SizedBox.shrink();
+                    final size = (12 + amount * 0.4).clamp(12, 46);
+                    return Center(
+                      child: Assets.lib.vectors.bigChevronRight.svg(
+                        package: 'ui',
+                        width: size * 0.26,
+                        height: size.toDouble(),
+                        colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(height: 8),
-      ValueListenableBuilder<int>(
-        valueListenable: selectedPage,
-        builder: (context, value, child) => PageIndicator(selectedPage: value, totalPages: widget.items.length),
-      ),
-    ],
+            ],
+          ),
+          const SizedBox(height: 8),
+          ValueListenableBuilder<int>(
+            valueListenable: selectedPage,
+            builder: (context, value, child) => PageIndicator(selectedPage: value, totalPages: widget.tests.length),
+          ),
+        ],
+      );
+    },
   );
 }

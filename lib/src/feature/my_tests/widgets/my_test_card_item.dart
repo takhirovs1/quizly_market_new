@@ -14,7 +14,7 @@ class MyTestCardItem extends StatelessWidget {
 
   final TestModel test;
   final VoidCallback onBuyButtonPressed;
-  final VoidCallback onShareButtonPressed;
+  final void Function(TestModel test) onShareButtonPressed;
 
   @override
   Widget build(BuildContext context) => TestCardWidget(
@@ -26,6 +26,6 @@ class MyTestCardItem extends StatelessWidget {
     buyButtonText: test.isPurchased == true ? context.x.l10n.enterTest : context.x.l10n.buy,
     onBuyButtonPressed: onBuyButtonPressed,
     isFree: test.price == 0 || test.price == null,
-    onShareButtonPressed: onShareButtonPressed,
+    onShareButtonPressed: () => onShareButtonPressed(test),
   );
 }

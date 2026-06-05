@@ -1,19 +1,72 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
+import '../../../common/extension/context_extension.dart';
+import '../../../common/router/pages.dart';
+import '../../my_tests/models/test_mode.dart';
+import '../bloc/recommendation_cubit.dart';
 import '../screen/recommendation_screen.dart';
 
 abstract class RecommendationScreenState extends State<RecommendationScreen> {
+  late final RecommendationCubit recommendationCubit;
   late final TextEditingController searchController;
+  late final ScrollController scrollController;
+  Timer? _debounceTimer;
+  var _isLoadingMore = false;
 
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController();
+    searchController = TextEditingController()..addListener(_onSearchChanged);
+    scrollController = ScrollController()..addListener(_onScroll);
+    recommendationCubit = context.read<RecommendationCubit>()..initialize();
+  }
+
+  void _onSearchChanged() {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+    final query = searchController.text.trim();
+    if (query.isNotEmpty && query.length <= 3) return;
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (query.isEmpty) {
+        recommendationCubit.initialize();
+      } else {
+        recommendationCubit.getAllTests(search: query);
+      }
+    });
+  }
+
+  void _onScroll() {
+    if (_isLoadingMore || !scrollController.hasClients) return;
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.position.pixels;
+    if (maxScroll - currentScroll <= 200) {
+      _isLoadingMore = true;
+      recommendationCubit.getAllTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
+    }
+  }
+
+  void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
+
+  void onShareTestPressed(TestModel test) {
+    context.telegramWebApp.hapticImpact(.light);
+    context.shareTest(
+      test.name ?? '',
+      test.categoryName ?? '',
+      test.description ?? '',
+      test.price?.toString() ?? '0',
+      test.questionCount?.toString() ?? '0',
+    );
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    _debounceTimer?.cancel();
+    scrollController.dispose();
     super.dispose();
   }
 }

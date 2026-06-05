@@ -15,7 +15,7 @@ class ResponsiveTestRow extends StatelessWidget {
   final List<TestModel> tests;
   final int crossAxisCount;
   final VoidCallback onBuyButtonPressed;
-  final VoidCallback onShareButtonPressed;
+  final void Function(TestModel test) onShareButtonPressed;
 
   @override
   Widget build(BuildContext context) {

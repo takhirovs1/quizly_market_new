@@ -108,7 +108,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   tests: state.myTests.take(2 * crossAxisCount).toList(),
                                   crossAxisCount: crossAxisCount,
                                   onBuyButtonPressed: onBuyTestPressed,
-                                  onShareButtonPressed: onShareTestPressed,
+                                  onShareButtonPressed: (test) => onShareTestPressed(),
                                 ),
 
                                 const SizedBox(height: 6),
@@ -120,7 +120,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   tests: state.myTests.skip(2 * crossAxisCount).take(3 * crossAxisCount).toList(),
                                   crossAxisCount: crossAxisCount,
                                   onBuyButtonPressed: onBuyTestPressed,
-                                  onShareButtonPressed: onShareTestPressed,
+                                  onShareButtonPressed: (test) => onShareTestPressed(),
                                 ),
                               ],
                               true => [
@@ -189,7 +189,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   tests: state.topTests,
                                   crossAxisCount: crossAxisCount,
                                   onBuyButtonPressed: onBuyTestPressed,
-                                  onShareButtonPressed: onShareTestPressed,
+                                  onShareButtonPressed: (test) => onShareTestPressed(),
                                 ),
                                 if (state.isTopTestsLoadingMore)
                                   const Padding(

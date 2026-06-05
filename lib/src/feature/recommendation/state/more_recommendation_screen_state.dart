@@ -8,11 +8,13 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/bloc/my_test_cubit.dart';
 import '../../my_tests/models/test_mode.dart';
+import '../bloc/recommendation_cubit.dart';
 import '../screen/more_recommendation_screen.dart';
 import '../widget/test_view_mode_toggle.dart';
 
 abstract class MoreRecommendationScreenState extends State<MoreRecommendationScreen> {
   late final MyTestCubit myTestCubit;
+  late final RecommendationCubit recommendationCubit;
   late final ScrollController scrollController;
   late final TextEditingController searchController;
   late final ValueNotifier<TestViewMode> viewModeNotifier;
@@ -108,11 +110,18 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     viewModeNotifier = ValueNotifier<TestViewMode>(TestViewMode.grid);
     scrollController = ScrollController()..addListener(_onScroll);
     myTestCubit = context.read<MyTestCubit>();
-    if (widget.type == .myTests) {
+    recommendationCubit = context.read<RecommendationCubit>();
+
+    if (widget.type == TestCategoryType.myTests) {
       myTestCubit.getMyTests();
-    } else {
-      myTestCubit.getTopTests();
+    } else if (widget.type == TestCategoryType.topTests || widget.type == TestCategoryType.recommendation) {
+      recommendationCubit.getRecommendationTests();
+    } else if (widget.type == TestCategoryType.liked) {
+      recommendationCubit.getLikedTests();
+    } else if (widget.type == TestCategoryType.allTests) {
+      recommendationCubit.getAllTests();
     }
+
     searchController = TextEditingController()..addListener(_onSearchChanged);
     context.setupTelegramBackButton();
   }
@@ -123,10 +132,14 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     if (query.isNotEmpty && query.length <= 3) return;
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      if (widget.type == .myTests) {
+      if (widget.type == TestCategoryType.myTests) {
         myTestCubit.getMyTests(search: query);
-      } else {
-        myTestCubit.getTopTests(search: query);
+      } else if (widget.type == TestCategoryType.topTests || widget.type == TestCategoryType.recommendation) {
+        recommendationCubit.getRecommendationTests(search: query);
+      } else if (widget.type == TestCategoryType.liked) {
+        recommendationCubit.getLikedTests(search: query);
+      } else if (widget.type == TestCategoryType.allTests) {
+        recommendationCubit.getAllTests(search: query);
       }
     });
   }
@@ -137,8 +150,17 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     final currentScroll = scrollController.position.pixels;
     if (maxScroll - currentScroll <= 200) {
       _isLoadingMore = true;
-      (widget.type == .myTests ? myTestCubit.getMyTests(loadMore: true) : myTestCubit.getTopTests(loadMore: true))
-          .whenComplete(() => _isLoadingMore = false);
+      final Future<void> future;
+      if (widget.type == TestCategoryType.myTests) {
+        future = myTestCubit.getMyTests(loadMore: true);
+      } else if (widget.type == TestCategoryType.topTests || widget.type == TestCategoryType.recommendation) {
+        future = recommendationCubit.getRecommendationTests(loadMore: true);
+      } else if (widget.type == TestCategoryType.liked) {
+        future = recommendationCubit.getLikedTests(loadMore: true);
+      } else {
+        future = recommendationCubit.getAllTests(loadMore: true);
+      }
+      future.whenComplete(() => _isLoadingMore = false);
     }
   }
 

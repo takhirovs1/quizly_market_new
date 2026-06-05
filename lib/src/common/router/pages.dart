@@ -16,6 +16,8 @@ import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/profile/screen/referral_screen.dart';
+import '../../feature/recommendation/bloc/recommendation_cubit.dart';
+import '../../feature/recommendation/data/recommendation_repository.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
 import '../../feature/tests/screens/test_custom_mode_screen.dart';
 import '../../feature/tests/screens/test_flashcard_mode.dart';
@@ -65,6 +67,11 @@ enum Routes with OctopusRoute {
         BlocProvider(
           create: (_) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
         ),
+        BlocProvider(
+          create: (context) => RecommendationCubit(
+            recommendationRepository: RecommendationRepositoryImpl(dio: context.x.dependencies.dios.dio),
+          ),
+        ),
       ],
       child: const HomeScreen(),
     ),
@@ -76,8 +83,17 @@ enum Routes with OctopusRoute {
       child: const SplashRouteWrapper(),
     ),
     .selectLanguage => const SelectLanguage(),
-    .moreRecommendation => BlocProvider(
-      create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
+    .moreRecommendation => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
+        ),
+        BlocProvider(
+          create: (context) => RecommendationCubit(
+            recommendationRepository: RecommendationRepositoryImpl(dio: context.x.dependencies.dios.dio),
+          ),
+        ),
+      ],
       child: MoreRecommendationScreen(
         type: TestCategoryType.values.byName(node.arguments['type'] ?? TestCategoryType.topTests.name),
       ),

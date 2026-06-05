@@ -29,6 +29,8 @@ class HomeScreen extends StatefulWidget {
 /// State for widget HomeScreen.
 abstract class HomeScreenState extends State<HomeScreen> {
   late final ValueNotifier<int> currentIndex;
+  final Set<int> _activatedIndices = {0};
+
   /* #region Lifecycle */
   @override
   void initState() {
@@ -45,9 +47,14 @@ abstract class HomeScreenState extends State<HomeScreen> {
   void onTap(int index) {
     if (currentIndex.value != index) {
       if (context.telegramWebApp.isSupported) {
-        context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+        context.telegramWebApp.hapticImpact(.light);
       } else {
         HapticFeedback.lightImpact();
+      }
+      if (!_activatedIndices.contains(index)) {
+        setState(() {
+          _activatedIndices.add(index);
+        });
       }
       currentIndex.value = index;
     }
@@ -60,11 +67,16 @@ class _HomeScreenState extends HomeScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    body: ValueListenableBuilder(
+    body: ValueListenableBuilder<int>(
       valueListenable: currentIndex,
       builder: (context, value, child) => IndexedStack(
         index: value,
-        children: const [MyTestsScreen(), RecommendationScreen(), UploadScreen(), ProfileScreen()],
+        children: [
+          const MyTestsScreen(),
+          if (_activatedIndices.contains(1)) const RecommendationScreen() else const SizedBox.shrink(),
+          if (_activatedIndices.contains(2)) const UploadScreen() else const SizedBox.shrink(),
+          if (_activatedIndices.contains(3)) const ProfileScreen() else const SizedBox.shrink(),
+        ],
       ),
     ),
     bottomNavigationBar: ColoredBox(
