@@ -12,7 +12,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
   final IMyTestRepository myTestRepository;
 
-  Future<void> initialize({String? search, int limit = 5}) => handle<void>(
+  Future<void> initialize({String? search, int limit = 20}) => handle<void>(
     (emit) async {
       emit(state.copyWith(status: .loading, search: search ?? ''));
       final results = await Future.wait([

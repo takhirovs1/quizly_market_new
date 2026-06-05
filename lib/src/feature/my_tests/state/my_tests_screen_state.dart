@@ -14,12 +14,27 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   late final ScrollController scrollController;
   late final TextEditingController searchController;
   Timer? _debounceTimer;
+  var _isLoadingMore = false;
+
+  /// Max card width for list view mode (in logical pixels).
+  static const double maxCardWidth = 300;
+
+  /// Horizontal padding (left + right) applied to the grid/list.
+  static const double horizontalPadding = 32; // 16 * 2
+
+  /// Computes the adaptive layout for the list view mode.
+  ({int crossAxisCount, double mainAxisExtent}) computeListLayout(double screenWidth) {
+    final availableWidth = screenWidth - horizontalPadding;
+    final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
+    const mainAxisExtent = 160.0;
+    return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
+  }
 
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController();
-    myTestCubit = context.read<MyTestCubit>()..initialize(limit: 5);
+    scrollController = ScrollController()..addListener(_onScroll);
+    myTestCubit = context.read<MyTestCubit>()..initialize();
     searchController = TextEditingController()..addListener(_onSearchChanged);
   }
 
@@ -29,8 +44,18 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     if (query.isNotEmpty && query.length <= 3) return;
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      myTestCubit.initialize(search: query, limit: 5);
+      myTestCubit.initialize(search: query);
     });
+  }
+
+  void _onScroll() {
+    if (_isLoadingMore || !scrollController.hasClients) return;
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.position.pixels;
+    if (maxScroll - currentScroll <= 200) {
+      _isLoadingMore = true;
+      myTestCubit.getTopTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
+    }
   }
 
   @override
@@ -44,7 +69,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
   Future<void> onRefresh() async {
     context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
-    await myTestCubit.initialize(search: searchController.text, limit: 5);
+    await myTestCubit.initialize(search: searchController.text);
   }
 
   void onShareTestPressed() {
