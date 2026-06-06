@@ -18,6 +18,9 @@ class MyTestState extends Equatable {
     this.demoTestStatus = StateStatus.idle,
     this.demoTestDetail,
     this.demoTestErrorMessage,
+    this.walletStatus = StateStatus.idle,
+    this.walletData,
+    this.walletErrorMessage,
   });
 
   final StateStatus status;
@@ -36,6 +39,9 @@ class MyTestState extends Equatable {
   final StateStatus demoTestStatus;
   final DemoTestDetail? demoTestDetail;
   final String? demoTestErrorMessage;
+  final StateStatus walletStatus;
+  final WalletData? walletData;
+  final String? walletErrorMessage;
 
   MyTestState copyWith({
     StateStatus? status,
@@ -54,6 +60,9 @@ class MyTestState extends Equatable {
     StateStatus? demoTestStatus,
     DemoTestDetail? demoTestDetail,
     String? demoTestErrorMessage,
+    StateStatus? walletStatus,
+    WalletData? walletData,
+    String? walletErrorMessage,
   }) => MyTestState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
@@ -71,6 +80,9 @@ class MyTestState extends Equatable {
     demoTestStatus: demoTestStatus ?? this.demoTestStatus,
     demoTestDetail: demoTestDetail ?? this.demoTestDetail,
     demoTestErrorMessage: demoTestErrorMessage ?? this.demoTestErrorMessage,
+    walletStatus: walletStatus ?? this.walletStatus,
+    walletData: walletData ?? this.walletData,
+    walletErrorMessage: walletErrorMessage ?? this.walletErrorMessage,
   );
 
   @override
@@ -91,5 +103,8 @@ class MyTestState extends Equatable {
     demoTestStatus,
     demoTestDetail,
     demoTestErrorMessage,
+    walletStatus,
+    walletData,
+    walletErrorMessage,
   ];
 }

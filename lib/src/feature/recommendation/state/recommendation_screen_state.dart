@@ -70,6 +70,11 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
     );
   }
 
+  Future<void> onRefresh() async {
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    await recommendationCubit.initialize(search: searchController.text);
+  }
+
   @override
   void dispose() {
     searchController.dispose();

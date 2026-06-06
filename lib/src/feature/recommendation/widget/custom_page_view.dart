@@ -70,6 +70,18 @@ class _CustomPageViewState extends State<CustomPageView> {
     }
   }
 
+  void scrollToPage(int pageIndex) {
+    if (!scrollController.hasClients) return;
+    final pos = scrollController.position;
+    final cardWidth = pos.viewportDimension > 0 ? pos.viewportDimension * 0.95 : _cardWidth;
+    final targetOffset = pageIndex * (cardWidth + _cardSpacing);
+    scrollController.animateTo(
+      targetOffset.toDouble(),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -225,11 +237,14 @@ class _CustomPageViewState extends State<CustomPageView> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          ValueListenableBuilder<int>(
-            valueListenable: selectedPage,
-            builder: (context, value, child) => PageIndicator(selectedPage: value, totalPages: widget.tests.length),
-          ),
+          if (widget.tests.length > 1) ...[
+            const SizedBox(height: 8),
+            ValueListenableBuilder<int>(
+              valueListenable: selectedPage,
+              builder: (context, value, child) =>
+                  PageIndicator(selectedPage: value, totalPages: widget.tests.length, onPageSelected: scrollToPage),
+            ),
+          ],
         ],
       );
     },

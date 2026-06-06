@@ -5,6 +5,7 @@ import '../../../common/extension/number_extension.dart';
 import '../../../common/util/logger.dart';
 import '../models/demo_test_model.dart';
 import '../models/test_model.dart';
+import '../models/wallet_model.dart';
 
 abstract interface class IMyTestRepository {
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request);
@@ -12,11 +13,23 @@ abstract interface class IMyTestRepository {
   Future<DemoTestResponse> getDemoTest(DemoTestRequest request);
   Future<void> likeTest(String testId);
   Future<void> unlikeTest(String testId);
+  Future<WalletResponse> getWallet(WalletRequest request);
 }
 
 final class MyTestRepositoryImpl implements IMyTestRepository {
   const MyTestRepositoryImpl({required this.dio});
   final Dio dio;
+
+  @override
+  Future<WalletResponse> getWallet(WalletRequest request) async {
+    try {
+      final response = await dio.get<Map<String, Object?>>('/api/payments/wallet');
+      return WalletResponse.fromJson(response.data ?? {});
+    } catch (e, s) {
+      info('GET WALLET API ERROR: $e $s');
+      rethrow;
+    }
+  }
 
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request) async {

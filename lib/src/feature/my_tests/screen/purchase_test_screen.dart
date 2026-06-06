@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
-import '../../../common/util/state_status.dart';
 import '../bloc/my_test_cubit.dart';
 import '../models/test_model.dart';
 import '../state/purchase_test_screen_state.dart';
@@ -28,17 +28,18 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
       title: context.x.l10n.buy,
     ),
     body: BlocListener<MyTestCubit, MyTestState>(
-      listenWhen: (previous, current) => previous.demoTestStatus != current.demoTestStatus,
+      listenWhen: (previous, current) =>
+          previous.demoTestStatus != current.demoTestStatus || previous.walletStatus != current.walletStatus,
       listener: onDemoTestStateChanged,
       child: BlocBuilder<MyTestCubit, MyTestState>(
         builder: (context, state) => switch (state.demoTestStatus) {
           .loading => const PurchaseTestShimmer(),
-          .error || StateStatus.noInternetConnection => Center(
+          .error || .noInternetConnection => Center(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const .all(24),
               child: EmptyTestWidget(
-                title: context.x.l10n.noTestsFound,
-                description: context.x.l10n.trySearchingWithOtherKeywords,
+                title: context.x.l10n.somethingWentWrong,
+                description: context.x.l10n.pleaseTryAgainLater,
               ),
             ),
           ),
@@ -49,8 +50,8 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                 child: Padding(
                   padding: const .all(24),
                   child: EmptyTestWidget(
-                    title: context.x.l10n.noTestsFound,
-                    description: context.x.l10n.trySearchingWithOtherKeywords,
+                    title: context.x.l10n.somethingWentWrong,
+                    description: context.x.l10n.pleaseTryAgainLater,
                   ),
                 ),
               );
@@ -96,7 +97,14 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                           ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
                           : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
                       hasShadow: true,
-                      title: payment.title,
+                       title: payment.title,
+                      titleWidget: (payment.id == 0 && state.walletStatus.isLoading)
+                          ? Shimmer.fromColors(
+                              baseColor: context.x.colors.indicatorBackground,
+                              highlightColor: context.x.colors.scaffoldBackground,
+                              child: const ShimmerBox(width: 80, height: 18, radius: 4),
+                            )
+                          : null,
                       subtitle: payment.subtitle,
                       image: Image.asset(payment.icon, package: 'ui', width: payment.type == .card ? 32 : 54),
                       onTap: onSwitchPaymentPressed,

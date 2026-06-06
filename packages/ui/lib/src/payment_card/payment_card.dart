@@ -17,6 +17,7 @@ class PaymentCard extends StatelessWidget {
     this.action,
     this.hasShadow = false,
     this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 8.5),
+    this.titleWidget,
     super.key,
   });
 
@@ -30,6 +31,7 @@ class PaymentCard extends StatelessWidget {
   final Widget? action;
   final bool hasShadow;
   final EdgeInsetsGeometry imagePadding;
+  final Widget? titleWidget;
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
@@ -70,7 +72,7 @@ class PaymentCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: context.x.textStyle.sfW700s18),
+                titleWidget ?? Text(title, style: context.x.textStyle.sfW700s18),
                 if (subtitle != null)
                   Text(
                     subtitle!,

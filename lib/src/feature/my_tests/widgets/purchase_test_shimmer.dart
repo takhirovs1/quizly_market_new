@@ -17,20 +17,20 @@ class PurchaseTestShimmer extends StatelessWidget {
 
     return ListView(
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const .symmetric(horizontal: 16),
       children: [
         const SizedBox(height: 16),
         // Title & Actions Shimmer
         shimmerWrapper(
           const Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             spacing: 8,
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
-                    ShimmerBox(width: double.infinity, height: 22, radius: 4),
+                    ShimmerBox(width: .infinity, height: 22, radius: 4),
                     SizedBox(height: 6),
                     ShimmerBox(width: 180, height: 22, radius: 4),
                   ],
@@ -167,42 +167,42 @@ class PurchaseTestShimmer extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        // Page Indicator Shimmer
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.x.colors.indicatorBackground,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                child: Row(
-                  spacing: 6,
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(
-                    5,
-                    (index) => SizedBox(
-                      width: 8,
-                      height: 8,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: index == 0 ? context.x.colors.white : context.x.colors.white.withValues(alpha: .25),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        // // Page Indicator Shimmer
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     DecoratedBox(
+        //       decoration: BoxDecoration(
+        //         color: context.x.colors.indicatorBackground,
+        //         borderRadius: BorderRadius.circular(16),
+        //       ),
+        //       child: Padding(
+        //         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        //         child: Row(
+        //           spacing: 6,
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: List.generate(
+        //             5,
+        //             (index) => SizedBox(
+        //               width: 8,
+        //               height: 8,
+        //               child: DecoratedBox(
+        //                 decoration: BoxDecoration(
+        //                   color: index == 0 ? context.x.colors.white : context.x.colors.white.withValues(alpha: .25),
+        //                   shape: BoxShape.circle,
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 20),
         // Payment Type Section Title
-        shimmerWrapper(const ShimmerBox(width: 100, height: 18, radius: 4)),
-        const SizedBox(height: 8),
+        shimmerWrapper(const ShimmerBox(width: 50, height: 24, radius: 4)),
+        const SizedBox(height: 20),
         // Payment Card Shimmer
         DecoratedBox(
           decoration: BoxDecoration(
@@ -225,7 +225,7 @@ class PurchaseTestShimmer extends StatelessWidget {
                 Expanded(
                   child: shimmerWrapper(
                     const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         ShimmerBox(width: 120, height: 16, radius: 4),
                         SizedBox(height: 6),

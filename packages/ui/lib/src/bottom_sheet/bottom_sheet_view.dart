@@ -63,7 +63,7 @@ class BottomSheetView extends StatelessWidget {
           ),
         ),
         Divider(color: ThemeColors.of(context).buttonBorder),
-        child,
+        Flexible(child: child),
       ],
     ),
   );

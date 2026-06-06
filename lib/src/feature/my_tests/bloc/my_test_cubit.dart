@@ -5,6 +5,7 @@ import '../../../common/util/state_status.dart';
 import '../data/my_test_repository.dart';
 import '../models/demo_test_model.dart';
 import '../models/test_model.dart';
+import '../models/wallet_model.dart';
 
 part 'my_test_state.dart';
 
@@ -162,6 +163,17 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
         final revertedDetail = detail.copyWith(isLiked: !currentIsLiked);
         emit(state.copyWith(demoTestDetail: revertedDetail));
       }
+    },
+  );
+
+  Future<void> getWallet() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(walletStatus: StateStatus.loading));
+      final response = await myTestRepository.getWallet(const WalletRequest());
+      emit(state.copyWith(walletStatus: StateStatus.success, walletData: response.data));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(walletStatus: StateStatus.error, walletErrorMessage: error.toString()));
     },
   );
 }
