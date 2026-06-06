@@ -22,7 +22,7 @@ class EmptyTestWidget extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22, color: context.x.colors.bannerText),
             ),

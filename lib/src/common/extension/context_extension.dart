@@ -111,12 +111,14 @@ extension type Build(BuildContext context) {
     bool isError = false,
     TextStyle? textStyle,
     String? errorStatusCode,
+    double? top,
   }) => CustomNotification.show(
     context: context,
     message: message,
     iconBackgroundColor: iconBackgroundColor,
     isError: isError,
     textStyle: textStyle,
+    top: top,
   );
 
   /// Obtain the nearest widget of the given type T,

@@ -57,8 +57,14 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onCopyCardNumber(String cardNumber) {
     Clipboard.setData(ClipboardData(text: cardNumber));
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
-    context.x.showNotification(message: context.x.l10n.copyCardID);
+    context.telegramWebApp.hapticImpact(.light);
+    context.x.showNotification(
+      message: context.x.l10n.copyCardID,
+      top: switch (context.telegramWebApp.isSupported) {
+        true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+        false => MediaQuery.paddingOf(context).top + 56,
+      },
+    );
   }
 
   void selectThemeMode(ThemeMode mode) {

@@ -41,7 +41,11 @@ class CustomNotification extends StatefulWidget {
     this.testMode = false,
     this.padding,
     this.onNotificationTap,
+    this.top,
   });
+
+  /// The top position of the notification.
+  final double? top;
 
   /// The message to display in the notification.
   final String message;
@@ -88,6 +92,7 @@ class CustomNotification extends StatefulWidget {
     EdgeInsets? padding,
     void Function()? onNotificationTap,
     bool testMode = false,
+    double? top,
   }) {
     _currentOverlay?.remove();
     _currentOverlay = null;
@@ -107,6 +112,7 @@ class CustomNotification extends StatefulWidget {
         padding: padding,
         testMode: testMode,
         onNotificationTap: onNotificationTap,
+        top: top,
       ),
     );
 
@@ -165,7 +171,7 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
   Widget build(BuildContext context) => Stack(
     children: <Widget>[
       Positioned(
-        top: MediaQuery.paddingOf(context).top + 46,
+        top: widget.top ?? MediaQuery.paddingOf(context).top,
         left: 20,
         right: 20,
         child: GestureDetector(

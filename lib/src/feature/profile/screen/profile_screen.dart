@@ -30,34 +30,24 @@ class _ProfileScreenState extends ProfileScreenState {
         final isShimmer = user == null;
 
         if (isShimmer && state.status.isError) {
-          final code = currentLocale.languageCode;
-          final errorText = switch (code) {
-            'uz' => 'Profil yuklashda xatolik yuz berdi',
-            'kk' => 'Профил юклашда хатолик юз берди',
-            'ru' => 'Произошла ошибка при загрузке профиля',
-            _ => 'Failed to load profile',
-          };
-          final retryText = switch (code) {
-            'uz' => 'Qayta urinish',
-            'kk' => 'Қайта уриниш',
-            'ru' => 'Повторить попытку',
-            _ => 'Retry',
-          };
           return Scaffold(
             backgroundColor: context.x.colors.scaffoldBackground,
             body: Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const .all(24),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     Text(
-                      state.errorMessage ?? errorText,
+                      context.x.l10n.failedToLoadProfile,
                       textAlign: .center,
                       style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.error),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton(onPressed: () => context.read<ProfileCubit>().loadProfile(), child: Text(retryText)),
+                    ElevatedButton(
+                      onPressed: () => context.read<ProfileCubit>().loadProfile(),
+                      child: Text(context.x.l10n.retry),
+                    ),
                   ],
                 ),
               ),
