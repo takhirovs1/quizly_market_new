@@ -4,7 +4,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../my_tests/bloc/my_test_cubit.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../bloc/recommendation_cubit.dart';
 import '../state/more_recommendation_screen_state.dart';
 import '../widget/test_view_mode_toggle.dart';
@@ -36,7 +36,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
           : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
       questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
       buyButtonText: buyText,
-      onBuyButtonPressed: onBuyTestPressed,
+      onBuyButtonPressed: () => onBuyTestPressed(test),
       onShareButtonPressed: () => onShareTestPressed(test),
       isFree: test.price == 0 || test.price == null,
       isPurchased: isPurchased,
@@ -58,7 +58,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
           : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
       questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
       buyButtonText: buyText,
-      onBuyButtonPressed: onBuyTestPressed,
+      onBuyButtonPressed: () => onBuyTestPressed(test),
       isPurchased: isPurchased,
     );
   }

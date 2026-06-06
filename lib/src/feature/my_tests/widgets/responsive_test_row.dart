@@ -1,6 +1,6 @@
 import 'package:ui/ui.dart';
 
-import '../models/test_mode.dart';
+import '../models/test_model.dart';
 import 'my_test_card_item.dart';
 
 class ResponsiveTestRow extends StatelessWidget {
@@ -14,7 +14,7 @@ class ResponsiveTestRow extends StatelessWidget {
 
   final List<TestModel> tests;
   final int crossAxisCount;
-  final VoidCallback onBuyButtonPressed;
+  final void Function(TestModel test) onBuyButtonPressed;
   final void Function(TestModel test) onShareButtonPressed;
 
   @override

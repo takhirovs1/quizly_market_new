@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../screens/test_group_mode_screen.dart';
 
 abstract class TestGroupModeScreenState extends State<TestGroupModeScreen> {
   final TestModel test = TestModel(
-    id: 1,
+    id: '1',
     name: 'O’zbekistonning eng yangi tarixi fanidan testlar',
     createdBy: 123123,
     description: 'Example test description, Example test description, Example test description',

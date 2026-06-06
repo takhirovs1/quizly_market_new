@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../common/extension/number_extension.dart';
 import '../../../common/util/logger.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 
 abstract interface class IRecommendationRepository {
   Future<({List<TestModel> items, int limit, int offset, int total})> getRecommendationTests(TestModelRequest request);

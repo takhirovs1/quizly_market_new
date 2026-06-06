@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../data/recommendation_repository.dart';
 
 part 'recommendation_state.dart';

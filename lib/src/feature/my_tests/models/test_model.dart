@@ -20,6 +20,7 @@ class TestModel {
     this.description,
     this.price,
     this.isPurchased,
+    this.isLiked,
     this.questionCount,
     this.likeCount,
     this.categoryName,
@@ -27,26 +28,28 @@ class TestModel {
   });
 
   factory TestModel.fromJson(Map<String, Object?> json) => TestModel(
-    id: json['id'].toIntOrNull,
-    categoryId: json['category_id'].toIntOrNull,
-    createdBy: json['created_by'].toIntOrNull,
+    id: json['id']?.toString(),
+    categoryId: json['category_id']?.toString(),
+    createdBy: json['created_by'],
     name: json['name'] as String?,
     description: json['description'] as String?,
     price: json['price'].toIntOrNull,
     isPurchased: json['is_purchased'] as bool?,
+    isLiked: json['is_liked'] as bool?,
     questionCount: json['question_count'].toIntOrNull,
     likeCount: json['like_count'].toIntOrNull,
     categoryName: json['category_name'] as String?,
     createdAt: json['created_at'].toDateTimeOrNull,
   );
 
-  final int? id;
-  final int? categoryId;
-  final int? createdBy;
+  final String? id;
+  final String? categoryId;
+  final Object? createdBy;
   final String? name;
   final String? description;
   final int? price;
   final bool? isPurchased;
+  final bool? isLiked;
   final int? questionCount;
   final int? likeCount;
   final String? categoryName;

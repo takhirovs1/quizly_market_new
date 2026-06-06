@@ -7,6 +7,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../bloc/my_test_cubit.dart';
+import '../models/test_model.dart';
 import '../screen/my_tests_screen.dart';
 
 abstract class MyTestsScreenState extends State<MyTestsScreen> {
@@ -66,7 +67,8 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     super.dispose();
   }
 
-  void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
+  void onBuyTestPressed(TestModel test) =>
+      context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});
   Future<void> onRefresh() async {
     context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     await myTestCubit.initialize(search: searchController.text);

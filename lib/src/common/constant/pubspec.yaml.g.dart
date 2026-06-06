@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'2.0.0+59',
+    representation: r'2.0.0+61',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'2.0.0+59',
+    canonical: r'2.0.0+61',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'59'],
+    build: <String>[r'61'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
     6,
-    5,
     6,
-    53,
-    24,
-    450,
-    830,
+    6,
+    11,
+    14,
+    200,
+    341,
   );
 
   /// Name
@@ -452,6 +452,7 @@ sealed class Pubspec {
     'octopus': r'^0.0.9',
     'telegram_web_app': r'^0.3.3',
     'expandable_page_view': r'^1.2.1',
+    'shimmer': r'^3.0.0',
     'equatable': r'^2.0.8',
     'lottie': r'^3.3.2',
     'flutter_markdown': r'^0.7.7+1',

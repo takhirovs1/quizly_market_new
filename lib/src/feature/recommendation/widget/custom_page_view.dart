@@ -2,7 +2,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 
 class CustomPageView extends StatefulWidget {
   const CustomPageView({
@@ -17,7 +17,7 @@ class CustomPageView extends StatefulWidget {
   final String title;
   final VoidCallback? onShowMore;
   final List<TestModel> tests;
-  final VoidCallback? onBuyButtonPressed;
+  final void Function(TestModel test)? onBuyButtonPressed;
   final void Function(TestModel test)? onShareButtonPressed;
 
   @override
@@ -100,7 +100,7 @@ class _CustomPageViewState extends State<CustomPageView> {
         : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
     questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
     buyButtonText: test.isPurchased == true ? context.x.l10n.enterTest : context.x.l10n.buy,
-    onBuyButtonPressed: widget.onBuyButtonPressed ?? () {},
+    onBuyButtonPressed: () => widget.onBuyButtonPressed?.call(test),
     isFree: test.price == 0 || test.price == null,
     isPurchased: test.isPurchased == true,
     onShareButtonPressed: () => widget.onShareButtonPressed?.call(test),

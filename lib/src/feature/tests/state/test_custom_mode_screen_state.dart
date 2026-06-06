@@ -4,7 +4,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/models/test_init_enum.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../model/test_result_response_model.dart';
 import '../screens/test_custom_mode_screen.dart';
 
@@ -17,7 +17,7 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
 
   int totalQuestions = 100;
 
-  final TestModel test = TestModel(id: 1, description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
+  final TestModel test = TestModel(id: '1', description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
 
   final List<QuestionTimeOption> questionTimeOptions = [
     .seconds15,

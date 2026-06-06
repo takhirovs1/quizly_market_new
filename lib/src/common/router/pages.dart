@@ -97,7 +97,10 @@ enum Routes with OctopusRoute {
         type: TestCategoryType.values.byName(node.arguments['type'] ?? TestCategoryType.topTests.name),
       ),
     ),
-    .purchaseTest => const PurchaseTestScreen(),
+    .purchaseTest => BlocProvider(
+      create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
+      child: PurchaseTestScreen(testId: node.arguments['id'] ?? ''),
+    ),
     .payment => const PaymentScreen(),
     .referral => const ReferralScreen(),
     .paymentHistory => const PaymentHistoryScreen(),

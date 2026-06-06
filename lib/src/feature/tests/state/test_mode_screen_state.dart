@@ -3,12 +3,12 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../model/test_mode_model.dart';
 import '../screens/test_mode_screen.dart';
 
 abstract class TestModeScreenState extends State<TestModeScreen> {
-  final TestModel test = TestModel(id: 1, description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
+  final TestModel test = TestModel(id: '1', description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
 
   final List<TestModeModel> testModes = [
     TestModeModel(

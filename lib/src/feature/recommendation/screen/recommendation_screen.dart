@@ -197,7 +197,6 @@ class _RecommendationScreenState extends RecommendationScreenState {
                           final availableWidth = constraints.maxWidth + 32;
                           const maxCardWidth = 300.0;
                           final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
-
                           return ResponsiveRecommendationsList(
                             tests: state.allTests,
                             crossAxisCount: crossAxisCount,

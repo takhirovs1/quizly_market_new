@@ -4,13 +4,13 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/models/test_init_enum.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../model/test_result_response_model.dart';
 import '../screens/test_university_mode_screen.dart';
 
 abstract class TestUniversityModeScreenState extends State<TestUniversityModeScreen> {
   late final ValueNotifier<QuestionTimeOption?> selectedQuestionTime;
-  final TestModel test = TestModel(id: 1, description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
+  final TestModel test = TestModel(id: '1', description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
   final List<TestResultResponseModel>? result = [
     TestResultResponseModel(
       id: 1,

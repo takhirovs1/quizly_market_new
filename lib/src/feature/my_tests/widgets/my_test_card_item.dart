@@ -2,7 +2,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
-import '../models/test_mode.dart';
+import '../models/test_model.dart';
 
 class MyTestCardItem extends StatelessWidget {
   const MyTestCardItem({
@@ -13,7 +13,7 @@ class MyTestCardItem extends StatelessWidget {
   });
 
   final TestModel test;
-  final VoidCallback onBuyButtonPressed;
+  final void Function(TestModel test) onBuyButtonPressed;
   final void Function(TestModel test) onShareButtonPressed;
 
   @override
@@ -26,7 +26,7 @@ class MyTestCardItem extends StatelessWidget {
         : (test.price == 0 || test.price == null ? context.x.l10n.free : test.price!.formatUzs),
     questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
     buyButtonText: test.isPurchased == true ? context.x.l10n.enterTest : context.x.l10n.buy,
-    onBuyButtonPressed: onBuyButtonPressed,
+    onBuyButtonPressed: () => onBuyButtonPressed(test),
     isFree: test.price == 0 || test.price == null,
     isPurchased: test.isPurchased == true,
     onShareButtonPressed: () => onShareButtonPressed(test),

@@ -15,6 +15,9 @@ class MyTestState extends Equatable {
     this.topTestsOffset = 0,
     this.topTestsTotal = 0,
     this.isTopTestsLoadingMore = false,
+    this.demoTestStatus = StateStatus.idle,
+    this.demoTestDetail,
+    this.demoTestErrorMessage,
   });
 
   final StateStatus status;
@@ -30,6 +33,9 @@ class MyTestState extends Equatable {
   final int topTestsOffset;
   final int topTestsTotal;
   final bool isTopTestsLoadingMore;
+  final StateStatus demoTestStatus;
+  final DemoTestDetail? demoTestDetail;
+  final String? demoTestErrorMessage;
 
   MyTestState copyWith({
     StateStatus? status,
@@ -45,6 +51,9 @@ class MyTestState extends Equatable {
     int? topTestsOffset,
     int? topTestsTotal,
     bool? isTopTestsLoadingMore,
+    StateStatus? demoTestStatus,
+    DemoTestDetail? demoTestDetail,
+    String? demoTestErrorMessage,
   }) => MyTestState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
@@ -59,6 +68,9 @@ class MyTestState extends Equatable {
     topTestsOffset: topTestsOffset ?? this.topTestsOffset,
     topTestsTotal: topTestsTotal ?? this.topTestsTotal,
     isTopTestsLoadingMore: isTopTestsLoadingMore ?? this.isTopTestsLoadingMore,
+    demoTestStatus: demoTestStatus ?? this.demoTestStatus,
+    demoTestDetail: demoTestDetail ?? this.demoTestDetail,
+    demoTestErrorMessage: demoTestErrorMessage ?? this.demoTestErrorMessage,
   );
 
   @override
@@ -76,5 +88,8 @@ class MyTestState extends Equatable {
     topTestsOffset,
     topTestsTotal,
     isTopTestsLoadingMore,
+    demoTestStatus,
+    demoTestDetail,
+    demoTestErrorMessage,
   ];
 }

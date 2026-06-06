@@ -6,7 +6,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
-import '../../my_tests/models/test_mode.dart';
+import '../../my_tests/models/test_model.dart';
 import '../bloc/recommendation_cubit.dart';
 import '../screen/recommendation_screen.dart';
 
@@ -56,7 +56,8 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
     }
   }
 
-  void onBuyTestPressed() => context.octopus.push(Routes.purchaseTest);
+  void onBuyTestPressed(TestModel test) =>
+      context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});
 
   void onShareTestPressed(TestModel test) {
     context.telegramWebApp.hapticImpact(.light);

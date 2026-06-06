@@ -3,7 +3,8 @@ import 'package:equatable/equatable.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../data/my_test_repository.dart';
-import '../models/test_mode.dart';
+import '../models/demo_test_model.dart';
+import '../models/test_model.dart';
 
 part 'my_test_state.dart';
 
@@ -14,7 +15,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
   Future<void> initialize({String? search, int limit = 20}) => handle<void>(
     (emit) async {
-      emit(state.copyWith(status: .loading, search: search ?? ''));
+      emit(state.copyWith(status: StateStatus.loading, search: search ?? ''));
       final results = await Future.wait([
         myTestRepository.getMyTests(TestModelRequest(limit: limit, offset: 0, search: search)),
         myTestRepository.getTopTests(TestModelRequest(limit: limit, offset: 0, search: search)),
@@ -23,7 +24,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       final topResult = results[1];
       emit(
         state.copyWith(
-          status: .success,
+          status: StateStatus.success,
           myTests: myResult.items,
           myTestsOffset: myResult.offset,
           myTestsLimit: myResult.limit,
@@ -36,7 +37,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       );
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: .error, errorMessage: error.toString()));
+      emit(state.copyWith(status: StateStatus.error, errorMessage: error.toString()));
     },
   );
 
@@ -125,6 +126,42 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
     },
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(status: .error, isTopTestsLoadingMore: false, errorMessage: error.toString()));
+    },
+  );
+
+  Future<void> getDemoTest(String testId) => handle<void>(
+    (emit) async {
+      emit(state.copyWith(demoTestStatus: StateStatus.loading));
+      final response = await myTestRepository.getDemoTest(DemoTestRequest(testId: testId));
+      emit(state.copyWith(demoTestStatus: StateStatus.success, demoTestDetail: response.data));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(demoTestStatus: StateStatus.error, demoTestErrorMessage: error.toString()));
+    },
+  );
+
+  Future<void> toggleLike(String testId) => handle<void>(
+    (emit) async {
+      final detail = state.demoTestDetail;
+      if (detail == null || detail.id != testId) return;
+
+      final currentIsLiked = detail.isLiked ?? false;
+      final updatedDetail = detail.copyWith(isLiked: !currentIsLiked);
+      emit(state.copyWith(demoTestDetail: updatedDetail));
+
+      if (currentIsLiked) {
+        await myTestRepository.unlikeTest(testId);
+      } else {
+        await myTestRepository.likeTest(testId);
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      final detail = state.demoTestDetail;
+      if (detail != null && detail.id == testId) {
+        final currentIsLiked = detail.isLiked ?? false;
+        final revertedDetail = detail.copyWith(isLiked: !currentIsLiked);
+        emit(state.copyWith(demoTestDetail: revertedDetail));
+      }
     },
   );
 }

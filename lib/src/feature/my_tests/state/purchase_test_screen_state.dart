@@ -1,51 +1,67 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
+import '../bloc/my_test_cubit.dart';
 import '../models/payment_model.dart';
 import '../screen/purchase_test_screen.dart';
 
 abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
+  late final MyTestCubit myTestCubit;
   late final ValueNotifier<PaymentModel> selectedPayment;
-  late final PageController pageController;
+  late final ScrollController scrollController;
   late final ValueNotifier<int> currentTest;
   final List<PaymentModel> paymentModel = [
     PaymentModel(
       id: 0,
       title: 340000.formatUzs,
-      type: .card,
+      type: PaymentType.card,
       icon: Assets.lib.images.logoPng.path,
       subtitle: 'QuizlyMarket Card',
     ),
-    PaymentModel(id: 1, title: 'Payme', type: .provider, icon: Assets.lib.images.payme2.path),
-    PaymentModel(id: 2, title: 'ClickSuperApp', type: .provider, icon: Assets.lib.images.click2.path),
+    PaymentModel(id: 1, title: 'Payme', type: PaymentType.provider, icon: Assets.lib.images.payme2.path),
+    PaymentModel(id: 2, title: 'ClickSuperApp', type: PaymentType.provider, icon: Assets.lib.images.click2.path),
   ];
 
   @override
   void initState() {
     super.initState();
     context.setupTelegramBackButton();
-    pageController = PageController();
+    scrollController = ScrollController()..addListener(onScroll);
     currentTest = ValueNotifier(0);
     selectedPayment = ValueNotifier(
       PaymentModel(
         id: 0,
         title: 340000.formatUzs,
-        type: .card,
+        type: PaymentType.card,
         icon: Assets.lib.images.logoPng.path,
         subtitle: 'QuizlyMarket Card',
       ),
     );
+    myTestCubit = context.read<MyTestCubit>();
+    myTestCubit.getDemoTest(widget.testId);
   }
 
   @override
   void dispose() {
     super.dispose();
-    pageController.dispose();
+    scrollController.dispose();
     selectedPayment.dispose();
     context.teardownTelegramBackButton();
+  }
+
+  void onScroll() {
+    if (!scrollController.hasClients) return;
+    final pos = scrollController.position;
+    final width = pos.viewportDimension;
+    if (width <= 0) return;
+    final page = (pos.pixels / width).round();
+    if (currentTest.value != page) {
+      currentTest.value = page;
+    }
   }
 
   Future<void> onSwitchPaymentPressed() async {
@@ -120,7 +136,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   }
 
   void onBuyPressed() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     showDialog<void>(
       context: context,
       builder: (context) => Dialog(
@@ -140,11 +156,12 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   }
 
   void onPressLike() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
+    myTestCubit.toggleLike(widget.testId);
   }
 
   void onPressShare() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     context.shareTest(
       'Example test',
       'QuizlyMarket',
@@ -152,5 +169,28 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
       '100000',
       '100',
     );
+  }
+
+  void onDemoTestStateChanged(BuildContext context, MyTestState state) {
+    if (state.demoTestStatus.isSuccess && state.demoTestDetail != null) {
+      final detail = state.demoTestDetail!;
+      final priceText = detail.price == 0 || detail.price == null ? context.x.l10n.free : detail.price!.formatUzs;
+
+      paymentModel[0] = PaymentModel(
+        id: 0,
+        title: priceText,
+        type: PaymentType.card,
+        icon: Assets.lib.images.logoPng.path,
+        subtitle: 'QuizlyMarket Card',
+      );
+
+      if (selectedPayment.value.id == 0) {
+        selectedPayment.value = paymentModel[0];
+      }
+    }
+  }
+
+  void onRetryPressed() {
+    myTestCubit.getDemoTest(widget.testId);
   }
 }

@@ -3,11 +3,15 @@ import 'package:dio/dio.dart';
 import '../../../common/constant/urls.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/util/logger.dart';
-import '../models/test_mode.dart';
+import '../models/demo_test_model.dart';
+import '../models/test_model.dart';
 
 abstract interface class IMyTestRepository {
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request);
   Future<({List<TestModel> items, int limit, int offset, int total})> getTopTests(TestModelRequest request);
+  Future<DemoTestResponse> getDemoTest(DemoTestRequest request);
+  Future<void> likeTest(String testId);
+  Future<void> unlikeTest(String testId);
 }
 
 final class MyTestRepositoryImpl implements IMyTestRepository {
@@ -49,6 +53,37 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('TOP TESTS API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<DemoTestResponse> getDemoTest(DemoTestRequest request) async {
+    try {
+      final response = await dio.get<Map<String, Object?>>('/api/tests/${request.testId}/demo');
+      return DemoTestResponse.fromJson(response.data ?? {});
+    } catch (e, s) {
+      info('GET DEMO TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> likeTest(String testId) async {
+    try {
+      await dio.post<void>('/api/tests/$testId/like');
+    } catch (e, s) {
+      info('LIKE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unlikeTest(String testId) async {
+    try {
+      await dio.delete<void>('/api/tests/$testId/like');
+    } catch (e, s) {
+      info('UNLIKE TEST API ERROR: $e $s');
       rethrow;
     }
   }
