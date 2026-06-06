@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -26,59 +27,41 @@ class _ProfileScreenState extends ProfileScreenState {
     child: BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         final user = state.user;
+        final isShimmer = user == null;
 
-        if (user == null) {
-          if (state.status.isLoading) {
-            return Scaffold(
-              backgroundColor: context.x.colors.scaffoldBackground,
-              body: const Center(child: CircularProgressIndicator.adaptive()),
-            );
-          } else if (state.status.isError) {
-            final code = currentLocale.languageCode;
-            final errorText = switch (code) {
-              'uz' => 'Profil yuklashda xatolik yuz berdi',
-              'kk' => 'Профил юклашда хатолик юз берди',
-              'ru' => 'Произошла ошибка при загрузке профиля',
-              _ => 'Failed to load profile',
-            };
-            final retryText = switch (code) {
-              'uz' => 'Qayta urinish',
-              'kk' => 'Қайта уриниш',
-              'ru' => 'Повторить попытку',
-              _ => 'Retry',
-            };
-            return Scaffold(
-              backgroundColor: context.x.colors.scaffoldBackground,
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        state.errorMessage ?? errorText,
-                        textAlign: TextAlign.center,
-                        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.error),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => context.read<ProfileCubit>().loadProfile(),
-                        child: Text(retryText),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-        }
-
-        // If user is null but not loading or error (e.g. idle/initial state),
-        // fallback to loader while the initState trigger runs.
-        if (user == null) {
+        if (isShimmer && state.status.isError) {
+          final code = currentLocale.languageCode;
+          final errorText = switch (code) {
+            'uz' => 'Profil yuklashda xatolik yuz berdi',
+            'kk' => 'Профил юклашда хатолик юз берди',
+            'ru' => 'Произошла ошибка при загрузке профиля',
+            _ => 'Failed to load profile',
+          };
+          final retryText = switch (code) {
+            'uz' => 'Qayta urinish',
+            'kk' => 'Қайта уриниш',
+            'ru' => 'Повторить попытку',
+            _ => 'Retry',
+          };
           return Scaffold(
             backgroundColor: context.x.colors.scaffoldBackground,
-            body: const Center(child: CircularProgressIndicator.adaptive()),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state.errorMessage ?? errorText,
+                      textAlign: .center,
+                      style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.error),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(onPressed: () => context.read<ProfileCubit>().loadProfile(), child: Text(retryText)),
+                  ],
+                ),
+              ),
+            ),
           );
         }
 
@@ -98,9 +81,9 @@ class _ProfileScreenState extends ProfileScreenState {
                   builder: (context, constraints) {
                     final layout = headerLayout(context, constraints);
 
-                    final displayNameStr = formatProfileName(user.displayName);
-                    final idStr = 'ID: ${user.telegramChatId ?? user.id ?? ""}';
-                    final usernameStr = user.username != null && user.username!.isNotEmpty
+                    final displayNameStr = user != null ? formatProfileName(user.displayName) : '';
+                    final idStr = user != null ? 'ID: ${user.telegramChatId ?? user.id ?? ""}' : '';
+                    final usernameStr = user != null && user.username != null && user.username!.isNotEmpty
                         ? ' User: @${user.username}'
                         : '';
                     final subtitleStr = '$idStr$usernameStr';
@@ -111,7 +94,7 @@ class _ProfileScreenState extends ProfileScreenState {
                       height: 100,
                       decoration: BoxDecoration(
                         color: context.x.colors.primary.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
+                        shape: .circle,
                       ),
                       alignment: Alignment.center,
                       child: Text(
@@ -120,12 +103,14 @@ class _ProfileScreenState extends ProfileScreenState {
                       ),
                     );
 
-                    final avatarUrl = user.avatarUrl;
+                    final avatarUrl = user?.avatarUrl;
                     Widget avatarWidget;
-                    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+                    if (isShimmer) {
+                      avatarWidget = const _ProfileShimmer(child: ShimmerBox(width: 100, height: 100, radius: 50));
+                    } else if (avatarUrl != null && avatarUrl.isNotEmpty) {
                       avatarWidget = Image.network(
                         avatarUrl,
-                        fit: BoxFit.cover,
+                        fit: .cover,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return const Center(child: CircularProgressIndicator.adaptive());
@@ -134,7 +119,7 @@ class _ProfileScreenState extends ProfileScreenState {
                           if (avatarUrl.toLowerCase().contains('.svg') || avatarUrl.toLowerCase().contains('userpic')) {
                             return SvgPicture.network(
                               avatarUrl,
-                              fit: BoxFit.cover,
+                              fit: .cover,
                               placeholderBuilder: (context) => fallbackAvatar,
                             );
                           }
@@ -180,30 +165,38 @@ class _ProfileScreenState extends ProfileScreenState {
                                       SizedBox(height: headerNameSpacing(layout.expandedHeight)),
                                       Padding(
                                         padding: .symmetric(horizontal: nameHorizontalPadding(layout.width)),
-                                        child: Text(
-                                          displayNameStr,
-                                          maxLines: 1,
-                                          overflow: .ellipsis,
-                                          textAlign: .center,
-                                          style: context.x.textStyle.sfW700s28.copyWith(
-                                            fontSize: nameSizeExpanded(layout.width),
-                                            color: context.x.colors.primary,
-                                          ),
-                                        ),
+                                        child: isShimmer
+                                            ? const _ProfileShimmer(
+                                                child: ShimmerBox(width: 180, height: 28, radius: 4),
+                                              )
+                                            : Text(
+                                                displayNameStr,
+                                                maxLines: 1,
+                                                overflow: .ellipsis,
+                                                textAlign: .center,
+                                                style: context.x.textStyle.sfW700s28.copyWith(
+                                                  fontSize: nameSizeExpanded(layout.width),
+                                                  color: context.x.colors.primary,
+                                                ),
+                                              ),
                                       ),
                                       const SizedBox(height: 4),
                                       Padding(
                                         padding: .symmetric(horizontal: phoneHorizontalPadding(layout.width)),
-                                        child: Text(
-                                          subtitleStr,
-                                          maxLines: 1,
-                                          overflow: .ellipsis,
-                                          textAlign: .center,
-                                          style: context.x.textStyle.sfW400s14.copyWith(
-                                            fontSize: phoneSize(layout.width),
-                                            color: context.x.colors.gray,
-                                          ),
-                                        ),
+                                        child: isShimmer
+                                            ? const _ProfileShimmer(
+                                                child: ShimmerBox(width: 120, height: 16, radius: 4),
+                                              )
+                                            : Text(
+                                                subtitleStr,
+                                                maxLines: 1,
+                                                overflow: .ellipsis,
+                                                textAlign: .center,
+                                                style: context.x.textStyle.sfW400s14.copyWith(
+                                                  fontSize: phoneSize(layout.width),
+                                                  color: context.x.colors.gray,
+                                                ),
+                                              ),
                                       ),
                                       const SizedBox(height: 6),
                                     ],
@@ -229,16 +222,19 @@ class _ProfileScreenState extends ProfileScreenState {
                                       mainAxisAlignment: .center,
                                       children: [
                                         SizedBox(height: context.telegramWebApp.safeAreaInset.top.toDouble() + 10),
-                                        Text(
-                                          displayNameStr,
-                                          maxLines: 1,
-                                          overflow: .ellipsis,
-                                          textAlign: .center,
-                                          style: context.x.textStyle.sfW700s16.copyWith(
-                                            fontSize: nameSizeCollapsed(layout.width),
-                                            color: context.x.colors.primary,
+                                        if (isShimmer)
+                                          const _ProfileShimmer(child: ShimmerBox(width: 100, height: 16, radius: 4))
+                                        else
+                                          Text(
+                                            displayNameStr,
+                                            maxLines: 1,
+                                            overflow: .ellipsis,
+                                            textAlign: .center,
+                                            style: context.x.textStyle.sfW700s16.copyWith(
+                                              fontSize: nameSizeCollapsed(layout.width),
+                                              color: context.x.colors.primary,
+                                            ),
                                           ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -260,9 +256,10 @@ class _ProfileScreenState extends ProfileScreenState {
                 shrinkWrap: true,
                 children: [
                   ProfilePaymentCard(
-                    balance: user.balance?.formatUzs ?? '0 UZS',
-                    cardNumber: '${user.telegramChatId ?? user.id ?? ""}',
-                    onCopyCardNumber: () => onCopyCardNumber('${user.telegramChatId ?? user.id ?? ""}'),
+                    balance: user?.balance?.formatUzs ?? '0 UZS',
+                    cardNumber: '${user?.telegramChatId ?? user?.id ?? ""}',
+                    onCopyCardNumber: () => onCopyCardNumber('${user?.telegramChatId ?? user?.id ?? ""}'),
+                    isLoading: isShimmer,
                   ),
                   Padding(
                     padding: menuSliverPadding(context),
@@ -304,4 +301,19 @@ class _ProfileScreenState extends ProfileScreenState {
       },
     ),
   );
+}
+
+class _ProfileShimmer extends StatelessWidget {
+  const _ProfileShimmer({required this.child, super.key});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Shimmer.fromColors(
+      baseColor: isDark ? const Color(0x20FFFFFF) : const Color(0xFFE2E8F0),
+      highlightColor: isDark ? const Color(0x40FFFFFF) : const Color(0xFFF1F5F9),
+      child: child,
+    );
+  }
 }
