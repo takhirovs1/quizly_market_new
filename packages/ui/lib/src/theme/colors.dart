@@ -436,7 +436,7 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     dialogCancelButton: Color(0xFF1E2A3A),
 
     // app bar colors
-    appBarBackground: Color(0xFF0D1117),
+    appBarBackground: Color(0xFF121626),
 
     // bottom navigation bar colors
     bottomNavigationBarUnselectedColor: Color(0xFF4A5568),

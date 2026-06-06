@@ -107,10 +107,10 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                     Text(context.x.l10n.paymentViaProvider, style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
                     for (final payment in paymentModel.where((e) => e != isSelected && e.id != 0))
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: const .only(bottom: 8),
                         child: PaymentCard(
                           hasShadow: true,
-                          imagePadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5),
+                          imagePadding: const .symmetric(horizontal: 5, vertical: 16.5),
                           title: payment.title,
                           image: Image.asset(payment.icon, package: 'ui', width: 54),
                           onTap: () => Navigator.pop<PaymentModel>(ctx, payment),
