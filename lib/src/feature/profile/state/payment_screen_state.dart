@@ -1,8 +1,11 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/util/app_enum.dart';
+import '../bloc/profile_cubit.dart';
 import '../model/payment_response_model.dart';
 import '../screen/payment_screen.dart';
 
@@ -187,6 +190,50 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   //     ),
   //   );
   // }
+
+  Future<void> onTopUpButtonPressed() async {
+    final amount = parsedAmount;
+    final provider = PaymentProvider.fromValue(selectedPayment.value?.paymentName);
+    if (amount == null || !isAmountInValidRange) return;
+
+    context.telegramWebApp.hapticImpact(.light);
+
+    try {
+      final response = await context.read<ProfileCubit>().topUp(amount, provider);
+      if (!mounted) return;
+
+      final payUrl = response?.payUrl;
+      if (payUrl != null && payUrl.isNotEmpty) {
+        context.telegramWebApp.openLink(payUrl, tryInstantView: false);
+      } else {
+        context.x.showNotification(
+          message: context.x.l10n.somethingWentWrong,
+          isError: true,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
+      }
+    } on Object catch (_) {
+      if (mounted) {
+        context.x.showNotification(
+          message: context.x.l10n.somethingWentWrong,
+          isError: true,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
+      }
+    }
+  }
+
+  void onTopUpPressed() {
+    if (isAmountInValidRange) {
+      onTopUpButtonPressed();
+    }
+  }
 
   void onClearPressed() {
     if (amountController.text.isNotEmpty) {

@@ -101,7 +101,10 @@ enum Routes with OctopusRoute {
       create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
       child: PurchaseTestScreen(testId: node.arguments['id'] ?? ''),
     ),
-    .payment => const PaymentScreen(),
+    .payment => BlocProvider(
+      create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
+      child: const PaymentScreen(),
+    ),
     .referral => const ReferralScreen(),
     .paymentHistory => const PaymentHistoryScreen(),
     .appInfo => const AppInfoScreen(),

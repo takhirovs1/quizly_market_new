@@ -96,7 +96,7 @@ class _ProfileScreenState extends ProfileScreenState {
                     final avatarUrl = user?.avatarUrl;
                     Widget avatarWidget;
                     if (isShimmer) {
-                      avatarWidget = const _ProfileShimmer(child: ShimmerBox(width: 100, height: 100, radius: 50));
+                      avatarWidget = const ProfileShimmer(child: ShimmerBox(width: 100, height: 100, radius: 50));
                     } else if (avatarUrl != null && avatarUrl.isNotEmpty) {
                       avatarWidget = Image.network(
                         avatarUrl,
@@ -111,6 +111,7 @@ class _ProfileScreenState extends ProfileScreenState {
                               avatarUrl,
                               fit: .cover,
                               placeholderBuilder: (context) => fallbackAvatar,
+                              errorBuilder: (context, error, stackTrace) => fallbackAvatar,
                             );
                           }
                           return fallbackAvatar;
@@ -156,9 +157,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                       Padding(
                                         padding: .symmetric(horizontal: nameHorizontalPadding(layout.width)),
                                         child: isShimmer
-                                            ? const _ProfileShimmer(
-                                                child: ShimmerBox(width: 180, height: 28, radius: 4),
-                                              )
+                                            ? const ProfileShimmer(child: ShimmerBox(width: 180, height: 28, radius: 4))
                                             : Text(
                                                 displayNameStr,
                                                 maxLines: 1,
@@ -174,9 +173,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                       Padding(
                                         padding: .symmetric(horizontal: phoneHorizontalPadding(layout.width)),
                                         child: isShimmer
-                                            ? const _ProfileShimmer(
-                                                child: ShimmerBox(width: 120, height: 16, radius: 4),
-                                              )
+                                            ? const ProfileShimmer(child: ShimmerBox(width: 120, height: 16, radius: 4))
                                             : Text(
                                                 subtitleStr,
                                                 maxLines: 1,
@@ -213,7 +210,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                       children: [
                                         SizedBox(height: context.telegramWebApp.safeAreaInset.top.toDouble() + 10),
                                         if (isShimmer)
-                                          const _ProfileShimmer(child: ShimmerBox(width: 100, height: 16, radius: 4))
+                                          const ProfileShimmer(child: ShimmerBox(width: 100, height: 16, radius: 4))
                                         else
                                           Text(
                                             displayNameStr,
@@ -293,13 +290,13 @@ class _ProfileScreenState extends ProfileScreenState {
   );
 }
 
-class _ProfileShimmer extends StatelessWidget {
-  const _ProfileShimmer({required this.child, super.key});
+class ProfileShimmer extends StatelessWidget {
+  const ProfileShimmer({required this.child});
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == .dark;
     return Shimmer.fromColors(
       baseColor: isDark ? const Color(0x20FFFFFF) : const Color(0xFFE2E8F0),
       highlightColor: isDark ? const Color(0x40FFFFFF) : const Color(0xFFF1F5F9),

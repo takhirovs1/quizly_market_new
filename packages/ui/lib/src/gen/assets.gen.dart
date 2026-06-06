@@ -30,12 +30,6 @@ class $LibGen {
 class $LibImagesGen {
   const $LibImagesGen();
 
-  /// File path: lib/images/ads_first.png
-  AssetGenImage get adsFirst => const AssetGenImage('lib/images/ads_first.png');
-
-  /// File path: lib/images/ads_second.png
-  AssetGenImage get adsSecond => const AssetGenImage('lib/images/ads_second.png');
-
   /// File path: lib/images/click.jpeg
   AssetGenImage get click => const AssetGenImage('lib/images/click.jpeg');
 
@@ -47,9 +41,6 @@ class $LibImagesGen {
 
   /// File path: lib/images/cup.png
   AssetGenImage get cup => const AssetGenImage('lib/images/cup.png');
-
-  /// File path: lib/images/default_banner.png
-  AssetGenImage get defaultBanner => const AssetGenImage('lib/images/default_banner.png');
 
   /// File path: lib/images/flexed_biceps.png
   AssetGenImage get flexedBiceps => const AssetGenImage('lib/images/flexed_biceps.png');
@@ -68,9 +59,6 @@ class $LibImagesGen {
 
   /// File path: lib/images/money.png
   AssetGenImage get money => const AssetGenImage('lib/images/money.png');
-
-  /// File path: lib/images/mustaqil.png
-  AssetGenImage get mustaqil => const AssetGenImage('lib/images/mustaqil.png');
 
   /// File path: lib/images/party.png
   AssetGenImage get party => const AssetGenImage('lib/images/party.png');
@@ -95,9 +83,6 @@ class $LibImagesGen {
 
   /// File path: lib/images/placeholder.jpg
   AssetGenImage get placeholder => const AssetGenImage('lib/images/placeholder.jpg');
-
-  /// File path: lib/images/referat.png
-  AssetGenImage get referat => const AssetGenImage('lib/images/referat.png');
 
   /// File path: lib/images/robot.png
   AssetGenImage get robot => const AssetGenImage('lib/images/robot.png');
@@ -125,20 +110,16 @@ class $LibImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
-    adsFirst,
-    adsSecond,
     click,
     click2,
     clickLogo,
     cup,
-    defaultBanner,
     flexedBiceps,
     logo,
     logoPng,
     logoutQuizbot,
     memo,
     money,
-    mustaqil,
     party,
     partyPopper,
     payme,
@@ -147,7 +128,6 @@ class $LibImagesGen {
     paymeLogo,
     paynet,
     placeholder,
-    referat,
     robot,
     robotResult,
     samandar,

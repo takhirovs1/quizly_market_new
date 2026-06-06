@@ -21,7 +21,6 @@ export 'src/button/button_state.dart';
 export 'src/button/custom_button.dart';
 export 'src/button/custom_button_2.dart';
 export 'src/button/selection_pill_button.dart';
-export 'src/dialog/error_dialog.dart';
 export 'src/dialog/logout_dialog.dart';
 export 'src/dialog/success_dialog.dart';
 export 'src/extension/int_extention.dart';

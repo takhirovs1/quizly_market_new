@@ -29,7 +29,9 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
     ),
     body: BlocListener<MyTestCubit, MyTestState>(
       listenWhen: (previous, current) =>
-          previous.demoTestStatus != current.demoTestStatus || previous.walletStatus != current.walletStatus,
+          previous.demoTestStatus != current.demoTestStatus ||
+          previous.walletStatus != current.walletStatus ||
+          previous.purchaseStatus != current.purchaseStatus,
       listener: onDemoTestStateChanged,
       child: BlocBuilder<MyTestCubit, MyTestState>(
         builder: (context, state) => switch (state.demoTestStatus) {
@@ -133,7 +135,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: context.x.colors.dialogBackground,
-              borderRadius: const .only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+              borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
               border: Border.all(color: context.x.colors.divider, width: 1),
               boxShadow: [
                 BoxShadow(
@@ -144,13 +146,13 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
               ],
             ),
             child: ClipRRect(
-              borderRadius: const .only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+              borderRadius: const .only(topLeft: .circular(15), topRight: .circular(15)),
               child: Padding(
                 padding: .only(
                   bottom: context.telegramWebApp.isSupported
                       ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
                       : 0.0,
-                  top: 14,
+                  top: 16,
                   left: 16,
                   right: 16,
                 ),
@@ -169,7 +171,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                         borderRadius: 10,
                         onTap: onBuyPressed,
                         title: context.x.l10n.buy,
-                        textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
+                        isLoading: state.purchaseStatus.isLoading,
                       ),
                     ),
                   ],

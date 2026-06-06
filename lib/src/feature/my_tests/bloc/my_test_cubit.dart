@@ -5,6 +5,7 @@ import '../../../common/util/state_status.dart';
 import '../data/my_test_repository.dart';
 import '../models/demo_test_model.dart';
 import '../models/test_model.dart';
+import '../models/test_purchase_model.dart';
 import '../models/wallet_model.dart';
 
 part 'my_test_state.dart';
@@ -174,6 +175,32 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
     },
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(walletStatus: StateStatus.error, walletErrorMessage: error.toString()));
+    },
+  );
+
+  Future<TestPurchaseResponse?> purchaseTest(String testId) => handle<TestPurchaseResponse?>(
+    (emit) async {
+      emit(state.copyWith(purchaseStatus: StateStatus.loading));
+      final request = TestPurchaseRequest(testId: testId);
+      final response = await myTestRepository.purchaseTest(request);
+
+      final detail = state.demoTestDetail;
+      if (detail != null && detail.id == testId) {
+        emit(
+          state.copyWith(
+            purchaseStatus: StateStatus.success,
+            purchaseData: response.data,
+            demoTestDetail: detail.copyWith(isPurchased: true),
+          ),
+        );
+      } else {
+        emit(state.copyWith(purchaseStatus: StateStatus.success, purchaseData: response.data));
+      }
+      return response;
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(purchaseStatus: StateStatus.error, purchaseErrorMessage: error.toString()));
+      return null;
     },
   );
 }

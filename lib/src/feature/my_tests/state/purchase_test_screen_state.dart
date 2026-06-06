@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/state_status.dart';
 import '../bloc/my_test_cubit.dart';
 import '../models/payment_model.dart';
 import '../screen/purchase_test_screen.dart';
@@ -16,6 +17,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
   late final ValueNotifier<int> currentTest;
   late final List<PaymentModel> paymentModel;
   bool _isInitialized = false;
+  StateStatus _lastPurchaseStatus = .idle;
 
   @override
   void initState() {
@@ -37,22 +39,12 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
         PaymentModel(
           id: 0,
           title: 0.formatUzs,
-          type: PaymentType.card,
+          type: .card,
           icon: Assets.lib.images.logoPng.path,
           subtitle: context.x.l10n.quizlyMarketCard,
         ),
-        PaymentModel(
-          id: 1,
-          title: context.x.l10n.payme,
-          type: PaymentType.provider,
-          icon: Assets.lib.images.payme2.path,
-        ),
-        PaymentModel(
-          id: 2,
-          title: context.x.l10n.clickSuperApp,
-          type: PaymentType.provider,
-          icon: Assets.lib.images.click2.path,
-        ),
+        PaymentModel(id: 1, title: context.x.l10n.payme, type: .provider, icon: Assets.lib.images.payme2.path),
+        PaymentModel(id: 2, title: context.x.l10n.clickSuperApp, type: .provider, icon: Assets.lib.images.click2.path),
       ];
       selectedPayment = ValueNotifier(paymentModel[0]);
       _isInitialized = true;
@@ -150,24 +142,12 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     }
   }
 
-  void onBuyPressed() {
+  void onBuyPressed({bool withPop = false}) {
+    if (withPop) {
+      Navigator.pop(context);
+    }
     context.telegramWebApp.hapticImpact(.light);
-    showDialog<void>(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: context.x.colors.transparent,
-        child: Center(
-          child: SuccessDialog(
-            title: 'Test sotib olindi!',
-            description: 'Testni istalgan vaqtda o’rganishingiz mumkin.',
-            cancelButtonText: 'Chiqish',
-            successButtonText: 'Kirish',
-            onCancelButtonPressed: () => Navigator.pop(context),
-            onSuccessButtonPressed: () => context.octopus.push(Routes.testMode),
-          ),
-        ),
-      ),
-    );
+    myTestCubit.purchaseTest(widget.testId);
   }
 
   void onPressLike() {
@@ -192,7 +172,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
       paymentModel[0] = PaymentModel(
         id: 0,
         title: balance.formatUzs,
-        type: PaymentType.card,
+        type: .card,
         icon: Assets.lib.images.logoPng.path,
         subtitle: context.x.l10n.quizlyMarketCard,
       );
@@ -201,10 +181,38 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
         selectedPayment.value = paymentModel[0];
       }
     }
+
+    if (_lastPurchaseStatus != state.purchaseStatus) {
+      _lastPurchaseStatus = state.purchaseStatus;
+      if (state.purchaseStatus.isSuccess || state.purchaseStatus.isError) {
+        final isError = state.purchaseStatus.isError;
+        showDialog<void>(
+          context: context,
+          builder: (context) => Dialog(
+            backgroundColor: context.x.colors.transparent,
+            child: Center(
+              child: SuccessDialog(
+                title: isError ? context.x.l10n.testNotPurchasedTitle : context.x.l10n.testPurchasedTitle,
+                description: isError
+                    ? context.x.l10n.testNotPurchasedDescription
+                    : context.x.l10n.testPurchasedDescription,
+                cancelButtonText: context.x.l10n.exit,
+                successButtonText: isError ? context.x.l10n.retry : context.x.l10n.enter,
+                onCancelButtonPressed: () => Navigator.pop(context),
+                isError: isError,
+                onSuccessButtonPressed: () =>
+                    isError ? onBuyPressed(withPop: true) : context.octopus.push(Routes.testMode),
+              ),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   void onRetryPressed() {
-    myTestCubit.getDemoTest(widget.testId);
-    myTestCubit.getWallet();
+    myTestCubit
+      ..getDemoTest(widget.testId)
+      ..getWallet();
   }
 }

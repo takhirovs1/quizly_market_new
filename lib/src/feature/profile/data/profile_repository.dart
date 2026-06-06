@@ -2,10 +2,12 @@ import 'package:dio/dio.dart';
 
 import '../../../common/constant/urls.dart';
 import '../model/profile_model.dart';
+import '../model/topup_model.dart';
 
 abstract interface class IProfileRepository {
   Future<ProfileModelResponse> getProfile();
   Future<void> updateLanguage(String language);
+  Future<TopUpResponse> topUp(TopUpRequest request);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -23,5 +25,11 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   @override
   Future<void> updateLanguage(String language) async {
     await dio.put<void>(Urls.updateLanguage, data: {'language': language});
+  }
+
+  @override
+  Future<TopUpResponse> topUp(TopUpRequest request) async {
+    final response = await dio.post<Map<String, Object?>>(Urls.topUp, data: request.toJson());
+    return TopUpResponse.fromJson(response.data ?? {});
   }
 }

@@ -153,23 +153,25 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               SectionWidget(
-                title: 'ErrorDialog',
+                title: 'SuccessDialog (Error)',
                 children: [
-                  ErrorDialog(
+                  SuccessDialog(
                     title: 'Test sotib olinmadi!',
                     description: 'Test description Test description Test description Test description',
                     cancelButtonText: 'Chiqish',
                     successButtonText: 'Qayta urinish',
+                    isError: true,
                     onCancelButtonPressed: () {},
                     onSuccessButtonPressed: () {},
                   ),
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
-                    child: ErrorDialog(
+                    child: SuccessDialog(
                       title: 'Test sotib olinmadi!',
                       description: 'Test description Test description Test description Test description',
                       cancelButtonText: 'Chiqish',
                       successButtonText: 'Qayta urinish',
+                      isError: true,
                       onCancelButtonPressed: () {},
                       onSuccessButtonPressed: () {},
                     ),

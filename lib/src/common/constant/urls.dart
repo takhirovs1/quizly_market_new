@@ -4,6 +4,7 @@ final class Urls {
   static const String loginWithTelegram = '/api/auth/telegram';
   static const String getMe = '/api/users/me';
   static const String updateLanguage = '/api/users/me/language';
+  static const String topUp = '/api/payments/topup';
 
   static const String getMyTests = '/api/tests';
 }

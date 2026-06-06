@@ -5,6 +5,7 @@ import '../../../common/extension/number_extension.dart';
 import '../../../common/util/logger.dart';
 import '../models/demo_test_model.dart';
 import '../models/test_model.dart';
+import '../models/test_purchase_model.dart';
 import '../models/wallet_model.dart';
 
 abstract interface class IMyTestRepository {
@@ -14,6 +15,7 @@ abstract interface class IMyTestRepository {
   Future<void> likeTest(String testId);
   Future<void> unlikeTest(String testId);
   Future<WalletResponse> getWallet(WalletRequest request);
+  Future<TestPurchaseResponse> purchaseTest(TestPurchaseRequest request);
 }
 
 final class MyTestRepositoryImpl implements IMyTestRepository {
@@ -97,6 +99,20 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       await dio.delete<void>('/api/tests/$testId/like');
     } catch (e, s) {
       info('UNLIKE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<TestPurchaseResponse> purchaseTest(TestPurchaseRequest request) async {
+    try {
+      final response = await dio.post<Map<String, Object?>>(
+        '/api/payments/tests/${request.testId}/purchase',
+        data: request.toJson(),
+      );
+      return TestPurchaseResponse.fromJson(response.data ?? {});
+    } catch (e, s) {
+      info('PURCHASE TEST API ERROR: $e $s');
       rethrow;
     }
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/string_extension.dart';
+import '../bloc/profile_cubit.dart';
 import '../state/payment_screen_state.dart';
 import '../widget/payment_item_widget.dart';
 import '../widget/payment_text_builder_widget.dart';
@@ -104,7 +106,7 @@ class _PaymentScreenState extends PaymentScreenState {
                   isSelected: value == defaultAmounts[index],
                   onTap: () {
                     onSelectAmount(defaultAmounts[index]);
-                    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+                    context.telegramWebApp.hapticImpact(.light);
                   },
                   child: Center(
                     child: Text(
@@ -164,7 +166,7 @@ class _PaymentScreenState extends PaymentScreenState {
             padding: const .symmetric(horizontal: 16),
             child: GestureDetector(
               onTap: () {
-                context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+                context.telegramWebApp.hapticImpact(.light);
                 // onTapReport(parentContext: context);
               },
               child: Row(
@@ -193,15 +195,24 @@ class _PaymentScreenState extends PaymentScreenState {
     ),
 
     bottomNavigationBar: Padding(
-      padding: const .all(16),
-      child: ListenableBuilder(
-        listenable: .merge([selectedAmount, selectedPayment]),
-        builder: (context, child) => CustomButton(
-          onTap: () {
-            context.telegramWebApp.hapticNotification(TelegramHapticNotification.success);
+      padding: .only(
+        top: 16,
+        left: 16,
+        right: 16,
+        bottom: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16 : 16,
+      ),
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) => ListenableBuilder(
+          listenable: .merge([selectedAmount, selectedPayment]),
+          builder: (context, child) {
+            final isValid = isAmountInValidRange;
+            return CustomButton(
+              onTap: onTopUpPressed,
+              color: isValid ? context.x.colors.primary : context.x.colors.gray,
+              title: context.x.l10n.filling,
+              isLoading: state.status.isLoading,
+            );
           },
-
-          title: context.x.l10n.filling,
         ),
       ),
     ),
