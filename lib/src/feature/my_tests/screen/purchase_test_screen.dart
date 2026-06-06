@@ -97,7 +97,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                           ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
                           : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
                       hasShadow: true,
-                       title: payment.title,
+                      title: payment.title,
                       titleWidget: (payment.id == 0 && state.walletStatus.isLoading)
                           ? Shimmer.fromColors(
                               baseColor: context.x.colors.indicatorBackground,
@@ -132,44 +132,48 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           color: context.x.colors.dialogBackground,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: context.x.colors.scaffoldBackground,
-              borderRadius: const .only(topLeft: .circular(16), topRight: .circular(16)),
+              color: context.x.colors.dialogBackground,
+              borderRadius: const .only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+              border: Border.all(color: context.x.colors.divider, width: 1),
               boxShadow: [
                 BoxShadow(
                   color: context.x.colors.black.withValues(alpha: .078),
-                  offset: const Offset(0, 3),
+                  offset: const Offset(0, -3),
                   blurRadius: 30,
                 ),
               ],
             ),
-            child: Padding(
-              padding: .only(
-                bottom: context.telegramWebApp.isSupported
-                    ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
-                    : 0.0,
-                top: 14,
-                left: 16,
-                right: 16,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      priceText,
-                      style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
-                      textAlign: .center,
+            child: ClipRRect(
+              borderRadius: const .only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+              child: Padding(
+                padding: .only(
+                  bottom: context.telegramWebApp.isSupported
+                      ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
+                      : 0.0,
+                  top: 14,
+                  left: 16,
+                  right: 16,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        priceText,
+                        style: context.x.textStyle.sfW700s16.copyWith(fontSize: 24, color: context.x.colors.primary),
+                        textAlign: .center,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: CustomButton(
-                      borderRadius: 10,
-                      onTap: onBuyPressed,
-                      title: context.x.l10n.buy,
-                      textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: CustomButton(
+                        borderRadius: 10,
+                        onTap: onBuyPressed,
+                        title: context.x.l10n.buy,
+                        textStyle: context.x.textStyle.sfW500s16.copyWith(fontSize: 17, color: context.x.colors.white),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

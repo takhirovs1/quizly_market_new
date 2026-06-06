@@ -41,6 +41,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
       decoration: BoxDecoration(
         color: context.x.colors.dialogBackground,
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+        border: Border.all(color: context.x.colors.divider, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -51,7 +52,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
         child: NavigationBar(
           selectedIndex: selectedIndex,
           onDestinationSelected: onItemTapped,

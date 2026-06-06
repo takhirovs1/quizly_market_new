@@ -378,100 +378,99 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     profileIcon: Color(0xFF000000),
   );
 
-  /// The default dark theme colors.
   static const dark = ThemeColors(
-    error: Color(0xFFFF2F22),
-    onError: Color(0xFFF8F9FA),
-    primary: Color(0xFF1E40AF),
-    onPrimary: Color(0xFF1A1F22),
-    secondary: Color.fromARGB(255, 44, 51, 56),
-    onSecondary: Color(0xFFF8F9FA),
-    success: Color(0xFF0CD678),
-    onSuccess: Color(0xFFF8F9FA),
-    surface: Color(0xFF1A1F22),
-    onSurface: Color(0xFF202732),
+    error: Color(0xFFEF4444),
+    onError: Color(0xFFFFFFFF),
+    primary: Color(0xFF3B82F6),
+    onPrimary: Color(0xFFFFFFFF),
+    secondary: Color(0xFF1E2A3A),
+    onSecondary: Color(0xFFFFFFFF),
+    success: Color(0xFF22C55E),
+    onSuccess: Color(0xFFFFFFFF),
+    surface: Color(0xFF161B27),
+    onSurface: Color(0xFFFFFFFF),
     tealBlue: Color(0xFF026492),
-    tertiary: Color(0xFF0CD678),
-    tertiaryBold: Color.fromARGB(255, 9, 172, 96),
-    onTertiary: Color(0xFFF8F9FA),
+    tertiary: Color(0xFF22C55E),
+    tertiaryBold: Color(0xFF16A34A),
+    onTertiary: Color(0xFFFFFFFF),
 
     // Base colors
     black: Color(0xFF000000),
-    gray: Color(0xFFA0A9BA),
+    gray: Color(0xFF8A9BB0),
     transparent: Color(0x00000000),
-    white: Color(0xFFF8F9FA),
-    green: Color(0xFF099250),
+    white: Color(0xFFFFFFFF),
+    green: Color(0xFF22C55E),
     appleGreen: Color(0xFF34C759),
     orange: Color(0xFFF97316),
 
     // Widget-specific colors
-    buttonBorder: Color(0xFF41484C),
-    buttonFill: Color(0xFF020617),
-    divider: Color(0xFF41484C),
-    primaryButtonFill: Color(0xFF344054),
-    primaryButtonBorder: Color(0xFF1594CA),
+    buttonBorder: Color(0x333B82F6),
+    buttonFill: Color(0xFF121626),
+    divider: Color(0xFF2A3347),
+    primaryButtonFill: Color(0xFF3B82F6),
+    primaryButtonBorder: Color(0xFF3B82F6),
 
     // text color
-    text: Color(0xFFF8F9FA),
+    text: Color(0xFFFFFFFF),
 
     // duty status circles colors
     breakC: Color(0xFFF79009),
     driveC: Color(0xFF12B76A),
-    shiftC: Color(0xFF1594CA),
-    cycleC: Color(0xFFFF2F22),
+    shiftC: Color(0xFF3B82F6),
+    cycleC: Color(0xFFEF4444),
 
     // theme toggle color
-    themeToggle: Color(0xFFF8F9FA),
+    themeToggle: Color(0xFFFFFFFF),
 
     // banner colors
-    bannerBackground: Color(0xFF1E293B),
-    bannerText: Color(0xFFF8FAFC),
-    bannerSecondaryText: Color(0xFFCBD5E1),
-    bannerPriceText: Color(0xFF1E40AF),
-    bannerButton: Color(0xFF1E40AF),
+    bannerBackground: Color(0xFF121626),
+    bannerText: Color(0xFFFFFFFF),
+    bannerSecondaryText: Color(0xFF8A9BB0),
+    bannerPriceText: Color(0xFF3B82F6),
+    bannerButton: Color(0xFF3B82F6),
     bannerIcon: Color(0xFFFFFFFF),
 
     // dialog colors
-    dialogBackground: Color(0xFF020617),
+    dialogBackground: Color(0xFF121626),
     dialogText: Color(0xFFFFFFFF),
-    dialogCancelButton: Color(0xFF1E293B),
+    dialogCancelButton: Color(0xFF1E2A3A),
 
     // app bar colors
-    appBarBackground: Color(0xFF020617),
+    appBarBackground: Color(0xFF0D1117),
 
     // bottom navigation bar colors
-    bottomNavigationBarUnselectedColor: Color(0xFFBBBFD0),
+    bottomNavigationBarUnselectedColor: Color(0xFF4A5568),
 
-    bottomNavigationBarSelectedColor: Color(0xFFF5F9FF),
+    bottomNavigationBarSelectedColor: Color(0xFF3B82F6),
 
     // scaffold colors
-    scaffoldBackground: Color(0xFF0F172A),
+    scaffoldBackground: Color(0xFF0D1117),
 
     // custom button
-    customButtonBackground: Color(0xff1E40AF),
-    customButtonText: Color(0xffF8FAFC),
+    customButtonBackground: Color(0xFF3B82F6),
+    customButtonText: Color(0xFFFFFFFF),
 
     // bottom sheet colors
-    bottomSheetBackground: Color(0xFF1E293B),
-    bottomSheetSurface: Color(0xFF0F172A),
+    bottomSheetBackground: Color(0xFF161B27),
+    bottomSheetSurface: Color(0xFF0D1117),
 
     // selection pill button
-    selectionPillUnselectedBackground: Color(0xFF1E293B),
+    selectionPillUnselectedBackground: Color(0xFF1E2A3A),
 
     // card background
-    cardBackground: Color(0xff0F172A),
+    cardBackground: Color(0xFF161B27),
 
     // indicator background
     indicatorBackground: Color(0x40FFFFFF),
 
     // cardBackground2
-    cardBackground2: Color(0xffFFFFFF),
+    cardBackground2: Color(0xFF1E2535),
 
     // text field background
-    textFieldBackground: Color(0xff1E293B),
+    textFieldBackground: Color(0xFF161B27),
 
     // profile icon color
-    profileIcon: Color(0xFFFFFFFF),
+    profileIcon: Color(0xFF3B82F6),
   );
 
   @override

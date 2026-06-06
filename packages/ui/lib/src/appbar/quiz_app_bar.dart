@@ -32,12 +32,19 @@ class QuizAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     ),
-    bottom: bottom,
+    bottom:
+        bottom ??
+        PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Divider(height: 1, thickness: 1, color: context.x.colors.divider),
+        ),
   );
 
   @override
-  Size get preferredSize =>
-      _PreferredAppBarSize((telegramWebAppSafeAreaInsetTop ?? kToolbarHeight) + 56, bottom?.preferredSize.height);
+  Size get preferredSize => _PreferredAppBarSize(
+    (telegramWebAppSafeAreaInsetTop ?? kToolbarHeight) + 56,
+    bottom?.preferredSize.height ?? 1.0,
+  );
 }
 
 class _PreferredAppBarSize extends Size {
