@@ -1,0 +1,4 @@
+/* effects.css — QuizlyMarket landing */
+#spot{width:320px;height:320px;border-radius:50%;z-index:9998;filter:blur(10px);background:radial-gradient(circle,rgba(65,214,255,.18),rgba(28,89,242,.10) 42%,transparent 70%);transition:opacity .35s}
+#ring{width:20px;height:20px;border-radius:50%;z-index:9999;border:1.6px solid rgba(65,214,255,.9);box-shadow:0 0 10px rgba(65,214,255,.5);transition:opacity .35s}
+@media (hover:none){#spot,#ring{display:none}}
