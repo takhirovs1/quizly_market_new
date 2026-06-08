@@ -109,6 +109,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   crossAxisCount: crossAxisCount,
                                   onBuyButtonPressed: onBuyTestPressed,
                                   onShareButtonPressed: (test) => onShareTestPressed(),
+                                  onLikeButtonPressed: onLikeTestPressed,
                                 ),
 
                                 const SizedBox(height: 6),
@@ -121,6 +122,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   crossAxisCount: crossAxisCount,
                                   onBuyButtonPressed: onBuyTestPressed,
                                   onShareButtonPressed: (test) => onShareTestPressed(),
+                                  onLikeButtonPressed: onLikeTestPressed,
                                 ),
                               ],
                               true => [
@@ -148,6 +150,9 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   onBuyButtonPressed: () {},
                                   isFree: true,
                                   onShareButtonPressed: onShareTestPressed,
+                                  textBought: context.x.l10n.textBought,
+                                  isLiked: false,
+                                  onLikeButtonPressed: () {},
                                 ),
                                 const SizedBox(height: 16),
                                 const AnimatedReferralBanner(),
@@ -190,6 +195,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   crossAxisCount: crossAxisCount,
                                   onBuyButtonPressed: onBuyTestPressed,
                                   onShareButtonPressed: (test) => onShareTestPressed(),
+                                  onLikeButtonPressed: onLikeTestPressed,
                                 ),
                                 if (state.isTopTestsLoadingMore)
                                   const Padding(

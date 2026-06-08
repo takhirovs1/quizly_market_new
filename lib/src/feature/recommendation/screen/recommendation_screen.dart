@@ -117,7 +117,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         child: LayoutBuilder(
                           builder: (context, constraints) {
                             final availableWidth = constraints.maxWidth + 32;
-                            const maxCardWidth = 300.0;
+                            const maxCardWidth = 360.0;
                             final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
 
                             return ResponsiveRecommendationsList(
@@ -125,6 +125,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                               crossAxisCount: crossAxisCount,
                               onBuyButtonPressed: onBuyTestPressed,
                               onShareButtonPressed: onShareTestPressed,
+                              onLikeButtonPressed: onLikeTestPressed,
                             );
                           },
                         ),
@@ -156,6 +157,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         },
                         onBuyButtonPressed: onBuyTestPressed,
                         onShareButtonPressed: onShareTestPressed,
+                        onLikeButtonPressed: onLikeTestPressed,
                       ),
                     const SizedBox(height: 16),
 
@@ -176,6 +178,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         },
                         onBuyButtonPressed: onBuyTestPressed,
                         onShareButtonPressed: onShareTestPressed,
+                        onLikeButtonPressed: onLikeTestPressed,
                       ),
 
                     // All tests section
@@ -197,13 +200,14 @@ class _RecommendationScreenState extends RecommendationScreenState {
                         child: LayoutBuilder(
                           builder: (context, constraints) {
                             final availableWidth = constraints.maxWidth + 32;
-                            const maxCardWidth = 300.0;
+                            const maxCardWidth = 360.0;
                             final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
                             return ResponsiveRecommendationsList(
                               tests: state.allTests,
                               crossAxisCount: crossAxisCount,
                               onBuyButtonPressed: onBuyTestPressed,
                               onShareButtonPressed: onShareTestPressed,
+                              onLikeButtonPressed: onLikeTestPressed,
                             );
                           },
                         ),

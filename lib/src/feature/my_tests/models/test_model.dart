@@ -35,7 +35,7 @@ class TestModel {
     description: json['description'] as String?,
     price: json['price'].toIntOrNull,
     isPurchased: json['is_purchased'] as bool?,
-    isLiked: json['is_liked'] as bool?,
+    isLiked: (json['liked'] ?? json['is_liked']) as bool?,
     questionCount: json['question_count'].toIntOrNull,
     likeCount: json['like_count'].toIntOrNull,
     categoryName: json['category_name'] as String?,

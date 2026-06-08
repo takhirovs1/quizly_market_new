@@ -70,8 +70,13 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
     );
   }
 
+  void onLikeTestPressed(TestModel test) {
+    context.telegramWebApp.hapticImpact(.light);
+    recommendationCubit.toggleLikeTest(test);
+  }
+
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     await recommendationCubit.initialize(search: searchController.text);
   }
 

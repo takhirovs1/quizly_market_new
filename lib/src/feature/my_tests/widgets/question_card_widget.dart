@@ -13,7 +13,7 @@ class QuestionCardWidget extends StatelessWidget {
     crossAxisAlignment: .start,
     children: [
       Text(
-        question.text?.get(languageCode) ?? '',
+        question.text ?? '',
         style: context.x.textStyle.sfW500s16.copyWith(fontSize: 16),
         maxLines: 3,
         overflow: .ellipsis,
@@ -33,7 +33,7 @@ class QuestionCardWidget extends StatelessWidget {
                 width: .infinity,
                 child: Padding(
                   padding: const .symmetric(vertical: 12, horizontal: 14),
-                  child: Text(option.text?.get(languageCode) ?? '', style: context.x.textStyle.sfW400s14),
+                  child: Text(option.text ?? '', style: context.x.textStyle.sfW400s14),
                 ),
               ),
             ),

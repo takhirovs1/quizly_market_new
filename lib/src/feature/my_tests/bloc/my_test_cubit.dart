@@ -167,6 +167,128 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
     },
   );
 
+  Future<void> toggleLikeTest(TestModel test) => handle<void>(
+    (emit) async {
+      final testId = test.id;
+      if (testId == null) return;
+
+      final currentIsLiked = test.isLiked ?? false;
+
+      final updatedMyTests = state.myTests.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: !currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final updatedTopTests = state.topTests.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: !currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final detail = state.demoTestDetail;
+      final updatedDetail = (detail != null && detail.id == testId)
+          ? detail.copyWith(isLiked: !currentIsLiked)
+          : detail;
+
+      emit(state.copyWith(
+        myTests: updatedMyTests,
+        topTests: updatedTopTests,
+        demoTestDetail: updatedDetail,
+      ));
+
+      if (currentIsLiked) {
+        await myTestRepository.unlikeTest(testId);
+      } else {
+        await myTestRepository.likeTest(testId);
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      final testId = test.id;
+      if (testId == null) return;
+      final currentIsLiked = test.isLiked ?? false;
+
+      final updatedMyTests = state.myTests.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final updatedTopTests = state.topTests.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final detail = state.demoTestDetail;
+      final updatedDetail = (detail != null && detail.id == testId)
+          ? detail.copyWith(isLiked: currentIsLiked)
+          : detail;
+
+      emit(state.copyWith(
+        myTests: updatedMyTests,
+        topTests: updatedTopTests,
+        demoTestDetail: updatedDetail,
+      ));
+    },
+  );
+
   Future<void> getWallet() => handle<void>(
     (emit) async {
       emit(state.copyWith(walletStatus: StateStatus.loading));

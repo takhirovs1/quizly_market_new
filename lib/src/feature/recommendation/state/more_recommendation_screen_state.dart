@@ -22,7 +22,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
   var _isLoadingMore = false;
 
   /// Max card width for list view mode (in logical pixels).
-  static const double maxCardWidth = 300;
+  static const double maxCardWidth = 360;
 
   /// Horizontal padding (left + right) applied to the grid/list.
   static const double horizontalPadding = 32; // 16 * 2
@@ -31,7 +31,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
   ({int crossAxisCount, double mainAxisExtent}) computeListLayout(double screenWidth) {
     final availableWidth = screenWidth - horizontalPadding;
     final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
-    const mainAxisExtent = 160.0;
+    const mainAxisExtent = 185.0;
     return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
   }
 
@@ -183,6 +183,15 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
       test.price?.toString() ?? '0',
       test.questionCount?.toString() ?? '0',
     );
+  }
+
+  void onLikeTestPressed(TestModel test) {
+    context.telegramWebApp.hapticImpact(.light);
+    if (widget.type == .myTests) {
+      myTestCubit.toggleLikeTest(test);
+    } else {
+      recommendationCubit.toggleLikeTest(test);
+    }
   }
 
   @override

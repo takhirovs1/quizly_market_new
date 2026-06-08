@@ -40,6 +40,9 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
       onShareButtonPressed: () => onShareTestPressed(test),
       isFree: test.price == 0 || test.price == null,
       isPurchased: isPurchased,
+      isLiked: test.isLiked == true,
+      onLikeButtonPressed: () => onLikeTestPressed(test),
+      textBought: context.x.l10n.textBought,
     );
   }
 
@@ -59,7 +62,10 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
       questionAmount: context.x.l10n.questionAmountText(test.questionCount ?? 0),
       buyButtonText: buyText,
       onBuyButtonPressed: () => onBuyTestPressed(test),
+      onShareButtonPressed: () => onShareTestPressed(test),
+      onLikeButtonPressed: () => onLikeTestPressed(test),
       isPurchased: isPurchased,
+      isLiked: test.isLiked == true,
     );
   }
 
@@ -177,7 +183,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                     );
                     return GridView.builder(
                       controller: scrollController,
-                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                      padding: const .only(left: 16, right: 16, bottom: 16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: layout.crossAxisCount,
                         mainAxisExtent: layout.mainAxisExtent,

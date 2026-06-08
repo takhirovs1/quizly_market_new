@@ -9,12 +9,14 @@ class MyTestCardItem extends StatelessWidget {
     required this.test,
     required this.onBuyButtonPressed,
     required this.onShareButtonPressed,
+    this.onLikeButtonPressed,
     super.key,
   });
 
   final TestModel test;
   final void Function(TestModel test) onBuyButtonPressed;
   final void Function(TestModel test) onShareButtonPressed;
+  final void Function(TestModel test)? onLikeButtonPressed;
 
   @override
   Widget build(BuildContext context) => TestCardWidget(
@@ -30,5 +32,8 @@ class MyTestCardItem extends StatelessWidget {
     isFree: test.price == 0 || test.price == null,
     isPurchased: test.isPurchased == true,
     onShareButtonPressed: () => onShareButtonPressed(test),
+    isLiked: test.isLiked == true,
+    onLikeButtonPressed: onLikeButtonPressed != null ? () => onLikeButtonPressed!(test) : null,
+    textBought: context.x.l10n.textBought,
   );
 }

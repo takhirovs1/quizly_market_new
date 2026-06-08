@@ -8,11 +8,33 @@ abstract interface class IRecommendationRepository {
   Future<({List<TestModel> items, int limit, int offset, int total})> getRecommendationTests(TestModelRequest request);
   Future<({List<TestModel> items, int limit, int offset, int total})> getLikedTests(TestModelRequest request);
   Future<({List<TestModel> items, int limit, int offset, int total})> getAllTests(TestModelRequest request);
+  Future<void> likeTest(String testId);
+  Future<void> unlikeTest(String testId);
 }
 
 final class RecommendationRepositoryImpl implements IRecommendationRepository {
   const RecommendationRepositoryImpl({required this.dio});
   final Dio dio;
+
+  @override
+  Future<void> likeTest(String testId) async {
+    try {
+      await dio.post<void>('/api/tests/$testId/like');
+    } catch (e, s) {
+      info('LIKE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unlikeTest(String testId) async {
+    try {
+      await dio.delete<void>('/api/tests/$testId/like');
+    } catch (e, s) {
+      info('UNLIKE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
 
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getRecommendationTests(

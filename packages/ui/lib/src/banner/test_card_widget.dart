@@ -13,8 +13,11 @@ class TestCardWidget extends StatelessWidget {
     required this.buyButtonText,
     this.onBuyButtonPressed,
     this.onShareButtonPressed,
+    this.onLikeButtonPressed,
     this.isFree = false,
     this.isPurchased = false,
+    this.isLiked = false,
+    this.textBought,
     super.key,
   });
 
@@ -26,8 +29,11 @@ class TestCardWidget extends StatelessWidget {
   final String buyButtonText;
   final VoidCallback? onBuyButtonPressed;
   final VoidCallback? onShareButtonPressed;
+  final VoidCallback? onLikeButtonPressed;
   final bool isFree;
   final bool isPurchased;
+  final bool isLiked;
+  final String? textBought;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -107,7 +113,7 @@ class TestCardWidget extends StatelessWidget {
                   Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui'),
                 const SizedBox(width: 4),
                 Text(
-                  isPurchased ? 'Sotib olingan' : price,
+                  isPurchased ? (textBought ?? '') : price,
                   style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -128,7 +134,16 @@ class TestCardWidget extends StatelessWidget {
                             colorFilter: ColorFilter.mode(context.x.colors.bannerIcon, BlendMode.srcATop),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        if (onLikeButtonPressed != null) ...[
+                          IconButton(
+                            onPressed: onLikeButtonPressed,
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: isLiked ? context.x.colors.error : context.x.colors.bannerIcon,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(width: 4),
                         Flexible(
                           child: FilledButton(
                             style: FilledButton.styleFrom(

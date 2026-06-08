@@ -9,6 +9,7 @@ class ResponsiveRecommendationsList extends StatelessWidget {
     required this.crossAxisCount,
     required this.onBuyButtonPressed,
     required this.onShareButtonPressed,
+    this.onLikeButtonPressed,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class ResponsiveRecommendationsList extends StatelessWidget {
   final int crossAxisCount;
   final void Function(TestModel test) onBuyButtonPressed;
   final void Function(TestModel test) onShareButtonPressed;
+  final void Function(TestModel test)? onLikeButtonPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class ResponsiveRecommendationsList extends StatelessWidget {
               test: test,
               onBuyButtonPressed: onBuyButtonPressed,
               onShareButtonPressed: onShareButtonPressed,
+              onLikeButtonPressed: onLikeButtonPressed,
             ),
             const SizedBox(height: 10),
           ],
@@ -52,6 +55,7 @@ class ResponsiveRecommendationsList extends StatelessWidget {
                             test: rowTests[j],
                             onBuyButtonPressed: onBuyButtonPressed,
                             onShareButtonPressed: onShareButtonPressed,
+                            onLikeButtonPressed: onLikeButtonPressed,
                           )
                         : const SizedBox.shrink(),
                   ),

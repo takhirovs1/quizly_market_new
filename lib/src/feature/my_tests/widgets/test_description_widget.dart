@@ -16,7 +16,6 @@ class TestDescriptionWidget extends StatelessWidget {
     children: [
       Row(
         crossAxisAlignment: .start,
-        spacing: 8,
         children: [
           Expanded(
             child: Text(
@@ -26,6 +25,7 @@ class TestDescriptionWidget extends StatelessWidget {
               overflow: .ellipsis,
             ),
           ),
+          const SizedBox(width: 4),
           IconButton(
             onPressed: onPressShare,
             icon: Assets.lib.vectors.share.svg(
@@ -37,7 +37,7 @@ class TestDescriptionWidget extends StatelessWidget {
             onPressed: onPressLike,
             icon: Icon(
               test.isLiked == true ? Icons.favorite : Icons.favorite_border,
-              color: test.isLiked == true ? context.x.colors.primary : ThemeColors.of(context).text,
+              color: test.isLiked == true ? context.x.colors.error : context.x.colors.text,
             ),
           ),
         ],

@@ -18,7 +18,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   var _isLoadingMore = false;
 
   /// Max card width for list view mode (in logical pixels).
-  static const double maxCardWidth = 300;
+  static const double maxCardWidth = 360;
 
   /// Horizontal padding (left + right) applied to the grid/list.
   static const double horizontalPadding = 32; // 16 * 2
@@ -27,7 +27,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   ({int crossAxisCount, double mainAxisExtent}) computeListLayout(double screenWidth) {
     final availableWidth = screenWidth - horizontalPadding;
     final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
-    const mainAxisExtent = 160.0;
+    const mainAxisExtent = 185.0;
     return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
   }
 
@@ -70,12 +70,12 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   void onBuyTestPressed(TestModel test) =>
       context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     await myTestCubit.initialize(search: searchController.text);
   }
 
   void onShareTestPressed() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     context.shareTest(
       'Example test',
       'QuizlyMarket',
@@ -83,5 +83,10 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
       '100000',
       '100',
     );
+  }
+
+  void onLikeTestPressed(TestModel test) {
+    context.telegramWebApp.hapticImpact(.light);
+    myTestCubit.toggleLikeTest(test);
   }
 }

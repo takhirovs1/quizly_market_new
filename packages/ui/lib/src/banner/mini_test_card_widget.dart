@@ -12,7 +12,10 @@ class MiniTestCardWidget extends StatelessWidget {
     required this.questionAmount,
     required this.buyButtonText,
     required this.onBuyButtonPressed,
+    this.onShareButtonPressed,
+    this.onLikeButtonPressed,
     this.isPurchased = false,
+    this.isLiked = false,
     super.key,
   });
 
@@ -23,7 +26,10 @@ class MiniTestCardWidget extends StatelessWidget {
   final String questionAmount;
   final String buyButtonText;
   final VoidCallback onBuyButtonPressed;
+  final VoidCallback? onShareButtonPressed;
+  final VoidCallback? onLikeButtonPressed;
   final bool isPurchased;
+  final bool isLiked;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -36,14 +42,33 @@ class MiniTestCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: context.x.textStyle.sfW400s18.copyWith(
-              color: context.x.colors.bannerText,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: context.x.textStyle.sfW400s18.copyWith(
+                    color: context.x.colors.bannerText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (onLikeButtonPressed != null) ...[
+                IconButton(
+                  onPressed: onLikeButtonPressed,
+                  icon: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? context.x.colors.error : context.x.colors.bannerIcon,
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
+            ],
           ),
           const SizedBox(height: 4),
           Text(
@@ -92,22 +117,41 @@ class MiniTestCardWidget extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           const Spacer(),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: context.x.colors.bannerPriceText,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              padding: EdgeInsetsGeometry.zero,
-            ),
-            onPressed: onBuyButtonPressed,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                buyButtonText,
-                style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.white),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (onShareButtonPressed != null) ...[
+                IconButton(
+                  onPressed: onShareButtonPressed,
+                  icon: Assets.lib.vectors.share.svg(
+                    width: 24,
+                    height: 24,
+                    package: 'ui',
+                    colorFilter: ColorFilter.mode(context.x.colors.bannerIcon, BlendMode.srcATop),
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
+              Expanded(
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: context.x.colors.bannerPriceText,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    padding: EdgeInsetsGeometry.zero,
+                  ),
+                  onPressed: onBuyButtonPressed,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Text(
+                      buyButtonText,
+                      style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.white),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

@@ -12,6 +12,7 @@ class CustomPageView extends StatefulWidget {
     this.onShowMore,
     this.onBuyButtonPressed,
     this.onShareButtonPressed,
+    this.onLikeButtonPressed,
   });
 
   final String title;
@@ -19,6 +20,7 @@ class CustomPageView extends StatefulWidget {
   final List<TestModel> tests;
   final void Function(TestModel test)? onBuyButtonPressed;
   final void Function(TestModel test)? onShareButtonPressed;
+  final void Function(TestModel test)? onLikeButtonPressed;
 
   @override
   State<CustomPageView> createState() => _CustomPageViewState();
@@ -116,6 +118,9 @@ class _CustomPageViewState extends State<CustomPageView> {
     isFree: test.price == 0 || test.price == null,
     isPurchased: test.isPurchased == true,
     onShareButtonPressed: () => widget.onShareButtonPressed?.call(test),
+    isLiked: test.isLiked == true,
+    onLikeButtonPressed: widget.onLikeButtonPressed != null ? () => widget.onLikeButtonPressed?.call(test) : null,
+    textBought: context.x.l10n.textBought,
   );
 
   @override

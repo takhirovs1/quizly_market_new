@@ -173,4 +173,156 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
       emit(state.copyWith(status: StateStatus.error, isAllTestsLoadingMore: false, errorMessage: error.toString()));
     },
   );
+
+  Future<void> toggleLikeTest(TestModel test) => handle<void>(
+    (emit) async {
+      final testId = test.id;
+      if (testId == null) return;
+
+      final currentIsLiked = test.isLiked ?? false;
+
+      final updatedRecs = state.recommendations.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: !currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final updatedLiked = state.liked.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: !currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final updatedAll = state.allTests.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: !currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      emit(state.copyWith(
+        recommendations: updatedRecs,
+        liked: updatedLiked,
+        allTests: updatedAll,
+      ));
+
+      if (currentIsLiked) {
+        await recommendationRepository.unlikeTest(testId);
+      } else {
+        await recommendationRepository.likeTest(testId);
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      final testId = test.id;
+      if (testId == null) return;
+      final currentIsLiked = test.isLiked ?? false;
+
+      final updatedRecs = state.recommendations.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final updatedLiked = state.liked.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      final updatedAll = state.allTests.map((t) {
+        if (t.id == testId) {
+          return TestModel(
+            id: t.id,
+            categoryId: t.categoryId,
+            createdBy: t.createdBy,
+            name: t.name,
+            description: t.description,
+            price: t.price,
+            isPurchased: t.isPurchased,
+            isLiked: currentIsLiked,
+            questionCount: t.questionCount,
+            likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
+            categoryName: t.categoryName,
+            createdAt: t.createdAt,
+          );
+        }
+        return t;
+      }).toList();
+
+      emit(state.copyWith(
+        recommendations: updatedRecs,
+        liked: updatedLiked,
+        allTests: updatedAll,
+      ));
+    },
+  );
 }

@@ -43,7 +43,11 @@ class TestViewModeToggle extends StatelessWidget {
         child: Padding(
           padding: const .all(padding),
           child: DecoratedBox(
-            decoration: BoxDecoration(color: context.x.colors.white, borderRadius: .circular(outerRadius)),
+            decoration: BoxDecoration(
+              color: context.x.colors.cardBackground2,
+              borderRadius: .circular(outerRadius),
+              border: Border.all(color: context.x.colors.divider),
+            ),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final innerW = constraints.maxWidth;
