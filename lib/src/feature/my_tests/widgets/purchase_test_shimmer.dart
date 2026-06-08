@@ -17,6 +17,7 @@ class PurchaseTestShimmer extends StatelessWidget {
 
     return ListView(
       physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       padding: const .symmetric(horizontal: 16),
       children: [
         const SizedBox(height: 16),

@@ -55,7 +55,7 @@ class _ProfileScreenState extends ProfileScreenState {
           );
         }
 
-        final isMobile = context.x.isMobile;
+        final isMobile = context.x.isMobile || context.x.isTablet;
 
         if (isMobile) {
           return Scaffold(
@@ -364,53 +364,50 @@ class _ProfileScreenState extends ProfileScreenState {
                         child: Column(
                           crossAxisAlignment: .stretch,
                           children: [
-                            Padding(
-                              padding: const .symmetric(horizontal: 16),
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: context.x.colors.cardBackground2,
-                                  borderRadius: .circular(20),
-                                  border: Border.all(color: context.x.colors.divider),
-                                ),
-                                child: Padding(
-                                  padding: const .all(24),
-                                  child: Column(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: .circular(50),
-                                        child: SizedBox(width: 100, height: 100, child: avatarWidget),
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: context.x.colors.cardBackground2,
+                                borderRadius: .circular(20),
+                                border: Border.all(color: context.x.colors.divider),
+                              ),
+                              child: Padding(
+                                padding: const .all(24),
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: .circular(50),
+                                      child: SizedBox(width: 100, height: 100, child: avatarWidget),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    switch (isShimmer) {
+                                      true => const ProfileShimmer(
+                                        child: ShimmerBox(width: 180, height: 28, radius: 4),
                                       ),
-                                      const SizedBox(height: 16),
-                                      switch (isShimmer) {
-                                        true => const ProfileShimmer(
-                                          child: ShimmerBox(width: 180, height: 28, radius: 4),
+                                      false => Text(
+                                        displayNameStr,
+                                        maxLines: 1,
+                                        overflow: .ellipsis,
+                                        textAlign: .center,
+                                        style: context.x.textStyle.sfW700s28.copyWith(
+                                          fontSize: 24,
+                                          color: context.x.colors.text,
                                         ),
-                                        false => Text(
-                                          displayNameStr,
-                                          maxLines: 1,
-                                          overflow: .ellipsis,
-                                          textAlign: .center,
-                                          style: context.x.textStyle.sfW700s28.copyWith(
-                                            fontSize: 24,
-                                            color: context.x.colors.text,
-                                          ),
-                                        ),
-                                      },
-                                      const SizedBox(height: 6),
-                                      switch (isShimmer) {
-                                        true => const ProfileShimmer(
-                                          child: ShimmerBox(width: 120, height: 16, radius: 4),
-                                        ),
-                                        false => Text(
-                                          subtitleStr,
-                                          maxLines: 1,
-                                          overflow: .ellipsis,
-                                          textAlign: .center,
-                                          style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-                                        ),
-                                      },
-                                    ],
-                                  ),
+                                      ),
+                                    },
+                                    const SizedBox(height: 6),
+                                    switch (isShimmer) {
+                                      true => const ProfileShimmer(
+                                        child: ShimmerBox(width: 120, height: 16, radius: 4),
+                                      ),
+                                      false => Text(
+                                        subtitleStr,
+                                        maxLines: 1,
+                                        overflow: .ellipsis,
+                                        textAlign: .center,
+                                        style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
+                                      ),
+                                    },
+                                  ],
                                 ),
                               ),
                             ),
@@ -420,6 +417,7 @@ class _ProfileScreenState extends ProfileScreenState {
                               cardNumber: '${user?.telegramChatId ?? user?.id ?? ""}',
                               onCopyCardNumber: () => onCopyCardNumber('${user?.telegramChatId ?? user?.id ?? ""}'),
                               isLoading: isShimmer,
+                              padding: EdgeInsets.zero,
                             ),
                           ],
                         ),
