@@ -15,10 +15,10 @@ class _MobileTelegramService extends TelegramService {
   String get initDataRaw => '';
 
   @override
-  TelegramSafeAreaInset get safeAreaInset => TelegramSafeAreaInset.zero;
+  TelegramSafeAreaInset get safeAreaInset => .zero;
 
   @override
-  TelegramSafeAreaInset get contentSafeAreaInset => TelegramSafeAreaInset.zero;
+  TelegramSafeAreaInset get contentSafeAreaInset => .zero;
 
   @override
   void ready() {}

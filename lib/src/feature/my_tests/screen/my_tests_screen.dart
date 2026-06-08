@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/error_util.dart';
 import '../../../common/util/state_status.dart';
 import '../../recommendation/screen/more_recommendation_screen.dart';
 import '../bloc/my_test_cubit.dart';
@@ -40,7 +41,13 @@ class _MyTestsScreenState extends MyTestsScreenState {
           ),
         ),
         Expanded(
-          child: BlocBuilder<MyTestCubit, MyTestState>(
+          child: BlocConsumer<MyTestCubit, MyTestState>(
+            listener: (context, state) {
+              final hasData = state.myTests.isNotEmpty || state.topTests.isNotEmpty;
+              if (state.status == StateStatus.error && hasData) {
+                ErrorUtil.showSnackBar(context, state.errorMessage ?? context.x.l10n.somethingWentWrong);
+              }
+            },
             builder: (context, state) => LayoutBuilder(
               builder: (context, constraints) {
                 final screenWidth = constraints.maxWidth + MyTestsScreenState.horizontalPadding;
@@ -49,12 +56,12 @@ class _MyTestsScreenState extends MyTestsScreenState {
                 final mainAxisExtent = layout.mainAxisExtent;
 
                 final hasData = state.myTests.isNotEmpty || state.topTests.isNotEmpty;
-                if (state.status == .success || hasData) {
+                if (state.status == StateStatus.success || hasData) {
                   return RefreshIndicator.adaptive(
                     onRefresh: onRefresh,
                     child: ListView(
                       controller: scrollController,
-                      padding: .only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                      padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
                       children: [
                         if (state.search.isNotEmpty && state.myTests.isEmpty) ...[
                           EmptyTestWidget(
@@ -142,23 +149,35 @@ class _MyTestsScreenState extends MyTestsScreenState {
                           const SizedBox(height: 12),
                           ...switch (state.topTests.isEmpty) {
                             true => [
-                              if (crossAxisCount == 1)
-                                for (var i = 0; i < 5; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)]
-                              else
-                                for (var i = 0; i < 6; i += crossAxisCount) ...[
-                                  SizedBox(
-                                    height: mainAxisExtent,
-                                    child: Row(
-                                      children: [
-                                        for (var j = 0; j < crossAxisCount; j++) ...[
-                                          if (j > 0) const SizedBox(width: 10),
-                                          const Expanded(child: TestCardShimmer()),
-                                        ],
-                                      ],
+                              if (state.status == StateStatus.error) ...[
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 24),
+                                    child: EmptyTestWidget(
+                                      title: context.x.l10n.somethingWentWrong,
+                                      description: state.errorMessage ?? context.x.l10n.pleaseTryAgainLater,
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
-                                ],
+                                ),
+                              ] else ...[
+                                if (crossAxisCount == 1)
+                                  for (var i = 0; i < 5; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)]
+                                else
+                                  for (var i = 0; i < 6; i += crossAxisCount) ...[
+                                    SizedBox(
+                                      height: mainAxisExtent,
+                                      child: Row(
+                                        children: [
+                                          for (var j = 0; j < crossAxisCount; j++) ...[
+                                            if (j > 0) const SizedBox(width: 10),
+                                            const Expanded(child: TestCardShimmer()),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                              ],
                             ],
                             false => [
                               ResponsiveRecommendationsList(

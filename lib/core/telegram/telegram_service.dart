@@ -61,12 +61,11 @@ abstract class TelegramService {
 
 /// Simple inset data holder that doesn't depend on any web package.
 class TelegramSafeAreaInset {
+  const TelegramSafeAreaInset({this.top = 0, this.bottom = 0, this.left = 0, this.right = 0});
   final int top;
   final int bottom;
   final int left;
   final int right;
-
-  const TelegramSafeAreaInset({this.top = 0, this.bottom = 0, this.left = 0, this.right = 0});
 
   static const zero = TelegramSafeAreaInset();
 }

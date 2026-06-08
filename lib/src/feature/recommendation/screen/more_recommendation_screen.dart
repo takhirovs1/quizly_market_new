@@ -5,6 +5,8 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../my_tests/bloc/my_test_cubit.dart';
 import '../../my_tests/models/test_model.dart';
+import '../../../common/util/error_util.dart';
+import '../../../common/util/state_status.dart';
 import '../bloc/recommendation_cubit.dart';
 import '../state/more_recommendation_screen_state.dart';
 import '../widget/test_view_mode_toggle.dart';
@@ -134,14 +136,17 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
     required List<TestModel> tests,
     required bool isLoading,
     required bool hasMoreLoading,
+    required bool isError,
+    required String? errorMessage,
+    required VoidCallback onRefresh,
   }) {
-    if (isLoading) {
-      if (viewMode == .grid) {
+    if (isLoading && tests.isEmpty) {
+      if (viewMode == TestViewMode.grid) {
         return LayoutBuilder(
           builder: (context, constraints) {
             final layout = computeGridLayout(constraints.maxWidth + MoreRecommendationScreenState.horizontalPadding);
             return GridView.builder(
-              padding: const .symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: layout.crossAxisCount,
                 mainAxisExtent: layout.mainAxisExtent,
@@ -157,25 +162,52 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
       return _buildListShimmer();
     }
 
+    if (isError && tests.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+          Center(
+            child: EmptyTestWidget(
+              title: context.x.l10n.somethingWentWrong,
+              description: errorMessage ?? context.x.l10n.pleaseTryAgainLater,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: FilledButton(onPressed: onRefresh, child: Text(context.x.l10n.retry)),
+          ),
+        ],
+      );
+    }
+
     if (tests.isEmpty) {
       final isSearching = searchController.text.trim().isNotEmpty;
-      return Center(
-        child: Padding(
-          padding: const .symmetric(horizontal: 16, vertical: 24),
-          child: EmptyTestWidget(
-            title: isSearching
-                ? context.x.l10n.noTestsFound
-                : (widget.type == .myTests ? context.x.l10n.youDontHaveAnyTestsYet : context.x.l10n.noTestsFound),
-            description: isSearching ? context.x.l10n.trySearchingWithOtherKeywords : '',
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: EmptyTestWidget(
+                title: isSearching
+                    ? context.x.l10n.noTestsFound
+                    : (widget.type == TestCategoryType.myTests
+                          ? context.x.l10n.youDontHaveAnyTestsYet
+                          : context.x.l10n.noTestsFound),
+                description: isSearching ? context.x.l10n.trySearchingWithOtherKeywords : '',
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 
     return Column(
       children: [
         Expanded(
-          child: viewMode == .grid
+          child: viewMode == TestViewMode.grid
               ? LayoutBuilder(
                   builder: (context, constraints) {
                     final layout = computeGridLayout(
@@ -183,7 +215,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                     );
                     return GridView.builder(
                       controller: scrollController,
-                      padding: const .only(left: 16, right: 16, bottom: 16),
+                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: layout.crossAxisCount,
                         mainAxisExtent: layout.mainAxisExtent,
@@ -199,7 +231,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
         ),
         if (hasMoreLoading)
           const Padding(
-            padding: .symmetric(vertical: 16),
+            padding: EdgeInsets.symmetric(vertical: 16),
             child: Center(child: CircularProgressIndicator.adaptive()),
           ),
       ],
@@ -209,11 +241,11 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
   @override
   Widget build(BuildContext context) {
     final title = switch (widget.type) {
-      .myTests => context.x.l10n.myTestsHeader,
-      .topTests => context.x.l10n.topTests,
-      .recommendation => context.x.l10n.recommendationsHeader,
-      .liked => context.x.l10n.likedTests,
-      .allTests => context.x.l10n.allTests,
+      TestCategoryType.myTests => context.x.l10n.myTestsHeader,
+      TestCategoryType.topTests => context.x.l10n.topTests,
+      TestCategoryType.recommendation => context.x.l10n.recommendationsHeader,
+      TestCategoryType.liked => context.x.l10n.likedTests,
+      TestCategoryType.allTests => context.x.l10n.allTests,
     };
 
     return Scaffold(
@@ -223,11 +255,11 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
         telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
       ),
       body: Column(
-        crossAxisAlignment: .stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 8),
           Padding(
-            padding: const .symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               spacing: 8,
               children: [
@@ -249,36 +281,75 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
             child: ValueListenableBuilder<TestViewMode>(
               valueListenable: viewModeNotifier,
               builder: (context, viewMode, _) {
-                if (widget.type == .myTests) {
-                  return BlocBuilder<MyTestCubit, MyTestState>(
-                    builder: (context, state) => _buildContent(
-                      viewMode: viewMode,
-                      tests: state.myTests,
-                      isLoading: state.status.isLoading,
-                      hasMoreLoading: state.isMyTestsLoadingMore,
-                    ),
+                if (widget.type == TestCategoryType.myTests) {
+                  return BlocConsumer<MyTestCubit, MyTestState>(
+                    listener: (context, state) {
+                      if (state.status == StateStatus.error && state.myTests.isNotEmpty) {
+                        ErrorUtil.showSnackBar(context, state.errorMessage ?? context.x.l10n.somethingWentWrong);
+                      }
+                    },
+                    builder: (context, state) {
+                      final refreshCallback = () => myTestCubit.getMyTests(search: searchController.text);
+                      return RefreshIndicator.adaptive(
+                        onRefresh: () async => refreshCallback(),
+                        child: _buildContent(
+                          viewMode: viewMode,
+                          tests: state.myTests,
+                          isLoading: state.status.isLoading,
+                          hasMoreLoading: state.isMyTestsLoadingMore,
+                          isError: state.status == StateStatus.error,
+                          errorMessage: state.errorMessage,
+                          onRefresh: refreshCallback,
+                        ),
+                      );
+                    },
                   );
                 } else {
-                  return BlocBuilder<RecommendationCubit, RecommendationState>(
+                  return BlocConsumer<RecommendationCubit, RecommendationState>(
+                    listener: (context, state) {
+                      final List<TestModel> tests;
+                      switch (widget.type) {
+                        case TestCategoryType.recommendation || TestCategoryType.topTests:
+                          tests = state.recommendations;
+                        case TestCategoryType.liked:
+                          tests = state.liked;
+                        default:
+                          tests = state.allTests;
+                      }
+                      if (state.status.isError && tests.isNotEmpty) {
+                        ErrorUtil.showSnackBar(context, state.errorMessage ?? context.x.l10n.somethingWentWrong);
+                      }
+                    },
                     builder: (context, state) {
                       final List<TestModel> tests;
                       final bool hasMoreLoading;
+                      final VoidCallback refreshCallback;
                       switch (widget.type) {
-                        case .recommendation || .topTests:
+                        case TestCategoryType.recommendation || TestCategoryType.topTests:
                           tests = state.recommendations;
                           hasMoreLoading = false;
-                        case .liked:
+                          refreshCallback = () =>
+                              recommendationCubit.getRecommendationTests(search: searchController.text);
+                        case TestCategoryType.liked:
                           tests = state.liked;
                           hasMoreLoading = false;
+                          refreshCallback = () => recommendationCubit.getLikedTests(search: searchController.text);
                         default:
                           tests = state.allTests;
                           hasMoreLoading = state.isAllTestsLoadingMore;
+                          refreshCallback = () => recommendationCubit.getAllTests(search: searchController.text);
                       }
-                      return _buildContent(
-                        viewMode: viewMode,
-                        tests: tests,
-                        isLoading: state.status.isLoading,
-                        hasMoreLoading: hasMoreLoading,
+                      return RefreshIndicator.adaptive(
+                        onRefresh: () async => refreshCallback(),
+                        child: _buildContent(
+                          viewMode: viewMode,
+                          tests: tests,
+                          isLoading: state.status.isLoading,
+                          hasMoreLoading: hasMoreLoading,
+                          isError: state.status.isError,
+                          errorMessage: state.errorMessage,
+                          onRefresh: refreshCallback,
+                        ),
                       );
                     },
                   );
