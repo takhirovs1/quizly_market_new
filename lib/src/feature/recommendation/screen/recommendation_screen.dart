@@ -68,14 +68,11 @@ class _RecommendationScreenState extends RecommendationScreenState {
             child: BlocBuilder<RecommendationCubit, RecommendationState>(
               builder: (context, state) {
                 if (state.status.isLoading && state.allTests.isEmpty) {
-                  return Padding(
-                    padding: const .symmetric(horizontal: 16),
-                    child: ListView(
-                      children: [
-                        const SizedBox(height: 16),
-                        for (var i = 0; i < 6; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)],
-                      ],
-                    ),
+                  return ListView(
+                    padding: .only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                    children: [
+                      for (var i = 0; i < 6; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)],
+                    ],
                   );
                 }
 
@@ -84,8 +81,8 @@ class _RecommendationScreenState extends RecommendationScreenState {
                   if (state.allTests.isEmpty) {
                     return ListView(
                       controller: scrollController,
+                      padding: .only(top: 16, bottom: context.x.isMobile ? 16 : 120),
                       children: [
-                        const SizedBox(height: 16),
                         Padding(
                           padding: const .symmetric(horizontal: 16),
                           child: EmptyTestWidget(
@@ -99,8 +96,8 @@ class _RecommendationScreenState extends RecommendationScreenState {
 
                   return ListView(
                     controller: scrollController,
+                    padding: .only(top: 16, bottom: context.x.isMobile ? 16 : 120),
                     children: [
-                      const SizedBox(height: 16),
                       Padding(
                         padding: const .symmetric(horizontal: 16),
                         child: SectionHeaderWidget(
@@ -142,6 +139,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 // Default mode: Recommendations, Banner, Liked Tests, All Tests
                 return ListView(
                   controller: scrollController,
+                  padding: .only(bottom: context.x.isMobile ? 16 : 120),
                   children: [
                     // Recommendations section (first 5 top tests)
                     if (state.recommendations.isNotEmpty)

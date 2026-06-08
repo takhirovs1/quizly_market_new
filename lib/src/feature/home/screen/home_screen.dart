@@ -65,31 +65,77 @@ abstract class HomeScreenState extends State<HomeScreen> {
 
 class _HomeScreenState extends HomeScreenState {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.x.colors.scaffoldBackground,
-    body: ValueListenableBuilder<int>(
-      valueListenable: currentIndex,
-      builder: (context, value, child) => IndexedStack(
-        index: value,
-        children: [
-          const MyTestsScreen(),
-          if (_activatedIndices.contains(1)) const RecommendationScreen() else const SizedBox.shrink(),
-          if (_activatedIndices.contains(2)) const UploadScreen() else const SizedBox.shrink(),
-          if (_activatedIndices.contains(3)) const ProfileScreen() else const SizedBox.shrink(),
-        ],
-      ),
+  Widget build(BuildContext context) => Theme(
+    data: Theme.of(context).copyWith(
+      canvasColor: Colors.transparent,
+      shadowColor: Colors.transparent,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(backgroundColor: Colors.transparent, elevation: 0),
+      navigationBarTheme: const NavigationBarThemeData(backgroundColor: Colors.transparent, elevation: 0),
+      colorScheme: Theme.of(context).colorScheme.copyWith(surfaceTint: Colors.transparent),
     ),
-    bottomNavigationBar: ColoredBox(
-      color: context.x.colors.dialogBackground,
-      child: Padding(
-        padding: .only(
-          bottom: context.telegramWebApp.isSupported ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0.0,
+    child: Scaffold(
+      extendBody: !context.x.isMobile,
+      backgroundColor: context.x.colors.scaffoldBackground,
+      body: ValueListenableBuilder<int>(
+        valueListenable: currentIndex,
+        builder: (context, value, child) => IndexedStack(
+          index: value,
+          children: [
+            const MyTestsScreen(),
+            if (_activatedIndices.contains(1)) const RecommendationScreen() else const SizedBox.shrink(),
+            if (_activatedIndices.contains(2)) const UploadScreen() else const SizedBox.shrink(),
+            if (_activatedIndices.contains(3)) const ProfileScreen() else const SizedBox.shrink(),
+          ],
         ),
-        child: QuizNavigationBar(
-          labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.upload, context.x.l10n.profile],
-          currentIndex: currentIndex.value,
-          onTap: onTap,
-        ),
+      ),
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: currentIndex,
+        builder: (context, value, _) {
+          final isMobile = context.x.isMobile;
+          if (isMobile) {
+            return ColoredBox(
+              color: context.x.colors.dialogBackground,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: context.telegramWebApp.isSupported
+                      ? context.telegramWebApp.safeAreaInset.bottom.toDouble()
+                      : 0.0,
+                ),
+                child: QuizNavigationBar(
+                  labels: [context.x.l10n.home, context.x.l10n.market, context.x.l10n.upload, context.x.l10n.profile],
+                  currentIndex: value,
+                  onTap: onTap,
+                ),
+              ),
+            );
+          }
+
+          return SafeArea(
+            child: SizedBox(
+              height: 104,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+                  child: SizedBox(
+                    width: 500,
+                    child: QuizNavigationBar(
+                      labels: [
+                        context.x.l10n.home,
+                        context.x.l10n.market,
+                        context.x.l10n.upload,
+                        context.x.l10n.profile,
+                      ],
+                      currentIndex: value,
+                      onTap: onTap,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     ),
   );

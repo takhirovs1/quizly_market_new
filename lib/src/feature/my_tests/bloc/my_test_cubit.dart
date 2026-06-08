@@ -219,11 +219,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
           ? detail.copyWith(isLiked: !currentIsLiked)
           : detail;
 
-      emit(state.copyWith(
-        myTests: updatedMyTests,
-        topTests: updatedTopTests,
-        demoTestDetail: updatedDetail,
-      ));
+      emit(state.copyWith(myTests: updatedMyTests, topTests: updatedTopTests, demoTestDetail: updatedDetail));
 
       if (currentIsLiked) {
         await myTestRepository.unlikeTest(testId);
@@ -277,15 +273,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       }).toList();
 
       final detail = state.demoTestDetail;
-      final updatedDetail = (detail != null && detail.id == testId)
-          ? detail.copyWith(isLiked: currentIsLiked)
-          : detail;
+      final updatedDetail = (detail != null && detail.id == testId) ? detail.copyWith(isLiked: currentIsLiked) : detail;
 
-      emit(state.copyWith(
-        myTests: updatedMyTests,
-        topTests: updatedTopTests,
-        demoTestDetail: updatedDetail,
-      ));
+      emit(state.copyWith(myTests: updatedMyTests, topTests: updatedTopTests, demoTestDetail: updatedDetail));
     },
   );
 

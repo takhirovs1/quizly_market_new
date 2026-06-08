@@ -241,11 +241,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
         return t;
       }).toList();
 
-      emit(state.copyWith(
-        recommendations: updatedRecs,
-        liked: updatedLiked,
-        allTests: updatedAll,
-      ));
+      emit(state.copyWith(recommendations: updatedRecs, liked: updatedLiked, allTests: updatedAll));
 
       if (currentIsLiked) {
         await recommendationRepository.unlikeTest(testId);
@@ -318,11 +314,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
         return t;
       }).toList();
 
-      emit(state.copyWith(
-        recommendations: updatedRecs,
-        liked: updatedLiked,
-        allTests: updatedAll,
-      ));
+      emit(state.copyWith(recommendations: updatedRecs, liked: updatedLiked, allTests: updatedAll));
     },
   );
 }

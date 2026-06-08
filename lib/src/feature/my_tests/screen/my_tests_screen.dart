@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/state_status.dart';
 import '../../recommendation/screen/more_recommendation_screen.dart';
 import '../bloc/my_test_cubit.dart';
 import '../state/my_tests_screen_state.dart';
@@ -47,176 +48,186 @@ class _MyTestsScreenState extends MyTestsScreenState {
                 final crossAxisCount = layout.crossAxisCount;
                 final mainAxisExtent = layout.mainAxisExtent;
 
-                return switch (state.status) {
-                  .loading => RefreshIndicator.adaptive(
+                final hasData = state.myTests.isNotEmpty || state.topTests.isNotEmpty;
+                if (state.status == .success || hasData) {
+                  return RefreshIndicator.adaptive(
                     onRefresh: onRefresh,
-                    child: Padding(
-                      padding: const .symmetric(horizontal: 16),
-                      child: ListView(
-                        controller: scrollController,
-                        children: [
-                          const SizedBox(height: 16),
-                          if (crossAxisCount == 1)
-                            for (var i = 0; i < 6; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)]
-                          else
-                            for (var i = 0; i < 6; i += crossAxisCount) ...[
-                              SizedBox(
-                                height: mainAxisExtent,
-                                child: Row(
-                                  children: [
-                                    for (var j = 0; j < crossAxisCount; j++) ...[
-                                      if (j > 0) const SizedBox(width: 10),
-                                      const Expanded(child: TestCardShimmer()),
-                                    ],
-                                  ],
+                    child: ListView(
+                      controller: scrollController,
+                      padding: .only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                      children: [
+                        if (state.search.isNotEmpty && state.myTests.isEmpty) ...[
+                          EmptyTestWidget(
+                            title: context.x.l10n.noTestsFound,
+                            description: context.x.l10n.trySearchingWithOtherKeywords,
+                          ),
+                        ] else ...[
+                          ...switch (state.myTests.isEmpty) {
+                            false => [
+                              // My Tests header
+                              SectionHeaderWidget(
+                                title: context.x.l10n.myTestsHeader,
+                                onTap: () => context.octopus.push(
+                                  Routes.moreRecommendation,
+                                  arguments: <String, String>{'type': TestCategoryType.myTests.name},
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 12),
+
+                              // First 2 rows of my tests
+                              ResponsiveTestRow(
+                                tests: state.myTests.take(2 * crossAxisCount).toList(),
+                                crossAxisCount: crossAxisCount,
+                                onBuyButtonPressed: onBuyTestPressed,
+                                onShareButtonPressed: (test) => onShareTestPressed(),
+                                onLikeButtonPressed: onLikeTestPressed,
+                              ),
+
+                              const SizedBox(height: 6),
+                              const AnimatedReferralBanner(),
+                              const SizedBox(height: 16),
+
+                              // Next 3 rows of my tests
+                              ResponsiveTestRow(
+                                tests: state.myTests.skip(2 * crossAxisCount).take(3 * crossAxisCount).toList(),
+                                crossAxisCount: crossAxisCount,
+                                onBuyButtonPressed: onBuyTestPressed,
+                                onShareButtonPressed: (test) => onShareTestPressed(),
+                                onLikeButtonPressed: onLikeTestPressed,
+                              ),
                             ],
-                        ],
-                      ),
-                    ),
-                  ),
-                  .success => RefreshIndicator.adaptive(
-                    onRefresh: onRefresh,
-                    child: Padding(
-                      padding: const .symmetric(horizontal: 16),
-                      child: ListView(
-                        controller: scrollController,
-                        children: [
-                          const SizedBox(height: 16),
-                          if (state.search.isNotEmpty && state.myTests.isEmpty) ...[
-                            EmptyTestWidget(
-                              title: context.x.l10n.noTestsFound,
-                              description: context.x.l10n.trySearchingWithOtherKeywords,
-                            ),
-                          ] else ...[
-                            ...switch (state.myTests.isEmpty) {
-                              false => [
-                                // My Tests header
-                                SectionHeaderWidget(
-                                  title: context.x.l10n.myTestsHeader,
-                                  onTap: () => context.octopus.push(
-                                    Routes.moreRecommendation,
-                                    arguments: <String, String>{'type': TestCategoryType.myTests.name},
+                            true => [
+                              EmptyTestWidget(
+                                title: context.x.l10n.youDontHaveAnyTestsYet,
+                                description: context.x.l10n.thereAreTestsOnaVarietyOfTopicsAvailableOnTheMarket,
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Text(
+                                    context.x.l10n.tryItNow,
+                                    style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22),
                                   ),
-                                ),
-                                const SizedBox(height: 12),
+                                ],
+                              ),
+                              TestCardWidget(
+                                title: 'Example test',
+                                companyName: 'QuizlyMarket',
+                                description:
+                                    'Example test description, Example test description, Example test description',
+                                price: context.x.l10n.free,
+                                questionAmount: context.x.l10n.questionAmountText(100),
+                                buyButtonText: context.x.l10n.tryItNow,
+                                onBuyButtonPressed: () {},
+                                isFree: true,
+                                onShareButtonPressed: onShareTestPressed,
+                                textBought: context.x.l10n.textBought,
+                                isLiked: false,
+                                onLikeButtonPressed: () {},
+                              ),
+                              const SizedBox(height: 16),
+                              const AnimatedReferralBanner(),
+                            ],
+                          },
 
-                                // First 2 rows of my tests
-                                ResponsiveTestRow(
-                                  tests: state.myTests.take(2 * crossAxisCount).toList(),
-                                  crossAxisCount: crossAxisCount,
-                                  onBuyButtonPressed: onBuyTestPressed,
-                                  onShareButtonPressed: (test) => onShareTestPressed(),
-                                  onLikeButtonPressed: onLikeTestPressed,
-                                ),
-
-                                const SizedBox(height: 6),
-                                const AnimatedReferralBanner(),
-                                const SizedBox(height: 16),
-
-                                // Next 3 rows of my tests
-                                ResponsiveTestRow(
-                                  tests: state.myTests.skip(2 * crossAxisCount).take(3 * crossAxisCount).toList(),
-                                  crossAxisCount: crossAxisCount,
-                                  onBuyButtonPressed: onBuyTestPressed,
-                                  onShareButtonPressed: (test) => onShareTestPressed(),
-                                  onLikeButtonPressed: onLikeTestPressed,
-                                ),
-                              ],
-                              true => [
-                                EmptyTestWidget(
-                                  title: context.x.l10n.youDontHaveAnyTestsYet,
-                                  description: context.x.l10n.thereAreTestsOnaVarietyOfTopicsAvailableOnTheMarket,
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  children: [
-                                    Text(
-                                      context.x.l10n.tryItNow,
-                                      style: context.x.textStyle.sfW700s16.copyWith(fontSize: 22),
+                          // Recommendations section
+                          const SizedBox(height: 22),
+                          SectionHeaderWidget(
+                            title: context.x.l10n.recommendationsHeader,
+                            onTap: () => context.octopus.push(
+                              Routes.moreRecommendation,
+                              arguments: <String, String>{'type': TestCategoryType.topTests.name},
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...switch (state.topTests.isEmpty) {
+                            true => [
+                              if (crossAxisCount == 1)
+                                for (var i = 0; i < 5; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)]
+                              else
+                                for (var i = 0; i < 6; i += crossAxisCount) ...[
+                                  SizedBox(
+                                    height: mainAxisExtent,
+                                    child: Row(
+                                      children: [
+                                        for (var j = 0; j < crossAxisCount; j++) ...[
+                                          if (j > 0) const SizedBox(width: 10),
+                                          const Expanded(child: TestCardShimmer()),
+                                        ],
+                                      ],
                                     ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                            ],
+                            false => [
+                              ResponsiveRecommendationsList(
+                                tests: state.topTests,
+                                crossAxisCount: crossAxisCount,
+                                onBuyButtonPressed: onBuyTestPressed,
+                                onShareButtonPressed: (test) => onShareTestPressed(),
+                                onLikeButtonPressed: onLikeTestPressed,
+                              ),
+                              if (state.isTopTestsLoadingMore)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(child: CircularProgressIndicator.adaptive()),
+                                ),
+                            ],
+                          },
+                        ],
+                      ],
+                    ),
+                  );
+                } else if (state.status == StateStatus.loading) {
+                  return RefreshIndicator.adaptive(
+                    onRefresh: onRefresh,
+                    child: ListView(
+                      controller: scrollController,
+                      padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                      children: [
+                        if (crossAxisCount == 1)
+                          for (var i = 0; i < 6; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)]
+                        else
+                          for (var i = 0; i < 6; i += crossAxisCount) ...[
+                            SizedBox(
+                              height: mainAxisExtent,
+                              child: Row(
+                                children: [
+                                  for (var j = 0; j < crossAxisCount; j++) ...[
+                                    if (j > 0) const SizedBox(width: 10),
+                                    const Expanded(child: TestCardShimmer()),
                                   ],
-                                ),
-                                TestCardWidget(
-                                  title: 'Example test',
-                                  companyName: 'QuizlyMarket',
-                                  description:
-                                      'Example test description, Example test description, Example test description',
-                                  price: context.x.l10n.free,
-                                  questionAmount: context.x.l10n.questionAmountText(100),
-                                  buyButtonText: context.x.l10n.tryItNow,
-                                  onBuyButtonPressed: () {},
-                                  isFree: true,
-                                  onShareButtonPressed: onShareTestPressed,
-                                  textBought: context.x.l10n.textBought,
-                                  isLiked: false,
-                                  onLikeButtonPressed: () {},
-                                ),
-                                const SizedBox(height: 16),
-                                const AnimatedReferralBanner(),
-                              ],
-                            },
-
-                            // Recommendations section
-                            const SizedBox(height: 22),
-                            SectionHeaderWidget(
-                              title: context.x.l10n.recommendationsHeader,
-                              onTap: () => context.octopus.push(
-                                Routes.moreRecommendation,
-                                arguments: <String, String>{'type': TestCategoryType.topTests.name},
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            ...switch (state.topTests.isEmpty) {
-                              true => [
-                                if (crossAxisCount == 1)
-                                  for (var i = 0; i < 5; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)]
-                                else
-                                  for (var i = 0; i < 6; i += crossAxisCount) ...[
-                                    SizedBox(
-                                      height: mainAxisExtent,
-                                      child: Row(
-                                        children: [
-                                          for (var j = 0; j < crossAxisCount; j++) ...[
-                                            if (j > 0) const SizedBox(width: 10),
-                                            const Expanded(child: TestCardShimmer()),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                              ],
-                              false => [
-                                ResponsiveRecommendationsList(
-                                  tests: state.topTests,
-                                  crossAxisCount: crossAxisCount,
-                                  onBuyButtonPressed: onBuyTestPressed,
-                                  onShareButtonPressed: (test) => onShareTestPressed(),
-                                  onLikeButtonPressed: onLikeTestPressed,
-                                ),
-                                if (state.isTopTestsLoadingMore)
-                                  const Padding(
-                                    padding: .symmetric(vertical: 16),
-                                    child: Center(child: CircularProgressIndicator.adaptive()),
-                                  ),
-                              ],
-                            },
+                            const SizedBox(height: 10),
                           ],
-                        ],
-                      ),
+                      ],
                     ),
-                  ),
-                  _ => RefreshIndicator.adaptive(
+                  );
+                } else {
+                  return RefreshIndicator.adaptive(
                     onRefresh: onRefresh,
-                    child: Padding(
-                      padding: const .symmetric(horizontal: 16),
-                      child: ListView(controller: scrollController, children: const [SizedBox(height: 16)]),
+                    child: ListView(
+                      controller: scrollController,
+                      padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                      children: [
+                        SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+                        Center(
+                          child: EmptyTestWidget(
+                            title: 'Xatolik yuz berdi',
+                            description: state.errorMessage ?? 'Internet aloqasini tekshiring',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: FilledButton(onPressed: onRefresh, child: Text(context.x.l10n.retry)),
+                        ),
+                      ],
                     ),
-                  ),
-                };
+                  );
+                }
               },
             ),
           ),

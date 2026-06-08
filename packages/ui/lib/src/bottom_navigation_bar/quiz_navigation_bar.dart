@@ -4,11 +4,18 @@ import '../extension/context_extension.dart';
 import '../gen/assets.gen.dart';
 
 class QuizNavigationBar extends StatefulWidget {
-  const QuizNavigationBar({required this.labels, required this.currentIndex, required this.onTap, super.key});
+  const QuizNavigationBar({
+    required this.labels,
+    required this.currentIndex,
+    required this.onTap,
+    this.borderRadius,
+    super.key,
+  });
 
   final List<String> labels;
   final int currentIndex;
   final void Function(int) onTap;
+  final BorderRadius? borderRadius;
 
   @override
   State<QuizNavigationBar> createState() => _QuizNavigationBarState();
@@ -16,7 +23,21 @@ class QuizNavigationBar extends StatefulWidget {
 
 class _QuizNavigationBarState extends State<QuizNavigationBar> {
   bool bottomNavigationAnimated = true;
-  int selectedIndex = 0;
+  late int selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.currentIndex;
+  }
+
+  @override
+  void didUpdateWidget(covariant QuizNavigationBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      selectedIndex = widget.currentIndex;
+    }
+  }
 
   Future<void> onItemTapped(int index) async {
     bottomNavigationAnimated = false;
@@ -37,22 +58,37 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
       Assets.lib.vectors.person,
     ];
 
+    final effectiveBorderRadius =
+        widget.borderRadius ?? const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16));
+
+    final isFloating = widget.borderRadius != null;
+    final effectiveShadow = isFloating
+        ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+              spreadRadius: 2,
+            ),
+          ]
+        : [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 30,
+              offset: const Offset(0, -10),
+              spreadRadius: -5,
+            ),
+          ];
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: context.x.colors.dialogBackground,
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+        borderRadius: effectiveBorderRadius,
         border: Border.all(color: context.x.colors.divider, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 30,
-            offset: const Offset(0, -10),
-            spreadRadius: -5,
-          ),
-        ],
+        boxShadow: effectiveShadow,
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+        borderRadius: effectiveBorderRadius,
         child: NavigationBar(
           selectedIndex: selectedIndex,
           onDestinationSelected: onItemTapped,

@@ -239,7 +239,7 @@ class _ProfileScreenState extends ProfileScreenState {
             body: RefreshIndicator.adaptive(
               onRefresh: onRefresh,
               child: ListView(
-                padding: const .only(top: 16),
+                padding: EdgeInsets.only(top: 16, bottom: context.x.isMobile ? 16 : 24),
                 shrinkWrap: true,
                 children: [
                   ProfilePaymentCard(
