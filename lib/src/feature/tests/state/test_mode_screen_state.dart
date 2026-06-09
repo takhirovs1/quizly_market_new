@@ -8,7 +8,17 @@ import '../model/test_mode_model.dart';
 import '../screens/test_mode_screen.dart';
 
 abstract class TestModeScreenState extends State<TestModeScreen> {
-  final TestModel test = TestModel(id: '1', description: 'O’zbekiston tarixi bo‘yicha test savollari', price: 20000);
+  late final TestModel test;
+
+  @override
+  void initState() {
+    super.initState();
+    test = TestModel(
+      id: widget.testId,
+      description: 'O’zbekiston tarixi bo‘yicha test savollari',
+      price: 20000,
+    );
+  }
 
   final List<TestModeModel> testModes = [
     TestModeModel(

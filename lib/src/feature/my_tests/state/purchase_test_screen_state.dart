@@ -201,7 +201,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                 onCancelButtonPressed: () => Navigator.pop(context),
                 isError: isError,
                 onSuccessButtonPressed: () =>
-                    isError ? onBuyPressed(withPop: true) : context.octopus.push(Routes.testMode),
+                    isError ? onBuyPressed(withPop: true) : context.octopus.push(Routes.testMode, arguments: {'id': widget.testId}),
               ),
             ),
           ),
