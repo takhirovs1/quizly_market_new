@@ -127,13 +127,14 @@ class _CustomPageViewState extends State<CustomPageView> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final availableWidth = constraints.maxWidth;
-      final visibleCards = ((availableWidth - _horizontalPadding * 2 + _cardSpacing) / (_cardWidth + _cardSpacing))
-          .floor()
-          .clamp(1, widget.tests.length);
-      final isMultiCard = visibleCards > 1;
+      final maxCardsThatCanFit =
+          ((availableWidth - _horizontalPadding * 2 + _cardSpacing) / (_cardWidth + _cardSpacing)).floor().clamp(1, 10);
+      final isMultiCard = maxCardsThatCanFit > 1;
 
       // If multiple cards fit, show them in a responsive grid row instead of a horizontal PageView
       if (isMultiCard) {
+        final useFixedWidth = widget.tests.length < maxCardsThatCanFit;
+
         return Column(
           children: [
             Padding(
@@ -163,9 +164,12 @@ class _CustomPageViewState extends State<CustomPageView> {
                 child: Row(
                   crossAxisAlignment: .stretch,
                   children: [
-                    for (var i = 0; i < widget.tests.take(visibleCards).length; i++) ...[
+                    for (var i = 0; i < widget.tests.take(maxCardsThatCanFit).length; i++) ...[
                       if (i > 0) const SizedBox(width: 12),
-                      Expanded(child: _buildTestCard(widget.tests[i])),
+                      if (useFixedWidth)
+                        SizedBox(width: _cardWidth, child: _buildTestCard(widget.tests[i]))
+                      else
+                        Expanded(child: _buildTestCard(widget.tests[i])),
                     ],
                   ],
                 ),

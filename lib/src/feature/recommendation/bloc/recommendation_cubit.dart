@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../../my_tests/models/test_model.dart';
@@ -25,7 +26,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
       final allResult = results[2];
       emit(
         state.copyWith(
-          status: StateStatus.success,
+          status: .success,
           recommendations: recResult.items,
           recommendationsOffset: recResult.offset,
           recommendationsLimit: recResult.limit,
@@ -42,7 +43,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
       );
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: StateStatus.error, errorMessage: error.toString()));
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -68,13 +69,13 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
           ),
         );
       } else {
-        emit(state.copyWith(status: StateStatus.loading, search: currentSearch));
+        emit(state.copyWith(status: .loading, search: currentSearch));
         final result = await recommendationRepository.getRecommendationTests(
           TestModelRequest(limit: 20, offset: 0, search: currentSearch.isEmpty ? null : currentSearch),
         );
         emit(
           state.copyWith(
-            status: StateStatus.success,
+            status: .success,
             recommendations: result.items,
             recommendationsOffset: result.offset,
             recommendationsLimit: result.limit,
@@ -84,7 +85,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
       }
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: StateStatus.error, errorMessage: error.toString()));
+      emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -126,7 +127,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
       }
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: StateStatus.error, errorMessage: error.toString()));
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -170,7 +171,13 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
       }
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: StateStatus.error, isAllTestsLoadingMore: false, errorMessage: error.toString()));
+      emit(
+        state.copyWith(
+          status: StateStatus.error,
+          isAllTestsLoadingMore: false,
+          errorMessage: ErrorUtil.toUserFriendlyMessage(error),
+        ),
+      );
     },
   );
 
@@ -201,25 +208,53 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
         return t;
       }).toList();
 
-      final updatedLiked = state.liked.map((t) {
-        if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
-            isLiked: !currentIsLiked,
-            questionCount: t.questionCount,
-            likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
+      final List<TestModel> updatedLiked;
+      if (currentIsLiked) {
+        updatedLiked = state.liked.where((t) => t.id != testId).toList();
+      } else {
+        final exists = state.liked.any((t) => t.id == testId);
+        if (exists) {
+          updatedLiked = state.liked.map((t) {
+            if (t.id == testId) {
+              return TestModel(
+                id: t.id,
+                categoryId: t.categoryId,
+                createdBy: t.createdBy,
+                name: t.name,
+                description: t.description,
+                price: t.price,
+                isPurchased: t.isPurchased,
+                isLiked: true,
+                questionCount: t.questionCount,
+                likeCount: t.likeCount != null ? t.likeCount! + 1 : 1,
+                categoryName: t.categoryName,
+                createdAt: t.createdAt,
+              );
+            }
+            return t;
+          }).toList();
+        } else {
+          final original = state.recommendations.firstWhere(
+            (t) => t.id == testId,
+            orElse: () => state.allTests.firstWhere((t) => t.id == testId, orElse: () => test),
           );
+          final newLiked = TestModel(
+            id: original.id,
+            categoryId: original.categoryId,
+            createdBy: original.createdBy,
+            name: original.name,
+            description: original.description,
+            price: original.price,
+            isPurchased: original.isPurchased,
+            isLiked: true,
+            questionCount: original.questionCount,
+            likeCount: original.likeCount != null ? original.likeCount! + 1 : 1,
+            categoryName: original.categoryName,
+            createdAt: original.createdAt,
+          );
+          updatedLiked = [newLiked, ...state.liked];
         }
-        return t;
-      }).toList();
+      }
 
       final updatedAll = state.allTests.map((t) {
         if (t.id == testId) {
@@ -274,25 +309,49 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
         return t;
       }).toList();
 
-      final updatedLiked = state.liked.map((t) {
-        if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
-            isLiked: currentIsLiked,
-            questionCount: t.questionCount,
-            likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
+      final List<TestModel> updatedLiked;
+      if (currentIsLiked) {
+        final exists = state.liked.any((t) => t.id == testId);
+        if (exists) {
+          updatedLiked = state.liked.map((t) {
+            if (t.id == testId) {
+              return TestModel(
+                id: t.id,
+                categoryId: t.categoryId,
+                createdBy: t.createdBy,
+                name: t.name,
+                description: t.description,
+                price: t.price,
+                isPurchased: t.isPurchased,
+                isLiked: true,
+                questionCount: t.questionCount,
+                likeCount: test.likeCount,
+                categoryName: t.categoryName,
+                createdAt: t.createdAt,
+              );
+            }
+            return t;
+          }).toList();
+        } else {
+          final reverted = TestModel(
+            id: test.id,
+            categoryId: test.categoryId,
+            createdBy: test.createdBy,
+            name: test.name,
+            description: test.description,
+            price: test.price,
+            isPurchased: test.isPurchased,
+            isLiked: true,
+            questionCount: test.questionCount,
+            likeCount: test.likeCount,
+            categoryName: test.categoryName,
+            createdAt: test.createdAt,
           );
+          updatedLiked = [reverted, ...state.liked];
         }
-        return t;
-      }).toList();
+      } else {
+        updatedLiked = state.liked.where((t) => t.id != testId).toList();
+      }
 
       final updatedAll = state.allTests.map((t) {
         if (t.id == testId) {

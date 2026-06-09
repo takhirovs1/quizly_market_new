@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../common/service/auth_service.dart';
+import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../data/authentication_repository.dart';
@@ -19,7 +20,7 @@ class AuthCubit extends SequentialCubit<AuthState> {
       if (response == null) return emit(state.copyWith(status: .error, errorMessage: 'Failed to sign in with Google'));
       emit(state.copyWith(status: .success));
     } on Object catch (error) {
-      return emit(state.copyWith(status: .error, errorMessage: error.toString()));
+      return emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     }
   });
 
@@ -30,7 +31,7 @@ class AuthCubit extends SequentialCubit<AuthState> {
       if (response == null) return emit(state.copyWith(status: .error, errorMessage: 'Failed to sign in with Google'));
       emit(state.copyWith(status: .success));
     } on Object catch (error) {
-      return emit(state.copyWith(status: .error, errorMessage: error.toString()));
+      return emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     }
   });
 
@@ -41,7 +42,7 @@ class AuthCubit extends SequentialCubit<AuthState> {
       // if (response == null) return emit(state.copyWith(status: .error, errorMessage: 'Failed to sign in with Google'));
       emit(state.copyWith(status: .success));
     } on Object catch (error) {
-      return emit(state.copyWith(status: .error, errorMessage: error.toString()));
+      return emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     }
   });
 }

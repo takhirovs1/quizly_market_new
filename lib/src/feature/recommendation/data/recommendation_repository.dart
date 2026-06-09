@@ -70,6 +70,9 @@ final class RecommendationRepositoryImpl implements IRecommendationRepository {
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('LIKED TESTS API ERROR: $e $s');
+      if (e is DioException && e.response?.statusCode == 403) {
+        return (items: <TestModel>[], limit: request.limit ?? 20, offset: request.offset ?? 0, total: 0);
+      }
       rethrow;
     }
   }

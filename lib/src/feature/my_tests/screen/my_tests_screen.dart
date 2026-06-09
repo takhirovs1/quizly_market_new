@@ -155,7 +155,10 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                     padding: const EdgeInsets.symmetric(vertical: 24),
                                     child: EmptyTestWidget(
                                       title: context.x.l10n.somethingWentWrong,
-                                      description: state.errorMessage ?? context.x.l10n.pleaseTryAgainLater,
+                                      description: ErrorUtil.localizeError(
+                                        context,
+                                        state.errorMessage ?? 'pleaseTryAgainLater',
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -235,8 +238,8 @@ class _MyTestsScreenState extends MyTestsScreenState {
                         SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
                         Center(
                           child: EmptyTestWidget(
-                            title: 'Xatolik yuz berdi',
-                            description: state.errorMessage ?? 'Internet aloqasini tekshiring',
+                            title: context.x.l10n.somethingWentWrong,
+                            description: ErrorUtil.localizeError(context, state.errorMessage ?? 'connectionError'),
                           ),
                         ),
                         const SizedBox(height: 16),

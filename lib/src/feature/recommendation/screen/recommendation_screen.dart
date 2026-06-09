@@ -78,7 +78,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
 
                 if (state.status.isLoading && !hasData) {
                   return ListView(
-                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                    padding: const .only(left: 16, right: 16, top: 16, bottom: 16),
                     children: [
                       for (var i = 0; i < 6; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)],
                     ],
@@ -88,13 +88,13 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 if (state.status.isError && !hasData) {
                   return ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                    padding: .only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
                     children: [
                       SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
                       Center(
                         child: EmptyTestWidget(
                           title: context.x.l10n.somethingWentWrong,
-                          description: state.errorMessage ?? context.x.l10n.pleaseTryAgainLater,
+                          description: ErrorUtil.localizeError(context, state.errorMessage ?? 'pleaseTryAgainLater'),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -110,10 +110,10 @@ class _RecommendationScreenState extends RecommendationScreenState {
                   if (state.allTests.isEmpty) {
                     return ListView(
                       controller: scrollController,
-                      padding: const EdgeInsets.only(top: 16, bottom: 16),
+                      padding: const .only(top: 16, bottom: 16),
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const .symmetric(horizontal: 16),
                           child: EmptyTestWidget(
                             title: context.x.l10n.noTestsFound,
                             description: context.x.l10n.trySearchingWithOtherKeywords,
@@ -168,7 +168,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                 // Default mode: Recommendations, Banner, Liked Tests, All Tests
                 return ListView(
                   controller: scrollController,
-                  padding: EdgeInsets.only(bottom: context.x.isMobile ? 16 : 120),
+                  padding: .only(bottom: context.x.isMobile ? 16 : 120),
                   children: [
                     // Recommendations section (first 5 top tests)
                     if (state.recommendations.isNotEmpty)
@@ -189,7 +189,7 @@ class _RecommendationScreenState extends RecommendationScreenState {
                     const SizedBox(height: 16),
 
                     // Referral banner
-                    const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: AnimatedReferralBanner()),
+                    const Padding(padding: .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
 
                     // Liked section (first 5 liked tests)
                     if (state.liked.isNotEmpty)

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../data/my_test_repository.dart';
@@ -39,7 +40,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       );
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: StateStatus.error, errorMessage: error.toString()));
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -83,7 +84,13 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       }
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: .error, isMyTestsLoadingMore: false, errorMessage: error.toString()));
+      emit(
+        state.copyWith(
+          status: .error,
+          isMyTestsLoadingMore: false,
+          errorMessage: ErrorUtil.toUserFriendlyMessage(error),
+        ),
+      );
     },
   );
 
@@ -127,7 +134,13 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       }
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: .error, isTopTestsLoadingMore: false, errorMessage: error.toString()));
+      emit(
+        state.copyWith(
+          status: .error,
+          isTopTestsLoadingMore: false,
+          errorMessage: ErrorUtil.toUserFriendlyMessage(error),
+        ),
+      );
     },
   );
 
@@ -138,7 +151,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       emit(state.copyWith(demoTestStatus: StateStatus.success, demoTestDetail: response.data));
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(demoTestStatus: StateStatus.error, demoTestErrorMessage: error.toString()));
+      emit(
+        state.copyWith(demoTestStatus: StateStatus.error, demoTestErrorMessage: ErrorUtil.toUserFriendlyMessage(error)),
+      );
     },
   );
 
@@ -286,7 +301,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       emit(state.copyWith(walletStatus: StateStatus.success, walletData: response.data));
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(walletStatus: StateStatus.error, walletErrorMessage: error.toString()));
+      emit(state.copyWith(walletStatus: StateStatus.error, walletErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -311,7 +326,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       return response;
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(purchaseStatus: StateStatus.error, purchaseErrorMessage: error.toString()));
+      emit(
+        state.copyWith(purchaseStatus: StateStatus.error, purchaseErrorMessage: ErrorUtil.toUserFriendlyMessage(error)),
+      );
       return null;
     },
   );

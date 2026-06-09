@@ -170,7 +170,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
           Center(
             child: EmptyTestWidget(
               title: context.x.l10n.somethingWentWrong,
-              description: errorMessage ?? context.x.l10n.pleaseTryAgainLater,
+              description: ErrorUtil.localizeError(context, errorMessage ?? 'pleaseTryAgainLater'),
             ),
           ),
           const SizedBox(height: 16),
