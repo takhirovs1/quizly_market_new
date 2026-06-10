@@ -3,11 +3,13 @@ import 'package:dio/dio.dart';
 import '../../../common/constant/urls.dart';
 import '../model/profile_model.dart';
 import '../model/topup_model.dart';
+import '../model/transaction_model.dart';
 
 abstract interface class IProfileRepository {
   Future<ProfileModelResponse> getProfile();
   Future<void> updateLanguage(String language);
   Future<TopUpResponse> topUp(TopUpRequest request);
+  Future<TransactionResponse> getTransactions(TransactionRequest request);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -31,5 +33,14 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   Future<TopUpResponse> topUp(TopUpRequest request) async {
     final response = await dio.post<Map<String, Object?>>(Urls.topUp, data: request.toJson());
     return TopUpResponse.fromJson(response.data ?? {});
+  }
+
+  @override
+  Future<TransactionResponse> getTransactions(TransactionRequest request) async {
+    final response = await dio.get<Map<String, Object?>>(
+      '/api/payments/wallet/transactions',
+      queryParameters: request.toJson(),
+    );
+    return TransactionResponse.fromJson(response.data ?? {});
   }
 }
