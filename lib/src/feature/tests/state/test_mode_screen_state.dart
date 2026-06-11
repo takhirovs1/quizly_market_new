@@ -119,10 +119,13 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
     }
   }
 
-  void onPressTestMode(TestModeModel testMode) => context.octopus.push(switch (testMode.type) {
-    .custom => Routes.testCustomMode,
-    .university => Routes.testUniversityMode,
-    .group => Routes.testGroupMode,
-    .flashcard => Routes.testFlashcardMode,
-  });
+  void onPressTestMode(TestModeModel testMode) => context.octopus.push(
+    switch (testMode.type) {
+      TestMode.custom => Routes.testCustomMode,
+      TestMode.university => Routes.testUniversityMode,
+      TestMode.group => Routes.testGroupMode,
+      TestMode.flashcard => Routes.testFlashcardMode,
+    },
+    arguments: {'id': widget.testId},
+  );
 }

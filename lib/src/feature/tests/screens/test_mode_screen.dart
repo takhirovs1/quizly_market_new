@@ -7,6 +7,7 @@ import '../../my_tests/widgets/test_description_widget.dart';
 import '../bloc/test_view.dart';
 import '../state/test_mode_screen_state.dart';
 import '../widgets/test_mode_item_widget.dart';
+import '../widgets/test_mode_shimmer.dart';
 
 class TestModeScreen extends StatefulWidget {
   const TestModeScreen({required this.testId, super.key});
@@ -36,14 +37,11 @@ class _TestModeScreenState extends TestModeScreenState {
         builder: (context, state) {
           final detail = state.detail;
           if (detail == null) {
-            return const Center(
-              child: Padding(padding: .symmetric(vertical: 24), child: CircularProgressIndicator.adaptive()),
-            );
+            return const TestModeShimmer();
           }
           final testModel = TestModel(
             id: detail.id,
             categoryId: detail.categoryId,
-            createdBy: detail.createdBy,
             name: detail.name ?? '',
             description: detail.description ?? '',
             price: detail.price,
@@ -55,6 +53,7 @@ class _TestModeScreenState extends TestModeScreenState {
             semester: detail.semester,
             code: detail.code,
             isArchived: detail.isArchived,
+            createdBy: detail.academicYear != null ? '${detail.academicYear}' : null,
           );
           return LayoutBuilder(
             builder: (context, constraints) => constraints.maxWidth >= 800

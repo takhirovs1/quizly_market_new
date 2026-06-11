@@ -24,7 +24,6 @@ class DemoTestDetail {
   const DemoTestDetail({
     this.id,
     this.categoryId,
-    this.createdBy,
     this.name,
     this.description,
     this.price,
@@ -34,7 +33,6 @@ class DemoTestDetail {
     this.isLiked,
     this.likeCount,
     this.questionCount,
-    this.isDemo,
     this.questions,
     this.createdAt,
     this.code,
@@ -44,7 +42,6 @@ class DemoTestDetail {
   factory DemoTestDetail.fromJson(Map<String, Object?> json) => DemoTestDetail(
     id: json['id'] as String?,
     categoryId: json['category_id'] as String?,
-    createdBy: json['created_by'] as String?,
     name: json['name'] as String?,
     description: json['description'] as String?,
     price: (json['price'] as num?)?.toInt(),
@@ -54,7 +51,6 @@ class DemoTestDetail {
     isLiked: json['liked'] as bool?,
     likeCount: (json['like_count'] as num?)?.toInt(),
     questionCount: (json['question_count'] as num?)?.toInt(),
-    isDemo: json['is_demo'] as bool?,
     questions: (json['questions'] as List<Object?>?)
         ?.map((e) => DemoQuestion.fromJson(e as Map<String, Object?>))
         .toList(),
@@ -65,7 +61,6 @@ class DemoTestDetail {
 
   final String? id;
   final String? categoryId;
-  final String? createdBy;
   final String? name;
   final String? description;
   final int? price;
@@ -75,7 +70,6 @@ class DemoTestDetail {
   final bool? isLiked;
   final int? likeCount;
   final int? questionCount;
-  final bool? isDemo;
   final List<DemoQuestion>? questions;
   final DateTime? createdAt;
   final String? code;
@@ -84,7 +78,6 @@ class DemoTestDetail {
   Map<String, Object?> toJson() => {
     'id': id,
     'category_id': categoryId,
-    'created_by': createdBy,
     'name': name,
     'description': description,
     'price': price,
@@ -94,7 +87,6 @@ class DemoTestDetail {
     'liked': isLiked,
     'like_count': likeCount,
     'question_count': questionCount,
-    'is_demo': isDemo,
     'questions': questions?.map((e) => e.toJson()).toList(),
     'created_at': createdAt?.toIso8601String(),
     'code': code,
@@ -104,7 +96,6 @@ class DemoTestDetail {
   DemoTestDetail copyWith({
     String? id,
     String? categoryId,
-    String? createdBy,
     String? name,
     String? description,
     int? price,
@@ -114,7 +105,6 @@ class DemoTestDetail {
     bool? isLiked,
     int? likeCount,
     int? questionCount,
-    bool? isDemo,
     List<DemoQuestion>? questions,
     DateTime? createdAt,
     String? code,
@@ -122,7 +112,6 @@ class DemoTestDetail {
   }) => DemoTestDetail(
     id: id ?? this.id,
     categoryId: categoryId ?? this.categoryId,
-    createdBy: createdBy ?? this.createdBy,
     name: name ?? this.name,
     description: description ?? this.description,
     price: price ?? this.price,
@@ -132,7 +121,6 @@ class DemoTestDetail {
     isLiked: isLiked ?? this.isLiked,
     likeCount: likeCount ?? this.likeCount,
     questionCount: questionCount ?? this.questionCount,
-    isDemo: isDemo ?? this.isDemo,
     questions: questions ?? this.questions,
     createdAt: createdAt ?? this.createdAt,
     code: code ?? this.code,

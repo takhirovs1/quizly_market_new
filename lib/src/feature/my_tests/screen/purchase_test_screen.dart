@@ -78,7 +78,6 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
               final testModel = TestModel(
                 id: detail.id,
                 categoryId: detail.categoryId,
-                createdBy: detail.createdBy,
                 name: detail.name ?? '',
                 description: detail.description ?? '',
                 price: detail.price,

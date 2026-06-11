@@ -121,7 +121,12 @@ enum Routes with OctopusRoute {
             ..getTestDetail(node.arguments['id'] ?? ''),
       child: TestModeScreen(testId: node.arguments['id'] ?? ''),
     ),
-    .testCustomMode => const TestCustomModeScreen(),
+    .testCustomMode => BlocProvider(
+      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+        ..getTestDetail(node.arguments['id'] ?? '')
+        ..getAttempts(node.arguments['id'] ?? ''),
+      child: const TestCustomModeScreen(),
+    ),
     .testUniversityMode => const TestUniversityModeScreen(),
     .testGroupMode => const TestGroupModeScreen(),
     .testFlashcardMode => const TestFlashcardMode(),
