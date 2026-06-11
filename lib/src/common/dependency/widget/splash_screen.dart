@@ -6,7 +6,10 @@ import 'package:ui/ui.dart';
 import '../../../feature/main/bloc/main_cubit.dart';
 import '../../../feature/main/model/login_with_telegram.dart';
 import '../../extension/context_extension.dart';
+import '../../router/pages.dart';
 import '../../util/helpers.dart';
+import '../../../feature/my_tests/models/demo_test_model.dart';
+import '../../../feature/my_tests/models/test_by_code_model.dart';
 
 /// {@template splash_screen}
 /// Splash screen widget.
@@ -173,7 +176,43 @@ class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
       }
       await context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
       if (context.mounted) {
-        context.octopus.navigate('home');
+        final startParam = context.telegramWebApp.startParam;
+        if (startParam != null && startParam.isNotEmpty) {
+          try {
+            final repo = context.x.dependencies.repository.myTestRepository;
+            final response = await repo.getTestByCode(TestByCodeRequest(code: startParam));
+            final isPurchased = response.data?.isPurchased ?? false;
+            final testId = response.data?.id ?? startParam;
+            if (context.mounted) {
+              if (isPurchased) {
+                context.octopus.setState(
+                  (s) => s
+                    ..clear()
+                    ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                    ..add(OctopusNode(name: Routes.testMode.name, arguments: {'id': testId}, children: const [])),
+                );
+              } else {
+                context.octopus.setState(
+                  (s) => s
+                    ..clear()
+                    ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                    ..add(OctopusNode(name: Routes.purchaseTest.name, arguments: {'id': testId}, children: const [])),
+                );
+              }
+            }
+          } on Object catch (e) {
+            if (context.mounted) {
+              context.octopus.setState(
+                (s) => s
+                  ..clear()
+                  ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                  ..add(OctopusNode(name: Routes.purchaseTest.name, arguments: {'id': startParam}, children: const [])),
+              );
+            }
+          }
+        } else {
+          context.octopus.navigate('home');
+        }
       }
     },
     child: const SplashScreen(),

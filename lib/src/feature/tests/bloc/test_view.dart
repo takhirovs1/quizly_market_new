@@ -1,0 +1,87 @@
+import 'package:equatable/equatable.dart';
+
+import '../../../common/util/error_util.dart';
+import '../../../common/util/sequential_cubit.dart';
+import '../../../common/util/state_status.dart';
+import '../../my_tests/models/demo_test_model.dart';
+import '../data/test_view_repository.dart';
+import '../model/test_attempt_model.dart';
+
+part 'test_view_state.dart';
+
+class TestView extends SequentialCubit<TestViewState> {
+  TestView({required this.testViewRepository}) : super(const TestViewState());
+
+  final ITestViewRepository testViewRepository;
+
+  Future<void> getAttempts(String testId, {bool loadMore = false}) => handle<void>(
+    (emit) async {
+      if (loadMore) {
+        if (state.attempts.length >= state.total) return;
+        final nextOffset = state.offset + state.limit;
+        final result = await testViewRepository.getAttempts(
+          testId,
+          TestAttemptRequest(limit: state.limit, offset: nextOffset),
+        );
+        emit(
+          state.copyWith(
+            attempts: [...state.attempts, ...result.items],
+            offset: result.offset,
+            limit: result.limit,
+            total: result.total,
+          ),
+        );
+      } else {
+        emit(state.copyWith(status: .loading));
+        final result = await testViewRepository.getAttempts(testId, const TestAttemptRequest(limit: 20, offset: 0));
+        emit(
+          state.copyWith(
+            status: .success,
+            attempts: result.items,
+            offset: result.offset,
+            limit: result.limit,
+            total: result.total,
+          ),
+        );
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+  Future<void> getTestDetail(String testId) => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: .loading));
+      final response = await testViewRepository.getTestDetail(testId);
+      emit(state.copyWith(status: .success, detail: response.data));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> toggleLike(String testId) => handle<void>(
+    (emit) async {
+      final detail = state.detail;
+      if (detail == null || detail.id != testId) return;
+
+      final currentIsLiked = detail.isLiked ?? false;
+      final updatedDetail = detail.copyWith(isLiked: !currentIsLiked);
+      emit(state.copyWith(detail: updatedDetail));
+
+      if (currentIsLiked) {
+        await testViewRepository.unlikeTest(testId);
+      } else {
+        await testViewRepository.likeTest(testId);
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      final detail = state.detail;
+      if (detail != null && detail.id == testId) {
+        final currentIsLiked = detail.isLiked ?? false;
+        final revertedDetail = detail.copyWith(isLiked: !currentIsLiked);
+        emit(state.copyWith(detail: revertedDetail));
+      }
+    },
+  );
+}

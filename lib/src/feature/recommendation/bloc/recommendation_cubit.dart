@@ -190,19 +190,9 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
 
       final updatedRecs = state.recommendations.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: !currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
@@ -216,20 +206,7 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
         if (exists) {
           updatedLiked = state.liked.map((t) {
             if (t.id == testId) {
-              return TestModel(
-                id: t.id,
-                categoryId: t.categoryId,
-                createdBy: t.createdBy,
-                name: t.name,
-                description: t.description,
-                price: t.price,
-                isPurchased: t.isPurchased,
-                isLiked: true,
-                questionCount: t.questionCount,
-                likeCount: t.likeCount != null ? t.likeCount! + 1 : 1,
-                categoryName: t.categoryName,
-                createdAt: t.createdAt,
-              );
+              return t.copyWith(isLiked: true, likeCount: t.likeCount != null ? t.likeCount! + 1 : 1);
             }
             return t;
           }).toList();
@@ -238,19 +215,9 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
             (t) => t.id == testId,
             orElse: () => state.allTests.firstWhere((t) => t.id == testId, orElse: () => test),
           );
-          final newLiked = TestModel(
-            id: original.id,
-            categoryId: original.categoryId,
-            createdBy: original.createdBy,
-            name: original.name,
-            description: original.description,
-            price: original.price,
-            isPurchased: original.isPurchased,
+          final newLiked = original.copyWith(
             isLiked: true,
-            questionCount: original.questionCount,
             likeCount: original.likeCount != null ? original.likeCount! + 1 : 1,
-            categoryName: original.categoryName,
-            createdAt: original.createdAt,
           );
           updatedLiked = [newLiked, ...state.liked];
         }
@@ -258,19 +225,9 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
 
       final updatedAll = state.allTests.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: !currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
@@ -291,19 +248,9 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
 
       final updatedRecs = state.recommendations.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
@@ -315,38 +262,12 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
         if (exists) {
           updatedLiked = state.liked.map((t) {
             if (t.id == testId) {
-              return TestModel(
-                id: t.id,
-                categoryId: t.categoryId,
-                createdBy: t.createdBy,
-                name: t.name,
-                description: t.description,
-                price: t.price,
-                isPurchased: t.isPurchased,
-                isLiked: true,
-                questionCount: t.questionCount,
-                likeCount: test.likeCount,
-                categoryName: t.categoryName,
-                createdAt: t.createdAt,
-              );
+              return t.copyWith(isLiked: true, likeCount: test.likeCount);
             }
             return t;
           }).toList();
         } else {
-          final reverted = TestModel(
-            id: test.id,
-            categoryId: test.categoryId,
-            createdBy: test.createdBy,
-            name: test.name,
-            description: test.description,
-            price: test.price,
-            isPurchased: test.isPurchased,
-            isLiked: true,
-            questionCount: test.questionCount,
-            likeCount: test.likeCount,
-            categoryName: test.categoryName,
-            createdAt: test.createdAt,
-          );
+          final reverted = test.copyWith(isLiked: true, likeCount: test.likeCount);
           updatedLiked = [reverted, ...state.liked];
         }
       } else {
@@ -355,19 +276,9 @@ class RecommendationCubit extends SequentialCubit<RecommendationState> {
 
       final updatedAll = state.allTests.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;

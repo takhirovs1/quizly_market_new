@@ -1,23 +1,20 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
-import '../../my_tests/models/test_model.dart';
+import '../bloc/test_view.dart';
 import '../model/test_mode_model.dart';
 import '../screens/test_mode_screen.dart';
 
 abstract class TestModeScreenState extends State<TestModeScreen> {
-  late final TestModel test;
+  late final TestView cubit;
 
   @override
   void initState() {
+    cubit = context.read<TestView>();
     super.initState();
-    test = TestModel(
-      id: widget.testId,
-      description: 'O’zbekiston tarixi bo‘yicha test savollari',
-      price: 20000,
-    );
   }
 
   final List<TestModeModel> testModes = [
@@ -51,14 +48,24 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
     ),
   ];
 
-  void onPressLike() {}
+  void onPressLike() {
+    final detail = cubit.state.detail;
+    if (detail == null) return;
+    final testId = detail.id;
+    if (testId == null) return;
+    cubit.toggleLike(testId);
+  }
+
   void onPressShare() {
+    final detail = cubit.state.detail;
+    if (detail == null) return;
     context.shareTest(
-      'Example test',
+      detail.name ?? '',
       'QuizlyMarket',
-      'Example test description, Example test description, Example test description',
-      '100000',
-      '100',
+      detail.description ?? '',
+      detail.price?.toString() ?? '0',
+      detail.questionCount?.toString() ?? '0',
+      code: detail.code,
     );
   }
 

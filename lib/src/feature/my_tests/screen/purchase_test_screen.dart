@@ -86,6 +86,9 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                 isLiked: detail.isLiked,
                 questionCount: detail.questionCount,
                 createdAt: detail.createdAt,
+                academicYear: detail.academicYear,
+                semester: detail.semester,
+                code: detail.code,
               );
 
               final questions = detail.questions ?? [];

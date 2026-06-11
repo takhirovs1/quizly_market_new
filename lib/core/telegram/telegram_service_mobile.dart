@@ -15,6 +15,17 @@ class _MobileTelegramService extends TelegramService {
   String get initDataRaw => '';
 
   @override
+  String? get startParam {
+    try {
+      final param = Uri.base.queryParameters['tgWebAppStartParam'];
+      if (param != null && param.isNotEmpty) {
+        return param;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  @override
   TelegramSafeAreaInset get safeAreaInset => .zero;
 
   @override

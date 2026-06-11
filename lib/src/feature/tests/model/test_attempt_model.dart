@@ -1,27 +1,16 @@
 import '../../../common/extension/string_extension.dart';
 
 class TestAttemptRequest {
-  const TestAttemptRequest({
-    this.limit = 20,
-    this.offset = 0,
-  });
+  const TestAttemptRequest({this.limit = 20, this.offset = 0});
 
   final int limit;
   final int offset;
 
-  Map<String, Object?> toJson() => {
-        'limit': limit,
-        'offset': offset,
-      };
+  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset};
 }
 
 class TestAttemptResponse {
-  const TestAttemptResponse({
-    required this.items,
-    required this.limit,
-    required this.offset,
-    required this.total,
-  });
+  const TestAttemptResponse({required this.items, required this.limit, required this.offset, required this.total});
 
   factory TestAttemptResponse.fromJson(Map<String, Object?> json) {
     final list = json['data'] as List<Object?>? ?? [];
@@ -52,15 +41,15 @@ class TestAttempt {
   });
 
   factory TestAttempt.fromJson(Map<String, Object?> json) => TestAttempt(
-        id: json['id']?.toString() ?? '',
-        testId: json['test_id']?.toString() ?? '',
-        score: json['score'] as int? ?? 0,
-        correctAnswers: json['correct_answers'] as int? ?? 0,
-        totalQuestions: json['total_questions'] as int? ?? 0,
-        timeSpent: json['time_spent'] as int? ?? 0,
-        createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
-        status: json['status'] as String? ?? 'completed',
-      );
+    id: json['id']?.toString() ?? '',
+    testId: json['test_id']?.toString() ?? '',
+    score: json['score'] as int? ?? 0,
+    correctAnswers: json['correct_answers'] as int? ?? 0,
+    totalQuestions: json['total_questions'] as int? ?? 0,
+    timeSpent: json['time_spent'] as int? ?? 0,
+    createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
+    status: json['status'] as String? ?? 'completed',
+  );
 
   final String id;
   final String testId;

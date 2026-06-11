@@ -67,6 +67,7 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
       test.description ?? '',
       test.price?.toString() ?? '0',
       test.questionCount?.toString() ?? '0',
+      code: test.code,
     );
   }
 

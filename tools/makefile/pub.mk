@@ -81,7 +81,7 @@ get: ## Get dependencies
 # ──────────────────────────────────
 .PHONY: format
 format: ## Format Dart code to line length 120
-	@$(DART) format -l 120 lib/ test/ packages/ data/
+	@$(DART) format -l 120 lib/ test/ packages/
 
 # ──────────────────────────────────
 # ⚡ CODE GENERATION
@@ -116,7 +116,6 @@ codegen: ## Run all code generation tasks
 	@make fluttergen
 	@make l10n
 	@make format
-	@clear
 	@echo "✅ Code generated successfully"
 
 .PHONY: gen

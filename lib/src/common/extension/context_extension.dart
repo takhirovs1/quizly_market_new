@@ -208,15 +208,23 @@ extension TelegramWebAppX on BuildContext {
   }
 
   void _handleTelegramBackButtonPressed() {
-    telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    telegramWebApp.hapticImpact(.light);
     if (!mounted) return;
     octopus.pop();
   }
 
-  void shareTest(String title, String companyName, String description, String price, String questionAmount) {
-    const fallbackProductId = '1234567';
-    const link = '${Constant.botUrl}?startapp=$fallbackProductId';
-    final message = x.l10n.shareTestCopy(companyName, description, title, questionAmount, link);
+  void shareTest(
+    String title,
+    String companyName,
+    String description,
+    String price,
+    String questionAmount, {
+    String? code,
+  }) {
+    final link = code != null && code.isNotEmpty
+        ? 'https://t.me/@prjkttest_bot?startapp=$code'
+        : '${Constant.botUrl}?startapp=1234567';
+    final message = x.l10n.shareTestCopy(title, description, questionAmount, link);
     final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
     telegramWebApp.openTelegramLink(shareLink);
   }

@@ -16,6 +16,9 @@ abstract class TelegramService {
   /// Raw init data string for server-side validation.
   String get initDataRaw;
 
+  /// Start parameter passed in the Telegram link (tgWebAppStartParam).
+  String? get startParam;
+
   // ── Safe area ─────────────────────────────────────────────────────
 
   /// System safe-area insets (notch, nav-bar, etc.).

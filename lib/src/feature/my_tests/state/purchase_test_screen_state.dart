@@ -157,12 +157,15 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
 
   void onPressShare() {
     context.telegramWebApp.hapticImpact(.light);
+    final detail = myTestCubit.state.demoTestDetail;
+    if (detail == null) return;
     context.shareTest(
-      'Example test',
-      'QuizlyMarket',
-      'Example test description, Example test description, Example test description',
-      '100000',
-      '100',
+      detail.name ?? '',
+      detail.categoryId ?? 'QuizlyMarket',
+      detail.description ?? '',
+      detail.price?.toString() ?? '0',
+      detail.questionCount?.toString() ?? '0',
+      code: detail.code,
     );
   }
 
@@ -200,8 +203,9 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                 successButtonText: isError ? context.x.l10n.retry : context.x.l10n.enter,
                 onCancelButtonPressed: () => Navigator.pop(context),
                 isError: isError,
-                onSuccessButtonPressed: () =>
-                    isError ? onBuyPressed(withPop: true) : context.octopus.push(Routes.testMode, arguments: {'id': widget.testId}),
+                onSuccessButtonPressed: () => isError
+                    ? onBuyPressed(withPop: true)
+                    : context.octopus.push(Routes.testMode, arguments: {'id': widget.testId}),
               ),
             ),
           ),

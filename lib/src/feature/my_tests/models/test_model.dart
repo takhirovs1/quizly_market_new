@@ -25,6 +25,9 @@ class TestModel {
     this.likeCount,
     this.categoryName,
     this.createdAt,
+    this.code,
+    this.academicYear,
+    this.semester,
   });
 
   factory TestModel.fromJson(Map<String, Object?> json) => TestModel(
@@ -40,6 +43,9 @@ class TestModel {
     likeCount: json['like_count'].toIntOrNull,
     categoryName: json['category_name'] as String?,
     createdAt: json['created_at'].toDateTimeOrNull,
+    code: json['code'] as String?,
+    academicYear: json['academic_year'] as String?,
+    semester: json['semester'].toIntOrNull,
   );
 
   final String? id;
@@ -54,4 +60,41 @@ class TestModel {
   final int? likeCount;
   final String? categoryName;
   final DateTime? createdAt;
+  final String? code;
+  final String? academicYear;
+  final int? semester;
+
+  TestModel copyWith({
+    String? id,
+    String? categoryId,
+    Object? createdBy,
+    String? name,
+    String? description,
+    int? price,
+    bool? isPurchased,
+    bool? isLiked,
+    int? questionCount,
+    int? likeCount,
+    String? categoryName,
+    DateTime? createdAt,
+    String? code,
+    String? academicYear,
+    int? semester,
+  }) => TestModel(
+    id: id ?? this.id,
+    categoryId: categoryId ?? this.categoryId,
+    createdBy: createdBy ?? this.createdBy,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    price: price ?? this.price,
+    isPurchased: isPurchased ?? this.isPurchased,
+    isLiked: isLiked ?? this.isLiked,
+    questionCount: questionCount ?? this.questionCount,
+    likeCount: likeCount ?? this.likeCount,
+    categoryName: categoryName ?? this.categoryName,
+    createdAt: createdAt ?? this.createdAt,
+    code: code ?? this.code,
+    academicYear: academicYear ?? this.academicYear,
+    semester: semester ?? this.semester,
+  );
 }

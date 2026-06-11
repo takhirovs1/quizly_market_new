@@ -10,7 +10,7 @@ TelegramService createTelegramService() => _WebTelegramService();
 /// This file is only compiled on web thanks to the conditional
 /// import in [telegram_service.dart].
 class _WebTelegramService extends TelegramService {
-  final TelegramWebApp _tg = .instance;
+  final TelegramWebApp _tg = TelegramWebApp.instance;
 
   // ── Identity ──────────────────────────────────────────────────────
 
@@ -19,6 +19,17 @@ class _WebTelegramService extends TelegramService {
 
   @override
   String get initDataRaw => _tg.initData.raw;
+
+  @override
+  String? get startParam {
+    try {
+      final param = Uri.base.queryParameters['tgWebAppStartParam'];
+      if (param != null && param.isNotEmpty) {
+        return param;
+      }
+    } catch (_) {}
+    return null;
+  }
 
   // ── Safe area ─────────────────────────────────────────────────────
 

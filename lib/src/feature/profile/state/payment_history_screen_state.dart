@@ -7,11 +7,13 @@ import '../screen/payment_history_screen.dart';
 
 abstract class PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   late final ScrollController scrollController;
+  late final ProfileCubit profileCubit;
 
   @override
   void initState() {
     super.initState();
     context.setupTelegramBackButton();
+    profileCubit = context.read<ProfileCubit>();
     scrollController = ScrollController()..addListener(_onScroll);
   }
 
@@ -20,7 +22,7 @@ abstract class PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     final maxScroll = scrollController.position.maxScrollExtent;
     final currentScroll = scrollController.position.pixels;
     if (maxScroll - currentScroll <= 200) {
-      context.read<ProfileCubit>().getTransactions(loadMore: true);
+      profileCubit.getTransactions(loadMore: true);
     }
   }
 

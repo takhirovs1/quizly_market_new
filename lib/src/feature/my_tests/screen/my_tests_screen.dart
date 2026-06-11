@@ -8,6 +8,7 @@ import '../../../common/util/error_util.dart';
 import '../../../common/util/state_status.dart';
 import '../../recommendation/screen/more_recommendation_screen.dart';
 import '../bloc/my_test_cubit.dart';
+import '../models/test_model.dart';
 import '../state/my_tests_screen_state.dart';
 import '../widgets/animated_referral_banner.dart';
 import '../widgets/responsive_recommendations_list.dart';
@@ -86,7 +87,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                 tests: state.myTests.take(2 * crossAxisCount).toList(),
                                 crossAxisCount: crossAxisCount,
                                 onBuyButtonPressed: onBuyTestPressed,
-                                onShareButtonPressed: (test) => onShareTestPressed(),
+                                onShareButtonPressed: onShareTestPressed,
                                 onLikeButtonPressed: onLikeTestPressed,
                               ),
 
@@ -99,7 +100,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                 tests: state.myTests.skip(2 * crossAxisCount).take(3 * crossAxisCount).toList(),
                                 crossAxisCount: crossAxisCount,
                                 onBuyButtonPressed: onBuyTestPressed,
-                                onShareButtonPressed: (test) => onShareTestPressed(),
+                                onShareButtonPressed: onShareTestPressed,
                                 onLikeButtonPressed: onLikeTestPressed,
                               ),
                             ],
@@ -127,7 +128,16 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                 buyButtonText: context.x.l10n.tryItNow,
                                 onBuyButtonPressed: () {},
                                 isFree: true,
-                                onShareButtonPressed: onShareTestPressed,
+                                onShareButtonPressed: () => onShareTestPressed(
+                                  TestModel(
+                                    name: 'Example test',
+                                    categoryName: 'QuizlyMarket',
+                                    description:
+                                        'Example test description, Example test description, Example test description',
+                                    price: 0,
+                                    questionCount: 100,
+                                  ),
+                                ),
                                 textBought: context.x.l10n.textBought,
                                 isLiked: false,
                                 onLikeButtonPressed: () {},
@@ -187,7 +197,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                 tests: state.topTests,
                                 crossAxisCount: crossAxisCount,
                                 onBuyButtonPressed: onBuyTestPressed,
-                                onShareButtonPressed: (test) => onShareTestPressed(),
+                                onShareButtonPressed: onShareTestPressed,
                                 onLikeButtonPressed: onLikeTestPressed,
                               ),
                               if (state.isTopTestsLoadingMore)

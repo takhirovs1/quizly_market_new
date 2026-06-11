@@ -37,6 +37,7 @@ class DemoTestDetail {
     this.isDemo,
     this.questions,
     this.createdAt,
+    this.code,
   });
 
   factory DemoTestDetail.fromJson(Map<String, Object?> json) => DemoTestDetail(
@@ -57,6 +58,7 @@ class DemoTestDetail {
         ?.map((e) => DemoQuestion.fromJson(e as Map<String, Object?>))
         .toList(),
     createdAt: (json['created_at'] as String?)?.toDateTimeOrNull(),
+    code: json['code'] as String?,
   );
 
   final String? id;
@@ -74,6 +76,7 @@ class DemoTestDetail {
   final bool? isDemo;
   final List<DemoQuestion>? questions;
   final DateTime? createdAt;
+  final String? code;
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -91,6 +94,7 @@ class DemoTestDetail {
     'is_demo': isDemo,
     'questions': questions?.map((e) => e.toJson()).toList(),
     'created_at': createdAt?.toIso8601String(),
+    'code': code,
   };
 
   DemoTestDetail copyWith({
@@ -109,6 +113,7 @@ class DemoTestDetail {
     bool? isDemo,
     List<DemoQuestion>? questions,
     DateTime? createdAt,
+    String? code,
   }) => DemoTestDetail(
     id: id ?? this.id,
     categoryId: categoryId ?? this.categoryId,
@@ -125,6 +130,7 @@ class DemoTestDetail {
     isDemo: isDemo ?? this.isDemo,
     questions: questions ?? this.questions,
     createdAt: createdAt ?? this.createdAt,
+    code: code ?? this.code,
   );
 }
 

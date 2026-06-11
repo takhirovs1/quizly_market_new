@@ -2,27 +2,16 @@ import '../../../common/extension/number_extension.dart';
 import '../../../common/extension/string_extension.dart';
 
 class TransactionRequest {
-  const TransactionRequest({
-    this.limit = 20,
-    this.offset = 0,
-  });
+  const TransactionRequest({this.limit = 20, this.offset = 0});
 
   final int limit;
   final int offset;
 
-  Map<String, Object?> toJson() => {
-        'limit': limit,
-        'offset': offset,
-      };
+  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset};
 }
 
 class TransactionResponse {
-  const TransactionResponse({
-    required this.items,
-    required this.limit,
-    required this.offset,
-    required this.total,
-  });
+  const TransactionResponse({required this.items, required this.limit, required this.offset, required this.total});
 
   factory TransactionResponse.fromJson(Map<String, Object?> json) {
     final list = json['data'] as List<Object?>? ?? [];
@@ -50,12 +39,12 @@ class Transaction {
   });
 
   factory Transaction.fromJson(Map<String, Object?> json) => Transaction(
-        id: json['id']?.toString() ?? '',
-        title: json['title'] as String? ?? json['name'] as String? ?? '',
-        amount: json['amount'].toIntOrNull ?? 0,
-        type: json['type'] as String? ?? '',
-        createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
-      );
+    id: json['id']?.toString() ?? '',
+    title: json['title'] as String? ?? json['name'] as String? ?? '',
+    amount: json['amount'].toIntOrNull ?? 0,
+    type: json['type'] as String? ?? '',
+    createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
+  );
 
   final String id;
   final String title;

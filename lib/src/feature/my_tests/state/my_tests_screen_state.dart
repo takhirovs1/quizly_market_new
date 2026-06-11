@@ -74,14 +74,15 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     await myTestCubit.initialize(search: searchController.text);
   }
 
-  void onShareTestPressed() {
+  void onShareTestPressed(TestModel test) {
     context.telegramWebApp.hapticImpact(.light);
     context.shareTest(
-      'Example test',
-      'QuizlyMarket',
-      'Example test description, Example test description, Example test description',
-      '100000',
-      '100',
+      test.name ?? '',
+      test.categoryName ?? '',
+      test.description ?? '',
+      test.price?.toString() ?? '0',
+      test.questionCount?.toString() ?? '0',
+      code: test.code,
     );
   }
 

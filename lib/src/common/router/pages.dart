@@ -18,8 +18,8 @@ import '../../feature/profile/screen/referral_screen.dart';
 import '../../feature/recommendation/bloc/recommendation_cubit.dart';
 import '../../feature/recommendation/data/recommendation_repository.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
-import '../../feature/tests/bloc/test_attempt_cubit.dart';
-import '../../feature/tests/data/test_attempt_repository.dart';
+import '../../feature/tests/bloc/test_view.dart';
+import '../../feature/tests/data/test_view_repository.dart';
 import '../../feature/tests/screens/test_custom_mode_screen.dart';
 import '../../feature/tests/screens/test_flashcard_mode.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
@@ -109,17 +109,16 @@ enum Routes with OctopusRoute {
     ),
     .referral => const ReferralScreen(),
     .paymentHistory => BlocProvider(
-      create: (context) => ProfileCubit(
-        profileRepository: context.x.dependencies.repository.profileRepository,
-      )..getTransactions(),
+      create: (context) =>
+          ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository)..getTransactions(),
       child: const PaymentHistoryScreen(),
     ),
     .appInfo => const AppInfoScreen(),
     .appDocuments => const AppDocumentsScreen(),
     .testMode => BlocProvider(
-      create: (context) => TestAttemptCubit(
-        testAttemptRepository: TestAttemptRepositoryImpl(dio: context.x.dependencies.dios.dio),
-      )..getAttempts(node.arguments['id'] ?? ''),
+      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+        ..getAttempts(node.arguments['id'] ?? '')
+        ..getTestDetail(node.arguments['id'] ?? ''),
       child: TestModeScreen(testId: node.arguments['id'] ?? ''),
     ),
     .testCustomMode => const TestCustomModeScreen(),

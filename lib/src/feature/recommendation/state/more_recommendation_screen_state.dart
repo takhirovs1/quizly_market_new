@@ -182,6 +182,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
       test.description ?? '',
       test.price?.toString() ?? '0',
       test.questionCount?.toString() ?? '0',
+      code: test.code,
     );
   }
 

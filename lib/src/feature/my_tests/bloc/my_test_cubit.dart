@@ -191,19 +191,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
       final updatedMyTests = state.myTests.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: !currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
@@ -211,19 +201,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
       final updatedTopTests = state.topTests.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: !currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
@@ -249,19 +229,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
       final updatedMyTests = state.myTests.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
@@ -269,19 +239,9 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
       final updatedTopTests = state.topTests.map((t) {
         if (t.id == testId) {
-          return TestModel(
-            id: t.id,
-            categoryId: t.categoryId,
-            createdBy: t.createdBy,
-            name: t.name,
-            description: t.description,
-            price: t.price,
-            isPurchased: t.isPurchased,
+          return t.copyWith(
             isLiked: currentIsLiked,
-            questionCount: t.questionCount,
             likeCount: t.likeCount != null ? (!currentIsLiked ? t.likeCount! - 1 : t.likeCount! + 1) : null,
-            categoryName: t.categoryName,
-            createdAt: t.createdAt,
           );
         }
         return t;
