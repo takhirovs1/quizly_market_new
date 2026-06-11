@@ -11,10 +11,23 @@ import '../screens/test_mode_screen.dart';
 abstract class TestModeScreenState extends State<TestModeScreen> {
   late final TestView cubit;
 
+  void onBackPressed() {
+    context.telegramWebApp.hapticImpact(.light);
+    if (!mounted) return;
+    context.octopus.navigate(Routes.home.name);
+  }
+
   @override
   void initState() {
     cubit = context.read<TestView>();
     super.initState();
+    context.setupTelegramBackButton(onBackPressed);
+  }
+
+  @override
+  void dispose() {
+    context.teardownTelegramBackButton(onBackPressed);
+    super.dispose();
   }
 
   List<TestModeModel> get testModes => [
@@ -83,11 +96,25 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
         final message = wasArchived
             ? context.x.l10n.testUnarchivedSuccessfully
             : context.x.l10n.testArchivedSuccessfully;
-        context.x.showNotification(message: message, isError: false);
+        context.x.showNotification(
+          message: message,
+          isError: false,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
       }
     } on Object catch (_) {
       if (mounted) {
-        context.x.showNotification(message: context.x.l10n.errorOccurred, isError: true);
+        context.x.showNotification(
+          message: context.x.l10n.errorOccurred,
+          isError: true,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
       }
     }
   }

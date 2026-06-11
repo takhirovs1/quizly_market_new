@@ -303,7 +303,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
         colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
       ),
     ),
-    if (context.telegramWebApp.isSupported)
+    if (context.telegramWebApp.isSupported && context.x.isMobile)
       ProfileListRow.item(
         (c) => context.x.l10n.installOnHomeScreen,
         onSetHomePressed,

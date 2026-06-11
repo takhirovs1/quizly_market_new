@@ -19,42 +19,50 @@ class TestModeScreen extends StatefulWidget {
 
 class _TestModeScreenState extends TestModeScreenState {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: QuizAppBar(
-      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
-      title: context.x.l10n.mode,
-    ),
-    body: BlocBuilder<TestView, TestViewState>(
-      builder: (context, state) {
-        final detail = state.detail;
-        if (detail == null) {
-          return const Center(
-            child: Padding(padding: .symmetric(vertical: 24), child: CircularProgressIndicator.adaptive()),
+  Widget build(BuildContext context) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, result) {
+      if (!didPop) {
+        onBackPressed();
+      }
+    },
+    child: Scaffold(
+      backgroundColor: context.x.colors.scaffoldBackground,
+      appBar: QuizAppBar(
+        telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+        title: context.x.l10n.mode,
+      ),
+      body: BlocBuilder<TestView, TestViewState>(
+        builder: (context, state) {
+          final detail = state.detail;
+          if (detail == null) {
+            return const Center(
+              child: Padding(padding: .symmetric(vertical: 24), child: CircularProgressIndicator.adaptive()),
+            );
+          }
+          final testModel = TestModel(
+            id: detail.id,
+            categoryId: detail.categoryId,
+            createdBy: detail.createdBy,
+            name: detail.name ?? '',
+            description: detail.description ?? '',
+            price: detail.price,
+            isPurchased: detail.isPurchased,
+            isLiked: detail.isLiked,
+            questionCount: detail.questionCount,
+            createdAt: detail.createdAt,
+            academicYear: detail.academicYear,
+            semester: detail.semester,
+            code: detail.code,
+            isArchived: detail.isArchived,
           );
-        }
-        final testModel = TestModel(
-          id: detail.id,
-          categoryId: detail.categoryId,
-          createdBy: detail.createdBy,
-          name: detail.name ?? '',
-          description: detail.description ?? '',
-          price: detail.price,
-          isPurchased: detail.isPurchased,
-          isLiked: detail.isLiked,
-          questionCount: detail.questionCount,
-          createdAt: detail.createdAt,
-          academicYear: detail.academicYear,
-          semester: detail.semester,
-          code: detail.code,
-          isArchived: detail.isArchived,
-        );
-        return LayoutBuilder(
-          builder: (context, constraints) => constraints.maxWidth >= 800
-              ? _buildWebLayout(context, testModel, constraints)
-              : _buildMobileLayout(context, testModel, constraints),
-        );
-      },
+          return LayoutBuilder(
+            builder: (context, constraints) => constraints.maxWidth >= 800
+                ? _buildWebLayout(context, testModel, constraints)
+                : _buildMobileLayout(context, testModel, constraints),
+          );
+        },
+      ),
     ),
   );
 

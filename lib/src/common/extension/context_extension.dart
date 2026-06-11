@@ -188,21 +188,21 @@ extension TelegramWebAppX on BuildContext {
   void disableClosingConfirmation() => telegramWebApp.disableClosingConfirmation();
   void enableClosingConfirmation() => telegramWebApp.enableClosingConfirmation();
 
-  void setupTelegramBackButton() {
+  void setupTelegramBackButton([void Function()? onPressed]) {
     if (!kIsWeb) return;
     try {
       if (!telegramWebApp.isSupported) return;
-      telegramWebApp.showBackButton(_handleTelegramBackButtonPressed);
+      telegramWebApp.showBackButton(onPressed ?? _handleTelegramBackButtonPressed);
     } on Object catch (_) {
       log('Failed to show Telegram back button');
     }
   }
 
-  void teardownTelegramBackButton() {
+  void teardownTelegramBackButton([void Function()? onPressed]) {
     if (!kIsWeb) return;
     try {
       if (!telegramWebApp.isSupported) return;
-      telegramWebApp.hideBackButton(_handleTelegramBackButtonPressed);
+      telegramWebApp.hideBackButton(onPressed ?? _handleTelegramBackButtonPressed);
     } on Object catch (_) {
       log('Failed to hide Telegram back button');
     }
