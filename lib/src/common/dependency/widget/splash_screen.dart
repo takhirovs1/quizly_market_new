@@ -9,6 +9,7 @@ import '../../../feature/my_tests/models/test_by_code_model.dart';
 import '../../extension/context_extension.dart';
 import '../../router/pages.dart';
 import '../../util/helpers.dart';
+import '../../util/locale_codec.dart';
 
 /// {@template splash_screen}
 /// Splash screen widget.
@@ -171,7 +172,7 @@ class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
     listener: (context, state) async {
       final language = state.loginWithTelegramResponse?.language;
       if (language != null && language.isNotEmpty) {
-        context.x.setLocalization(Locale(language));
+        context.x.setLocalization(AppLocaleCodec.decode(language));
       }
       await context.x.dependencies.localSource.setOnboardingCompleted(completed: true);
       if (context.mounted) {

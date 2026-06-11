@@ -4,3 +4,9 @@ output-localization-file: app_localization.dart
 output-class: AppLocalization
 output-dir: lib/src/generated/app
 nullable-getter: false
+# Supported locales are auto-derived from every intl_*.arb in arb-dir
+# (en, ru, uz, uz_Cyrl, kk, kaa, ky, tg). The list below only controls ordering
+# so `uz` is first and therefore the default fallback in the generated
+# supportedLocales.
+preferred-supported-locales:
+  - uz

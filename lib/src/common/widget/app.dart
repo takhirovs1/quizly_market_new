@@ -14,6 +14,7 @@ import '../../feature/settings/screen/settings_scope.dart';
 import '../constant/config.dart';
 import '../dependency/model/debug_config.dart';
 import '../extension/context_extension.dart';
+import '../localization/app_localizations_config.dart';
 import '../router/auth_guard.dart';
 import '../router/main_guard.dart';
 import '../router/pages.dart';
@@ -50,13 +51,9 @@ class _AppState extends AppState {
     debugShowCheckedModeBanner: false,
 
     // Localizations
-    localizationsDelegates: const <LocalizationsDelegate<Object?>>[
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-      AppLocalization.delegate,
-    ],
+    localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalization.supportedLocales,
+    localeResolutionCallback: appLocaleResolution,
     locale: SettingsScope.settingsOf(context).localization,
 
     // Theme

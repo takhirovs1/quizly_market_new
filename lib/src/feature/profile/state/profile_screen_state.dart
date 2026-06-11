@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/locale_codec.dart';
 import '../../settings/screen/settings_scope.dart';
 import '../bloc/profile_cubit.dart';
 import '../screen/profile_screen.dart';
@@ -42,10 +43,15 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void selectLanguage(Locale locale) {
-    if (locale.languageCode == currentLocale.languageCode) return;
+    if (_isCurrentLocale(locale)) return;
     context.x.setLocalization(locale);
-    profileCubit.updateLanguage(locale.languageCode);
+    profileCubit.updateLanguage(AppLocaleCodec.encode(locale));
   }
+
+  /// Whether [locale] matches the active one, comparing the script too so that
+  /// Uzbek Latin and Uzbek Cyrillic are treated as distinct selections.
+  bool _isCurrentLocale(Locale locale) =>
+      currentLocale.languageCode == locale.languageCode && currentLocale.scriptCode == locale.scriptCode;
 
   String themeLabel(ThemeMode mode) => switch (mode) {
     .system => 'System',
@@ -91,16 +97,35 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onTransferHistoryPressed() {}
 
+  static const _uzbekLatin = Locale('uz');
+  static const _uzbekCyrillic = Locale.fromSubtags(languageCode: 'uz', scriptCode: 'Cyrl');
+  static const _kazakh = Locale('kk');
+  static const _karakalpak = Locale('kaa');
+  static const _kyrgyz = Locale('ky');
+  static const _tajik = Locale('tg');
+  static const _russian = Locale('ru');
+  static const _english = Locale('en');
+
   Future<void> onLanguagePressed() async {
-    final selected = currentLocale.languageCode;
     final textColor = context.x.colors.text;
+
+    final options = <({String label, Locale locale})>[
+      (label: context.x.l10n.uzbekLatin, locale: _uzbekLatin),
+      (label: context.x.l10n.uzbekKril, locale: _uzbekCyrillic),
+      (label: context.x.l10n.kazakh, locale: _kazakh),
+      (label: context.x.l10n.karakalpak, locale: _karakalpak),
+      (label: context.x.l10n.kyrgyz, locale: _kyrgyz),
+      (label: context.x.l10n.tajik, locale: _tajik),
+      (label: context.x.l10n.russian, locale: _russian),
+      (label: context.x.l10n.english, locale: _english),
+    ];
 
     await showModalBottomSheet<void>(
       backgroundColor: context.x.colors.transparent,
       context: context,
       isScrollControlled: true,
       builder: (sheetContext) => CustomBottomSheet(
-        maxHeightFactor: .45,
+        maxHeightFactor: .75,
         isScrollable: true,
         title: Row(
           children: [
@@ -114,30 +139,15 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         children: [
-          SelectionPillButton(
-            label: context.x.l10n.uzbekLatin,
-            isSelected: currentLocale.languageCode == 'uz',
-            onTap: () => _onLanguageSelected(const Locale('uz')),
-          ),
-          const SizedBox(height: 8),
-          SelectionPillButton(
-            label: context.x.l10n.uzbekKril,
-            isSelected: currentLocale.languageCode == 'kk',
-            onTap: () => _onLanguageSelected(const Locale('kk')),
-          ),
-          const SizedBox(height: 8),
-          SelectionPillButton(
-            label: context.x.l10n.english,
-            isSelected: selected == 'en',
-            onTap: () => _onLanguageSelected(const Locale('en')),
-          ),
-          const SizedBox(height: 8),
-          SelectionPillButton(
-            label: context.x.l10n.russian,
-            isSelected: selected == 'ru',
-            onTap: () => _onLanguageSelected(const Locale('ru')),
-          ),
-          const SizedBox(height: 12),
+          for (final option in options) ...[
+            SelectionPillButton(
+              label: option.label,
+              isSelected: _isCurrentLocale(option.locale),
+              onTap: () => _onLanguageSelected(option.locale),
+            ),
+            const SizedBox(height: 8),
+          ],
+          const SizedBox(height: 4),
         ],
       ),
     );

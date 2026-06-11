@@ -8,9 +8,13 @@ export const QUIZ_QUESTION_MS = 10_000; // each question lasts 10s, then auto-ad
 // [flag, short code] per supported language
 export const LANG_META = {
   uz: ['🇺🇿', 'UZ'],
+  uz_cyrl: ['🇺🇿', 'ЎЗ'],
   ru: ['🇷🇺', 'RU'],
   en: ['🇬🇧', 'EN'],
   kk: ['🇰🇿', 'KK'],
+  kaa: ['🇺🇿', 'QQ'],
+  ky: ['🇰🇬', 'KG'],
+  tg: ['🇹🇯', 'TJ'],
 };
 
 export const BRAND = { blue: '#1C59F2', cyan: '#41D6FF', ink: '#0A1330' };

@@ -11,13 +11,9 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
       return AuthenticationScope(
         authenticationScreens: MaterialApp.router(
           routerConfig: authenticationNavigator.config,
-          localizationsDelegates: const <LocalizationsDelegate<Object?>>[
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            AppLocalization.delegate,
-          ],
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalization.supportedLocales,
+          localeResolutionCallback: appLocaleResolution,
           locale: locale,
           themeMode: themeMode,
           darkTheme: AppThemeData.dark(),
@@ -25,13 +21,9 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
         ),
         child: MaterialApp.router(
           routerConfig: navigator.config,
-          localizationsDelegates: const <LocalizationsDelegate<Object?>>[
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            AppLocalization.delegate,
-          ],
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalization.supportedLocales,
+          localeResolutionCallback: appLocaleResolution,
           locale: locale,
           themeMode: themeMode,
           darkTheme: AppThemeData.dark(),
