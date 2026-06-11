@@ -84,4 +84,29 @@ class TestView extends SequentialCubit<TestViewState> {
       }
     },
   );
+
+  Future<void> toggleArchive(String testId) => handle<void>(
+    (emit) async {
+      final detail = state.detail;
+      if (detail == null || detail.id != testId) return;
+
+      final currentIsArchived = detail.isArchived ?? false;
+      final updatedDetail = detail.copyWith(isArchived: !currentIsArchived);
+      emit(state.copyWith(detail: updatedDetail));
+
+      if (currentIsArchived) {
+        await testViewRepository.unarchiveTest(testId);
+      } else {
+        await testViewRepository.archiveTest(testId);
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      final detail = state.detail;
+      if (detail != null && detail.id == testId) {
+        final currentIsArchived = detail.isArchived ?? false;
+        final revertedDetail = detail.copyWith(isArchived: !currentIsArchived);
+        emit(state.copyWith(detail: revertedDetail));
+      }
+    },
+  );
 }

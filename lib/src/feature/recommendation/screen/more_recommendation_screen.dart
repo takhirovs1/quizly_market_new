@@ -3,10 +3,10 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
-import '../../my_tests/bloc/my_test_cubit.dart';
-import '../../my_tests/models/test_model.dart';
 import '../../../common/util/error_util.dart';
 import '../../../common/util/state_status.dart';
+import '../../my_tests/bloc/my_test_cubit.dart';
+import '../../my_tests/models/test_model.dart';
 import '../bloc/recommendation_cubit.dart';
 import '../state/more_recommendation_screen_state.dart';
 import '../widget/test_view_mode_toggle.dart';
@@ -289,7 +289,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                       }
                     },
                     builder: (context, state) {
-                      final refreshCallback = () => myTestCubit.getMyTests(search: searchController.text);
+                      Future<void> refreshCallback() => myTestCubit.getMyTests(search: searchController.text);
                       return RefreshIndicator.adaptive(
                         onRefresh: () async => refreshCallback(),
                         child: _buildContent(

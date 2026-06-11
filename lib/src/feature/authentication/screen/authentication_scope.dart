@@ -2,8 +2,8 @@ import 'package:ui/ui.dart';
 
 import '../../../common/dependency/widget/dependencies_scope.dart';
 import '../../../common/extension/context_extension.dart';
-import '../state/authentication_controller.dart';
 import '../model/user.dart';
+import '../state/authentication_controller.dart';
 
 /// {@template authentication_scope}
 /// AuthenticationScope widget.

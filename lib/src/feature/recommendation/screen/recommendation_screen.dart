@@ -4,10 +4,10 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/error_util.dart';
 import '../../my_tests/widgets/animated_referral_banner.dart';
 import '../../my_tests/widgets/responsive_recommendations_list.dart';
 import '../../my_tests/widgets/section_header_widget.dart';
-import '../../../common/util/error_util.dart';
 import '../bloc/recommendation_cubit.dart';
 import '../state/recommendation_screen_state.dart';
 import '../widget/custom_page_view.dart';

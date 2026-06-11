@@ -49,7 +49,7 @@ void main(List<String> args) async {
   // Iterate through all SVG files
   for (final file in svgFiles) {
     final inputFile = file.path;
-    final normalized = inputFile.replaceAll('\\', '/');
+    final normalized = inputFile.replaceAll(r'\', '/');
     final baseName = normalized.split('/').last.split('.').first;
 
     final outputFile = '${vecDirectory.path}/$baseName.vec';
@@ -94,8 +94,8 @@ Future<List<File>> _getSvgFiles({required Directory dir}) async {
 /// [inputFile] The path to the input SVG file
 /// [outputFile] The path where the output VEC file should be saved
 Future<void> _compileVector({required String inputFile, required String outputFile}) async {
-  final input = inputFile.replaceAll('\\', '/');
-  final output = outputFile.replaceAll('\\', '/');
+  final input = inputFile.replaceAll(r'\', '/');
+  final output = outputFile.replaceAll(r'\', '/');
 
   // papkani yaratish (MUHIM!)
   final outDir = Directory(output).parent;

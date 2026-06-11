@@ -104,17 +104,16 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
 }
 
 class _LoadingBorderPainter extends CustomPainter {
-  final double progress;
-  final Color color;
-  final double borderRadius;
-  final double strokeWidth;
-
   _LoadingBorderPainter({
     required this.progress,
     required this.color,
     required this.borderRadius,
     this.strokeWidth = 3.0,
   });
+  final double progress;
+  final Color color;
+  final double borderRadius;
+  final double strokeWidth;
 
   @override
   void paint(Canvas canvas, Size size) {

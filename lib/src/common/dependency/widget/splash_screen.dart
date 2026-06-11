@@ -5,11 +5,10 @@ import 'package:ui/ui.dart';
 
 import '../../../feature/main/bloc/main_cubit.dart';
 import '../../../feature/main/model/login_with_telegram.dart';
+import '../../../feature/my_tests/models/test_by_code_model.dart';
 import '../../extension/context_extension.dart';
 import '../../router/pages.dart';
 import '../../util/helpers.dart';
-import '../../../feature/my_tests/models/demo_test_model.dart';
-import '../../../feature/my_tests/models/test_by_code_model.dart';
 
 /// {@template splash_screen}
 /// Splash screen widget.
@@ -200,7 +199,7 @@ class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
                 );
               }
             }
-          } on Object catch (e) {
+          } on Object catch (_) {
             if (context.mounted) {
               context.octopus.setState(
                 (s) => s

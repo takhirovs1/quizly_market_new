@@ -4,10 +4,10 @@ import '../../../common/constant/urls.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/util/logger.dart';
 import '../models/demo_test_model.dart';
+import '../models/test_by_code_model.dart';
 import '../models/test_model.dart';
 import '../models/test_purchase_model.dart';
 import '../models/wallet_model.dart';
-import '../models/test_by_code_model.dart';
 
 abstract interface class IMyTestRepository {
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request);
@@ -18,7 +18,6 @@ abstract interface class IMyTestRepository {
   Future<WalletResponse> getWallet(WalletRequest request);
   Future<TestPurchaseResponse> purchaseTest(TestPurchaseRequest request);
   Future<TestByCodeResponse> getTestByCode(TestByCodeRequest request);
-  Future<DemoTestResponse> getTestDetail(String testId);
 }
 
 final class MyTestRepositoryImpl implements IMyTestRepository {
@@ -93,17 +92,6 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       return TestByCodeResponse.fromJson(response.data ?? {});
     } catch (e, s) {
       info('GET TEST BY CODE API ERROR: $e $s');
-      rethrow;
-    }
-  }
-
-  @override
-  Future<DemoTestResponse> getTestDetail(String testId) async {
-    try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/$testId');
-      return DemoTestResponse.fromJson(response.data ?? {});
-    } catch (e, s) {
-      info('GET TEST DETAIL API ERROR: $e $s');
       rethrow;
     }
   }

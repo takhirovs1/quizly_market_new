@@ -171,8 +171,13 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     }
   }
 
-  void onBuyTestPressed(TestModel test) =>
+  void onBuyTestPressed(TestModel test) {
+    if (test.isPurchased == true) {
+      context.octopus.push(Routes.testMode, arguments: <String, String>{'id': test.id?.toString() ?? ''});
+    } else {
       context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});
+    }
+  }
 
   void onShareTestPressed(TestModel test) {
     context.telegramWebApp.hapticImpact(.light);

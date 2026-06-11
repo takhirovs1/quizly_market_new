@@ -4,10 +4,17 @@ import '../../../common/extension/context_extension.dart';
 import '../models/test_model.dart';
 
 class TestDescriptionWidget extends StatelessWidget {
-  const TestDescriptionWidget({required this.test, required this.onPressShare, required this.onPressLike, super.key});
+  const TestDescriptionWidget({
+    required this.test,
+    required this.onPressShare,
+    required this.onPressLike,
+    this.onPressArchive,
+    super.key,
+  });
   final TestModel test;
   final VoidCallback onPressShare;
   final VoidCallback onPressLike;
+  final VoidCallback? onPressArchive;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -40,6 +47,14 @@ class TestDescriptionWidget extends StatelessWidget {
               color: test.isLiked == true ? context.x.colors.error : context.x.colors.text,
             ),
           ),
+          if (onPressArchive != null)
+            IconButton(
+              onPressed: onPressArchive,
+              icon: Icon(
+                test.isArchived == true ? Icons.unarchive_outlined : Icons.archive_outlined,
+                color: context.x.colors.text,
+              ),
+            ),
         ],
       ),
       Text(

@@ -17,32 +17,32 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
     super.initState();
   }
 
-  final List<TestModeModel> testModes = [
+  List<TestModeModel> get testModes => [
     TestModeModel(
       id: 1,
-      title: 'Custom',
-      description: 'Test parametrlarini o’zingiz sozlab test yeching.',
+      title: context.x.l10n.customModeTitle,
+      description: context.x.l10n.customModeDesc,
       image: Assets.lib.vectors.personSelected,
       type: .custom,
     ),
     TestModeModel(
       id: 2,
-      title: 'University',
-      description: 'Universitet imtihon formatida test yeching.',
+      title: context.x.l10n.universityModeTitle,
+      description: context.x.l10n.universityModeDesc,
       image: Assets.lib.vectors.university,
       type: .university,
     ),
     TestModeModel(
       id: 3,
-      title: 'Group',
-      description: 'Do’stlar bilan bir vaqting o’zida test ishlash.',
+      title: context.x.l10n.groupModeTitle,
+      description: context.x.l10n.groupModeDesc,
       image: Assets.lib.vectors.group,
       type: .group,
     ),
     TestModeModel(
       id: 4,
-      title: 'Flashcard',
-      description: 'Savollarni kartochka orqali yodlash va tez takrorlash..',
+      title: context.x.l10n.flashcardModeTitle,
+      description: context.x.l10n.flashcardModeDesc,
       image: Assets.lib.vectors.flashcards,
       type: .flashcard,
     ),
@@ -67,6 +67,29 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
       detail.questionCount?.toString() ?? '0',
       code: detail.code,
     );
+  }
+
+  Future<void> onPressArchive() async {
+    final detail = cubit.state.detail;
+    if (detail == null) return;
+    final testId = detail.id;
+    if (testId == null) return;
+
+    final wasArchived = detail.isArchived ?? false;
+    context.telegramWebApp.hapticImpact(.light);
+    try {
+      await cubit.toggleArchive(testId);
+      if (mounted) {
+        final message = wasArchived
+            ? context.x.l10n.testUnarchivedSuccessfully
+            : context.x.l10n.testArchivedSuccessfully;
+        context.x.showNotification(message: message, isError: false);
+      }
+    } on Object catch (_) {
+      if (mounted) {
+        context.x.showNotification(message: context.x.l10n.errorOccurred, isError: true);
+      }
+    }
   }
 
   void onPressTestMode(TestModeModel testMode) => context.octopus.push(switch (testMode.type) {

@@ -9,6 +9,8 @@ abstract interface class ITestViewRepository {
   Future<DemoTestResponse> getTestDetail(String testId);
   Future<void> likeTest(String testId);
   Future<void> unlikeTest(String testId);
+  Future<void> archiveTest(String testId);
+  Future<void> unarchiveTest(String testId);
 }
 
 final class TestViewRepositoryImpl implements ITestViewRepository {
@@ -56,6 +58,26 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
       await dio.delete<void>('/api/tests/$testId/like');
     } catch (e, s) {
       info('UNLIKE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> archiveTest(String testId) async {
+    try {
+      await dio.post<void>('/api/tests/$testId/archive');
+    } catch (e, s) {
+      info('ARCHIVE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unarchiveTest(String testId) async {
+    try {
+      await dio.delete<void>('/api/tests/$testId/archive');
+    } catch (e, s) {
+      info('UNARCHIVE TEST API ERROR: $e $s');
       rethrow;
     }
   }

@@ -36,13 +36,13 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
       status: 'completed',
       correctCount: 10,
       totalQuestions: 10,
-      startedAt: DateTime.now().subtract(Duration(minutes: 10)),
-      finishedAt: DateTime.now().subtract(Duration(minutes: 5)),
+      startedAt: DateTime.now().subtract(const Duration(minutes: 10)),
+      finishedAt: DateTime.now().subtract(const Duration(minutes: 5)),
       timeSpentSec: 300,
       skipCount: 2,
       mode: 'university',
-      createdAt: DateTime.now().subtract(Duration(minutes: 10)),
-      updatedAt: DateTime.now().subtract(Duration(minutes: 10)),
+      createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
+      updatedAt: DateTime.now().subtract(const Duration(minutes: 10)),
     ),
   ];
   void onPressLike() {}

@@ -28,6 +28,7 @@ class TestModel {
     this.code,
     this.academicYear,
     this.semester,
+    this.isArchived,
   });
 
   factory TestModel.fromJson(Map<String, Object?> json) => TestModel(
@@ -46,6 +47,7 @@ class TestModel {
     code: json['code'] as String?,
     academicYear: json['academic_year'] as String?,
     semester: json['semester'].toIntOrNull,
+    isArchived: json['is_archived'] as bool?,
   );
 
   final String? id;
@@ -63,6 +65,7 @@ class TestModel {
   final String? code;
   final String? academicYear;
   final int? semester;
+  final bool? isArchived;
 
   TestModel copyWith({
     String? id,
@@ -80,6 +83,7 @@ class TestModel {
     String? code,
     String? academicYear,
     int? semester,
+    bool? isArchived,
   }) => TestModel(
     id: id ?? this.id,
     categoryId: categoryId ?? this.categoryId,
@@ -96,5 +100,6 @@ class TestModel {
     code: code ?? this.code,
     academicYear: academicYear ?? this.academicYear,
     semester: semester ?? this.semester,
+    isArchived: isArchived ?? this.isArchived,
   );
 }

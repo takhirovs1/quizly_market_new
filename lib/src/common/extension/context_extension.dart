@@ -8,11 +8,12 @@ import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../core/telegram/telegram_service.dart';
-export '../../../core/telegram/telegram_service.dart';
 import '../constant/constant.dart';
 import '../dependency/model/dependencies.dart';
 import '../dependency/widget/dependencies_scope.dart';
 import '../util/screen_util.dart';
+
+export '../../../core/telegram/telegram_service.dart';
 
 extension BuildContextX on BuildContext {
   /// [Build] extension

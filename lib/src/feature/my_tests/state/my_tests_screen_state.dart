@@ -67,8 +67,14 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     super.dispose();
   }
 
-  void onBuyTestPressed(TestModel test) =>
+  void onBuyTestPressed(TestModel test) {
+    if (test.isPurchased == true) {
+      context.octopus.push(Routes.testMode, arguments: <String, String>{'id': test.id?.toString() ?? ''});
+    } else {
       context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});
+    }
+  }
+
   Future<void> onRefresh() async {
     context.telegramWebApp.hapticImpact(.light);
     await myTestCubit.initialize(search: searchController.text);
