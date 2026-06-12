@@ -129,7 +129,16 @@ class DemoTestDetail {
 }
 
 class DemoQuestion {
-  const DemoQuestion({this.id, this.testId, this.text, this.position, this.score, this.options, this.createdAt});
+  const DemoQuestion({
+    this.id,
+    this.testId,
+    this.text,
+    this.position,
+    this.score,
+    this.options,
+    this.createdAt,
+    this.image,
+  });
 
   factory DemoQuestion.fromJson(Map<String, Object?> json) => DemoQuestion(
     id: json['id'] as String?,
@@ -139,6 +148,7 @@ class DemoQuestion {
     score: (json['score'] as num?)?.toInt(),
     options: (json['options'] as List<Object?>?)?.map((e) => DemoOption.fromJson(e as Map<String, Object?>)).toList(),
     createdAt: (json['created_at'] as String?)?.toDateTimeOrNull(),
+    image: json['image'] as String? ?? json['image_url'] as String?,
   );
 
   final String? id;
@@ -148,6 +158,7 @@ class DemoQuestion {
   final int? score;
   final List<DemoOption>? options;
   final DateTime? createdAt;
+  final String? image;
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -157,6 +168,7 @@ class DemoQuestion {
     'score': score,
     'options': options?.map((e) => e.toJson()).toList(),
     'created_at': createdAt?.toIso8601String(),
+    'image': image,
   };
 }
 

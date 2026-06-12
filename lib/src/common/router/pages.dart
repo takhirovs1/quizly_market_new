@@ -25,6 +25,7 @@ import '../../feature/tests/screens/test_flashcard_mode.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
 import '../../feature/tests/screens/test_result_screen.dart';
+import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
 import '../dependency/widget/splash_screen.dart';
 import '../extension/context_extension.dart';
@@ -46,7 +47,8 @@ enum Routes with OctopusRoute {
   testUniversityMode('testUniversityMode', title: 'Test University Mode'),
   testGroupMode('testGroupMode', title: 'Test Group Mode'),
   testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode'),
-  testResult('testResult', title: 'Test Result');
+  testResult('testResult', title: 'Test Result'),
+  testSolving('testSolving', title: 'Test Solving');
 
   const Routes(this.name, {this.title});
 
@@ -131,5 +133,17 @@ enum Routes with OctopusRoute {
     .testGroupMode => const TestGroupModeScreen(),
     .testFlashcardMode => const TestFlashcardMode(),
     .testResult => const TestResultScreen(),
+    .testSolving => BlocProvider(
+      create: (context) =>
+          TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+            ..getTestDetail(node.arguments['id'] ?? ''),
+      child: TestSolvingScreen(
+        testId: node.arguments['id'] ?? '',
+        startRange: int.tryParse(node.arguments['start'] ?? '') ?? 0,
+        endRange: int.tryParse(node.arguments['end'] ?? '') ?? 100,
+        timeOptionName: node.arguments['time'] ?? '',
+        shuffleOptionName: node.arguments['shuffle'] ?? '',
+      ),
+    ),
   };
 }

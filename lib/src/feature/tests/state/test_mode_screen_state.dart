@@ -14,7 +14,7 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
   void onBackPressed() {
     context.telegramWebApp.hapticImpact(.light);
     if (!mounted) return;
-    context.octopus.navigate(Routes.home.name);
+    context.octopus.pop();
   }
 
   @override
@@ -24,8 +24,26 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
     context.setupTelegramBackButton(onBackPressed);
   }
 
+  Animation<double>? _secondaryAnimation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _secondaryAnimation?.removeStatusListener(_onSecondaryAnimationStatusChanged);
+    _secondaryAnimation = ModalRoute.of(context)?.secondaryAnimation;
+    _secondaryAnimation?.addStatusListener(_onSecondaryAnimationStatusChanged);
+  }
+
+  void _onSecondaryAnimationStatusChanged(AnimationStatus status) {
+    if (status == .dismissed) {
+      // Re-setup the back button when returning to this screen
+      context.setupTelegramBackButton(onBackPressed);
+    }
+  }
+
   @override
   void dispose() {
+    _secondaryAnimation?.removeStatusListener(_onSecondaryAnimationStatusChanged);
     context.teardownTelegramBackButton(onBackPressed);
     super.dispose();
   }

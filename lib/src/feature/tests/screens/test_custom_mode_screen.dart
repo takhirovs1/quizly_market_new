@@ -122,7 +122,10 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
             for (int i = 0; i < questionTimeOptions.length; i++)
               TestTitleBoxWidget(
                 title: questionTimeOptions[i].label,
-                onPressed: () => selectedQuestionTime.value = questionTimeOptions[i],
+                onPressed: () {
+                  context.telegramWebApp.hapticImpact(.light);
+                  selectedQuestionTime.value = questionTimeOptions[i];
+                },
                 isSelected: value == questionTimeOptions[i],
               ),
           ],
@@ -141,7 +144,10 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                 (option) => TestTitleBoxWidget(
                   title: _shuffleLabel(context, option),
                   isSelected: option == selected,
-                  onPressed: () => selectedShuffleOption.value = option,
+                  onPressed: () {
+                    context.telegramWebApp.hapticImpact(.light);
+                    selectedShuffleOption.value = option;
+                  },
                 ),
               )
               .toList(),
@@ -180,7 +186,13 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                       values: range,
                       min: minQuestions.toDouble(),
                       max: totalQuestions.toDouble(),
-                      onChanged: (value) => questionRange.value = snapRange(value),
+                      onChanged: (value) {
+                        final snappedValue = snapRange(value);
+                        if (snappedValue != questionRange.value) {
+                          context.telegramWebApp.hapticImpact(.light);
+                          questionRange.value = snappedValue;
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -292,7 +304,10 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                                   for (int i = 0; i < questionTimeOptions.length; i++)
                                     TestTitleBoxWidget(
                                       title: questionTimeOptions[i].label,
-                                      onPressed: () => selectedQuestionTime.value = questionTimeOptions[i],
+                                      onPressed: () {
+                                        context.telegramWebApp.hapticImpact(.light);
+                                        selectedQuestionTime.value = questionTimeOptions[i];
+                                      },
                                       isSelected: value == questionTimeOptions[i],
                                     ),
                                 ],
@@ -314,7 +329,10 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                                       (option) => TestTitleBoxWidget(
                                         title: _shuffleLabel(context, option),
                                         isSelected: option == selected,
-                                        onPressed: () => selectedShuffleOption.value = option,
+                                        onPressed: () {
+                                          context.telegramWebApp.hapticImpact(.light);
+                                          selectedShuffleOption.value = option;
+                                        },
                                       ),
                                     )
                                     .toList(),
@@ -356,7 +374,13 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                                             values: range,
                                             min: minQuestions.toDouble(),
                                             max: totalQuestions.toDouble(),
-                                            onChanged: (value) => questionRange.value = snapRange(value),
+                                            onChanged: (value) {
+                                              final snappedValue = snapRange(value);
+                                              if (snappedValue != questionRange.value) {
+                                                context.telegramWebApp.hapticImpact(.light);
+                                                questionRange.value = snappedValue;
+                                              }
+                                            },
                                           ),
                                         ),
                                       ),

@@ -13,26 +13,26 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
   late final ValueNotifier<QuestionTimeOption?> selectedQuestionTime;
   late final ValueNotifier<ShuffleOption?> selectedShuffleOption;
   late final ValueNotifier<RangeValues> questionRange;
-  int minQuestions = 1;
+  int minQuestions = 0;
   int questionStep = 5;
 
   int totalQuestions = 100;
 
   final List<QuestionTimeOption> questionTimeOptions = [
-    QuestionTimeOption.seconds15,
-    QuestionTimeOption.seconds30,
-    QuestionTimeOption.seconds45,
-    QuestionTimeOption.minute1,
-    QuestionTimeOption.minutes2,
-    QuestionTimeOption.minutes3,
+    .seconds15,
+    .seconds30,
+    .seconds45,
+    .minute1,
+    .minutes2,
+    .minutes3,
   ];
 
   void onDetailLoaded(int count) {
     if (totalQuestions != count && count > 0) {
       totalQuestions = count;
-      minQuestions = count >= 5 ? 1 : 0;
+      minQuestions = 0;
       final endVal = count.toDouble();
-      final startVal = count >= 5 ? 1.0 : 0.0;
+      const startVal = 0.0;
       questionRange.value = RangeValues(startVal, endVal);
     }
   }
@@ -40,7 +40,7 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
   void onBackPressed() {
     context.telegramWebApp.hapticImpact(.light);
     if (!mounted) return;
-    context.octopus.navigate(Routes.home.name);
+    context.octopus.pop();
   }
 
   void onPressLike() {
@@ -123,7 +123,21 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
     }
   }
 
-  void onPressStartTest() => context.octopus.push(Routes.testResult);
+  void onPressStartTest() {
+    final testId = cubit.state.detail?.id;
+    if (testId == null) return;
+
+    context.octopus.push(
+      Routes.testSolving,
+      arguments: {
+        'id': testId,
+        'start': questionRange.value.start.toInt().toString(),
+        'end': questionRange.value.end.toInt().toString(),
+        'time': selectedQuestionTime.value?.name ?? '',
+        'shuffle': selectedShuffleOption.value?.name ?? '',
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -136,7 +150,7 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
 
     final detail = cubit.state.detail;
     totalQuestions = detail?.questionCount ?? 100;
-    minQuestions = totalQuestions >= 5 ? 1 : 0;
+    minQuestions = 0;
 
     questionRange = ValueNotifier<RangeValues>(RangeValues(minQuestions.toDouble(), totalQuestions.toDouble()));
     context.setupTelegramBackButton(onBackPressed);
