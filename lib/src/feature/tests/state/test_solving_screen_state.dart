@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
+import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
@@ -27,10 +27,17 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
 
+  final SoundService _sound = .instance;
+
+  static const _correctSound = 'lib/audio/correct.mp3';
+
   @override
   void initState() {
     super.initState();
     cubit = context.read<TestView>();
+
+    // Preload sounds so they play instantly.
+    _sound.preload(_correctSound);
 
     questionTimeSeconds = _parseTimeOption(widget.timeOptionName);
     initializeQuestions();
@@ -137,10 +144,11 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
 
     if (option.isCorrect ?? false) {
       correctAnswers++;
-      context.telegramWebApp.hapticNotification(TelegramHapticNotification.success);
+      context.telegramWebApp.hapticNotification(.success);
+      _sound.play(_correctSound);
     } else {
       wrongAnswers++;
-      context.telegramWebApp.hapticNotification(TelegramHapticNotification.error);
+      context.telegramWebApp.hapticNotification(.error);
     }
 
     _startPostAnswerTimer();

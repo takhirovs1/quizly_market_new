@@ -117,9 +117,9 @@ class SolvingOptionItemWidget extends StatelessWidget {
       width: 22,
       height: 22,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        shape: .circle,
         border: Border.all(
-          color: isSelected ? context.x.colors.primary : colors.gray.withValues(alpha: 0.4),
+          color: isSelected ? context.x.colors.primary : context.x.colors.gray.withValues(alpha: 0.4),
           width: isSelected ? 6 : 2,
         ),
         color: isSelected ? Colors.white : Colors.transparent,

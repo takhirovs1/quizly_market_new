@@ -14,6 +14,7 @@ dependencies:
   intl: any
   meta: any
   collection: any
+  web: any
 
   cupertino_icons: ^1.0.8
 
@@ -40,6 +41,7 @@ flutter:
     - lib/images/
     - lib/vectors/
     - lib/lottie/
+    - lib/audio/
 
   fonts:
     - family: SF Pro Display

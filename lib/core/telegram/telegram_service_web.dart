@@ -116,6 +116,11 @@ class _WebTelegramService extends TelegramService {
       ..hide();
   }
 
+  @override
+  void removeBackButtonListener(void Function() onPressed) {
+    _tg.backButton.offClick(onPressed);
+  }
+
   // ── Links & sharing ───────────────────────────────────────────────
 
   @override

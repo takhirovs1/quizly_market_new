@@ -25,73 +25,81 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
   Widget build(BuildContext context) {
     final isMobile = context.x.isMobile || context.x.isTablet;
 
-    return BlocBuilder<TestView, TestViewState>(
-      builder: (context, state) {
-        final detail = state.detail;
-        if (detail == null) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          onBackPressed();
+        }
+      },
+      child: BlocBuilder<TestView, TestViewState>(
+        builder: (context, state) {
+          final detail = state.detail;
+          if (detail == null) {
+            return Scaffold(
+              backgroundColor: context.x.colors.scaffoldBackground,
+              appBar: QuizAppBar(
+                telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+                title: context.x.l10n.customModeTitle,
+              ),
+              body: const TestCustomModeShimmer(),
+            );
+          }
+
+          final testModel = TestModel(
+            id: detail.id,
+            categoryId: detail.categoryId,
+            name: detail.name ?? '',
+            description: detail.description ?? '',
+            price: detail.price,
+            isPurchased: detail.isPurchased,
+            isLiked: detail.isLiked,
+            questionCount: detail.questionCount,
+            createdAt: detail.createdAt,
+            academicYear: detail.academicYear,
+            semester: detail.semester,
+            code: detail.code,
+            isArchived: detail.isArchived,
+            createdBy: detail.academicYear != null ? '${detail.academicYear}' : null, // Fallback if createdBy is empty
+          );
+
+          // Notify state that details are loaded to adjust totalQuestions/questionRange
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              onDetailLoaded(detail.questionCount ?? 0);
+            }
+          });
+
           return Scaffold(
             backgroundColor: context.x.colors.scaffoldBackground,
             appBar: QuizAppBar(
               telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
               title: context.x.l10n.customModeTitle,
             ),
-            body: const TestCustomModeShimmer(),
-          );
-        }
-
-        final testModel = TestModel(
-          id: detail.id,
-          categoryId: detail.categoryId,
-          name: detail.name ?? '',
-          description: detail.description ?? '',
-          price: detail.price,
-          isPurchased: detail.isPurchased,
-          isLiked: detail.isLiked,
-          questionCount: detail.questionCount,
-          createdAt: detail.createdAt,
-          academicYear: detail.academicYear,
-          semester: detail.semester,
-          code: detail.code,
-          isArchived: detail.isArchived,
-          createdBy: detail.academicYear != null ? '${detail.academicYear}' : null, // Fallback if createdBy is empty
-        );
-
-        // Notify state that details are loaded to adjust totalQuestions/questionRange
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            onDetailLoaded(detail.questionCount ?? 0);
-          }
-        });
-
-        return Scaffold(
-          backgroundColor: context.x.colors.scaffoldBackground,
-          appBar: QuizAppBar(
-            telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
-            title: context.x.l10n.customModeTitle,
-          ),
-          bottomNavigationBar: isMobile
-              ? SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    child: CustomButton(
-                      onTap: onPressStartTest,
-                      title: context.x.l10n.startTestButton,
-                      borderRadius: 10,
+            bottomNavigationBar: isMobile
+                ? SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      child: CustomButton(
+                        onTap: onPressStartTest,
+                        title: context.x.l10n.startTestButton,
+                        borderRadius: 10,
+                      ),
                     ),
-                  ),
-                )
-              : null,
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth >= 800) {
-                return _buildWebLayout(context, testModel, state.attempts);
-              } else {
-                return _buildMobileLayout(context, testModel, state.attempts);
-              }
-            },
-          ),
-        );
-      },
+                  )
+                : null,
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth >= 800) {
+                  return _buildWebLayout(context, testModel, state.attempts);
+                } else {
+                  return _buildMobileLayout(context, testModel, state.attempts);
+                }
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 

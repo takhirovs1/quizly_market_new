@@ -65,6 +65,9 @@ class _MobileTelegramService extends TelegramService {
   void hideBackButton(void Function() onPressed) {}
 
   @override
+  void removeBackButtonListener(void Function() onPressed) {}
+
+  @override
   void openLink(String url, {bool tryInstantView = true}) {}
 
   @override

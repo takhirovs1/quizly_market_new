@@ -38,5 +38,6 @@ export 'src/pin_code/pin_code_widget.dart';
 export 'src/placeholder/empty_test_widget.dart';
 export 'src/selectable_tile/selectable_tile.dart';
 export 'src/service/haptics_service.dart';
+export 'src/service/sound_service.dart';
 export 'src/theme/text.dart';
 export 'src/theme/theme.dart'; // inner exported colors and

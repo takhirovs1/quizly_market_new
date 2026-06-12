@@ -192,7 +192,8 @@ extension TelegramWebAppX on BuildContext {
     if (!kIsWeb) return;
     try {
       if (!telegramWebApp.isSupported) return;
-      telegramWebApp.showBackButton(onPressed ?? _handleTelegramBackButtonPressed);
+      final callback = onPressed ?? _handleTelegramBackButtonPressed;
+      TelegramBackButtonManager.pushCallback(callback);
     } on Object catch (_) {
       log('Failed to show Telegram back button');
     }
@@ -202,7 +203,8 @@ extension TelegramWebAppX on BuildContext {
     if (!kIsWeb) return;
     try {
       if (!telegramWebApp.isSupported) return;
-      telegramWebApp.hideBackButton(onPressed ?? _handleTelegramBackButtonPressed);
+      final callback = onPressed ?? _handleTelegramBackButtonPressed;
+      TelegramBackButtonManager.popCallback(callback);
     } on Object catch (_) {
       log('Failed to hide Telegram back button');
     }
@@ -228,5 +230,42 @@ extension TelegramWebAppX on BuildContext {
     final message = x.l10n.shareTestCopy(title, description, questionAmount, link);
     final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
     telegramWebApp.openTelegramLink(shareLink);
+  }
+}
+
+/// A stack-based manager for the global Telegram Web App back button.
+///
+/// Ensures that only the topmost registered callback is active at any time,
+/// avoiding duplicate triggers when multiple screens register back handlers.
+class TelegramBackButtonManager {
+  TelegramBackButtonManager._();
+
+  static final List<void Function()> _callbacks = [];
+
+  static void pushCallback(void Function() callback) {
+    if (_callbacks.contains(callback)) return; // Prevent duplicate additions of the same callback
+    if (_callbacks.isNotEmpty) {
+      // Remove the previous active callback from the click handler
+      TelegramService.instance.removeBackButtonListener(_callbacks.last);
+    }
+    _callbacks.add(callback);
+    TelegramService.instance.showBackButton(callback);
+  }
+
+  static void popCallback(void Function() callback) {
+    final index = _callbacks.indexOf(callback);
+    if (index == -1) return;
+
+    final wasTop = index == _callbacks.length - 1;
+    if (wasTop) {
+      TelegramService.instance.hideBackButton(callback);
+    } else {
+      TelegramService.instance.removeBackButtonListener(callback);
+    }
+    _callbacks.removeAt(index);
+
+    if (wasTop && _callbacks.isNotEmpty) {
+      TelegramService.instance.showBackButton(_callbacks.last);
+    }
   }
 }

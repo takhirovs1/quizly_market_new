@@ -49,6 +49,7 @@ abstract class TelegramService {
 
   void showBackButton(void Function() onPressed);
   void hideBackButton(void Function() onPressed);
+  void removeBackButtonListener(void Function() onPressed);
 
   // ── Links & sharing ───────────────────────────────────────────────
 

@@ -17,6 +17,9 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $LibGen {
   const $LibGen();
 
+  /// Directory path: lib/audio
+  $LibAudioGen get audio => const $LibAudioGen();
+
   /// Directory path: lib/images
   $LibImagesGen get images => const $LibImagesGen();
 
@@ -25,6 +28,22 @@ class $LibGen {
 
   /// Directory path: lib/vectors
   $LibVectorsGen get vectors => const $LibVectorsGen();
+}
+
+class $LibAudioGen {
+  const $LibAudioGen();
+
+  /// File path: lib/audio/correct.mp3
+  String get correct => 'lib/audio/correct.mp3';
+
+  /// File path: lib/audio/wrong.mp3
+  String get wrong => 'lib/audio/wrong.mp3';
+
+  /// File path: lib/audio/wrong_v3.mp3
+  String get wrongV3 => 'lib/audio/wrong_v3.mp3';
+
+  /// List of all assets
+  List<String> get values => [correct, wrong, wrongV3];
 }
 
 class $LibImagesGen {
