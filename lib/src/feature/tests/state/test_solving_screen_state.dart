@@ -74,11 +74,7 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     final nextEnd = (nextStart + 19).clamp(nextStart, apiEnd);
     final rangeStr = '$nextStart-$nextEnd';
 
-    await cubit.loadNextQuestionsChunk(
-      widget.testId,
-      range: rangeStr,
-      shuffle: widget.shuffleOptionName,
-    );
+    await cubit.loadNextQuestionsChunk(widget.testId, range: rangeStr, shuffle: widget.shuffleOptionName);
   }
 
   void initializeQuestions() {
@@ -131,8 +127,6 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
         return 0;
     }
   }
-
-
 
   void _startQuestion() {
     selectedOption.value = null;
