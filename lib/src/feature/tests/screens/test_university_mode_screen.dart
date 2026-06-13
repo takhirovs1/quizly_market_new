@@ -23,8 +23,12 @@ class _TestUniversityModeScreenState extends TestUniversityModeScreenState {
     ),
     bottomNavigationBar: SafeArea(
       child: Padding(
-        padding: const .symmetric(horizontal: 20, vertical: 16),
-        child: CustomButton(onTap: onPressStartTest, title: 'Testni boshlash', borderRadius: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: isStartingTest,
+          builder: (context, loading, _) =>
+              CustomButton(onTap: onPressStartTest, title: 'Testni boshlash', borderRadius: 10, isLoading: loading),
+        ),
       ),
     ),
     body: ListView(

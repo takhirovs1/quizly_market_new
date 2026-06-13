@@ -7,25 +7,26 @@ import '../../../common/extension/context_extension.dart';
 import '../../my_tests/models/demo_test_model.dart';
 import '../../my_tests/models/test_init_enum.dart';
 import '../bloc/test_view.dart';
+import '../model/test_route_arguments.dart';
 import '../state/test_solving_screen_state.dart';
 import '../widgets/solving_option_item_widget.dart';
 import '../widgets/test_mode_shimmer.dart';
 
 class TestSolvingScreen extends StatefulWidget {
-  const TestSolvingScreen({
-    required this.testId,
-    required this.startRange,
-    required this.endRange,
-    required this.timeOptionName,
-    required this.shuffleOptionName,
-    super.key,
-  });
+  const TestSolvingScreen({required this.arguments, super.key});
 
-  final String testId;
-  final int startRange;
-  final int endRange;
-  final String timeOptionName;
-  final String shuffleOptionName;
+  final TestSolvingArguments arguments;
+
+  String get testId => arguments.testId;
+  String get attemptId => arguments.attemptId;
+  int get startRange => arguments.startRange;
+  int get endRange => arguments.endRange;
+  String get timeOptionName => arguments.timeOptionName;
+  String get shuffleOptionName => arguments.shuffleOptionName;
+  int? get lastAttemptCorrect => arguments.lastAttemptCorrect;
+  int? get lastAttemptTotal => arguments.lastAttemptTotal;
+  int? get lastAttemptTime => arguments.lastAttemptTime;
+  String? get lastAttemptDate => arguments.lastAttemptDate;
 
   @override
   State<TestSolvingScreen> createState() => _TestSolvingScreenState();

@@ -96,11 +96,15 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
             bottomNavigationBar: isMobile
                 ? SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      child: CustomButton(
-                        onTap: onPressStartTest,
-                        title: context.x.l10n.startTestButton,
-                        borderRadius: 10,
+                      padding: const .symmetric(horizontal: 20, vertical: 16),
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: isStartingTest,
+                        builder: (context, loading, _) => CustomButton(
+                          onTap: onPressStartTest,
+                          title: context.x.l10n.startTestButton,
+                          borderRadius: 10,
+                          isLoading: loading,
+                        ),
                       ),
                     ),
                   )
@@ -404,10 +408,14 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                                   ),
                                 ),
                                 const SizedBox(height: 36),
-                                CustomButton(
-                                  onTap: onPressStartTest,
-                                  title: context.x.l10n.startTestButton,
-                                  borderRadius: 12,
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: isStartingTest,
+                                  builder: (context, loading, _) => CustomButton(
+                                    onTap: onPressStartTest,
+                                    title: context.x.l10n.startTestButton,
+                                    borderRadius: 12,
+                                    isLoading: loading,
+                                  ),
                                 ),
                               ],
                             ),

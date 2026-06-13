@@ -6,6 +6,7 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/models/test_init_enum.dart';
 import '../bloc/test_view.dart';
+import '../model/test_request_response_models.dart';
 import '../screens/test_custom_mode_screen.dart';
 
 abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
@@ -13,6 +14,7 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
   late final ValueNotifier<QuestionTimeOption?> selectedQuestionTime;
   late final ValueNotifier<ShuffleOption?> selectedShuffleOption;
   late final ValueNotifier<RangeValues> questionRange;
+  late final ValueNotifier<bool> isStartingTest;
   int minQuestions = 0;
   int questionStep = 5;
 
@@ -123,26 +125,54 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
     }
   }
 
-  void onPressStartTest() {
+  Future<void> onPressStartTest() async {
     final testId = cubit.state.detail?.id;
     if (testId == null) return;
 
-    context.octopus.push(
-      Routes.testSolving,
-      arguments: {
-        'id': testId,
-        'start': questionRange.value.start.toInt().toString(),
-        'end': questionRange.value.end.toInt().toString(),
-        'time': selectedQuestionTime.value?.name ?? '',
-        'shuffle': selectedShuffleOption.value?.name ?? '',
-      },
-    );
+    if (isStartingTest.value) return;
+    isStartingTest.value = true;
+
+    try {
+      final response = await cubit.startAttempt(testId, const StartAttemptRequest(mode: 'custom'));
+      final attemptId = response.attemptId;
+      final lastAttempt = cubit.state.attempts.firstOrNull;
+      if (attemptId.isNotEmpty && mounted) {
+        context.octopus.push(
+          Routes.testSolving,
+          arguments: {
+            'id': testId,
+            'attempt_id': attemptId,
+            'start': questionRange.value.start.toInt().toString(),
+            'end': questionRange.value.end.toInt().toString(),
+            'time': selectedQuestionTime.value?.name ?? '',
+            'shuffle': selectedShuffleOption.value?.name ?? '',
+            if (lastAttempt != null) ...{
+              'last_attempt_correct': lastAttempt.correctAnswers.toString(),
+              'last_attempt_total': lastAttempt.totalQuestions.toString(),
+              'last_attempt_time': lastAttempt.timeSpent.toString(),
+              'last_attempt_date': lastAttempt.createdAt.toIso8601String(),
+            },
+          },
+        );
+      } else if (mounted) {
+        context.x.showNotification(message: context.x.l10n.errorOccurred, isError: true);
+      }
+    } on Object catch (_) {
+      if (mounted) {
+        context.x.showNotification(message: context.x.l10n.errorOccurred, isError: true);
+      }
+    } finally {
+      if (mounted) {
+        isStartingTest.value = false;
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     cubit = context.read<TestView>();
+    isStartingTest = ValueNotifier<bool>(false);
 
     // Default values: first option selected for both
     selectedQuestionTime = ValueNotifier(questionTimeOptions.first);
@@ -162,6 +192,7 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
     selectedQuestionTime.dispose();
     selectedShuffleOption.dispose();
     questionRange.dispose();
+    isStartingTest.dispose();
     super.dispose();
   }
 }

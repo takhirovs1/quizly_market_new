@@ -5,25 +5,30 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
-import '../../../common/util/state_status.dart';
 import '../bloc/test_view.dart';
-import '../widgets/test_mode_shimmer.dart';
+import '../model/test_request_response_models.dart';
+import '../model/test_route_arguments.dart';
 
 class TestResultScreen extends StatefulWidget {
-  const TestResultScreen({
-    required this.testId,
-    required this.correct,
-    required this.wrong,
-    required this.total,
-    required this.time,
-    super.key,
-  });
+  const TestResultScreen({required this.arguments, super.key});
 
-  final String testId;
-  final int correct;
-  final int wrong;
-  final int total;
-  final int time;
+  final TestResultArguments arguments;
+
+  String get testId => arguments.testId;
+  int get correct => arguments.correct;
+  int get wrong => arguments.wrong;
+  int get total => arguments.total;
+  int get time => arguments.time;
+  String? get attemptId => arguments.attemptId;
+  String? get testName => arguments.testName;
+  String? get description => arguments.description;
+  String? get academicYear => arguments.academicYear;
+  int? get semester => arguments.semester;
+  int? get questionCount => arguments.questionCount;
+  int? get lastAttemptCorrect => arguments.lastAttemptCorrect;
+  int? get lastAttemptTotal => arguments.lastAttemptTotal;
+  int? get lastAttemptTime => arguments.lastAttemptTime;
+  String? get lastAttemptDate => arguments.lastAttemptDate;
 
   @override
   State<TestResultScreen> createState() => _TestResultScreenState();
@@ -38,6 +43,18 @@ class _TestResultScreenState extends State<TestResultScreen> {
   void initState() {
     super.initState();
     context.setupTelegramBackButton(onBackPressed);
+    final attemptId = widget.attemptId;
+    if (attemptId != null && attemptId.isNotEmpty) {
+      context.read<TestView>().finishAttempt(
+        widget.testId,
+        attemptId,
+        FinishAttemptRequest(
+          answers: const [],
+          timeSpentSec: widget.time,
+          skipCount: (widget.total - widget.correct - widget.wrong).clamp(0, widget.total),
+        ),
+      );
+    }
   }
 
   @override
@@ -100,14 +117,13 @@ class _TestResultScreenState extends State<TestResultScreen> {
                     const SizedBox(height: 8),
 
                     // ── Test Name & Description ──
-                    BlocBuilder<TestView, TestViewState>(
-                      builder: (context, state) {
-                        final detail = state.detail;
-                        final testName = detail?.name ?? '';
-                        final description = detail?.description ?? '';
-                        final academicYear = detail?.academicYear;
-                        final semester = detail?.semester;
-                        final totalQuestionsCount = detail?.questionCount ?? widget.total;
+                    Builder(
+                      builder: (context) {
+                        final testName = widget.testName ?? '';
+                        final description = widget.description ?? '';
+                        final academicYear = widget.academicYear;
+                        final semester = widget.semester;
+                        final totalQuestionsCount = widget.questionCount ?? widget.total;
 
                         final parts = <String>[
                           if (description.isNotEmpty) description,
@@ -188,31 +204,21 @@ class _TestResultScreenState extends State<TestResultScreen> {
                     const SizedBox(height: 24),
 
                     // ── History Attempts ──
-                    BlocBuilder<TestView, TestViewState>(
-                      builder: (context, state) {
-                        if (state.attempts.isEmpty) {
-                          if (state.status == StateStatus.loading) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                                  child: Text(
-                                    context.x.l10n.lastTime,
-                                    style: context.x.textStyle.sfW600s16.copyWith(
-                                      color: context.x.colors.text,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                const HistoryAttemptShimmer(),
-                                const SizedBox(height: 12),
-                                const HistoryAttemptShimmer(),
-                              ],
-                            );
-                          }
+                    Builder(
+                      builder: (context) {
+                        final lastCorrect = widget.lastAttemptCorrect;
+                        final lastTotal = widget.lastAttemptTotal;
+                        final lastTime = widget.lastAttemptTime;
+                        final lastDateStr = widget.lastAttemptDate;
+
+                        if (lastCorrect == null || lastTotal == null || lastTime == null || lastDateStr == null) {
                           return const SizedBox.shrink();
                         }
+
+                        final parsedDate = DateTime.tryParse(lastDateStr)?.toLocal();
+                        if (parsedDate == null) return const SizedBox.shrink();
+
+                        final attemptWrong = (lastTotal - lastCorrect).clamp(0, lastTotal);
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,68 +233,62 @@ class _TestResultScreenState extends State<TestResultScreen> {
                                 ),
                               ),
                             ),
-                            ...state.attempts.map((attempt) {
-                              final attemptCorrect = attempt.correctAnswers;
-                              final attemptTotal = attempt.totalQuestions;
-                              final attemptWrong = (attemptTotal - attemptCorrect).clamp(0, attemptTotal);
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: context.x.colors.textFieldBackground,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          DateFormat('HH:mm').format(attempt.createdAt.toLocal()),
-                                          style: context.x.textStyle.sfW600s16.copyWith(
-                                            color: context.x.colors.text,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: context.x.colors.textFieldBackground,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        DateFormat('HH:mm').format(parsedDate),
+                                        style: context.x.textStyle.sfW600s16.copyWith(
+                                          color: context.x.colors.text,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        Text(
-                                          DateFormat('dd.MM.yyyy').format(attempt.createdAt.toLocal()),
-                                          style: context.x.textStyle.sfW600s16.copyWith(
-                                            color: context.x.colors.text,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                      ),
+                                      Text(
+                                        DateFormat('dd.MM.yyyy').format(parsedDate),
+                                        style: context.x.textStyle.sfW600s16.copyWith(
+                                          color: context.x.colors.text,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    _buildHistoryRow(
-                                      context,
-                                      Assets.lib.icon.correct.svg(package: 'ui'),
-                                      context.x.l10n.correctLabel,
-                                      context.x.l10n.countTaText(attemptCorrect.toString()),
-                                    ),
-                                    _buildHistoryRow(
-                                      context,
-                                      Assets.lib.icon.wrong.svg(package: 'ui'),
-                                      context.x.l10n.wrongLabel,
-                                      context.x.l10n.countTaText(attemptWrong.toString()),
-                                    ),
-                                    _buildHistoryRow(
-                                      context,
-                                      Assets.lib.icon.timer.svg(package: 'ui'),
-                                      context.x.l10n.skippedLabel,
-                                      context.x.l10n.countTaText('0'),
-                                    ),
-                                    _buildHistoryRow(
-                                      context,
-                                      Assets.lib.icon.timer2.svg(package: 'ui'),
-                                      context.x.l10n.timeLabel,
-                                      _formatAttemptTime(attempt.timeSpent),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  _buildHistoryRow(
+                                    context,
+                                    Assets.lib.icon.correct.svg(package: 'ui'),
+                                    context.x.l10n.correctLabel,
+                                    context.x.l10n.countTaText(lastCorrect.toString()),
+                                  ),
+                                  _buildHistoryRow(
+                                    context,
+                                    Assets.lib.icon.wrong.svg(package: 'ui'),
+                                    context.x.l10n.wrongLabel,
+                                    context.x.l10n.countTaText(attemptWrong.toString()),
+                                  ),
+                                  _buildHistoryRow(
+                                    context,
+                                    Assets.lib.icon.timer.svg(package: 'ui'),
+                                    context.x.l10n.skippedLabel,
+                                    context.x.l10n.countTaText('0'),
+                                  ),
+                                  _buildHistoryRow(
+                                    context,
+                                    Assets.lib.icon.timer2.svg(package: 'ui'),
+                                    context.x.l10n.timeLabel,
+                                    _formatAttemptTime(lastTime),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         );
                       },

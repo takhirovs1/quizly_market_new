@@ -20,6 +20,8 @@ import '../../feature/recommendation/data/recommendation_repository.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
 import '../../feature/tests/bloc/test_view.dart';
 import '../../feature/tests/data/test_view_repository.dart';
+import '../../feature/tests/model/test_request_response_models.dart';
+import '../../feature/tests/model/test_route_arguments.dart';
 import '../../feature/tests/screens/test_custom_mode_screen.dart';
 import '../../feature/tests/screens/test_flashcard_mode.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
@@ -120,53 +122,40 @@ enum Routes with OctopusRoute {
     .testMode => BlocProvider(
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-            ..getTestDetail(node.arguments['id'] ?? ''),
+            ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest()),
       child: TestModeScreen(testId: node.arguments['id'] ?? ''),
     ),
     .testCustomMode => BlocProvider(
       create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-        ..getTestDetail(node.arguments['id'] ?? '')
+        ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest())
         ..getAttempts(node.arguments['id'] ?? ''),
       child: const TestCustomModeScreen(),
     ),
-    .testUniversityMode => const TestUniversityModeScreen(),
+    .testUniversityMode => BlocProvider(
+      create: (context) =>
+          TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+            ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest()),
+      child: const TestUniversityModeScreen(),
+    ),
     .testGroupMode => const TestGroupModeScreen(),
     .testFlashcardMode => const TestFlashcardMode(),
     .testResult => BlocProvider(
-      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-        ..getTestDetail(node.arguments['id'] ?? '')
-        ..getAttempts(node.arguments['id'] ?? ''),
-      child: TestResultScreen(
-        testId: node.arguments['id'] ?? '',
-        correct: int.tryParse(node.arguments['correct'] ?? '') ?? 0,
-        wrong: int.tryParse(node.arguments['wrong'] ?? '') ?? 0,
-        total: int.tryParse(node.arguments['total'] ?? '') ?? 0,
-        time: int.tryParse(node.arguments['time'] ?? '') ?? 0,
-      ),
+      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio)),
+      child: TestResultScreen(arguments: TestResultArguments.fromArguments(node.arguments)),
     ),
     .testSolving => BlocProvider(
       create: (context) {
-        final testId = node.arguments['id'] ?? '';
-        final startRange = int.tryParse(node.arguments['start'] ?? '') ?? 1;
-        final endRange = int.tryParse(node.arguments['end'] ?? '') ?? 20;
-        final shuffle = node.arguments['shuffle'] ?? '';
-
-        final apiStart = startRange == 0 ? 1 : startRange;
-        final apiEnd = endRange == 0 ? 1 : endRange;
+        final args = TestSolvingArguments.fromArguments(node.arguments);
+        final apiStart = args.startRange == 0 ? 1 : args.startRange;
+        final apiEnd = args.endRange == 0 ? 1 : args.endRange;
 
         final firstChunkEnd = (apiStart + 19).clamp(apiStart, apiEnd);
         final rangeStr = '$apiStart-$firstChunkEnd';
 
         return TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-          ..getTestDetail(testId, shuffle: shuffle, range: rangeStr);
+          ..getTestDetail(args.testId, TestDetailRequest(shuffle: args.shuffleOptionName, range: rangeStr));
       },
-      child: TestSolvingScreen(
-        testId: node.arguments['id'] ?? '',
-        startRange: int.tryParse(node.arguments['start'] ?? '') ?? 1,
-        endRange: int.tryParse(node.arguments['end'] ?? '') ?? 20,
-        timeOptionName: node.arguments['time'] ?? '',
-        shuffleOptionName: node.arguments['shuffle'] ?? '',
-      ),
+      child: TestSolvingScreen(arguments: TestSolvingArguments.fromArguments(node.arguments)),
     ),
   };
 }

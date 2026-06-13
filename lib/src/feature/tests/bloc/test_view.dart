@@ -7,6 +7,7 @@ import '../../../common/util/state_status.dart';
 import '../../my_tests/models/demo_test_model.dart';
 import '../data/test_view_repository.dart';
 import '../model/test_attempt_model.dart';
+import '../model/test_request_response_models.dart';
 
 part 'test_view_state.dart';
 
@@ -33,11 +34,11 @@ class TestView extends SequentialCubit<TestViewState> {
           ),
         );
       } else {
-        emit(state.copyWith(status: .loading));
+        emit(state.copyWith(status: StateStatus.loading));
         final result = await testViewRepository.getAttempts(testId, const TestAttemptRequest(limit: 20, offset: 0));
         emit(
           state.copyWith(
-            status: .success,
+            status: StateStatus.success,
             attempts: result.items,
             offset: result.offset,
             limit: result.limit,
@@ -47,35 +48,35 @@ class TestView extends SequentialCubit<TestViewState> {
       }
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
-    },
-  );
-  Future<void> getTestDetail(String testId, {String? shuffle, String? range, bool? demo}) => handle<void>(
-    (emit) async {
-      emit(state.copyWith(status: .loading));
-      final response = await testViewRepository.getTestDetail(testId, shuffle: shuffle, range: range, demo: demo);
-      emit(state.copyWith(status: .success, detail: response.data));
-    },
-    errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
-  Future<void> loadNextQuestionsChunk(String testId, {required String range, String? shuffle, bool? demo}) =>
-      handle<void>(
-        (emit) async {
-          final response = await testViewRepository.getTestDetail(testId, shuffle: shuffle, range: range, demo: demo);
-          final newQuestions = response.data?.questions ?? [];
-          final currentDetail = state.detail;
-          if (currentDetail != null) {
-            final updatedQuestions = [...?currentDetail.questions, ...newQuestions];
-            emit(state.copyWith(detail: currentDetail.copyWith(questions: updatedQuestions)));
-          }
-        },
-        errorHandler: (emit, error, stackTrace) {
-          log_util.info('LOAD NEXT QUESTIONS CHUNK ERROR: $error $stackTrace');
-        },
-      );
+  Future<void> getTestDetail(String testId, TestDetailRequest request) => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: StateStatus.loading));
+      final response = await testViewRepository.getTestDetail(testId, request);
+      emit(state.copyWith(status: StateStatus.success, detail: response.data));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> loadNextQuestionsChunk(String testId, TestDetailRequest request) => handle<void>(
+    (emit) async {
+      final response = await testViewRepository.getTestDetail(testId, request);
+      final newQuestions = response.data?.questions ?? [];
+      final currentDetail = state.detail;
+      if (currentDetail != null) {
+        final updatedQuestions = [...?currentDetail.questions, ...newQuestions];
+        emit(state.copyWith(detail: currentDetail.copyWith(questions: updatedQuestions)));
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      log_util.info('LOAD NEXT QUESTIONS CHUNK ERROR: $error $stackTrace');
+    },
+  );
 
   Future<void> toggleLike(String testId) => handle<void>(
     (emit) async {
@@ -126,4 +127,25 @@ class TestView extends SequentialCubit<TestViewState> {
       }
     },
   );
+
+  Future<StartAttemptResponse> startAttempt(String testId, StartAttemptRequest request) => handle<StartAttemptResponse>(
+    (emit) async {
+      final response = await testViewRepository.startAttempt(testId, request);
+      return response;
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  ).then((value) => value ?? const StartAttemptResponse(attemptId: ''));
+
+  Future<FinishAttemptResponse> finishAttempt(String testId, String attemptId, FinishAttemptRequest request) =>
+      handle<FinishAttemptResponse>(
+        (emit) async {
+          final response = await testViewRepository.finishAttempt(testId, attemptId, request);
+          return response;
+        },
+        errorHandler: (emit, error, stackTrace) {
+          emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+        },
+      ).then((value) => value ?? const FinishAttemptResponse());
 }

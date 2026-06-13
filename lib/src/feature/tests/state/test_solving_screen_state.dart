@@ -9,12 +9,14 @@ import '../../../common/router/pages.dart';
 import '../../my_tests/models/demo_test_model.dart';
 import '../../my_tests/models/test_init_enum.dart';
 import '../bloc/test_view.dart';
+import '../model/test_request_response_models.dart';
 import '../screens/test_solving_screen.dart';
 
 abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   late final TestView cubit;
 
   List<DemoQuestion> questions = [];
+  final Map<String, String> selectedAnswers = {};
   ValueNotifier<int> currentQuestionIndex = ValueNotifier(0);
 
   Timer? _timer;
@@ -27,7 +29,7 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
 
-  final SoundService _sound = SoundService.instance;
+  final SoundService _sound = .instance;
 
   static const _correctSound = 'lib/audio/correct.mp3';
 
@@ -74,7 +76,10 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     final nextEnd = (nextStart + 19).clamp(nextStart, apiEnd);
     final rangeStr = '$nextStart-$nextEnd';
 
-    await cubit.loadNextQuestionsChunk(widget.testId, range: rangeStr, shuffle: widget.shuffleOptionName);
+    await cubit.loadNextQuestionsChunk(
+      widget.testId,
+      TestDetailRequest(range: rangeStr, shuffle: widget.shuffleOptionName),
+    );
   }
 
   void initializeQuestions() {
@@ -163,6 +168,11 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     isAnswerChecked.value = true;
     _timer?.cancel();
 
+    final currentQuestion = questions[currentQuestionIndex.value];
+    if (currentQuestion.id != null && option.id != null) {
+      selectedAnswers[currentQuestion.id!] = option.id!;
+    }
+
     if (option.isCorrect ?? false) {
       correctAnswers++;
       context.telegramWebApp.hapticNotification(.success);
@@ -203,19 +213,43 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     }
   }
 
-  void onFinish() {
+  Future<void> onFinish() async {
     _timer?.cancel();
     final timeSpentSec = DateTime.now().difference(startTime).inSeconds;
-    context.octopus.pushReplacement(
-      Routes.testResult,
-      arguments: {
-        'id': widget.testId,
-        'correct': correctAnswers.toString(),
-        'wrong': wrongAnswers.toString(),
-        'total': questions.length.toString(),
-        'time': timeSpentSec.toString(),
-      },
-    );
+    final skipCount = (questions.length - selectedAnswers.length).clamp(0, questions.length);
+
+    final answersList = selectedAnswers.entries.map((e) => {'question_id': e.key, 'option_id': e.value}).toList();
+
+    if (widget.attemptId.isNotEmpty) {
+      await cubit.finishAttempt(
+        widget.testId,
+        widget.attemptId,
+        FinishAttemptRequest(answers: answersList, timeSpentSec: timeSpentSec, skipCount: skipCount),
+      );
+    }
+
+    if (mounted) {
+      final detail = cubit.state.detail;
+      context.octopus.pushReplacement(
+        Routes.testResult,
+        arguments: {
+          'id': widget.testId,
+          'correct': correctAnswers.toString(),
+          'wrong': wrongAnswers.toString(),
+          'total': questions.length.toString(),
+          'time': timeSpentSec.toString(),
+          if (detail?.name != null) 'name': detail!.name!,
+          if (detail?.description != null) 'description': detail!.description!,
+          if (detail?.academicYear != null) 'academic_year': detail!.academicYear!,
+          if (detail?.semester != null) 'semester': detail!.semester!.toString(),
+          if (detail?.questionCount != null) 'question_count': detail!.questionCount!.toString(),
+          if (widget.lastAttemptCorrect != null) 'last_attempt_correct': widget.lastAttemptCorrect!.toString(),
+          if (widget.lastAttemptTotal != null) 'last_attempt_total': widget.lastAttemptTotal!.toString(),
+          if (widget.lastAttemptTime != null) 'last_attempt_time': widget.lastAttemptTime!.toString(),
+          if (widget.lastAttemptDate != null) 'last_attempt_date': widget.lastAttemptDate!,
+        },
+      );
+    }
   }
 
   void onBackPressed() {
