@@ -14,8 +14,11 @@ import '../../upload/screen/upload_screen.dart';
 class HomeScreen extends StatefulWidget {
   /// {@macro home_screen}
   const HomeScreen({
+    this.initialTab = 0,
     super.key, // ignore: unused_element
   });
+
+  final int initialTab;
 
   /// The state from the closest instance of this class
   /// that encloses the given context, if any.
@@ -35,7 +38,19 @@ abstract class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    currentIndex = ValueNotifier(0);
+    currentIndex = ValueNotifier(widget.initialTab);
+    if (widget.initialTab != 0) {
+      _activatedIndices.add(widget.initialTab);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialTab != oldWidget.initialTab) {
+      currentIndex.value = widget.initialTab;
+      _activatedIndices.add(widget.initialTab);
+    }
   }
 
   @override

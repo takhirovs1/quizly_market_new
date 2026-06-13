@@ -30,3 +30,5 @@ enum TestMode {
     _ => fallback,
   };
 }
+
+enum TransactionDisplayType { payme, click, referral, premium, other }

@@ -23,13 +23,20 @@ class _PaymentScreenState extends PaymentScreenState {
   Widget build(BuildContext context) {
     final isMobile = context.x.isMobile;
 
-    return Scaffold(
-      backgroundColor: context.x.colors.scaffoldBackground,
-      resizeToAvoidBottomInset: false,
-      appBar: QuizAppBar(
-        title: context.x.l10n.topUpUserBalance,
-        telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          goBackToProfile();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: context.x.colors.scaffoldBackground,
+        resizeToAvoidBottomInset: false,
+        appBar: QuizAppBar(
+          title: context.x.l10n.topUpUserBalance,
+          telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+        ),
       body: isMobile
           ? Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -95,8 +102,9 @@ class _PaymentScreenState extends PaymentScreenState {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   List<Widget> _buildContent(BuildContext context, {required bool isMobile}) {
     final horizontalPadding = EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24);

@@ -1,9 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/router/pages.dart';
 import '../../../common/util/app_enum.dart';
 import '../bloc/profile_cubit.dart';
 import '../model/payment_response_model.dart';
@@ -242,10 +244,20 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
+  void goBackToProfile() {
+    context.telegramWebApp.hapticImpact(.light);
+    if (!mounted) return;
+    context.octopus.setState(
+      (state) => state
+        ..clear()
+        ..add(OctopusNode(name: Routes.home.name, arguments: const {'tab': '3'}, children: const [])),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    context.setupTelegramBackButton();
+    context.setupTelegramBackButton(goBackToProfile);
     amountController = TextEditingController();
     amountFocusNode = FocusNode()..requestFocus();
     selectedPayment = ValueNotifier<PaymentResponseModel?>(paymentResponseModels.first);

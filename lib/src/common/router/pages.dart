@@ -78,7 +78,7 @@ enum Routes with OctopusRoute {
           ),
         ),
       ],
-      child: const HomeScreen(),
+      child: HomeScreen(initialTab: int.tryParse(node.arguments['tab'] ?? '') ?? 0),
     ),
     .splash => BlocProvider(
       create: (_) => MainCubit(
