@@ -134,7 +134,8 @@ enum Routes with OctopusRoute {
     .testUniversityMode => BlocProvider(
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-            ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest()),
+            ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest())
+            ..getAttempts(node.arguments['id'] ?? ''),
       child: const TestUniversityModeScreen(),
     ),
     .testGroupMode => const TestGroupModeScreen(),

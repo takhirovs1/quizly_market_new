@@ -2,11 +2,11 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../model/test_result_response_model.dart';
+import '../model/test_attempt_model.dart';
 
 class TestAttemptWidget extends StatefulWidget {
-  const TestAttemptWidget({required this.result, this.backgroundColor, this.isResultScreen = false, super.key});
-  final TestResultResponseModel? result;
+  const TestAttemptWidget({required this.attempt, this.backgroundColor, this.isResultScreen = false, super.key});
+  final TestAttempt attempt;
   final Color? backgroundColor;
   final bool isResultScreen;
   @override
@@ -23,58 +23,58 @@ class _TestAttemptWidgetState extends State<TestAttemptWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final a = widget.result;
+    final a = widget.attempt;
 
-    final correct = a?.correctCount ?? 0;
-    final total = a?.totalQuestions ?? 0;
-    final skipped = a?.skipCount ?? 0;
+    final correct = a.correctAnswers;
+    final total = a.totalQuestions;
+    final skipped = a.skipCount;
     final wrong = (total - correct - skipped).clamp(0, total);
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: .circular(16),
+        borderRadius: BorderRadius.circular(16),
         color: widget.isResultScreen
             ? context.x.colors.transparent
             : (widget.backgroundColor ?? context.x.colors.bannerBackground),
       ),
       child: Padding(
-        padding: const .all(12),
+        padding: const EdgeInsets.all(12),
         child: Column(
           spacing: 4,
           children: [
-            if (a?.startedAt != null && !widget.isResultScreen)
+            if (!widget.isResultScreen)
               Row(
-                mainAxisAlignment: .spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    DateFormat('HH:mm').format(a!.startedAt!.toLocal()),
-                    style: context.x.textStyle.sfW400s16.copyWith(fontWeight: .w700),
+                    DateFormat('HH:mm').format(a.createdAt.toLocal()),
+                    style: context.x.textStyle.sfW400s16.copyWith(fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    DateFormat('dd.MM.yyyy').format(a.startedAt!.toLocal()),
-                    style: context.x.textStyle.sfW400s16.copyWith(fontWeight: .w700),
+                    DateFormat('dd.MM.yyyy').format(a.createdAt.toLocal()),
+                    style: context.x.textStyle.sfW400s16.copyWith(fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
             _ResultInfoWidget(
               leadingIcon: Assets.lib.icon.correct.svg(package: 'ui'),
-              leadingTitle: 'context.l10n.correct',
-              trailingTitle: correct.toString(),
+              leadingTitle: context.x.l10n.correctLabel,
+              trailingTitle: context.x.l10n.countTaText(correct),
             ),
             _ResultInfoWidget(
               leadingIcon: Assets.lib.icon.wrong.svg(package: 'ui'),
-              leadingTitle: 'context.l10n.wrong',
-              trailingTitle: wrong.toString(),
+              leadingTitle: context.x.l10n.wrongLabel,
+              trailingTitle: context.x.l10n.countTaText(wrong),
             ),
             _ResultInfoWidget(
               leadingIcon: Assets.lib.icon.timer.svg(package: 'ui'),
-              leadingTitle: 'context.l10n.skipped',
-              trailingTitle: skipped.toString(),
+              leadingTitle: context.x.l10n.skippedLabel,
+              trailingTitle: context.x.l10n.countTaText(skipped),
             ),
             _ResultInfoWidget(
               leadingIcon: Assets.lib.icon.timer2.svg(package: 'ui'),
-              leadingTitle: 'context.l10n.time',
-              trailingTitle: format(Duration(seconds: a?.timeSpentSec ?? 0)),
+              leadingTitle: context.x.l10n.timeLabel,
+              trailingTitle: format(Duration(seconds: a.timeSpent)),
             ),
           ],
         ),
@@ -91,7 +91,7 @@ class _ResultInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-    crossAxisAlignment: .end,
+    crossAxisAlignment: CrossAxisAlignment.end,
     children: [
       Row(
         spacing: 12,
@@ -100,8 +100,8 @@ class _ResultInfoWidget extends StatelessWidget {
           Text(
             leadingTitle,
             style: context.x.textStyle.sfW500s16.copyWith(
-              color: context.x.colors.black,
-              fontWeight: .w500,
+              color: context.x.colors.text,
+              fontWeight: FontWeight.w500,
               fontSize: 12,
             ),
           ),
@@ -110,7 +110,11 @@ class _ResultInfoWidget extends StatelessWidget {
       Expanded(child: DottedDivider(color: context.x.colors.gray)),
       Text(
         trailingTitle,
-        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.black, fontWeight: .w500, fontSize: 12),
+        style: context.x.textStyle.sfW500s16.copyWith(
+          color: context.x.colors.text,
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+        ),
       ),
     ],
   );

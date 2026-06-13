@@ -38,6 +38,7 @@ class TestAttempt {
     required this.timeSpent,
     required this.createdAt,
     required this.status,
+    this.skipCount = 0,
   });
 
   factory TestAttempt.fromJson(Map<String, Object?> json) => TestAttempt(
@@ -49,6 +50,7 @@ class TestAttempt {
     timeSpent: json['time_spent'] as int? ?? 0,
     createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
     status: json['status'] as String? ?? 'completed',
+    skipCount: json['skip_count'] as int? ?? 0,
   );
 
   final String id;
@@ -59,4 +61,5 @@ class TestAttempt {
   final int timeSpent;
   final DateTime createdAt;
   final String status;
+  final int skipCount;
 }
