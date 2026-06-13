@@ -37,74 +37,74 @@ class _PaymentScreenState extends PaymentScreenState {
           title: context.x.l10n.topUpUserBalance,
           telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
         ),
-      body: isMobile
-          ? Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildContent(context, isMobile: true),
-              ),
-            )
-          : Center(
-              child: SingleChildScrollView(
-                padding: const .symmetric(vertical: 24, horizontal: 16),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: context.x.colors.cardBackground2,
-                      borderRadius: .circular(20),
-                      border: Border.all(color: context.x.colors.divider),
-                    ),
-                    child: Padding(
-                      padding: const .symmetric(vertical: 24),
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        mainAxisSize: .min,
-                        children: _buildContent(context, isMobile: false),
+        body: isMobile
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _buildContent(context, isMobile: true),
+                ),
+              )
+            : Center(
+                child: SingleChildScrollView(
+                  padding: const .symmetric(vertical: 24, horizontal: 16),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: context.x.colors.cardBackground2,
+                        borderRadius: .circular(20),
+                        border: Border.all(color: context.x.colors.divider),
+                      ),
+                      child: Padding(
+                        padding: const .symmetric(vertical: 24),
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          mainAxisSize: .min,
+                          children: _buildContent(context, isMobile: false),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: .only(
+              top: 16,
+              left: 16,
+              right: 16,
+              bottom: context.telegramWebApp.isSupported
+                  ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
+                  : 16,
             ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: .only(
-            top: 16,
-            left: 16,
-            right: 16,
-            bottom: context.telegramWebApp.isSupported
-                ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
-                : 16,
-          ),
-          child: Row(
-            mainAxisAlignment: .center,
-            children: [
-              SizedBox(
-                width: isMobile ? MediaQuery.sizeOf(context).width - 32 : 568,
-                child: BlocBuilder<ProfileCubit, ProfileState>(
-                  builder: (context, state) => ListenableBuilder(
-                    listenable: .merge([selectedAmount, selectedPayment]),
-                    builder: (context, child) {
-                      final isValid = isAmountInValidRange;
-                      return CustomButton(
-                        onTap: onTopUpPressed,
-                        color: isValid ? context.x.colors.primary : context.x.colors.gray,
-                        title: context.x.l10n.filling,
-                        isLoading: state.status.isLoading,
-                      );
-                    },
+            child: Row(
+              mainAxisAlignment: .center,
+              children: [
+                SizedBox(
+                  width: isMobile ? MediaQuery.sizeOf(context).width - 32 : 568,
+                  child: BlocBuilder<ProfileCubit, ProfileState>(
+                    builder: (context, state) => ListenableBuilder(
+                      listenable: .merge([selectedAmount, selectedPayment]),
+                      builder: (context, child) {
+                        final isValid = isAmountInValidRange;
+                        return CustomButton(
+                          onTap: onTopUpPressed,
+                          color: isValid ? context.x.colors.primary : context.x.colors.gray,
+                          title: context.x.l10n.filling,
+                          isLoading: state.status.isLoading,
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   List<Widget> _buildContent(BuildContext context, {required bool isMobile}) {
     final horizontalPadding = EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24);

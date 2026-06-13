@@ -31,7 +31,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> onRefresh() async {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.heavy);
+    context.telegramWebApp.hapticImpact(.heavy);
     await profileCubit.loadProfile();
   }
 
@@ -222,7 +222,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onTelegramConnectPressed() {}
 
   void onSetHomePressed() {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     context.telegramWebApp.addToHomeScreen();
   }
 
@@ -276,6 +276,8 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       (c) => context.x.l10n.googleConnect,
       onGoogleConnectPressed,
       Assets.lib.vectors.google.svg(package: Constant.packageUi),
+      isComingSoon: true,
+      comingSoonText: (c) => c.x.l10n.comingSoon,
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.appleIdConnect,
@@ -284,6 +286,8 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
         package: Constant.packageUi,
         colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
       ),
+      isComingSoon: true,
+      comingSoonText: (c) => c.x.l10n.comingSoon,
     ),
     ProfileListRow.item(
       (c) => context.x.l10n.telegramConnect,
@@ -294,6 +298,8 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
         height: 20,
         // color: context.x.colors.profileIcon,
       ),
+      isConnected: true,
+      connectedText: (c) => c.x.l10n.connected,
     ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.appearance),
@@ -359,7 +365,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   // Actions
 
   Future<void> onLogoutPressed() async {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     final screenContext = context;
     showDialog<void>(
       context: context,
@@ -486,7 +492,21 @@ class ProfileListRow {
     VoidCallback onTap,
     Widget? leading, {
     bool isLogout = false,
-  }) => ProfileListRow._(.item, titleBuilder: titleBuilder, onTap: onTap, leading: leading, isLogout: isLogout);
+    bool isComingSoon = false,
+    bool isConnected = false,
+    ProfileTitleBuilder? comingSoonText,
+    ProfileTitleBuilder? connectedText,
+  }) => ProfileListRow._(
+    .item,
+    titleBuilder: titleBuilder,
+    onTap: onTap,
+    leading: leading,
+    isLogout: isLogout,
+    isComingSoon: isComingSoon,
+    isConnected: isConnected,
+    comingSoonText: comingSoonText,
+    connectedText: connectedText,
+  );
 
   factory ProfileListRow.spacer(double height) => ProfileListRow._(.spacer, spacerHeight: height);
 
@@ -499,6 +519,10 @@ class ProfileListRow {
     this.onTap,
     this.leading,
     this.isLogout = false,
+    this.isComingSoon = false,
+    this.isConnected = false,
+    this.comingSoonText,
+    this.connectedText,
   });
 
   final ProfileListRowType type;
@@ -507,6 +531,10 @@ class ProfileListRow {
   final VoidCallback? onTap;
   final Widget? leading;
   final bool isLogout;
+  final bool isComingSoon;
+  final bool isConnected;
+  final ProfileTitleBuilder? comingSoonText;
+  final ProfileTitleBuilder? connectedText;
 }
 
 enum ProfileListRowType { header, item, spacer }

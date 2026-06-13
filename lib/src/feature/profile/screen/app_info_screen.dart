@@ -65,6 +65,7 @@ class _AppInfoScreenState extends AppInfoState {
       leading: Assets.lib.vectors.google.svg(package: 'ui', width: 22, height: 22),
       title: 'GooglePlay',
       subtitle: ' - QuizlyMarket',
+      isComingSoon: true,
       onTap: () => openLink('https://play.google.com/store'),
     ),
     const SizedBox(height: 10),
@@ -77,6 +78,7 @@ class _AppInfoScreenState extends AppInfoState {
       ),
       title: 'AppStore',
       subtitle: ' - QuizlyMarket',
+      isComingSoon: true,
       onTap: () => openLink('https://www.apple.com/app-store/'),
     ),
     const SizedBox(height: 10),
@@ -84,7 +86,7 @@ class _AppInfoScreenState extends AppInfoState {
       leading: Assets.lib.images.telegramLogo.image(package: 'ui', width: 22, height: 22),
       title: 'Telegram',
       subtitle: ' - t.me/quizlymarketbot',
-      onTap: () => openTelegramLink('https://t.me/quizlymarketbot'),
+      onTap: () => openLink('https://t.me/quizlymarketbot'),
     ),
     const SizedBox(height: 20),
     SectionTitle(title: context.x.l10n.socialNetworks, color: context.x.colors.text),
@@ -100,7 +102,7 @@ class _AppInfoScreenState extends AppInfoState {
       leading: Assets.lib.images.telegramLogo.image(package: 'ui', width: 22, height: 22),
       title: 't.me/',
       subtitle: 'quizlymarket',
-      onTap: () => openTelegramLink('https://t.me/quizlymarket'),
+      onTap: () => openLink('https://t.me/quizlymarket'),
     ),
     const SizedBox(height: 20),
     SectionTitle(title: context.x.l10n.appVersion, color: context.x.colors.text),
@@ -119,57 +121,83 @@ class SectionTitle extends StatelessWidget {
 }
 
 class LinkCard extends StatelessWidget {
-  const LinkCard({required this.leading, required this.title, required this.onTap, this.subtitle, super.key});
+  const LinkCard({
+    required this.leading,
+    required this.title,
+    required this.onTap,
+    this.subtitle,
+    this.isComingSoon = false,
+    super.key,
+  });
 
   final Widget leading;
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
+  final bool isComingSoon;
 
   @override
-  Widget build(BuildContext context) => Material(
-    color: context.x.colors.scaffoldBackground,
-    borderRadius: .circular(16),
-
-    child: InkWell(
-      borderRadius: .circular(16),
-      onTap: onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: .circular(16),
-          border: Border.all(color: context.x.colors.divider),
-        ),
-        child: Padding(
-          padding: const .symmetric(horizontal: 14, vertical: 14),
-          child: Row(
-            children: [
-              SizedBox(width: 28, height: 28, child: Center(child: leading)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: RichText(
-                  maxLines: 3,
-                  overflow: .ellipsis,
-                  text: subtitle != null
-                      ? TextSpan(
-                          style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.text),
-                          children: [
-                            TextSpan(
-                              text: title,
-                              style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.text),
-                            ),
-                            TextSpan(text: subtitle ?? ''),
-                          ],
-                        )
-                      : TextSpan(
-                          text: title,
-                          style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.text),
-                        ),
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+    return Material(
+      color: colors.scaffoldBackground,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: isComingSoon ? null : onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.divider),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            child: Row(
+              children: [
+                SizedBox(width: 28, height: 28, child: Center(child: leading)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: RichText(
+                    maxLines: 3,
+                    overflow: .ellipsis,
+                    text: subtitle != null
+                        ? TextSpan(
+                            style: textStyle.sfW400s16.copyWith(color: colors.text),
+                            children: [
+                              TextSpan(
+                                text: title,
+                                style: textStyle.sfW700s16.copyWith(color: colors.text),
+                              ),
+                              TextSpan(text: subtitle ?? ''),
+                            ],
+                          )
+                        : TextSpan(
+                            text: title,
+                            style: textStyle.sfW700s16.copyWith(color: colors.text),
+                          ),
+                  ),
                 ),
-              ),
-            ],
+                if (isComingSoon) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const .symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.1),
+                      borderRadius: .circular(20),
+                      border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                    ),
+                    child: Text(
+                      context.x.l10n.comingSoon,
+                      style: textStyle.sfW500s11.copyWith(color: colors.primary, fontSize: 10),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

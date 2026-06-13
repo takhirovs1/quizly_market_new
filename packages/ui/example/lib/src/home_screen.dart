@@ -76,6 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {},
                     iconColor: Theme.of(context).appColors.error,
                     textColor: Theme.of(context).appColors.error,
+                    comingSoonText: '',
+                    connectedText: '',
                   ),
 
                   Theme(
@@ -86,6 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {},
                       iconColor: Theme.of(context).appColors.onPrimary,
                       textColor: Theme.of(context).appColors.onPrimary,
+                      comingSoonText: '',
+                      connectedText: '',
                     ),
                   ),
                 ],
