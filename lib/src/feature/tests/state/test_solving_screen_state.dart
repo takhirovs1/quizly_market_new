@@ -43,27 +43,42 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     _sound.preload(_correctSound);
 
     questionTimeSeconds = _parseTimeOption(widget.timeOptionName);
+    currentQuestionIndex.addListener(_onQuestionIndexChanged);
     initializeQuestions();
     context.setupTelegramBackButton(onBackPressed);
   }
 
-  int _parseTimeOption(String timeName) {
-    switch (timeName) {
-      case 'seconds15':
-        return 15;
-      case 'seconds30':
-        return 30;
-      case 'seconds45':
-        return 45;
-      case 'minute1':
-        return 60;
-      case 'minutes2':
-        return 120;
-      case 'minutes3':
-        return 180;
-      default:
-        return 0;
+  int _lastFetchedIndex = 0;
+
+  void _onQuestionIndexChanged() {
+    final index = currentQuestionIndex.value;
+    final apiStart = widget.startRange == 0 ? 1 : widget.startRange;
+    final apiEnd = widget.endRange == 0 ? 1 : widget.endRange;
+    final totalToSolve = apiEnd - apiStart + 1;
+
+    if (questions.length < totalToSolve) {
+      final triggerIndex = questions.length - 4; // 17th question of current 20-chunk (20 - 4 = 16)
+      if (index >= triggerIndex && _lastFetchedIndex < questions.length) {
+        _lastFetchedIndex = questions.length;
+        _fetchNextChunk();
+      }
     }
+  }
+
+  Future<void> _fetchNextChunk() async {
+    final apiStart = widget.startRange == 0 ? 1 : widget.startRange;
+    final apiEnd = widget.endRange == 0 ? 1 : widget.endRange;
+
+    // Calculate the next range chunk based on how many questions are already loaded locally
+    final nextStart = apiStart + questions.length;
+    final nextEnd = (nextStart + 19).clamp(nextStart, apiEnd);
+    final rangeStr = '$nextStart-$nextEnd';
+
+    await cubit.loadNextQuestionsChunk(
+      widget.testId,
+      range: rangeStr,
+      shuffle: widget.shuffleOptionName,
+    );
   }
 
   void initializeQuestions() {
@@ -71,20 +86,8 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     if (detail == null || detail.questions == null) return;
     if (questions.isNotEmpty) return;
 
-    var start = widget.startRange;
-    var end = widget.endRange;
     var allQuestions = List<DemoQuestion>.from(detail.questions!);
-
-    if (allQuestions.length >= end) {
-      questions = allQuestions.sublist(start > 0 ? start - 1 : 0, end);
-    } else {
-      questions = allQuestions;
-    }
-
-    if (widget.shuffleOptionName == ShuffleOption.all.name ||
-        widget.shuffleOptionName == ShuffleOption.questionsOnly.name) {
-      questions.shuffle();
-    }
+    questions = allQuestions;
 
     questions = questions.map((q) {
       if (q.options != null &&
@@ -109,6 +112,27 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
       _startQuestion();
     }
   }
+
+  int _parseTimeOption(String timeName) {
+    switch (timeName) {
+      case 'seconds15':
+        return 15;
+      case 'seconds30':
+        return 30;
+      case 'seconds45':
+        return 45;
+      case 'minute1':
+        return 60;
+      case 'minutes2':
+        return 120;
+      case 'minutes3':
+        return 180;
+      default:
+        return 0;
+    }
+  }
+
+
 
   void _startQuestion() {
     selectedOption.value = null;
@@ -212,6 +236,7 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
 
   @override
   void dispose() {
+    currentQuestionIndex.removeListener(_onQuestionIndexChanged);
     context.teardownTelegramBackButton(onBackPressed);
     _timer?.cancel();
     selectedOption.dispose();

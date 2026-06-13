@@ -145,13 +145,25 @@ enum Routes with OctopusRoute {
       ),
     ),
     .testSolving => BlocProvider(
-      create: (context) =>
-          TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-            ..getTestDetail(node.arguments['id'] ?? ''),
+      create: (context) {
+        final testId = node.arguments['id'] ?? '';
+        final startRange = int.tryParse(node.arguments['start'] ?? '') ?? 1;
+        final endRange = int.tryParse(node.arguments['end'] ?? '') ?? 20;
+        final shuffle = node.arguments['shuffle'] ?? '';
+
+        final apiStart = startRange == 0 ? 1 : startRange;
+        final apiEnd = endRange == 0 ? 1 : endRange;
+
+        final firstChunkEnd = (apiStart + 19).clamp(apiStart, apiEnd);
+        final rangeStr = '$apiStart-$firstChunkEnd';
+
+        return TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+          ..getTestDetail(testId, shuffle: shuffle, range: rangeStr);
+      },
       child: TestSolvingScreen(
         testId: node.arguments['id'] ?? '',
-        startRange: int.tryParse(node.arguments['start'] ?? '') ?? 0,
-        endRange: int.tryParse(node.arguments['end'] ?? '') ?? 100,
+        startRange: int.tryParse(node.arguments['start'] ?? '') ?? 1,
+        endRange: int.tryParse(node.arguments['end'] ?? '') ?? 20,
         timeOptionName: node.arguments['time'] ?? '',
         shuffleOptionName: node.arguments['shuffle'] ?? '',
       ),

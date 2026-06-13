@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../common/util/error_util.dart';
+import '../../../common/util/logger.dart' as log_util;
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../../my_tests/models/demo_test_model.dart';
@@ -49,16 +50,32 @@ class TestView extends SequentialCubit<TestViewState> {
       emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
-  Future<void> getTestDetail(String testId) => handle<void>(
+  Future<void> getTestDetail(String testId, {String? shuffle, String? range, bool? demo}) => handle<void>(
     (emit) async {
       emit(state.copyWith(status: .loading));
-      final response = await testViewRepository.getTestDetail(testId);
+      final response = await testViewRepository.getTestDetail(testId, shuffle: shuffle, range: range, demo: demo);
       emit(state.copyWith(status: .success, detail: response.data));
     },
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
+
+  Future<void> loadNextQuestionsChunk(String testId, {required String range, String? shuffle, bool? demo}) =>
+      handle<void>(
+        (emit) async {
+          final response = await testViewRepository.getTestDetail(testId, shuffle: shuffle, range: range, demo: demo);
+          final newQuestions = response.data?.questions ?? [];
+          final currentDetail = state.detail;
+          if (currentDetail != null) {
+            final updatedQuestions = [...?currentDetail.questions, ...newQuestions];
+            emit(state.copyWith(detail: currentDetail.copyWith(questions: updatedQuestions)));
+          }
+        },
+        errorHandler: (emit, error, stackTrace) {
+          log_util.info('LOAD NEXT QUESTIONS CHUNK ERROR: $error $stackTrace');
+        },
+      );
 
   Future<void> toggleLike(String testId) => handle<void>(
     (emit) async {

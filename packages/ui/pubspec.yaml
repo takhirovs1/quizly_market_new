@@ -42,6 +42,7 @@ flutter:
     - lib/vectors/
     - lib/lottie/
     - lib/audio/
+    - lib/icon/
 
   fonts:
     - family: SF Pro Display

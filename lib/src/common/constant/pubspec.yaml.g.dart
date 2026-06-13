@@ -124,12 +124,12 @@ sealed class Pubspec {
   static final DateTime timestamp = DateTime.utc(
     2026,
     6,
-    12,
+    13,
     7,
-    27,
-    32,
-    358,
-    231,
+    36,
+    36,
+    254,
+    397,
   );
 
   /// Name

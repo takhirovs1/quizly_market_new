@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -42,6 +43,22 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                 telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
                 title: context.x.l10n.customModeTitle,
               ),
+              bottomNavigationBar: isMobile
+                  ? SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        child: Shimmer.fromColors(
+                          baseColor: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0),
+                          highlightColor: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF475569)
+                              : const Color(0xFFF1F5F9),
+                          child: const ShimmerBox(width: double.infinity, height: 48, radius: 10),
+                        ),
+                      ),
+                    )
+                  : null,
               body: const TestCustomModeShimmer(),
             );
           }
@@ -238,185 +255,190 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
             constraints: const BoxConstraints(maxWidth: 1200),
             child: Padding(
               padding: const EdgeInsets.all(28),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Left side: Test Description card and Attempt History
-                    Expanded(
-                      flex: 5,
-                      child: attempts.isEmpty
-                          ? _WebInfoCard(
-                              testModel: testModel,
-                              onPressLike: onPressLike,
-                              onPressShare: onPressShare,
-                              onPressArchive: onPressArchive,
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _WebInfoCard(
-                                  testModel: testModel,
-                                  onPressLike: onPressLike,
-                                  onPressShare: onPressShare,
-                                  onPressArchive: onPressArchive,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Left side: Test Description card
+                        Expanded(
+                          flex: 5,
+                          child: _WebInfoCard(
+                            testModel: testModel,
+                            onPressLike: onPressLike,
+                            onPressShare: onPressShare,
+                            onPressArchive: onPressArchive,
+                          ),
+                        ),
+                        const SizedBox(width: 28),
+                        // Right side: Custom Setup Configuration Card
+                        Expanded(
+                          flex: 7,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: context.x.colors.cardBackground2,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: context.x.colors.black.withValues(alpha: 0.06), width: 1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: context.x.colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
                                 ),
-                                const SizedBox(height: 28),
-                                Text(
-                                  context.x.l10n.answersHistory,
-                                  style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18),
-                                ),
-                                const SizedBox(height: 12),
-                                for (final attempt in attempts)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: _AttemptItemWidget(attempt: attempt),
-                                  ),
                               ],
                             ),
-                    ),
-                    const SizedBox(width: 28),
-                    // Right side: Custom Setup Configuration Card
-                    Expanded(
-                      flex: 7,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: context.x.colors.cardBackground2,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: context.x.colors.black.withValues(alpha: 0.06), width: 1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: context.x.colors.black.withValues(alpha: 0.04),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(28),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(context.x.l10n.customModeSetup, style: context.x.textStyle.sfW500s22),
-                            const SizedBox(height: 24),
-                            Text(
-                              context.x.l10n.questionTimePrompt,
-                              style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-                            ),
-                            const SizedBox(height: 8),
-                            ValueListenableBuilder<QuestionTimeOption?>(
-                              valueListenable: selectedQuestionTime,
-                              builder: (context, value, child) => Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  for (int i = 0; i < questionTimeOptions.length; i++)
-                                    TestTitleBoxWidget(
-                                      title: questionTimeOptions[i].label,
-                                      onPressed: () {
-                                        context.telegramWebApp.hapticImpact(.light);
-                                        selectedQuestionTime.value = questionTimeOptions[i];
-                                      },
-                                      isSelected: value == questionTimeOptions[i],
-                                    ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              context.x.l10n.shufflePrompt,
-                              style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-                            ),
-                            const SizedBox(height: 8),
-                            ValueListenableBuilder<ShuffleOption?>(
-                              valueListenable: selectedShuffleOption,
-                              builder: (context, selected, _) => Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: ShuffleOption.values
-                                    .map(
-                                      (option) => TestTitleBoxWidget(
-                                        title: _shuffleLabel(context, option),
-                                        isSelected: option == selected,
-                                        onPressed: () {
-                                          context.telegramWebApp.hapticImpact(.light);
-                                          selectedShuffleOption.value = option;
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              context.x.l10n.rangePrompt,
-                              style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-                            ),
-                            const SizedBox(height: 8),
-                            ValueListenableBuilder<RangeValues>(
-                              valueListenable: questionRange,
-                              builder: (context, range, _) => Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            padding: const EdgeInsets.all(28),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(context.x.l10n.customModeSetup, style: context.x.textStyle.sfW500s22),
+                                const SizedBox(height: 24),
+                                Text(
+                                  context.x.l10n.questionTimePrompt,
+                                  style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
+                                ),
+                                const SizedBox(height: 8),
+                                ValueListenableBuilder<QuestionTimeOption?>(
+                                  valueListenable: selectedQuestionTime,
+                                  builder: (context, value, child) => Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
                                     children: [
-                                      Text(
-                                        '${range.start.toInt()}',
-                                        style: context.x.textStyle.sfW500s16.copyWith(
-                                          color: context.x.colors.gray,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 17,
+                                      for (int i = 0; i < questionTimeOptions.length; i++)
+                                        TestTitleBoxWidget(
+                                          title: questionTimeOptions[i].label,
+                                          onPressed: () {
+                                            context.telegramWebApp.hapticImpact(.light);
+                                            selectedQuestionTime.value = questionTimeOptions[i];
+                                          },
+                                          isSelected: value == questionTimeOptions[i],
                                         ),
-                                      ),
-                                      Flexible(
-                                        child: SliderTheme(
-                                          data: SliderTheme.of(context).copyWith(
-                                            trackHeight: 6,
-                                            activeTrackColor: context.x.colors.primary,
-                                            inactiveTrackColor: context.x.colors.gray.withValues(alpha: .25),
-                                            thumbColor: context.x.colors.white,
-                                            overlayColor: context.x.colors.primary.withValues(alpha: 0.12),
-                                            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14),
-                                            overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
-                                          ),
-                                          child: RangeSlider(
-                                            values: range,
-                                            min: minQuestions.toDouble(),
-                                            max: totalQuestions.toDouble(),
-                                            onChanged: (value) {
-                                              final snappedValue = snapRange(value);
-                                              if (snappedValue != questionRange.value) {
-                                                context.telegramWebApp.hapticImpact(.light);
-                                                questionRange.value = snappedValue;
-                                              }
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Text(
+                                  context.x.l10n.shufflePrompt,
+                                  style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
+                                ),
+                                const SizedBox(height: 8),
+                                ValueListenableBuilder<ShuffleOption?>(
+                                  valueListenable: selectedShuffleOption,
+                                  builder: (context, selected, _) => Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: ShuffleOption.values
+                                        .map(
+                                          (option) => TestTitleBoxWidget(
+                                            title: _shuffleLabel(context, option),
+                                            isSelected: option == selected,
+                                            onPressed: () {
+                                              context.telegramWebApp.hapticImpact(.light);
+                                              selectedShuffleOption.value = option;
                                             },
                                           ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '${range.end.toInt()}',
-                                        style: context.x.textStyle.sfW500s16.copyWith(
-                                          color: context.x.colors.gray,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 17,
-                                        ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Text(
+                                  context.x.l10n.rangePrompt,
+                                  style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
+                                ),
+                                const SizedBox(height: 8),
+                                ValueListenableBuilder<RangeValues>(
+                                  valueListenable: questionRange,
+                                  builder: (context, range, _) => Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            '${range.start.toInt()}',
+                                            style: context.x.textStyle.sfW500s16.copyWith(
+                                              color: context.x.colors.gray,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: SliderTheme(
+                                              data: SliderTheme.of(context).copyWith(
+                                                trackHeight: 6,
+                                                activeTrackColor: context.x.colors.primary,
+                                                inactiveTrackColor: context.x.colors.gray.withValues(alpha: .25),
+                                                thumbColor: context.x.colors.white,
+                                                overlayColor: context.x.colors.primary.withValues(alpha: 0.12),
+                                                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14),
+                                                overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
+                                              ),
+                                              child: RangeSlider(
+                                                values: range,
+                                                min: minQuestions.toDouble(),
+                                                max: totalQuestions.toDouble(),
+                                                onChanged: (value) {
+                                                  final snappedValue = snapRange(value);
+                                                  if (snappedValue != questionRange.value) {
+                                                    context.telegramWebApp.hapticImpact(.light);
+                                                    questionRange.value = snappedValue;
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            '${range.end.toInt()}',
+                                            style: context.x.textStyle.sfW500s16.copyWith(
+                                              color: context.x.colors.gray,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(height: 36),
+                                CustomButton(
+                                  onTap: onPressStartTest,
+                                  title: context.x.l10n.startTestButton,
+                                  borderRadius: 12,
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 36),
-                            CustomButton(
-                              onTap: onPressStartTest,
-                              title: context.x.l10n.startTestButton,
-                              borderRadius: 12,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
+                  if (attempts.isNotEmpty) ...[
+                    const SizedBox(height: 36),
+                    Text(context.x.l10n.answersHistory, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18)),
+                    const SizedBox(height: 16),
+                    LayoutBuilder(
+                      builder: (context, attemptConstraints) {
+                        final cardWidth = attemptConstraints.maxWidth >= 800
+                            ? (attemptConstraints.maxWidth - 28) / 2
+                            : attemptConstraints.maxWidth;
+                        return Wrap(
+                          spacing: 28,
+                          runSpacing: 16,
+                          children: attempts.map((attempt) {
+                            return SizedBox(
+                              width: cardWidth,
+                              child: _AttemptItemWidget(attempt: attempt),
+                            );
+                          }).toList(),
+                        );
+                      },
                     ),
                   ],
-                ),
+                ],
               ),
             ),
           ),
@@ -450,14 +472,14 @@ class _AttemptItemWidget extends StatelessWidget {
     const skipped = 0; // TestAttempt does not store skipped count
 
     return DecoratedBox(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: context.x.colors.bannerBackground),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: context.x.colors.textFieldBackground),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           spacing: 4,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 Text(
                   DateFormat('HH:mm').format(attempt.createdAt.toLocal()),
@@ -469,23 +491,24 @@ class _AttemptItemWidget extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.vectors.correct.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.correct.svg(package: 'ui'),
               leadingTitle: context.x.l10n.correctLabel,
               trailingTitle: '$correct ta',
             ),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.vectors.wrong.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.wrong.svg(package: 'ui'),
               leadingTitle: context.x.l10n.wrongLabel,
               trailingTitle: '$wrong ta',
             ),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.vectors.timer.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.timer.svg(package: 'ui'),
               leadingTitle: context.x.l10n.skippedLabel,
               trailingTitle: '$skipped ta',
             ),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.vectors.timer2.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.timer2.svg(package: 'ui'),
               leadingTitle: context.x.l10n.timeLabel,
               trailingTitle: _formatDuration(attempt.timeSpent),
             ),
@@ -504,33 +527,20 @@ class _ResultInfoRow extends StatelessWidget {
   final String trailingTitle;
 
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.end,
-    children: [
-      Row(
-        spacing: 12,
-        children: [
-          leadingIcon,
-          Text(
-            leadingTitle,
-            style: context.x.textStyle.sfW500s16.copyWith(
-              color: context.x.colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-      Expanded(child: DottedDivider(color: context.x.colors.gray)),
-      Text(
-        trailingTitle,
-        style: context.x.textStyle.sfW500s16.copyWith(
-          color: context.x.colors.black,
-          fontWeight: FontWeight.w500,
-          fontSize: 12,
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Row(
+      children: [
+        SizedBox(width: 14, height: 14, child: leadingIcon),
+        const SizedBox(width: 8),
+        Text(leadingTitle, style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.text)),
+        Expanded(child: DottedDivider(color: context.x.colors.gray.withValues(alpha: 0.3))),
+        Text(
+          trailingTitle,
+          style: context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.text, fontWeight: FontWeight.w500),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 

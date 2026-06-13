@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
-import 'dart:ui';
 
 import '../../../common/constant/config.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../my_tests/models/demo_test_model.dart';
+import '../../my_tests/models/test_init_enum.dart';
 import '../bloc/test_view.dart';
 import '../state/test_solving_screen_state.dart';
 import '../widgets/solving_option_item_widget.dart';
@@ -36,16 +37,61 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
     canPop: false,
     child: BlocConsumer<TestView, TestViewState>(
       listener: (context, state) {
-        if (state.detail != null && questions.isEmpty) {
-          setState(initializeQuestions);
+        if (state.detail != null) {
+          if (questions.isEmpty) {
+            setState(initializeQuestions);
+          } else {
+            final apiQuestions = state.detail?.questions ?? [];
+            if (apiQuestions.length > questions.length) {
+              final newApiQuestions = apiQuestions.sublist(questions.length);
+              final processedNewQuestions = newApiQuestions.map((q) {
+                if (q.options != null &&
+                    (widget.shuffleOptionName == ShuffleOption.all.name ||
+                        widget.shuffleOptionName == ShuffleOption.answersOnly.name)) {
+                  final newOptions = List<DemoOption>.from(q.options!)..shuffle();
+                  return DemoQuestion(
+                    id: q.id,
+                    testId: q.testId,
+                    text: q.text,
+                    position: q.position,
+                    score: q.score,
+                    options: newOptions,
+                    createdAt: q.createdAt,
+                    image: q.image,
+                  );
+                }
+                return q;
+              }).toList();
+              setState(() {
+                questions.addAll(processedNewQuestions);
+              });
+            }
+          }
         }
       },
       builder: (context, state) {
         if (state.detail == null || questions.isEmpty) {
+          final isMobile = context.x.isMobile || context.x.isTablet;
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+          final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+
           return Scaffold(
             backgroundColor: context.x.colors.scaffoldBackground,
             appBar: _buildAppBar(context),
-            body: const TestCustomModeShimmer(),
+            bottomNavigationBar: isMobile
+                ? SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Shimmer.fromColors(
+                        baseColor: baseColor,
+                        highlightColor: highlightColor,
+                        child: const ShimmerBox(width: double.infinity, height: 48, radius: 12),
+                      ),
+                    ),
+                  )
+                : null,
+            body: const TestSolvingShimmer(),
           );
         }
 

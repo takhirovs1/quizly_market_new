@@ -6,7 +6,12 @@ import '../model/test_attempt_model.dart';
 
 abstract interface class ITestViewRepository {
   Future<TestAttemptResponse> getAttempts(String testId, TestAttemptRequest request);
-  Future<DemoTestResponse> getTestDetail(String testId);
+  Future<DemoTestResponse> getTestDetail(
+    String testId, {
+    String? shuffle,
+    String? range,
+    bool? demo,
+  });
   Future<void> likeTest(String testId);
   Future<void> unlikeTest(String testId);
   Future<void> archiveTest(String testId);
@@ -32,9 +37,28 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   }
 
   @override
-  Future<DemoTestResponse> getTestDetail(String testId) async {
+  Future<DemoTestResponse> getTestDetail(
+    String testId, {
+    String? shuffle,
+    String? range,
+    bool? demo,
+  }) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/$testId');
+      final queryParams = <String, Object?>{};
+      if (shuffle != null && shuffle.isNotEmpty) {
+        queryParams['shuffle'] = shuffle;
+      }
+      if (range != null && range.isNotEmpty) {
+        queryParams['range'] = range;
+      }
+      if (demo != null) {
+        queryParams['demo'] = demo;
+      }
+
+      final response = await dio.get<Map<String, Object?>>(
+        '/api/tests/$testId',
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      );
       return DemoTestResponse.fromJson(response.data ?? {});
     } catch (e, s) {
       info('GET TEST DETAIL API ERROR: $e $s');

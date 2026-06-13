@@ -7,6 +7,7 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../../common/util/state_status.dart';
 import '../bloc/test_view.dart';
+import '../widgets/test_mode_shimmer.dart';
 
 class TestResultScreen extends StatefulWidget {
   const TestResultScreen({
@@ -161,25 +162,25 @@ class _TestResultScreenState extends State<TestResultScreen> {
                     // ── Current Session Stats ──
                     _buildStatRow(
                       context,
-                      '✅',
+                      Assets.lib.icon.correct.svg(package: 'ui'),
                       context.x.l10n.correctLabel.replaceAll(':', ''),
                       context.x.l10n.donaText(widget.correct.toString()),
                     ),
                     _buildStatRow(
                       context,
-                      '❌',
+                      Assets.lib.icon.wrong.svg(package: 'ui'),
                       context.x.l10n.wrongLabel.replaceAll(':', ''),
                       context.x.l10n.donaText(widget.wrong.toString()),
                     ),
                     _buildStatRow(
                       context,
-                      '⏳',
+                      Assets.lib.icon.timer.svg(package: 'ui'),
                       context.x.l10n.skippedLabel.replaceAll(':', ''),
                       context.x.l10n.donaText(skipped.toString()),
                     ),
                     _buildStatRow(
                       context,
-                      '⏱️',
+                      Assets.lib.icon.timer2.svg(package: 'ui'),
                       context.x.l10n.timeLabel.replaceAll(':', ''),
                       _formatCurrentTime(widget.time),
                     ),
@@ -191,8 +192,23 @@ class _TestResultScreenState extends State<TestResultScreen> {
                       builder: (context, state) {
                         if (state.attempts.isEmpty) {
                           if (state.status == StateStatus.loading) {
-                            return const Center(
-                              child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                                  child: Text(
+                                    context.x.l10n.lastTime,
+                                    style: context.x.textStyle.sfW600s16.copyWith(
+                                      color: context.x.colors.text,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const HistoryAttemptShimmer(),
+                                const SizedBox(height: 12),
+                                const HistoryAttemptShimmer(),
+                              ],
                             );
                           }
                           return const SizedBox.shrink();
@@ -247,25 +263,25 @@ class _TestResultScreenState extends State<TestResultScreen> {
                                     const SizedBox(height: 12),
                                     _buildHistoryRow(
                                       context,
-                                      '✅',
+                                      Assets.lib.icon.correct.svg(package: 'ui'),
                                       context.x.l10n.correctLabel,
                                       context.x.l10n.countTaText(attemptCorrect.toString()),
                                     ),
                                     _buildHistoryRow(
                                       context,
-                                      '❌',
+                                      Assets.lib.icon.wrong.svg(package: 'ui'),
                                       context.x.l10n.wrongLabel,
                                       context.x.l10n.countTaText(attemptWrong.toString()),
                                     ),
                                     _buildHistoryRow(
                                       context,
-                                      '⏳',
+                                      Assets.lib.icon.timer.svg(package: 'ui'),
                                       context.x.l10n.skippedLabel,
                                       context.x.l10n.countTaText('0'),
                                     ),
                                     _buildHistoryRow(
                                       context,
-                                      '⏱️',
+                                      Assets.lib.icon.timer2.svg(package: 'ui'),
                                       context.x.l10n.timeLabel,
                                       _formatAttemptTime(attempt.timeSpent),
                                     ),
@@ -370,14 +386,14 @@ class _TestResultScreenState extends State<TestResultScreen> {
     );
   }
 
-  Widget _buildStatRow(BuildContext context, String emoji, String label, String value) => Padding(
+  Widget _buildStatRow(BuildContext context, Widget leadingIcon, String label, String value) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 18)),
+            SizedBox(width: 18, height: 18, child: leadingIcon),
             const SizedBox(width: 8),
             Text(
               label,
@@ -393,11 +409,11 @@ class _TestResultScreenState extends State<TestResultScreen> {
     ),
   );
 
-  Widget _buildHistoryRow(BuildContext context, String emoji, String label, String value) => Padding(
-    padding: const EdgeInsets.only(bottom: 8),
+  Widget _buildHistoryRow(BuildContext context, Widget leadingIcon, String label, String value) => Padding(
+    padding: const .only(bottom: 8),
     child: Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 14)),
+        SizedBox(width: 14, height: 14, child: leadingIcon),
         const SizedBox(width: 8),
         Text(label, style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.text)),
         _DottedLine(color: context.x.colors.gray.withValues(alpha: 0.3)),

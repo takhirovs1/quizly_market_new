@@ -57,22 +57,22 @@ class _TestAttemptWidgetState extends State<TestAttemptWidget> {
                 ],
               ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.correct.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.correct.svg(package: 'ui'),
               leadingTitle: 'context.l10n.correct',
               trailingTitle: correct.toString(),
             ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.wrong.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.wrong.svg(package: 'ui'),
               leadingTitle: 'context.l10n.wrong',
               trailingTitle: wrong.toString(),
             ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.timer.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.timer.svg(package: 'ui'),
               leadingTitle: 'context.l10n.skipped',
               trailingTitle: skipped.toString(),
             ),
             _ResultInfoWidget(
-              leadingIcon: Assets.lib.vectors.timer2.svg(package: 'ui'),
+              leadingIcon: Assets.lib.icon.timer2.svg(package: 'ui'),
               leadingTitle: 'context.l10n.time',
               trailingTitle: format(Duration(seconds: a?.timeSpentSec ?? 0)),
             ),
