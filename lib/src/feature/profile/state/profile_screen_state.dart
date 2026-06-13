@@ -205,7 +205,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
     context.bottomSheetPop();
   }
 
-  void onHelpPressed() {}
+  void onHelpPressed() => context.octopus.push(Routes.supportChat);
 
   void onFrequentlyAskedQuestionsPressed() {}
 

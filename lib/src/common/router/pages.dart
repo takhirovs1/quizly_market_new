@@ -15,6 +15,7 @@ import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/profile/screen/referral_screen.dart';
+import '../../feature/profile/screen/support_chat_screen.dart';
 import '../../feature/recommendation/bloc/recommendation_cubit.dart';
 import '../../feature/recommendation/data/recommendation_repository.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
@@ -50,6 +51,7 @@ enum Routes with OctopusRoute {
   testGroupMode('testGroupMode', title: 'Test Group Mode'),
   testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode'),
   testResult('testResult', title: 'Test Result'),
+  supportChat('supportChat', title: 'Support Chat'),
   testSolving('testSolving', title: 'Test Solving');
 
   const Routes(this.name, {this.title});
@@ -157,5 +159,6 @@ enum Routes with OctopusRoute {
       },
       child: TestSolvingScreen(arguments: TestSolvingArguments.fromArguments(node.arguments)),
     ),
+    .supportChat => const SupportChatScreen(),
   };
 }
