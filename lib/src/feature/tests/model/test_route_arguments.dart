@@ -1,3 +1,5 @@
+import '../../../common/util/app_enum.dart';
+
 class TestResultArguments {
   const TestResultArguments({
     required this.testId,
@@ -78,6 +80,7 @@ class TestSolvingArguments {
     required this.endRange,
     required this.timeOptionName,
     required this.shuffleOptionName,
+    this.mode = TestMode.custom,
     this.lastAttemptCorrect,
     this.lastAttemptTotal,
     this.lastAttemptTime,
@@ -91,6 +94,7 @@ class TestSolvingArguments {
     endRange: int.tryParse(args['end'] ?? '') ?? 20,
     timeOptionName: args['time'] ?? '',
     shuffleOptionName: args['shuffle'] ?? '',
+    mode: .fromValue(args['mode']),
     lastAttemptCorrect: int.tryParse(args['last_attempt_correct'] ?? ''),
     lastAttemptTotal: int.tryParse(args['last_attempt_total'] ?? ''),
     lastAttemptTime: int.tryParse(args['last_attempt_time'] ?? ''),
@@ -103,6 +107,7 @@ class TestSolvingArguments {
   final int endRange;
   final String timeOptionName;
   final String shuffleOptionName;
+  final TestMode mode;
   final int? lastAttemptCorrect;
   final int? lastAttemptTotal;
   final int? lastAttemptTime;
@@ -115,9 +120,10 @@ class TestSolvingArguments {
     'end': endRange.toString(),
     'time': timeOptionName,
     'shuffle': shuffleOptionName,
+    'mode': mode.value,
     if (lastAttemptCorrect != null) 'last_attempt_correct': lastAttemptCorrect!.toString(),
     if (lastAttemptTotal != null) 'last_attempt_total': lastAttemptTotal!.toString(),
     if (lastAttemptTime != null) 'last_attempt_time': lastAttemptTime!.toString(),
-    if (lastAttemptDate != null) 'last_attempt_date': lastAttemptDate!,
+    'last_attempt_date': ?lastAttemptDate,
   };
 }

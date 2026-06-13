@@ -44,6 +44,7 @@ abstract class TestUniversityModeScreenState extends State<TestUniversityModeScr
             'end': (selectedQuestionCount.value ?? detail?.questionCount ?? 100).toString(),
             'time': selectedTotalTime.value.inMinutes.toString(),
             'shuffle': 'all',
+            'mode': 'university',
             if (lastAttempt != null) ...{
               'last_attempt_correct': lastAttempt.correctAnswers.toString(),
               'last_attempt_total': lastAttempt.totalQuestions.toString(),

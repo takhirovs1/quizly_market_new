@@ -594,3 +594,51 @@ class TestSolvingShimmer extends StatelessWidget {
     }
   }
 }
+
+class TestQuestionContentShimmer extends StatelessWidget {
+  const TestQuestionContentShimmer({required this.isMobile, super.key});
+
+  final bool isMobile;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+
+    Widget shimmerWrapper(Widget child) =>
+        Shimmer.fromColors(baseColor: baseColor, highlightColor: highlightColor, child: child);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        // Question number row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            shimmerWrapper(const ShimmerBox(width: 60, height: 14, radius: 4)),
+            shimmerWrapper(const ShimmerBox(width: 40, height: 14, radius: 4)),
+          ],
+        ),
+        const SizedBox(height: 24),
+        // Question image placeholder
+        shimmerWrapper(ShimmerBox(width: double.infinity, height: isMobile ? 200 : 320, radius: 12)),
+        const SizedBox(height: 16),
+        // Question text lines
+        shimmerWrapper(const ShimmerBox(width: double.infinity, height: 18, radius: 4)),
+        const SizedBox(height: 8),
+        shimmerWrapper(const ShimmerBox(width: 240, height: 18, radius: 4)),
+        const SizedBox(height: 24),
+        // 4 options shimmers
+        Column(
+          spacing: 12,
+          children: List.generate(
+            4,
+            (index) => shimmerWrapper(const ShimmerBox(width: double.infinity, height: 60, radius: 12)),
+          ),
+        ),
+      ],
+    );
+  }
+}

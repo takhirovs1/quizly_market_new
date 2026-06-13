@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/app_enum.dart';
 import '../../my_tests/models/demo_test_model.dart';
-import '../../my_tests/models/test_init_enum.dart';
+import '../../my_tests/models/test_init_enum.dart' hide TestMode;
 import '../bloc/test_view.dart';
 import '../model/test_request_response_models.dart';
 import '../screens/test_solving_screen.dart';
@@ -19,9 +21,26 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   final Map<String, String> selectedAnswers = {};
   ValueNotifier<int> currentQuestionIndex = ValueNotifier(0);
 
+  int get totalToSolve {
+    final apiStart = widget.startRange == 0 ? 1 : widget.startRange;
+    final apiEnd = widget.endRange == 0 ? 1 : widget.endRange;
+    final rangeCount = apiEnd - apiStart + 1;
+    final actualTotal = cubit.state.detail?.questionCount;
+    if (actualTotal != null) {
+      final maxAvailable = actualTotal - apiStart + 1;
+      return rangeCount.clamp(0, maxAvailable);
+    }
+    return rangeCount;
+  }
+
+  final ValueNotifier<bool> isFetching = ValueNotifier(false);
+
   Timer? _timer;
   ValueNotifier<int> remainingSeconds = ValueNotifier(0);
   int questionTimeSeconds = 0;
+
+  Timer? _postAnswerTimer;
+  final ValueNotifier<int> postAnswerRemainingSeconds = ValueNotifier(0);
 
   ValueNotifier<DemoOption?> selectedOption = ValueNotifier(null);
   ValueNotifier<bool> isAnswerChecked = ValueNotifier(false);
@@ -44,7 +63,14 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     // Preload sounds so they play instantly.
     _sound.preload(_correctSound);
 
-    questionTimeSeconds = _parseTimeOption(widget.timeOptionName);
+    if (widget.arguments.mode == TestMode.university) {
+      final minutes = int.tryParse(widget.arguments.timeOptionName) ?? 30;
+      remainingSeconds.value = minutes * 60;
+      questionTimeSeconds = 0;
+      _startGlobalTimer();
+    } else {
+      questionTimeSeconds = _parseTimeOption(widget.timeOptionName);
+    }
     currentQuestionIndex.addListener(_onQuestionIndexChanged);
     initializeQuestions();
     context.setupTelegramBackButton(onBackPressed);
@@ -82,6 +108,33 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     );
   }
 
+  Future<void> fetchQuestionsUpTo(int targetIndex) async {
+    if (targetIndex < questions.length) return;
+
+    final apiStart = widget.startRange == 0 ? 1 : widget.startRange;
+    final apiEnd = widget.endRange == 0 ? 1 : widget.endRange;
+
+    final nextStart = apiStart + questions.length;
+    var nextEnd = nextStart + 19;
+    final requiredEnd = apiStart + targetIndex;
+    if (nextEnd < requiredEnd) {
+      nextEnd = requiredEnd;
+    }
+    nextEnd = nextEnd.clamp(nextStart, apiEnd);
+
+    final rangeStr = '$nextStart-$nextEnd';
+
+    isFetching.value = true;
+    try {
+      await cubit.loadNextQuestionsChunk(
+        widget.testId,
+        TestDetailRequest(range: rangeStr, shuffle: widget.shuffleOptionName),
+      );
+    } finally {
+      isFetching.value = false;
+    }
+  }
+
   void initializeQuestions() {
     final detail = cubit.state.detail;
     if (detail == null || detail.questions == null) return;
@@ -110,7 +163,7 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     }).toList();
 
     if (questions.isNotEmpty) {
-      _startQuestion();
+      startQuestion();
     }
   }
 
@@ -133,21 +186,35 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     }
   }
 
-  void _startQuestion() {
+  void startQuestion() {
     selectedOption.value = null;
     isAnswerChecked.value = false;
+    _postAnswerTimer?.cancel();
+    postAnswerRemainingSeconds.value = 0;
 
-    if (questionTimeSeconds > 0) {
-      remainingSeconds.value = questionTimeSeconds;
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (remainingSeconds.value > 0) {
-          remainingSeconds.value--;
-        } else {
+    final currentQuestion = questions[currentQuestionIndex.value];
+    final selectedOptionId = selectedAnswers[currentQuestion.id];
+    if (selectedOptionId != null) {
+      final previouslySelected = currentQuestion.options?.firstWhereOrNull((o) => o.id == selectedOptionId);
+      selectedOption.value = previouslySelected;
+      isAnswerChecked.value = true;
+    } else {
+      if (widget.arguments.mode == TestMode.university) {
+        // Global timer is running in university mode, no per-question timer.
+      } else {
+        if (questionTimeSeconds > 0) {
+          remainingSeconds.value = questionTimeSeconds;
           _timer?.cancel();
-          _onTimeUp();
+          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            if (remainingSeconds.value > 0) {
+              remainingSeconds.value--;
+            } else {
+              _timer?.cancel();
+              _onTimeUp();
+            }
+          });
         }
-      });
+      }
     }
   }
 
@@ -166,7 +233,10 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
 
     selectedOption.value = option;
     isAnswerChecked.value = true;
-    _timer?.cancel();
+
+    if (widget.arguments.mode != .university) {
+      _timer?.cancel();
+    }
 
     final currentQuestion = questions[currentQuestionIndex.value];
     if (currentQuestion.id != null && option.id != null) {
@@ -186,31 +256,75 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   }
 
   void _startPostAnswerTimer() {
-    remainingSeconds.value = 5;
+    if (widget.arguments.mode == TestMode.university) {
+      postAnswerRemainingSeconds.value = 5;
+      _postAnswerTimer?.cancel();
+      _postAnswerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (postAnswerRemainingSeconds.value > 0) {
+          postAnswerRemainingSeconds.value--;
+        } else {
+          _postAnswerTimer?.cancel();
+          _nextQuestion();
+        }
+      });
+    } else {
+      remainingSeconds.value = 5;
+      _timer?.cancel();
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (remainingSeconds.value > 0) {
+          remainingSeconds.value--;
+        } else {
+          _timer?.cancel();
+          _nextQuestion();
+        }
+      });
+    }
+  }
+
+  void _nextQuestion() {
+    if (currentQuestionIndex.value < questions.length - 1) {
+      currentQuestionIndex.value++;
+      startQuestion();
+    } else {
+      if (widget.arguments.mode == TestMode.university) {
+        final firstUnansweredIndex = questions.indexWhere((q) => !selectedAnswers.containsKey(q.id));
+        if (firstUnansweredIndex != -1) {
+          currentQuestionIndex.value = firstUnansweredIndex;
+          startQuestion();
+        } else {
+          onFinish();
+        }
+      } else {
+        onFinish();
+      }
+    }
+  }
+
+  void onNextPressed() {
+    context.telegramWebApp.hapticImpact(.light);
+    _postAnswerTimer?.cancel();
+    _nextQuestion();
+  }
+
+  void onPreviousPressed() {
+    context.telegramWebApp.hapticImpact(.light);
+    if (currentQuestionIndex.value > 0) {
+      _postAnswerTimer?.cancel();
+      currentQuestionIndex.value--;
+      startQuestion();
+    }
+  }
+
+  void _startGlobalTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (remainingSeconds.value > 0) {
         remainingSeconds.value--;
       } else {
         _timer?.cancel();
-        _nextQuestion();
+        onFinish();
       }
     });
-  }
-
-  void _nextQuestion() {
-    if (currentQuestionIndex.value < questions.length - 1) {
-      currentQuestionIndex.value++;
-      _startQuestion();
-    } else {
-      onFinish();
-    }
-  }
-
-  void onNextPressed() {
-    if (isAnswerChecked.value) {
-      _nextQuestion();
-    }
   }
 
   Future<void> onFinish() async {
@@ -236,7 +350,7 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
           'id': widget.testId,
           'correct': correctAnswers.toString(),
           'wrong': wrongAnswers.toString(),
-          'total': questions.length.toString(),
+          'total': totalToSolve.toString(),
           'time': timeSpentSec.toString(),
           if (detail?.name != null) 'name': detail!.name!,
           if (detail?.description != null) 'description': detail!.description!,
@@ -267,10 +381,13 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     currentQuestionIndex.removeListener(_onQuestionIndexChanged);
     context.teardownTelegramBackButton(onBackPressed);
     _timer?.cancel();
+    _postAnswerTimer?.cancel();
     selectedOption.dispose();
     isAnswerChecked.dispose();
     currentQuestionIndex.dispose();
     remainingSeconds.dispose();
+    postAnswerRemainingSeconds.dispose();
+    isFetching.dispose();
     super.dispose();
   }
 }

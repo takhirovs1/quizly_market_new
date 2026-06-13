@@ -465,22 +465,22 @@ class _AttemptItemWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.icon.correct.svg(package: 'ui'),
+              leadingIcon: Assets.lib.images.correctIcon.image(package: 'ui'),
               leadingTitle: context.x.l10n.correctLabel,
               trailingTitle: context.x.l10n.countTaText(correct),
             ),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.icon.wrong.svg(package: 'ui'),
+              leadingIcon: Assets.lib.images.wrongIcon.image(package: 'ui'),
               leadingTitle: context.x.l10n.wrongLabel,
               trailingTitle: context.x.l10n.countTaText(wrong),
             ),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.icon.timer.svg(package: 'ui'),
+              leadingIcon: Assets.lib.images.timerIcon.image(package: 'ui'),
               leadingTitle: context.x.l10n.skippedLabel,
               trailingTitle: context.x.l10n.countTaText(skipped),
             ),
             _ResultInfoRow(
-              leadingIcon: Assets.lib.icon.timer2.svg(package: 'ui'),
+              leadingIcon: Assets.lib.images.timer2Icon.image(package: 'ui'),
               leadingTitle: context.x.l10n.timeLabel,
               trailingTitle: _formatDuration(attempt.timeSpent),
             ),

@@ -78,7 +78,7 @@ class _TestResultScreenState extends State<TestResultScreen> {
         backgroundColor: context.x.colors.scaffoldBackground,
         appBar: QuizAppBar(
           title: context.x.l10n.resultTitle,
-          telegramWebAppSafeAreaInsetTop: MediaQuery.of(context).padding.top,
+          telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
         ),
         body: Container(
           width: double.infinity,
@@ -162,8 +162,8 @@ class _TestResultScreenState extends State<TestResultScreen> {
                             const SizedBox(height: 6),
                             Text(
                               context.x.l10n.solvedQuestionsSummary(
-                                totalQuestionsCount.toString(),
                                 solvedCount.toString(),
+                                totalQuestionsCount.toString(),
                               ),
                               style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.gray),
                               textAlign: TextAlign.center,
@@ -178,25 +178,25 @@ class _TestResultScreenState extends State<TestResultScreen> {
                     // ── Current Session Stats ──
                     _buildStatRow(
                       context,
-                      Assets.lib.icon.correct.svg(package: 'ui'),
+                      Assets.lib.images.correctIcon.image(package: 'ui'),
                       context.x.l10n.correctLabel.replaceAll(':', ''),
                       context.x.l10n.donaText(widget.correct.toString()),
                     ),
                     _buildStatRow(
                       context,
-                      Assets.lib.icon.wrong.svg(package: 'ui'),
+                      Assets.lib.images.wrongIcon.image(package: 'ui'),
                       context.x.l10n.wrongLabel.replaceAll(':', ''),
                       context.x.l10n.donaText(widget.wrong.toString()),
                     ),
                     _buildStatRow(
                       context,
-                      Assets.lib.icon.timer.svg(package: 'ui'),
+                      Assets.lib.images.timerIcon.image(package: 'ui'),
                       context.x.l10n.skippedLabel.replaceAll(':', ''),
                       context.x.l10n.donaText(skipped.toString()),
                     ),
                     _buildStatRow(
                       context,
-                      Assets.lib.icon.timer2.svg(package: 'ui'),
+                      Assets.lib.images.timer2Icon.image(package: 'ui'),
                       context.x.l10n.timeLabel.replaceAll(':', ''),
                       _formatCurrentTime(widget.time),
                     ),
@@ -264,25 +264,25 @@ class _TestResultScreenState extends State<TestResultScreen> {
                                   const SizedBox(height: 12),
                                   _buildHistoryRow(
                                     context,
-                                    Assets.lib.icon.correct.svg(package: 'ui'),
+                                    Assets.lib.images.correctIcon.image(package: 'ui'),
                                     context.x.l10n.correctLabel,
                                     context.x.l10n.countTaText(lastCorrect.toString()),
                                   ),
                                   _buildHistoryRow(
                                     context,
-                                    Assets.lib.icon.wrong.svg(package: 'ui'),
+                                    Assets.lib.images.wrongIcon.image(package: 'ui'),
                                     context.x.l10n.wrongLabel,
                                     context.x.l10n.countTaText(attemptWrong.toString()),
                                   ),
                                   _buildHistoryRow(
                                     context,
-                                    Assets.lib.icon.timer.svg(package: 'ui'),
+                                    Assets.lib.images.timerIcon.image(package: 'ui'),
                                     context.x.l10n.skippedLabel,
                                     context.x.l10n.countTaText('0'),
                                   ),
                                   _buildHistoryRow(
                                     context,
-                                    Assets.lib.icon.timer2.svg(package: 'ui'),
+                                    Assets.lib.images.timer2Icon.image(package: 'ui'),
                                     context.x.l10n.timeLabel,
                                     _formatAttemptTime(lastTime),
                                   ),

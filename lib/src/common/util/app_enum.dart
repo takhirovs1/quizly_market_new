@@ -15,3 +15,18 @@ enum PaymentProvider {
         _ => fallback,
       };
 }
+
+enum TestMode {
+  custom('custom'),
+  university('university');
+
+  const TestMode(this.value);
+
+  final String value;
+
+  static TestMode fromValue(String? value, {TestMode fallback = TestMode.custom}) => switch (value?.toLowerCase()) {
+    'custom' => custom,
+    'university' => university,
+    _ => fallback,
+  };
+}

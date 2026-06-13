@@ -309,6 +309,9 @@ class $LibImagesGen {
   /// File path: lib/images/click_logo.png
   AssetGenImage get clickLogo => const AssetGenImage('lib/images/click_logo.png');
 
+  /// File path: lib/images/correct_icon.png
+  AssetGenImage get correctIcon => const AssetGenImage('lib/images/correct_icon.png');
+
   /// File path: lib/images/cup.png
   AssetGenImage get cup => const AssetGenImage('lib/images/cup.png');
 
@@ -375,8 +378,17 @@ class $LibImagesGen {
   /// File path: lib/images/telegram_logo.png
   AssetGenImage get telegramLogo => const AssetGenImage('lib/images/telegram_logo.png');
 
+  /// File path: lib/images/timer2_icon.png
+  AssetGenImage get timer2Icon => const AssetGenImage('lib/images/timer2_icon.png');
+
+  /// File path: lib/images/timer_icon.png
+  AssetGenImage get timerIcon => const AssetGenImage('lib/images/timer_icon.png');
+
   /// File path: lib/images/uzum.jpeg
   AssetGenImage get uzum => const AssetGenImage('lib/images/uzum.jpeg');
+
+  /// File path: lib/images/wrong_icon.png
+  AssetGenImage get wrongIcon => const AssetGenImage('lib/images/wrong_icon.png');
 
   /// File path: lib/images/xazna.jpg
   AssetGenImage get xazna => const AssetGenImage('lib/images/xazna.jpg');
@@ -386,6 +398,7 @@ class $LibImagesGen {
     click,
     click2,
     clickLogo,
+    correctIcon,
     cup,
     cupResult,
     flexedBiceps,
@@ -408,7 +421,10 @@ class $LibImagesGen {
     strong,
     successDialog,
     telegramLogo,
+    timer2Icon,
+    timerIcon,
     uzum,
+    wrongIcon,
     xazna,
   ];
 }

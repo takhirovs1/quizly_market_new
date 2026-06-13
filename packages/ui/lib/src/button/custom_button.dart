@@ -6,8 +6,8 @@ import '../../ui.dart';
 class CustomButton extends StatefulWidget {
   /// {@macro custom_button}
   const CustomButton({
-    required this.onTap,
     required this.title,
+    this.onTap,
     this.color,
     this.textColor,
     super.key,
@@ -16,7 +16,7 @@ class CustomButton extends StatefulWidget {
     this.isLoading = false,
   });
 
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final String title;
   final Color? color;
   final Color? textColor;
@@ -77,7 +77,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
               )
             : null,
         child: FilledButton(
-          onPressed: widget.isLoading ? null : widget.onTap,
+          onPressed: (widget.isLoading || widget.onTap == null) ? null : widget.onTap,
           style: FilledButton.styleFrom(
             backgroundColor: widget.isLoading ? buttonColor.withValues(alpha: 0.1) : buttonColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(widget.borderRadius)),
