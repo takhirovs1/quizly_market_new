@@ -36,14 +36,16 @@ class Transaction {
     required this.amount,
     required this.type,
     required this.createdAt,
+    this.provider,
   });
 
   factory Transaction.fromJson(Map<String, Object?> json) => Transaction(
     id: json['id']?.toString() ?? '',
-    title: json['title'] as String? ?? json['name'] as String? ?? '',
+    title: json['description'] as String? ?? json['title'] as String? ?? json['name'] as String? ?? '',
     amount: json['amount'].toIntOrNull ?? 0,
-    type: json['type'] as String? ?? '',
+    type: json['tx_type'] as String? ?? json['type'] as String? ?? '',
     createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
+    provider: json['provider'] as String?,
   );
 
   final String id;
@@ -51,4 +53,5 @@ class Transaction {
   final int amount;
   final String type;
   final DateTime createdAt;
+  final String? provider;
 }
