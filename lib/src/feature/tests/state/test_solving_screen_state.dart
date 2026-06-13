@@ -27,13 +27,16 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
 
-  final SoundService _sound = .instance;
+  final SoundService _sound = SoundService.instance;
 
   static const _correctSound = 'lib/audio/correct.mp3';
+
+  late final DateTime startTime;
 
   @override
   void initState() {
     super.initState();
+    startTime = DateTime.now();
     cubit = context.read<TestView>();
 
     // Preload sounds so they play instantly.
@@ -184,13 +187,22 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
 
   void onFinish() {
     _timer?.cancel();
-    // Usually we would submit attempts, but currently we just go to result
-    context.octopus.navigate(Routes.testResult.name);
+    final timeSpentSec = DateTime.now().difference(startTime).inSeconds;
+    context.octopus.pushReplacement(
+      Routes.testResult,
+      arguments: {
+        'id': widget.testId,
+        'correct': correctAnswers.toString(),
+        'wrong': wrongAnswers.toString(),
+        'total': questions.length.toString(),
+        'time': timeSpentSec.toString(),
+      },
+    );
   }
 
   void onBackPressed() {
     // Disable exiting the screen via back button
-    context.telegramWebApp.hapticNotification(TelegramHapticNotification.warning);
+    context.telegramWebApp.hapticNotification(.warning);
   }
 
   void onClose() {

@@ -132,7 +132,18 @@ enum Routes with OctopusRoute {
     .testUniversityMode => const TestUniversityModeScreen(),
     .testGroupMode => const TestGroupModeScreen(),
     .testFlashcardMode => const TestFlashcardMode(),
-    .testResult => const TestResultScreen(),
+    .testResult => BlocProvider(
+      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+        ..getTestDetail(node.arguments['id'] ?? '')
+        ..getAttempts(node.arguments['id'] ?? ''),
+      child: TestResultScreen(
+        testId: node.arguments['id'] ?? '',
+        correct: int.tryParse(node.arguments['correct'] ?? '') ?? 0,
+        wrong: int.tryParse(node.arguments['wrong'] ?? '') ?? 0,
+        total: int.tryParse(node.arguments['total'] ?? '') ?? 0,
+        time: int.tryParse(node.arguments['time'] ?? '') ?? 0,
+      ),
+    ),
     .testSolving => BlocProvider(
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))

@@ -61,6 +61,9 @@ class $LibImagesGen {
   /// File path: lib/images/cup.png
   AssetGenImage get cup => const AssetGenImage('lib/images/cup.png');
 
+  /// File path: lib/images/cup_result.png
+  AssetGenImage get cupResult => const AssetGenImage('lib/images/cup_result.png');
+
   /// File path: lib/images/flexed_biceps.png
   AssetGenImage get flexedBiceps => const AssetGenImage('lib/images/flexed_biceps.png');
 
@@ -133,6 +136,7 @@ class $LibImagesGen {
     click2,
     clickLogo,
     cup,
+    cupResult,
     flexedBiceps,
     logo,
     logoPng,
