@@ -24,10 +24,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -68,5 +65,16 @@ class DefaultFirebaseOptions {
     projectId: 'test-9cf8b',
     storageBucket: 'test-9cf8b.firebasestorage.app',
     iosBundleId: 'com.quizly.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyA3j_HAwq0dyBi8KnCgPNUeUi7l85tYoOY',
+    appId: '1:568369386495:ios:acc99e27da3ad29c1e4dca',
+    messagingSenderId: '568369386495',
+    projectId: 'test-9cf8b',
+    storageBucket: 'test-9cf8b.firebasestorage.app',
+    androidClientId: '568369386495-umvco3b8jgp3l3bvdrmh7aj6q35drjsh.apps.googleusercontent.com',
+    iosClientId: '568369386495-17m34mrumh2njfsov3mbu51i2k2gna84.apps.googleusercontent.com',
+    iosBundleId: 'com.flutterbro.quizlyMarket',
   );
 }

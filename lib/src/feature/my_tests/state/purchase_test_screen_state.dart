@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/app_enum.dart';
 import '../../../common/util/state_status.dart';
 import '../bloc/my_test_cubit.dart';
 import '../models/payment_model.dart';
@@ -142,12 +143,42 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     }
   }
 
-  void onBuyPressed({bool withPop = false}) {
+  Future<void> onBuyPressed({bool withPop = false}) async {
     if (withPop) {
       Navigator.pop(context);
     }
     context.telegramWebApp.hapticImpact(.light);
-    myTestCubit.purchaseTest(widget.testId);
+
+    final selected = selectedPayment.value;
+    if (selected.type == PaymentType.provider) {
+      final provider = selected.id == 1 ? PaymentProvider.payme : PaymentProvider.click;
+      final detail = myTestCubit.state.demoTestDetail;
+      final code = (detail?.code != null && detail!.code!.isNotEmpty) ? detail.code! : widget.testId;
+      final redirectUrl = 'https://t.me/@prjkttest_bot?startapp=$code';
+
+      final response = await myTestCubit.checkoutTest(
+        testId: widget.testId,
+        provider: provider,
+        redirectUrl: redirectUrl,
+      );
+      if (!mounted) return;
+
+      final payUrl = response?.url;
+      if (payUrl != null && payUrl.isNotEmpty) {
+        context.telegramWebApp.openLink(payUrl, tryInstantView: false);
+      } else {
+        context.x.showNotification(
+          message: context.x.l10n.somethingWentWrong,
+          isError: true,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
+      }
+    } else {
+      myTestCubit.purchaseTest(widget.testId);
+    }
   }
 
   void onPressLike() {

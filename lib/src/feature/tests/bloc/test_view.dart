@@ -63,10 +63,35 @@ class TestView extends SequentialCubit<TestViewState> {
     },
   );
 
+  Future<void> getTestQuestions(String testId, TestDetailRequest request) => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: StateStatus.loading));
+      final newQuestions = await testViewRepository.getTestQuestions(testId, request);
+      final currentDetail = state.detail;
+      if (currentDetail != null) {
+        emit(
+          state.copyWith(
+            status: StateStatus.success,
+            detail: currentDetail.copyWith(questions: newQuestions),
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: StateStatus.success,
+            detail: DemoTestDetail(id: testId, questions: newQuestions),
+          ),
+        );
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
   Future<void> loadNextQuestionsChunk(String testId, TestDetailRequest request) => handle<void>(
     (emit) async {
-      final response = await testViewRepository.getTestDetail(testId, request);
-      final newQuestions = response.data?.questions ?? [];
+      final newQuestions = await testViewRepository.getTestQuestions(testId, request);
       final currentDetail = state.detail;
       if (currentDetail != null) {
         final updatedQuestions = [...?currentDetail.questions, ...newQuestions];

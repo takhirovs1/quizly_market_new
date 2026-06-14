@@ -1,4 +1,5 @@
 import '../../../common/util/app_enum.dart';
+import '../../../common/util/logger.dart' as log_util;
 
 class TestResultArguments {
   const TestResultArguments({
@@ -17,6 +18,7 @@ class TestResultArguments {
     this.lastAttemptTotal,
     this.lastAttemptTime,
     this.lastAttemptDate,
+    this.lastAttemptSkip,
   });
 
   factory TestResultArguments.fromArguments(Map<String, String> args) => TestResultArguments(
@@ -25,16 +27,17 @@ class TestResultArguments {
     wrong: int.tryParse(args['wrong'] ?? '') ?? 0,
     total: int.tryParse(args['total'] ?? '') ?? 0,
     time: int.tryParse(args['time'] ?? '') ?? 0,
-    attemptId: args['attempt_id'],
+    attemptId: args['attemptId'] ?? args['attempt_id'],
     testName: args['name'],
     description: args['description'],
-    academicYear: args['academic_year'],
+    academicYear: args['academicYear'] ?? args['academic_year'],
     semester: int.tryParse(args['semester'] ?? ''),
-    questionCount: int.tryParse(args['question_count'] ?? ''),
-    lastAttemptCorrect: int.tryParse(args['last_attempt_correct'] ?? ''),
-    lastAttemptTotal: int.tryParse(args['last_attempt_total'] ?? ''),
-    lastAttemptTime: int.tryParse(args['last_attempt_time'] ?? ''),
-    lastAttemptDate: args['last_attempt_date'],
+    questionCount: int.tryParse(args['questionCount'] ?? args['question_count'] ?? ''),
+    lastAttemptCorrect: int.tryParse(args['lastAttemptCorrect'] ?? args['last_attempt_correct'] ?? ''),
+    lastAttemptTotal: int.tryParse(args['lastAttemptTotal'] ?? args['last_attempt_total'] ?? ''),
+    lastAttemptTime: int.tryParse(args['lastAttemptTime'] ?? args['last_attempt_time'] ?? ''),
+    lastAttemptDate: args['lastAttemptDate'] ?? args['last_attempt_date'],
+    lastAttemptSkip: int.tryParse(args['lastAttemptSkip'] ?? args['last_attempt_skip'] ?? ''),
   );
 
   final String testId;
@@ -52,6 +55,7 @@ class TestResultArguments {
   final int? lastAttemptTotal;
   final int? lastAttemptTime;
   final String? lastAttemptDate;
+  final int? lastAttemptSkip;
 
   Map<String, String> toArguments() => {
     'id': testId,
@@ -59,16 +63,17 @@ class TestResultArguments {
     'wrong': wrong.toString(),
     'total': total.toString(),
     'time': time.toString(),
-    if (attemptId != null) 'attempt_id': attemptId!,
-    if (testName != null) 'name': testName!,
-    if (description != null) 'description': description!,
-    if (academicYear != null) 'academic_year': academicYear!,
-    if (semester != null) 'semester': semester!.toString(),
-    if (questionCount != null) 'question_count': questionCount!.toString(),
-    if (lastAttemptCorrect != null) 'last_attempt_correct': lastAttemptCorrect!.toString(),
-    if (lastAttemptTotal != null) 'last_attempt_total': lastAttemptTotal!.toString(),
-    if (lastAttemptTime != null) 'last_attempt_time': lastAttemptTime!.toString(),
-    if (lastAttemptDate != null) 'last_attempt_date': lastAttemptDate!,
+    'attemptId':? attemptId,
+    'name':? testName,
+    'description':? description,
+    'academicYear':? academicYear,
+    'semester':? semester?.toString(),
+    'questionCount':? questionCount?.toString(),
+    'lastAttemptCorrect':? lastAttemptCorrect?.toString(),
+    'lastAttemptTotal':? lastAttemptTotal?.toString(),
+    'lastAttemptTime':? lastAttemptTime?.toString(),
+    'lastAttemptDate':? lastAttemptDate,
+    'lastAttemptSkip':? lastAttemptSkip?.toString(),
   };
 }
 
@@ -85,21 +90,26 @@ class TestSolvingArguments {
     this.lastAttemptTotal,
     this.lastAttemptTime,
     this.lastAttemptDate,
+    this.lastAttemptSkip,
   });
 
-  factory TestSolvingArguments.fromArguments(Map<String, String> args) => TestSolvingArguments(
-    testId: args['id'] ?? '',
-    attemptId: args['attempt_id'] ?? '',
-    startRange: int.tryParse(args['start'] ?? '') ?? 1,
-    endRange: int.tryParse(args['end'] ?? '') ?? 20,
-    timeOptionName: args['time'] ?? '',
-    shuffleOptionName: args['shuffle'] ?? '',
-    mode: .fromValue(args['mode']),
-    lastAttemptCorrect: int.tryParse(args['last_attempt_correct'] ?? ''),
-    lastAttemptTotal: int.tryParse(args['last_attempt_total'] ?? ''),
-    lastAttemptTime: int.tryParse(args['last_attempt_time'] ?? ''),
-    lastAttemptDate: args['last_attempt_date'],
-  );
+  factory TestSolvingArguments.fromArguments(Map<String, String> args) {
+    log_util.info('TestSolvingArguments.fromArguments args: $args');
+    return TestSolvingArguments(
+      testId: args['id'] ?? '',
+      attemptId: args['attemptId'] ?? args['attempt_id'] ?? '',
+      startRange: int.tryParse(args['start'] ?? '') ?? 1,
+      endRange: int.tryParse(args['end'] ?? '') ?? 20,
+      timeOptionName: args['time'] ?? '',
+      shuffleOptionName: args['shuffle'] ?? '',
+      mode: TestMode.fromValue(args['mode']),
+      lastAttemptCorrect: int.tryParse(args['lastAttemptCorrect'] ?? args['last_attempt_correct'] ?? ''),
+      lastAttemptTotal: int.tryParse(args['lastAttemptTotal'] ?? args['last_attempt_total'] ?? ''),
+      lastAttemptTime: int.tryParse(args['lastAttemptTime'] ?? args['last_attempt_time'] ?? ''),
+      lastAttemptDate: args['lastAttemptDate'] ?? args['last_attempt_date'],
+      lastAttemptSkip: int.tryParse(args['lastAttemptSkip'] ?? args['last_attempt_skip'] ?? ''),
+    );
+  }
 
   final String testId;
   final String attemptId;
@@ -112,18 +122,20 @@ class TestSolvingArguments {
   final int? lastAttemptTotal;
   final int? lastAttemptTime;
   final String? lastAttemptDate;
+  final int? lastAttemptSkip;
 
   Map<String, String> toArguments() => {
     'id': testId,
-    'attempt_id': attemptId,
+    'attemptId': attemptId,
     'start': startRange.toString(),
     'end': endRange.toString(),
     'time': timeOptionName,
     'shuffle': shuffleOptionName,
     'mode': mode.value,
-    if (lastAttemptCorrect != null) 'last_attempt_correct': lastAttemptCorrect!.toString(),
-    if (lastAttemptTotal != null) 'last_attempt_total': lastAttemptTotal!.toString(),
-    if (lastAttemptTime != null) 'last_attempt_time': lastAttemptTime!.toString(),
-    'last_attempt_date': ?lastAttemptDate,
+    'lastAttemptCorrect':? lastAttemptCorrect?.toString(),
+    'lastAttemptTotal':? lastAttemptTotal?.toString(),
+    'lastAttemptTime':? lastAttemptTime?.toString(),
+    'lastAttemptDate':? lastAttemptDate,
+    'lastAttemptSkip':? lastAttemptSkip?.toString(),
   };
 }

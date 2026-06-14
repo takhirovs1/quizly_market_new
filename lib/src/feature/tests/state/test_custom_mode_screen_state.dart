@@ -141,16 +141,17 @@ abstract class TestCustomModeScreenState extends State<TestCustomModeScreen> {
           Routes.testSolving,
           arguments: {
             'id': testId,
-            'attempt_id': attemptId,
+            'attemptId': attemptId,
             'start': questionRange.value.start.toInt().toString(),
             'end': questionRange.value.end.toInt().toString(),
             'time': selectedQuestionTime.value?.name ?? '',
             'shuffle': selectedShuffleOption.value?.name ?? '',
             if (lastAttempt != null) ...{
-              'last_attempt_correct': lastAttempt.correctAnswers.toString(),
-              'last_attempt_total': lastAttempt.totalQuestions.toString(),
-              'last_attempt_time': lastAttempt.timeSpent.toString(),
-              'last_attempt_date': lastAttempt.createdAt.toIso8601String(),
+              'lastAttemptCorrect': lastAttempt.correctAnswers.toString(),
+              'lastAttemptTotal': lastAttempt.totalQuestions.toString(),
+              'lastAttemptTime': lastAttempt.timeSpent.toString(),
+              'lastAttemptDate': lastAttempt.createdAt.toIso8601String(),
+              'lastAttemptSkip': lastAttempt.skipCount.toString(),
             },
           },
         );

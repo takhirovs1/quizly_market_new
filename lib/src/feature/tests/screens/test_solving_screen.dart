@@ -29,6 +29,7 @@ class TestSolvingScreen extends StatefulWidget {
   int? get lastAttemptTotal => arguments.lastAttemptTotal;
   int? get lastAttemptTime => arguments.lastAttemptTime;
   String? get lastAttemptDate => arguments.lastAttemptDate;
+  int? get lastAttemptSkip => arguments.lastAttemptSkip;
 
   @override
   State<TestSolvingScreen> createState() => _TestSolvingScreenState();

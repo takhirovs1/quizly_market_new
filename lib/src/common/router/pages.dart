@@ -32,6 +32,7 @@ import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
 import '../dependency/widget/splash_screen.dart';
 import '../extension/context_extension.dart';
+import '../util/logger.dart' as log_util;
 
 enum Routes with OctopusRoute {
   login('login', title: 'Login'),
@@ -147,6 +148,7 @@ enum Routes with OctopusRoute {
     ),
     .testSolving => BlocProvider(
       create: (context) {
+        log_util.info('router build testSolving: node.arguments=${node.arguments}');
         final args = TestSolvingArguments.fromArguments(node.arguments);
         final apiStart = args.startRange == 0 ? 1 : args.startRange;
         final apiEnd = args.endRange == 0 ? 1 : args.endRange;

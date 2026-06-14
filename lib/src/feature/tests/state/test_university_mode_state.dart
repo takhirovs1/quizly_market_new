@@ -39,17 +39,18 @@ abstract class TestUniversityModeScreenState extends State<TestUniversityModeScr
           Routes.testSolving,
           arguments: {
             'id': testId,
-            'attempt_id': attemptId,
+            'attemptId': attemptId,
             'start': '1',
             'end': (selectedQuestionCount.value ?? detail?.questionCount ?? 100).toString(),
             'time': selectedTotalTime.value.inMinutes.toString(),
             'shuffle': 'all',
             'mode': 'university',
             if (lastAttempt != null) ...{
-              'last_attempt_correct': lastAttempt.correctAnswers.toString(),
-              'last_attempt_total': lastAttempt.totalQuestions.toString(),
-              'last_attempt_time': lastAttempt.timeSpent.toString(),
-              'last_attempt_date': lastAttempt.createdAt.toIso8601String(),
+              'lastAttemptCorrect': lastAttempt.correctAnswers.toString(),
+              'lastAttemptTotal': lastAttempt.totalQuestions.toString(),
+              'lastAttemptTime': lastAttempt.timeSpent.toString(),
+              'lastAttemptDate': lastAttempt.createdAt.toIso8601String(),
+              'lastAttemptSkip': lastAttempt.skipCount.toString(),
             },
           },
         );

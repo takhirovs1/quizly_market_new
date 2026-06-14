@@ -5,6 +5,7 @@ import '../../../common/extension/number_extension.dart';
 import '../../../common/util/logger.dart';
 import '../models/demo_test_model.dart';
 import '../models/test_by_code_model.dart';
+import '../models/test_checkout_model.dart';
 import '../models/test_model.dart';
 import '../models/test_purchase_model.dart';
 import '../models/wallet_model.dart';
@@ -13,10 +14,12 @@ abstract interface class IMyTestRepository {
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request);
   Future<({List<TestModel> items, int limit, int offset, int total})> getTopTests(TestModelRequest request);
   Future<DemoTestResponse> getDemoTest(DemoTestRequest request);
+  Future<DemoTestResponse> getTestDetail(DemoTestRequest request);
   Future<void> likeTest(String testId);
   Future<void> unlikeTest(String testId);
   Future<WalletResponse> getWallet(WalletRequest request);
   Future<TestPurchaseResponse> purchaseTest(TestPurchaseRequest request);
+  Future<TestCheckoutResponse> checkoutTest(String testId, TestCheckoutRequest request);
   Future<TestByCodeResponse> getTestByCode(TestByCodeRequest request);
 }
 
@@ -86,6 +89,17 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   }
 
   @override
+  Future<DemoTestResponse> getTestDetail(DemoTestRequest request) async {
+    try {
+      final response = await dio.get<Map<String, Object?>>('/api/tests/${request.testId}');
+      return DemoTestResponse.fromJson(response.data ?? {});
+    } catch (e, s) {
+      info('GET TEST DETAIL API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
   Future<TestByCodeResponse> getTestByCode(TestByCodeRequest request) async {
     try {
       final response = await dio.get<Map<String, Object?>>('/api/tests/code/${request.code}');
@@ -126,6 +140,20 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       return TestPurchaseResponse.fromJson(response.data ?? {});
     } catch (e, s) {
       info('PURCHASE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<TestCheckoutResponse> checkoutTest(String testId, TestCheckoutRequest request) async {
+    try {
+      final response = await dio.post<Map<String, Object?>>(
+        '/api/payments/tests/$testId/checkout',
+        data: request.toJson(),
+      );
+      return TestCheckoutResponse.fromJson(response.data ?? {});
+    } catch (e, s) {
+      info('CHECKOUT TEST API ERROR: $e $s');
       rethrow;
     }
   }

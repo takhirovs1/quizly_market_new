@@ -77,7 +77,9 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
             semester: detail.semester,
             code: detail.code,
             isArchived: detail.isArchived,
-            createdBy: detail.academicYear != null ? '${detail.academicYear}' : null, // Fallback if createdBy is empty
+            createdBy: detail.createdAt != null
+                ? '${context.x.l10n.uploadedAt}: ${DateFormat('dd.MM.yyyy').format(detail.createdAt!.toLocal())}'
+                : null,
           );
 
           // Notify state that details are loaded to adjust totalQuestions/questionRange

@@ -1,12 +1,10 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
-import '../bloc/test_view.dart';
-import '../model/test_request_response_models.dart';
+import '../../../common/util/logger.dart' as log_util;
 import '../model/test_route_arguments.dart';
 
 class TestResultScreen extends StatefulWidget {
@@ -29,6 +27,7 @@ class TestResultScreen extends StatefulWidget {
   int? get lastAttemptTotal => arguments.lastAttemptTotal;
   int? get lastAttemptTime => arguments.lastAttemptTime;
   String? get lastAttemptDate => arguments.lastAttemptDate;
+  int? get lastAttemptSkip => arguments.lastAttemptSkip;
 
   @override
   State<TestResultScreen> createState() => _TestResultScreenState();
@@ -44,17 +43,7 @@ class _TestResultScreenState extends State<TestResultScreen> {
     super.initState();
     context.setupTelegramBackButton(onBackPressed);
     final attemptId = widget.attemptId;
-    if (attemptId != null && attemptId.isNotEmpty) {
-      context.read<TestView>().finishAttempt(
-        widget.testId,
-        attemptId,
-        FinishAttemptRequest(
-          answers: const [],
-          timeSpentSec: widget.time,
-          skipCount: (widget.total - widget.correct - widget.wrong).clamp(0, widget.total),
-        ),
-      );
-    }
+    log_util.info('TestResultScreen loaded: attemptId=$attemptId, testId=${widget.testId}');
   }
 
   @override
@@ -210,6 +199,7 @@ class _TestResultScreenState extends State<TestResultScreen> {
                         final lastTotal = widget.lastAttemptTotal;
                         final lastTime = widget.lastAttemptTime;
                         final lastDateStr = widget.lastAttemptDate;
+                        final lastSkip = widget.lastAttemptSkip ?? 0;
 
                         if (lastCorrect == null || lastTotal == null || lastTime == null || lastDateStr == null) {
                           return const SizedBox.shrink();
@@ -218,7 +208,7 @@ class _TestResultScreenState extends State<TestResultScreen> {
                         final parsedDate = DateTime.tryParse(lastDateStr)?.toLocal();
                         if (parsedDate == null) return const SizedBox.shrink();
 
-                        final attemptWrong = (lastTotal - lastCorrect).clamp(0, lastTotal);
+                        final attemptWrong = (lastTotal - lastCorrect - lastSkip).clamp(0, lastTotal);
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +268,7 @@ class _TestResultScreenState extends State<TestResultScreen> {
                                     context,
                                     Assets.lib.images.timerIcon.image(package: 'ui'),
                                     context.x.l10n.skippedLabel,
-                                    context.x.l10n.countTaText('0'),
+                                    context.x.l10n.countTaText(lastSkip.toString()),
                                   ),
                                   _buildHistoryRow(
                                     context,

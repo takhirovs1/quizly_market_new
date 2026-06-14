@@ -76,7 +76,9 @@ class _TestUniversityModeScreenState extends TestUniversityModeScreenState {
             semester: detail.semester,
             code: detail.code,
             isArchived: detail.isArchived,
-            createdBy: detail.academicYear != null ? '${detail.academicYear}' : null,
+            createdBy: detail.createdAt != null
+                ? '${context.x.l10n.uploadedAt}: ${DateFormat('dd.MM.yyyy').format(detail.createdAt!.toLocal())}'
+                : null,
           );
 
           return Scaffold(
@@ -88,7 +90,7 @@ class _TestUniversityModeScreenState extends TestUniversityModeScreenState {
             bottomNavigationBar: isMobile
                 ? SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const .symmetric(horizontal: 20, vertical: 16),
                       child: ValueListenableBuilder<bool>(
                         valueListenable: isStartingTest,
                         builder: (context, loading, _) => CustomButton(

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -53,7 +54,9 @@ class _TestModeScreenState extends TestModeScreenState {
             semester: detail.semester,
             code: detail.code,
             isArchived: detail.isArchived,
-            createdBy: detail.academicYear != null ? '${detail.academicYear}' : null,
+            createdBy: detail.createdAt != null
+                ? '${context.x.l10n.uploadedAt}: ${DateFormat('dd.MM.yyyy').format(detail.createdAt!.toLocal())}'
+                : null,
           );
           return LayoutBuilder(
             builder: (context, constraints) => constraints.maxWidth >= 800

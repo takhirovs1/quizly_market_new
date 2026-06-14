@@ -62,26 +62,14 @@ class TestDescriptionWidget extends StatelessWidget {
         style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
       ),
       const SizedBox(height: 4),
-      Row(
-        children: [
-          if (test.createdBy != null && test.createdBy.toString().isNotEmpty) ...[
-            Text(
-              test.createdBy.toString(),
-              style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
-            ),
-            Padding(
-              padding: const .symmetric(horizontal: 8),
-              child: Text(
-                '•',
-                style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
-              ),
-            ),
-          ],
-          Text(
-            context.x.l10n.questionAmountText(test.questionCount ?? 0),
-            style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
-          ),
-        ],
+      if (test.createdBy != null && test.createdBy.toString().isNotEmpty)
+        Text(
+          test.createdBy.toString(),
+          style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+        ),
+      Text(
+        '${context.x.l10n.questionsCount}: ${context.x.l10n.countTaText(test.questionCount ?? 0)}',
+        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
       ),
     ],
   );

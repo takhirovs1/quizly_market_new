@@ -44,18 +44,18 @@ class TestAttempt {
   factory TestAttempt.fromJson(Map<String, Object?> json) => TestAttempt(
     id: json['id']?.toString() ?? '',
     testId: json['test_id']?.toString() ?? '',
-    score: json['score'] as int? ?? 0,
-    correctAnswers: json['correct_answers'] as int? ?? 0,
-    totalQuestions: json['total_questions'] as int? ?? 0,
-    timeSpent: json['time_spent'] as int? ?? 0,
+    score: (json['score'] as num?)?.toDouble() ?? 0.0,
+    correctAnswers: (json['correct_count'] as num?)?.toInt() ?? (json['correct_answers'] as num?)?.toInt() ?? 0,
+    totalQuestions: (json['total_questions'] as num?)?.toInt() ?? 0,
+    timeSpent: (json['time_spent_sec'] as num?)?.toInt() ?? (json['time_spent'] as num?)?.toInt() ?? 0,
     createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
     status: json['status'] as String? ?? 'completed',
-    skipCount: json['skip_count'] as int? ?? 0,
+    skipCount: (json['skip_count'] as num?)?.toInt() ?? 0,
   );
 
   final String id;
   final String testId;
-  final int score;
+  final double score;
   final int correctAnswers;
   final int totalQuestions;
   final int timeSpent;

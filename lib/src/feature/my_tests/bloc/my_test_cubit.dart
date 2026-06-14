@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../common/util/app_enum.dart';
 import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../data/my_test_repository.dart';
 import '../models/demo_test_model.dart';
+import '../models/test_checkout_model.dart';
 import '../models/test_model.dart';
 import '../models/test_purchase_model.dart';
 import '../models/wallet_model.dart';
@@ -146,14 +148,20 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
 
   Future<void> getDemoTest(String testId) => handle<void>(
     (emit) async {
-      emit(state.copyWith(demoTestStatus: StateStatus.loading));
-      final response = await myTestRepository.getDemoTest(DemoTestRequest(testId: testId));
-      emit(state.copyWith(demoTestStatus: StateStatus.success, demoTestDetail: response.data));
+      emit(state.copyWith(demoTestStatus: .loading));
+      final results = await Future.wait([
+        myTestRepository.getTestDetail(DemoTestRequest(testId: testId)),
+        myTestRepository.getDemoTest(DemoTestRequest(testId: testId)),
+      ]);
+      final detailResponse = results[0];
+      final demoResponse = results[1];
+
+      final combinedDetail = detailResponse.data?.copyWith(questions: demoResponse.data?.questions);
+
+      emit(state.copyWith(demoTestStatus: .success, demoTestDetail: combinedDetail));
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(
-        state.copyWith(demoTestStatus: StateStatus.error, demoTestErrorMessage: ErrorUtil.toUserFriendlyMessage(error)),
-      );
+      emit(state.copyWith(demoTestStatus: .error, demoTestErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -283,6 +291,26 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       } else {
         emit(state.copyWith(purchaseStatus: StateStatus.success, purchaseData: response.data));
       }
+      return response;
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(
+        state.copyWith(purchaseStatus: StateStatus.error, purchaseErrorMessage: ErrorUtil.toUserFriendlyMessage(error)),
+      );
+      return null;
+    },
+  );
+
+  Future<TestCheckoutResponse?> checkoutTest({
+    required String testId,
+    required PaymentProvider provider,
+    required String redirectUrl,
+  }) => handle<TestCheckoutResponse?>(
+    (emit) async {
+      emit(state.copyWith(purchaseStatus: StateStatus.loading));
+      final request = TestCheckoutRequest(provider: provider, redirectUrl: redirectUrl);
+      final response = await myTestRepository.checkoutTest(testId, request);
+      emit(state.copyWith(purchaseStatus: StateStatus.idle));
       return response;
     },
     errorHandler: (emit, error, stackTrace) {

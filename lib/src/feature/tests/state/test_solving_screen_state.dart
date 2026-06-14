@@ -8,6 +8,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../../common/util/app_enum.dart';
+import '../../../common/util/logger.dart' as log_util;
 import '../../my_tests/models/demo_test_model.dart';
 import '../../my_tests/models/test_init_enum.dart' hide TestMode;
 import '../bloc/test_view.dart';
@@ -59,6 +60,9 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     super.initState();
     startTime = DateTime.now();
     cubit = context.read<TestView>();
+    log_util.info(
+      'TestSolvingScreenState.initState: testId=${widget.testId}, attemptId=${widget.attemptId}, arguments.attemptId=${widget.arguments.attemptId}',
+    );
 
     // Preload sounds so they play instantly.
     _sound.preload(_correctSound);
@@ -72,7 +76,12 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
       questionTimeSeconds = _parseTimeOption(widget.timeOptionName);
     }
     currentQuestionIndex.addListener(_onQuestionIndexChanged);
-    initializeQuestions();
+    final detail = cubit.state.detail;
+    if (detail == null || detail.questions == null || detail.questions!.isEmpty) {
+      _fetchInitialQuestions();
+    } else {
+      initializeQuestions();
+    }
     context.setupTelegramBackButton(onBackPressed);
   }
 
@@ -106,6 +115,29 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
       widget.testId,
       TestDetailRequest(range: rangeStr, shuffle: widget.shuffleOptionName),
     );
+  }
+
+  Future<void> _fetchInitialQuestions() async {
+    final apiStart = widget.startRange == 0 ? 1 : widget.startRange;
+    final apiEnd = widget.endRange == 0 ? 1 : widget.endRange;
+    final nextEnd = (apiStart + 19).clamp(apiStart, apiEnd);
+    final rangeStr = '$apiStart-$nextEnd';
+
+    isFetching.value = true;
+    try {
+      await cubit.getTestQuestions(
+        widget.testId,
+        TestDetailRequest(
+          range: rangeStr,
+          shuffle: widget.shuffleOptionName.isNotEmpty ? widget.shuffleOptionName : null,
+          demo: false,
+        ),
+      );
+    } catch (e) {
+      // Error handled by Cubit
+    } finally {
+      isFetching.value = false;
+    }
   }
 
   Future<void> fetchQuestionsUpTo(int targetIndex) async {
@@ -330,16 +362,29 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   Future<void> onFinish() async {
     _timer?.cancel();
     final timeSpentSec = DateTime.now().difference(startTime).inSeconds;
-    final skipCount = (questions.length - selectedAnswers.length).clamp(0, questions.length);
+    final skipCount = (totalToSolve - selectedAnswers.length).clamp(0, totalToSolve);
 
     final answersList = selectedAnswers.entries.map((e) => {'question_id': e.key, 'option_id': e.value}).toList();
 
+    log_util.info(
+      'onFinish called: testId=${widget.testId}, attemptId=${widget.attemptId}, '
+      'answersCount=${answersList.length}, timeSpent=$timeSpentSec, skipCount=$skipCount',
+    );
+
     if (widget.attemptId.isNotEmpty) {
-      await cubit.finishAttempt(
-        widget.testId,
-        widget.attemptId,
-        FinishAttemptRequest(answers: answersList, timeSpentSec: timeSpentSec, skipCount: skipCount),
-      );
+      try {
+        log_util.info('Calling finishAttempt API...');
+        await cubit.finishAttempt(
+          widget.testId,
+          widget.attemptId,
+          FinishAttemptRequest(answers: answersList, timeSpentSec: timeSpentSec, skipCount: skipCount),
+        );
+        log_util.info('finishAttempt API call completed.');
+      } on Object catch (e, s) {
+        log_util.severe('Error calling finishAttempt: $e', s);
+      }
+    } else {
+      log_util.warning('attemptId is empty, skipping finishAttempt API call.');
     }
 
     if (mounted) {
@@ -348,19 +393,21 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
         Routes.testResult,
         arguments: {
           'id': widget.testId,
+          if (widget.attemptId.isNotEmpty) 'attemptId': widget.attemptId,
           'correct': correctAnswers.toString(),
           'wrong': wrongAnswers.toString(),
           'total': totalToSolve.toString(),
           'time': timeSpentSec.toString(),
           if (detail?.name != null) 'name': detail!.name!,
           if (detail?.description != null) 'description': detail!.description!,
-          if (detail?.academicYear != null) 'academic_year': detail!.academicYear!,
+          if (detail?.academicYear != null) 'academicYear': detail!.academicYear!,
           if (detail?.semester != null) 'semester': detail!.semester!.toString(),
-          if (detail?.questionCount != null) 'question_count': detail!.questionCount!.toString(),
-          if (widget.lastAttemptCorrect != null) 'last_attempt_correct': widget.lastAttemptCorrect!.toString(),
-          if (widget.lastAttemptTotal != null) 'last_attempt_total': widget.lastAttemptTotal!.toString(),
-          if (widget.lastAttemptTime != null) 'last_attempt_time': widget.lastAttemptTime!.toString(),
-          if (widget.lastAttemptDate != null) 'last_attempt_date': widget.lastAttemptDate!,
+          if (detail?.questionCount != null) 'questionCount': detail!.questionCount!.toString(),
+          if (widget.lastAttemptCorrect != null) 'lastAttemptCorrect': widget.lastAttemptCorrect!.toString(),
+          if (widget.lastAttemptTotal != null) 'lastAttemptTotal': widget.lastAttemptTotal!.toString(),
+          if (widget.lastAttemptTime != null) 'lastAttemptTime': widget.lastAttemptTime!.toString(),
+          if (widget.lastAttemptDate != null) 'lastAttemptDate': widget.lastAttemptDate!,
+          if (widget.lastAttemptSkip != null) 'lastAttemptSkip': widget.lastAttemptSkip!.toString(),
         },
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
@@ -88,6 +89,9 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                 academicYear: detail.academicYear,
                 semester: detail.semester,
                 code: detail.code,
+                createdBy: detail.createdAt != null
+                    ? '${context.x.l10n.uploadedAt}: ${DateFormat('dd.MM.yyyy').format(detail.createdAt!.toLocal())}'
+                    : null,
               );
 
               final questions = detail.questions ?? [];
@@ -99,19 +103,92 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                 languageCode: languageCode,
               );
 
-              if (isMobile) {
-                return ListView(children: content);
-              } else {
-                return Center(
-                  child: SingleChildScrollView(
-                    padding: const .symmetric(vertical: 24, horizontal: 16),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 650),
-                      child: Column(crossAxisAlignment: .stretch, mainAxisSize: .min, children: content),
-                    ),
-                  ),
-                );
-              }
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWeb = constraints.maxWidth >= 800;
+                  if (isWeb) {
+                    return SingleChildScrollView(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1200),
+                          child: Padding(
+                            padding: const EdgeInsets.all(28),
+                            child: IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  // ── Left: Test details card ──────────────────────────────
+                                  Expanded(
+                                    flex: 5,
+                                    child: _WebInfoCard(
+                                      testModel: testModel,
+                                      onPressLike: onPressLike,
+                                      onPressShare: onPressShare,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 28),
+                                  // ── Right: Payment and questions ────────────────────────
+                                  Expanded(
+                                    flex: 7,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (questions.isNotEmpty) ...[
+                                          QuestionsCarousel(
+                                            questions: questions,
+                                            languageCode: languageCode,
+                                            currentPage: currentTest,
+                                          ),
+                                          const SizedBox(height: 20),
+                                        ],
+                                        Text(
+                                          context.x.l10n.paymentType,
+                                          style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        ValueListenableBuilder(
+                                          valueListenable: selectedPayment,
+                                          builder: (context, payment, child) => PaymentCard(
+                                            imagePadding: payment.id != 0
+                                                ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
+                                                : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
+                                            hasShadow: true,
+                                            title: payment.title,
+                                            titleWidget: (payment.id == 0 && state.walletStatus.isLoading)
+                                                ? Shimmer.fromColors(
+                                                    baseColor: context.x.colors.indicatorBackground,
+                                                    highlightColor: context.x.colors.scaffoldBackground,
+                                                    child: const ShimmerBox(width: 80, height: 18, radius: 4),
+                                                  )
+                                                : null,
+                                            subtitle: payment.subtitle,
+                                            image: Image.asset(
+                                              payment.icon,
+                                              package: 'ui',
+                                              width: payment.type == .card ? 32 : 54,
+                                            ),
+                                            onTap: onSwitchPaymentPressed,
+                                            action: IconButton(
+                                              onPressed: onSwitchPaymentPressed,
+                                              icon: const Icon(Icons.unfold_more),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    return ListView(children: content);
+                  }
+                },
+              );
             }(),
           },
         ),
@@ -281,4 +358,80 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
     ),
     const SizedBox(height: 24),
   ];
+}
+
+class _WebInfoCard extends StatelessWidget {
+  const _WebInfoCard({required this.testModel, required this.onPressLike, required this.onPressShare});
+
+  final TestModel testModel;
+  final VoidCallback onPressLike;
+  final VoidCallback onPressShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.cardBackground2,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.1), width: 1.5),
+        boxShadow: [BoxShadow(color: colors.black.withValues(alpha: 0.05), blurRadius: 24, offset: const Offset(0, 8))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Gradient banner header
+          Container(
+            height: 80,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [colors.primary, colors.primary.withValues(alpha: 0.7)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(23), topRight: Radius.circular(23)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), shape: BoxShape.circle),
+                  child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'QuizlyMarket',
+                        style: context.x.textStyle.sfW600s16.copyWith(
+                          color: Colors.white,
+                          fontSize: 11,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        context.x.l10n.buy,
+                        style: context.x.textStyle.sfW600s16.copyWith(color: Colors.white, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: TestDescriptionWidget(test: testModel, onPressLike: onPressLike, onPressShare: onPressShare),
+          ),
+        ],
+      ),
+    );
+  }
 }

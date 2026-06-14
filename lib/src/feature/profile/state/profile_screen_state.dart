@@ -200,7 +200,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _onLanguageSelected(Locale locale) {
-    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    context.telegramWebApp.hapticImpact(.light);
     selectLanguage(locale);
     context.bottomSheetPop();
   }
