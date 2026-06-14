@@ -166,9 +166,15 @@ abstract class SupportChatState extends State<SupportChatScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(color: colors.buttonFill, borderRadius: BorderRadius.circular(12)),
                     child: Row(
+                      spacing: 8,
                       children: [
-                        Icon(Icons.photo_library_outlined, color: colors.text, size: 20),
-                        const SizedBox(width: 12),
+                        Assets.lib.icon.imageIcon.svg(
+                          package: 'ui',
+                          width: 22,
+                          height: 22,
+                          colorFilter: .mode(colors.text, .srcIn),
+                        ),
+
                         Text(context.x.l10n.sendImage, style: textStyle.sfW500s14.copyWith(color: colors.text)),
                       ],
                     ),
@@ -186,9 +192,14 @@ abstract class SupportChatState extends State<SupportChatScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(color: colors.buttonFill, borderRadius: BorderRadius.circular(12)),
                     child: Row(
+                      spacing: 8,
                       children: [
-                        Icon(Icons.article_outlined, color: colors.text, size: 20),
-                        const SizedBox(width: 12),
+                        Assets.lib.icon.fileIcon.svg(
+                          package: 'ui',
+                          width: 22,
+                          height: 22,
+                          colorFilter: .mode(colors.text, .srcIn),
+                        ),
                         Text(context.x.l10n.uploadFile, style: textStyle.sfW500s14.copyWith(color: colors.text)),
                       ],
                     ),
@@ -237,10 +248,6 @@ abstract class SupportChatState extends State<SupportChatScreen> {
 
   Future<void> openTelegramLink(String url) async {
     context.telegramWebApp.hapticImpact(.light);
-    if (context.telegramWebApp.isSupported) {
-      context.telegramWebApp.openLink(url, tryInstantView: false);
-      return;
-    }
-    await launchUrl(Uri.parse(url));
+    await launchUrl(.parse(url));
   }
 }

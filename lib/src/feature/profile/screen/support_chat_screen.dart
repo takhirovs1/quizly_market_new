@@ -207,8 +207,8 @@ class _SupportChatScreenState extends SupportChatState {
               right: 12,
               top: 8,
               bottom: isFocused
-                  ? context.telegramWebApp.contentSafeAreaInset.bottom + 24
-                  : context.telegramWebApp.contentSafeAreaInset.bottom + 8,
+                  ? context.telegramWebApp.contentSafeAreaInset.bottom + 12
+                  : context.telegramWebApp.contentSafeAreaInset.bottom + 24,
             ),
             decoration: BoxDecoration(
               color: context.x.isMobile ? colors.scaffoldBackground : colors.cardBackground2,
