@@ -23,7 +23,12 @@ abstract class OnboardingState extends State<OnboardingScreen> {
     final tg = context.telegramWebApp;
     mainCubit = context.read<MainCubit>();
     if (tg.isSupported) {
-      mainCubit.signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw));
+      final startParam = tg.startParam;
+      String? referralCode;
+      if (startParam != null && startParam.startsWith('r')) {
+        referralCode = startParam.substring(1);
+      }
+      mainCubit.signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw, referralCode: referralCode));
     }
     super.initState();
   }

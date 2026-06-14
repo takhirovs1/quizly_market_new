@@ -162,7 +162,14 @@ class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
     super.initState();
     final tg = context.telegramWebApp;
     if (tg.isSupported) {
-      context.read<MainCubit>().signInWithTelegram(LoginWithTelegramRequest(initData: tg.initDataRaw));
+      final startParam = tg.startParam;
+      String? referralCode;
+      if (startParam != null && startParam.startsWith('r')) {
+        referralCode = startParam.substring(1);
+      }
+      context.read<MainCubit>().signInWithTelegram(
+        LoginWithTelegramRequest(initData: tg.initDataRaw, referralCode: referralCode),
+      );
     }
   }
 

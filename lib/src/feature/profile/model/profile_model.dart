@@ -1,4 +1,4 @@
-// {"id":1,"first_name":"Akbarshoh","last_name":"Ismoilov","father_name":null,"status":"active","phone":"+998901234567","gender":"male","role":"customer","username":"akbar","avatar_url":"/uploads/abc123.jpg","premium":false,"balance":150000,"created_at":"2026-01-15T10:00:00Z","updated_at":"2026-03-20T12:00:00Z"}
+// {"id":"8435fc63-69b3-404e-a138-0993adcd97b3","name":"Takhirov","status":"active","role":"customer","username":"Takhirovs","avatar_url":"https://t.me/i/userpic/...","premium":false,"balance":570000,"telegram_chat_id":1251798314,"referral_code":"C9C48356FF","language":"uz","created_at":"2025-12-30T05:00:19.462763Z","updated_at":"2026-06-14T15:24:36.111157Z"}
 
 import '../../../common/extension/number_extension.dart';
 import '../../../common/extension/string_extension.dart';
@@ -19,12 +19,14 @@ class ProfileModelResponse {
     this.premium,
     this.balance,
     this.telegramChatId,
+    this.referralCode,
+    this.language,
     this.createdAt,
     this.updatedAt,
   });
 
   factory ProfileModelResponse.fromJson(Map<String, Object?> json) => ProfileModelResponse(
-    id: json['id'].toIntOrNull,
+    id: json['id'] as String?,
     name: json['name'] as String?,
     firstName: json['first_name'] as String?,
     lastName: json['last_name'] as String?,
@@ -38,11 +40,13 @@ class ProfileModelResponse {
     premium: json['premium'] as bool?,
     balance: json['balance'].toIntOrNull,
     telegramChatId: json['telegram_chat_id'].toIntOrNull,
+    referralCode: json['referral_code'] as String?,
+    language: json['language'] as String?,
     createdAt: json['created_at'].toDateTimeOrNull,
     updatedAt: json['updated_at'].toDateTimeOrNull,
   );
 
-  final int? id;
+  final String? id;
   final String? name;
   final String? firstName;
   final String? lastName;
@@ -56,6 +60,8 @@ class ProfileModelResponse {
   final bool? premium;
   final int? balance;
   final int? telegramChatId;
+  final String? referralCode;
+  final String? language;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 

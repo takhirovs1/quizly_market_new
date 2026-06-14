@@ -1,14 +1,17 @@
 class LoginWithTelegramRequest {
-  const LoginWithTelegramRequest({required this.initData});
+  const LoginWithTelegramRequest({required this.initData, this.referralCode});
 
-  factory LoginWithTelegramRequest.fromJson(Map<String, Object?> json) =>
-      LoginWithTelegramRequest(initData: json['init_data'] as String? ?? '');
+  factory LoginWithTelegramRequest.fromJson(Map<String, Object?> json) => LoginWithTelegramRequest(
+    initData: json['init_data'] as String? ?? '',
+    referralCode: json['referral_code'] as String?,
+  );
 
   /// Raw Telegram Mini App init data query string.
   /// Example: `auth_date=...&user=...&hash=...`
   final String initData;
+  final String? referralCode;
 
-  Map<String, Object?> toJson() => {'init_data': initData};
+  Map<String, Object?> toJson() => {'init_data': initData, 'referral_code': referralCode ?? ''};
 }
 
 class LoginWithTelegramResponse {

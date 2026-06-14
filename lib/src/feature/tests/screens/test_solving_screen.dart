@@ -662,52 +662,34 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
       builder: (context, index, _) {
         final isFirstQuestion = index == 0;
 
-        return Row(
-          children: [
-            Expanded(
-              child: CustomButton(
-                onTap: isFirstQuestion ? null : onPreviousPressed,
-                title: context.x.l10n.previousButton,
-                color: isFirstQuestion
-                    ? context.x.colors.primary.withValues(alpha: 0.05)
-                    : context.x.colors.primary.withValues(alpha: 0.1),
-                textColor: isFirstQuestion ? context.x.colors.primary.withValues(alpha: 0.3) : context.x.colors.primary,
-                borderRadius: 12,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ValueListenableBuilder<bool>(
-                valueListenable: isAnswerChecked,
-                builder: (context, checked, _) => ValueListenableBuilder<DemoOption?>(
-                  valueListenable: selectedOption,
-                  builder: (context, selected, _) {
-                    final isCorrect = selected?.isCorrect ?? false;
-                    final buttonColor = checked
-                        ? (isCorrect ? const Color(0xFF43C04D) : const Color(0xFFE53935))
-                        : context.x.colors.primary;
-                    const textColor = Colors.white;
+        return ValueListenableBuilder<bool>(
+          valueListenable: isAnswerChecked,
+          builder: (context, checked, _) => ValueListenableBuilder<DemoOption?>(
+            valueListenable: selectedOption,
+            builder: (context, selected, _) {
+              final isCorrect = selected?.isCorrect ?? false;
+              final rightButtonType = checked ? (isCorrect ? ButtonType.success : ButtonType.error) : ButtonType.active;
 
-                    return ValueListenableBuilder<int>(
-                      valueListenable: postAnswerRemainingSeconds,
-                      builder: (context, postSeconds, _) {
-                        final title = checked && postSeconds > 0
-                            ? '${context.x.l10n.nextButton} ($postSeconds)'
-                            : context.x.l10n.nextButton;
-                        return CustomButton(
-                          onTap: onNextPressed,
-                          title: title,
-                          color: buttonColor,
-                          textColor: textColor,
-                          borderRadius: 12,
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
+              return ValueListenableBuilder<int>(
+                valueListenable: postAnswerRemainingSeconds,
+                builder: (context, postSeconds, _) {
+                  final rightText = checked && postSeconds > 0
+                      ? '${context.x.l10n.nextButton} ($postSeconds)'
+                      : context.x.l10n.nextButton;
+
+                  return CustomButton2(
+                    width: context.x.width,
+                    onLeftPressed: isFirstQuestion ? null : onPreviousPressed,
+                    leftText: context.x.l10n.previousButton,
+                    leftButtonType: isFirstQuestion ? ButtonType.disabled : ButtonType.active,
+                    onRightPressed: onNextPressed,
+                    rightText: rightText,
+                    rightButtonType: rightButtonType,
+                  );
+                },
+              );
+            },
+          ),
         );
       },
     );

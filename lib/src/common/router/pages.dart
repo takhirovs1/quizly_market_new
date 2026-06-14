@@ -114,7 +114,10 @@ enum Routes with OctopusRoute {
       create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
       child: const PaymentScreen(),
     ),
-    .referral => const ReferralScreen(),
+    .referral => BlocProvider(
+      create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
+      child: const ReferralScreen(),
+    ),
     .paymentHistory => BlocProvider(
       create: (context) =>
           ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository)..getTransactions(),

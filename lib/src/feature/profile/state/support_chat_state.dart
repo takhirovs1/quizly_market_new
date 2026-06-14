@@ -1,11 +1,18 @@
 part of '../screen/support_chat_screen.dart';
 
 class MockSupportMessage {
-  MockSupportMessage({required this.text, required this.time, required this.isUser, this.isRead = true});
+  MockSupportMessage({
+    required this.text,
+    required this.time,
+    required this.isUser,
+    this.isRead = true,
+    this.hasAdminButton = false,
+  });
   String text;
   final String time;
   final bool isUser;
   final bool isRead;
+  final bool hasAdminButton;
 }
 
 abstract class SupportChatState extends State<SupportChatScreen> {
@@ -60,7 +67,12 @@ abstract class SupportChatState extends State<SupportChatScreen> {
         if (!mounted) return;
         setState(() {
           messages.add(
-            MockSupportMessage(text: context.x.l10n.supportAutoReply, time: _getCurrentTimeFormatted(), isUser: false),
+            MockSupportMessage(
+              text: context.x.l10n.supportAutoReply,
+              time: _getCurrentTimeFormatted(),
+              isUser: false,
+              hasAdminButton: true,
+            ),
           );
         });
         _scrollToBottom();
@@ -221,5 +233,14 @@ abstract class SupportChatState extends State<SupportChatScreen> {
     scrollController.dispose();
     isSendActive.dispose();
     super.dispose();
+  }
+
+  Future<void> openTelegramLink(String url) async {
+    context.telegramWebApp.hapticImpact(.light);
+    if (context.telegramWebApp.isSupported) {
+      context.telegramWebApp.openLink(url, tryInstantView: false);
+      return;
+    }
+    await launchUrl(Uri.parse(url));
   }
 }

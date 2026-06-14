@@ -179,64 +179,67 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
           child: FadeTransition(
             opacity: _fadeAnimation,
             child: Center(
-              child: SizedBox(
-                width: double.infinity,
-                child: Material(
-                  color: Colors.transparent,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: widget.isError ? const Color(0xFFD92D20) : const Color(0xFF14C732),
-                      borderRadius: widget.radius,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: widget.isError
-                              ? const Color(0xFFD92D20).withValues(alpha: 0.24)
-                              : const Color(0xFF14C732).withValues(alpha: 0.24),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              color: widget.iconBackgroundColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.all(6),
-                            width: 36,
-                            height: 36,
-                            child: widget.isError
-                                ? widget.leadingIcon ?? Icon(CupertinoIcons.info, color: context.x.colors.white)
-                                : Icon(CupertinoIcons.checkmark_circle, color: context.x.colors.white),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              widget.message,
-                              style: widget.textStyle,
-                              textAlign: TextAlign.start,
-                              softWrap: true,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                          ),
-
-                          GestureDetector(
-                            onTap: () {
-                              _animationController.reverse().then((_) {
-                                CustomNotification.hideCurrentNotification();
-                                CustomNotification._currentOverlay = null;
-                              });
-                            },
-                            child: Icon(Icons.close, color: context.x.colors.white),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: widget.isError ? const Color(0xFFD92D20) : const Color(0xFF14C732),
+                        borderRadius: widget.radius,
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: widget.isError
+                                ? const Color(0xFFD92D20).withValues(alpha: 0.24)
+                                : const Color(0xFF14C732).withValues(alpha: 0.24),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
+                      ),
+                      child: Padding(
+                        padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                color: widget.iconBackgroundColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.all(6),
+                              width: 36,
+                              height: 36,
+                              child: widget.isError
+                                  ? widget.leadingIcon ?? Icon(CupertinoIcons.info, color: context.x.colors.white)
+                                  : Icon(CupertinoIcons.checkmark_circle, color: context.x.colors.white),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                widget.message,
+                                style: widget.textStyle,
+                                textAlign: TextAlign.start,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ),
+
+                            GestureDetector(
+                              onTap: () {
+                                _animationController.reverse().then((_) {
+                                  CustomNotification.hideCurrentNotification();
+                                  CustomNotification._currentOverlay = null;
+                                });
+                              },
+                              child: Icon(Icons.close, color: context.x.colors.white),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -290,36 +290,21 @@ class _TestResultScreenState extends State<TestResultScreen> {
           ),
         ),
         bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              heightFactor: 1.0,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 600),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomButton(
-                        onTap: onBackPressed,
-                        title: context.x.l10n.retryTest,
-                        color: context.x.colors.primary,
-                        borderRadius: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: CustomButton(
-                        onTap: () {
-                          context.octopus.navigate(Routes.home.name);
-                        },
-                        title: context.x.l10n.exit,
-                        color: context.x.colors.dialogCancelButton,
-                        textColor: context.x.colors.primary,
-                        borderRadius: 16,
-                      ),
-                    ),
-                  ],
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            heightFactor: 1,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Padding(
+                padding: const .fromLTRB(20, 8, 20, 16),
+                child: CustomButton2(
+                  onLeftPressed: () => context.octopus.navigate(Routes.home.name),
+                  leftText: context.x.l10n.exit,
+                  leftButtonType: .active,
+                  onRightPressed: onBackPressed,
+                  rightText: context.x.l10n.retryTest,
+                  rightButtonType: .active,
+                  width: context.x.width,
                 ),
               ),
             ),
