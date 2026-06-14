@@ -2,7 +2,7 @@ name: quizly_market
 description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.0+105
+version: 2.0.0+106
 
 environment:
   sdk: ^3.10.9
@@ -77,6 +77,8 @@ dependencies:
   equatable: ^2.0.8
   lottie: ^3.3.2
   flutter_markdown: ^0.7.7+1
+  image_picker: ^1.2.2
+  file_picker: ^11.0.2
 
 dev_dependencies:
   flutter_test:

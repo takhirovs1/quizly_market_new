@@ -1,8 +1,8 @@
 part of '../screen/support_chat_screen.dart';
 
 class MockSupportMessage {
-  const MockSupportMessage({required this.text, required this.time, required this.isUser, this.isRead = true});
-  final String text;
+  MockSupportMessage({required this.text, required this.time, required this.isUser, this.isRead = true});
+  String text;
   final String time;
   final bool isUser;
   final bool isRead;
@@ -15,6 +15,34 @@ abstract class SupportChatState extends State<SupportChatScreen> {
   late final ValueNotifier<bool> isSendActive;
 
   final List<MockSupportMessage> messages = [];
+  Timer? _typingTimer;
+  bool _hasSentAutoResponse = false;
+
+  void _startWelcomeMessageTyping(String fullText) {
+    final welcomeMessage = MockSupportMessage(text: '', time: _getCurrentTimeFormatted(), isUser: false);
+    setState(() {
+      messages.add(welcomeMessage);
+    });
+
+    var charIndex = 0;
+    _typingTimer = Timer.periodic(const Duration(milliseconds: 15), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      charIndex += 2;
+      if (charIndex >= fullText.length) {
+        setState(() {
+          welcomeMessage.text = fullText;
+        });
+        timer.cancel();
+      } else {
+        setState(() {
+          welcomeMessage.text = fullText.substring(0, charIndex);
+        });
+      }
+    });
+  }
 
   void sendMessage() {
     final text = messageController.text.trim();
@@ -24,7 +52,23 @@ abstract class SupportChatState extends State<SupportChatScreen> {
     });
     messageController.clear();
     messageFocusNode.unfocus();
+    _scrollToBottom();
 
+    if (!_hasSentAutoResponse) {
+      _hasSentAutoResponse = true;
+      Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
+        setState(() {
+          messages.add(
+            MockSupportMessage(text: context.x.l10n.supportAutoReply, time: _getCurrentTimeFormatted(), isUser: false),
+          );
+        });
+        _scrollToBottom();
+      });
+    }
+  }
+
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
         scrollController.animateTo(
@@ -34,6 +78,45 @@ abstract class SupportChatState extends State<SupportChatScreen> {
         );
       }
     });
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          messages.add(
+            MockSupportMessage(
+              text: '🖼️ ${image.name}',
+              time: _getCurrentTimeFormatted(),
+              isUser: true,
+              isRead: false,
+            ),
+          );
+        });
+        _scrollToBottom();
+      }
+    } on Object catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
+
+  Future<void> _pickFile() async {
+    try {
+      final result = await FilePicker.pickFiles();
+      if (result != null && result.files.single.name.isNotEmpty) {
+        final fileName = result.files.single.name;
+        setState(() {
+          messages.add(
+            MockSupportMessage(text: '📁 $fileName', time: _getCurrentTimeFormatted(), isUser: true, isRead: false),
+          );
+        });
+        _scrollToBottom();
+      }
+    } on Object catch (e) {
+      debugPrint('Error picking file: $e');
+    }
   }
 
   String _getCurrentTimeFormatted() {
@@ -63,6 +146,7 @@ abstract class SupportChatState extends State<SupportChatScreen> {
                 InkWell(
                   onTap: () {
                     Navigator.pop(sheetContext);
+                    _pickImage();
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
@@ -82,6 +166,7 @@ abstract class SupportChatState extends State<SupportChatScreen> {
                 InkWell(
                   onTap: () {
                     Navigator.pop(sheetContext);
+                    _pickFile();
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
@@ -122,15 +207,13 @@ abstract class SupportChatState extends State<SupportChatScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (messages.isEmpty) {
-      messages.addAll([
-        MockSupportMessage(text: context.x.l10n.mockUserMessage, time: '09:24', isUser: true, isRead: true),
-        MockSupportMessage(text: context.x.l10n.mockSupportMessage, time: '16:44', isUser: false),
-      ]);
+      _startWelcomeMessageTyping(context.x.l10n.supportWelcomeMessage);
     }
   }
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
     messageController
       ..removeListener(_onMessageTextChanged)
       ..dispose();
