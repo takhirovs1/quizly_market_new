@@ -37,6 +37,8 @@ class Transaction {
     required this.type,
     required this.createdAt,
     this.provider,
+    this.testName,
+    this.relatedTestId,
   });
 
   factory Transaction.fromJson(Map<String, Object?> json) => Transaction(
@@ -46,6 +48,8 @@ class Transaction {
     type: json['tx_type'] as String? ?? json['type'] as String? ?? '',
     createdAt: json['created_at'].toDateTimeOrNull ?? DateTime.now(),
     provider: json['provider'] as String?,
+    testName: json['test_name'] as String?,
+    relatedTestId: json['related_test_id'] as String?,
   );
 
   final String id;
@@ -54,4 +58,6 @@ class Transaction {
   final String type;
   final DateTime createdAt;
   final String? provider;
+  final String? testName;
+  final String? relatedTestId;
 }

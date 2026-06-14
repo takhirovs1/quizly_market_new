@@ -82,9 +82,13 @@ class _PaymentHistoryScreenState extends PaymentHistoryScreenState {
                     final isClick = transaction.provider == 'click' || titleLower.contains('click');
                     final isReferral = transaction.type == 'referral';
                     final isPremium = titleLower.contains('premium');
+                    final isPurchase = transaction.type == 'purchase';
+                    final isSpend = transaction.type == 'spend';
 
                     var titleText = transaction.title;
-                    if (isPayme) {
+                    if (isPurchase || isSpend) {
+                      titleText = transaction.testName ?? transaction.title;
+                    } else if (isPayme) {
                       titleText = context.x.l10n.payme;
                     } else if (isClick) {
                       titleText = context.x.l10n.clickSuperApp;

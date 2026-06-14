@@ -80,14 +80,17 @@ abstract class PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       _ => TransactionDisplayType.other,
     };
 
-    final titleText = switch (type) {
-      TransactionDisplayType.payme => 'Payme',
-      TransactionDisplayType.click => 'Click',
-      TransactionDisplayType.referral =>
-        (titleLower.contains('referral') && transaction.title.contains(':'))
-            ? transaction.title.split(':').last.trim()
-            : transaction.title,
-      _ => transaction.title,
+    final titleText = switch (transaction.type) {
+      'purchase' || 'spend' => transaction.testName ?? transaction.title,
+      _ => switch (type) {
+        TransactionDisplayType.payme => 'Payme',
+        TransactionDisplayType.click => 'Click',
+        TransactionDisplayType.referral =>
+          (titleLower.contains('referral') && transaction.title.contains(':'))
+              ? transaction.title.split(':').last.trim()
+              : transaction.title,
+        _ => transaction.title,
+      },
     };
 
     final statusText = switch (transaction.type) {

@@ -145,6 +145,9 @@ class $LibIconGen {
   /// File path: lib/icon/icon_slider.svg
   SvgGenImage get iconSlider => const SvgGenImage('lib/icon/icon_slider.svg');
 
+  /// File path: lib/icon/image_icon.svg
+  SvgGenImage get imageIcon => const SvgGenImage('lib/icon/image_icon.svg');
+
   /// File path: lib/icon/information_app.svg
   SvgGenImage get informationApp => const SvgGenImage('lib/icon/information_app.svg');
 
@@ -265,6 +268,7 @@ class $LibIconGen {
     icExternalLink,
     iconMap,
     iconSlider,
+    imageIcon,
     informationApp,
     instagram,
     language,

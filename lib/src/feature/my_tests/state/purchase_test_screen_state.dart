@@ -150,7 +150,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     context.telegramWebApp.hapticImpact(.light);
 
     final selected = selectedPayment.value;
-    if (selected.type == PaymentType.provider) {
+    if (selected.type == .provider) {
       final provider = selected.id == 1 ? PaymentProvider.payme : PaymentProvider.click;
       final detail = myTestCubit.state.demoTestDetail;
       final code = (detail?.code != null && detail!.code!.isNotEmpty) ? detail.code! : widget.testId;
@@ -232,7 +232,9 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
                     : context.x.l10n.testPurchasedDescription,
                 cancelButtonText: context.x.l10n.exit,
                 successButtonText: isError ? context.x.l10n.retry : context.x.l10n.enter,
-                onCancelButtonPressed: () => Navigator.pop(context),
+                onCancelButtonPressed: () {
+                  context.octopus.navigate(Routes.home.name);
+                },
                 isError: isError,
                 onSuccessButtonPressed: () => isError
                     ? onBuyPressed(withPop: true)
