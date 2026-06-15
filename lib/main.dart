@@ -8,12 +8,14 @@ import 'src/common/dependency/widget/dependencies_scope.dart';
 import 'src/common/dependency/widget/initialization_failed_app.dart';
 import 'src/common/dependency/widget/splash_screen.dart';
 import 'src/common/dependency/widget/update_available_screen.dart';
+import 'src/common/extension/context_extension.dart';
 import 'src/common/util/helpers.dart';
 import 'src/common/widget/app.dart';
 
 @pragma('vm:entry-point')
 void main([List<String>? args]) => runZonedGuarded<Future<void>>(() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
+  QuizAppBar.isTelegramSupported = (context) => context.telegramWebApp.isSupported;
 
   final initializationProgress = ValueNotifier<({int progress, String message})>((progress: 0, message: ''));
   final logo = await Helpers.getPlatformSpecificLogo();

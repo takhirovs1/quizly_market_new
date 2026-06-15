@@ -95,3 +95,23 @@ web-win: pre-build-win ## Build Flutter web release and deploy to Firebase hosti
 	@xcopy /E /I /Y packages\quizlymarket_landing\dist\* web\landing\
 	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
 	@firebase deploy --only hosting
+
+# ─────────── BUILD COMMANDS FOR macOS ───────────
+
+.PHONY: macos-dmg
+macos-dmg: pre-build ## Build macOS app and package as DMG
+	@echo "🛠️ Installing create-dmg tool..."
+	@brew install create-dmg || true
+	@echo "📦 Building macOS app..."
+	@$(FLUTTER) build macos --release --dart-define-from-file=config/production.json --dart-define=config.platform=macos
+	@echo "💿 Creating DMG image..."
+	@rm -f QuizlyMarket.dmg
+	@create-dmg \
+		--volname "QuizlyMarket" \
+		--window-size 600 400 \
+		--icon-size 100 \
+		--app-drop-link 450 200 \
+		"QuizlyMarket.dmg" \
+		"build/macos/Build/Products/Release/QuizlyMarket.app"
+	@echo "✅ DMG created successfully"
+

@@ -107,77 +107,80 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                 builder: (context, constraints) {
                   final isWeb = constraints.maxWidth >= 800;
                   if (isWeb) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1200),
-                          child: Padding(
-                            padding: const EdgeInsets.all(28),
-                            child: IntrinsicHeight(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  // ── Left: Test details card ──────────────────────────────
-                                  Expanded(
-                                    flex: 5,
-                                    child: _WebInfoCard(
-                                      testModel: testModel,
-                                      onPressLike: onPressLike,
-                                      onPressShare: onPressShare,
+                    return ClipRect(
+                      child: SingleChildScrollView(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1200),
+                            child: Padding(
+                              padding: const EdgeInsets.all(28),
+                              child: IntrinsicHeight(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    // ── Left: Test details card ──────────────────────────────
+                                    Expanded(
+                                      flex: 5,
+                                      child: _WebInfoCard(
+                                        testModel: testModel,
+                                        onPressLike: onPressLike,
+                                        onPressShare: onPressShare,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 28),
-                                  // ── Right: Payment and questions ────────────────────────
-                                  Expanded(
-                                    flex: 7,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        if (questions.isNotEmpty) ...[
-                                          QuestionsCarousel(
-                                            questions: questions,
-                                            languageCode: languageCode,
-                                            currentPage: currentTest,
+                                    const SizedBox(width: 28),
+                                    // ── Right: Payment and questions ────────────────────────
+                                    Expanded(
+                                      flex: 7,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          if (questions.isNotEmpty) ...[
+                                            QuestionsCarousel(
+                                              questions: questions,
+                                              languageCode: languageCode,
+                                              currentPage: currentTest,
+                                            ),
+                                            const SizedBox(height: 20),
+                                          ],
+                                          Text(
+                                            context.x.l10n.paymentType,
+                                            style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18),
                                           ),
-                                          const SizedBox(height: 20),
+                                          const SizedBox(height: 8),
+                                          ValueListenableBuilder(
+                                            valueListenable: selectedPayment,
+                                            builder: (context, payment, child) => PaymentCard(
+                                              imagePadding: payment.id != 0
+                                                  ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
+                                                  : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
+                                              hasShadow: true,
+                                              title: payment.title,
+                                              titleWidget: (payment.id == 0 && state.walletStatus.isLoading)
+                                                  ? Shimmer.fromColors(
+                                                      baseColor: context.x.colors.indicatorBackground,
+                                                      highlightColor: context.x.colors.scaffoldBackground,
+                                                      child: const ShimmerBox(width: 80, height: 18, radius: 4),
+                                                    )
+                                                  : null,
+                                              subtitle: payment.subtitle,
+                                              image: Image.asset(
+                                                payment.icon,
+                                                package: 'ui',
+                                                width: payment.type == .card ? 32 : 54,
+                                              ),
+                                              onTap: onSwitchPaymentPressed,
+                                              action: IconButton(
+                                                onPressed: onSwitchPaymentPressed,
+                                                icon: const Icon(Icons.unfold_more),
+                                              ),
+                                            ),
+                                          ),
                                         ],
-                                        Text(
-                                          context.x.l10n.paymentType,
-                                          style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        ValueListenableBuilder(
-                                          valueListenable: selectedPayment,
-                                          builder: (context, payment, child) => PaymentCard(
-                                            imagePadding: payment.id != 0
-                                                ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
-                                                : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
-                                            hasShadow: true,
-                                            title: payment.title,
-                                            titleWidget: (payment.id == 0 && state.walletStatus.isLoading)
-                                                ? Shimmer.fromColors(
-                                                    baseColor: context.x.colors.indicatorBackground,
-                                                    highlightColor: context.x.colors.scaffoldBackground,
-                                                    child: const ShimmerBox(width: 80, height: 18, radius: 4),
-                                                  )
-                                                : null,
-                                            subtitle: payment.subtitle,
-                                            image: Image.asset(
-                                              payment.icon,
-                                              package: 'ui',
-                                              width: payment.type == .card ? 32 : 54,
-                                            ),
-                                            onTap: onSwitchPaymentPressed,
-                                            action: IconButton(
-                                              onPressed: onSwitchPaymentPressed,
-                                              icon: const Icon(Icons.unfold_more),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),

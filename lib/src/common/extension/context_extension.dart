@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:localization/localization.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/telegram/telegram_service.dart';
 import '../constant/constant.dart';
@@ -228,8 +229,12 @@ extension TelegramWebAppX on BuildContext {
         ? 'https://t.me/@prjkttest_bot?startapp=$code'
         : '${Constant.botUrl}?startapp=1234567';
     final message = x.l10n.shareTestCopy(title, description, questionAmount, link);
-    final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
-    telegramWebApp.openTelegramLink(shareLink);
+    if (telegramWebApp.isSupported) {
+      final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
+      telegramWebApp.openTelegramLink(shareLink);
+    } else {
+      SharePlus.instance.share(ShareParams(text: message));
+    }
   }
 }
 

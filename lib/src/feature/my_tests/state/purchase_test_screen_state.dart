@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
@@ -165,7 +166,11 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
 
       final payUrl = response?.url;
       if (payUrl != null && payUrl.isNotEmpty) {
-        context.telegramWebApp.openLink(payUrl, tryInstantView: false);
+        if (context.telegramWebApp.isSupported) {
+          context.telegramWebApp.openLink(payUrl, tryInstantView: false);
+        } else {
+          await launchUrl(.parse(payUrl), mode: .externalApplication);
+        }
       } else {
         context.x.showNotification(
           message: context.x.l10n.somethingWentWrong,
