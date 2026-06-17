@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,8 +19,10 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="QuizlyMarket — O'zbekistondagi #1 onlayn testlar bozori. Testlarni sotib oling, yeching va leaderboardda g'olib bo'ling. Talabalar, abituriyentlar va o'quvchilar uchun.">
-  <meta name="keywords" content="QuizlyMarket, Quizly Market, quizly, quizly app, quizly market app, quiz market, test yechish, onlayn test, online testlar, testlar bozori, dtm testlar, abituriyent test, uzbekistan quiz, онлайн тесты, квизли маркет">
+  <meta name="description"
+    content="QuizlyMarket — O'zbekistondagi #1 onlayn testlar bozori. Testlarni sotib oling, yeching va leaderboardda g'olib bo'ling. Talabalar, abituriyentlar va o'quvchilar uchun.">
+  <meta name="keywords"
+    content="QuizlyMarket, Quizly Market, quizly, quizly app, quizly market app, quiz market, test yechish, onlayn test, online testlar, testlar bozori, dtm testlar, abituriyent test, uzbekistan quiz, онлайн тесты, квизли маркет">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="author" content="QuizlyMarket" />
   <link rel="canonical" href="https://test-9cf8b.web.app/" />
@@ -39,14 +42,16 @@
   <meta property="og:locale:alternate" content="ru_RU" />
   <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:title" content="QuizlyMarket — Onlayn Testlar Bozori" />
-  <meta property="og:description" content="O'zbekistondagi #1 onlayn testlar bozori. Testlarni sotib oling, yeching va leaderboardda g'olib bo'ling." />
+  <meta property="og:description"
+    content="O'zbekistondagi #1 onlayn testlar bozori. Testlarni sotib oling, yeching va leaderboardda g'olib bo'ling." />
   <meta property="og:image" content="https://test-9cf8b.web.app/landing/assets/logo.png" />
   <meta property="og:image:width" content="512" />
   <meta property="og:image:height" content="512" />
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:title" content="QuizlyMarket — Onlayn Testlar Bozori" />
-  <meta property="twitter:description" content="O'zbekistondagi #1 onlayn testlar bozori. Testlarni sotib oling, yeching va leaderboardda g'olib bo'ling." />
+  <meta property="twitter:description"
+    content="O'zbekistondagi #1 onlayn testlar bozori. Testlarni sotib oling, yeching va leaderboardda g'olib bo'ling." />
   <meta property="twitter:image" content="https://test-9cf8b.web.app/landing/assets/logo.png" />
   <!-- JSON-LD -->
   <script type="application/ld+json">
@@ -76,36 +81,37 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>QuizlyMarket — Onlayn Testlar Bozori | O'zbekiston #1 Quiz Platformasi</title>
   <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
-  
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script defer src="telegram_web_app_simulator.js"></script>
   <script>
     (function () {
       const url = new URL(window.location.href);
-    
+
       if (url.searchParams.has('tgWebAppData')) {
         const cleanUrl = url.origin + url.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
       }
     })();
-    </script>
-  
+  </script>
+
   <script>
     if (window.Telegram && Telegram.WebApp) {
       const tg = Telegram.WebApp;
-      
+
       tg.ready();
-      
+
       tg.expand();
-      
+
       tg.disableVerticalSwipes();
-      
+
       tg.disableClosingConfirmation();
 
       const theme = tg.themeParams || {};
@@ -117,4 +123,5 @@
 
   <script src="flutter_bootstrap.js" async></script>
 </body>
+
 </html>
