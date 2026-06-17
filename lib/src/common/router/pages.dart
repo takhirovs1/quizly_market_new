@@ -6,7 +6,6 @@ import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
-import '../../feature/main/screen/select_language.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
@@ -38,7 +37,6 @@ enum Routes with OctopusRoute {
   login('login', title: 'Login'),
   home('home', title: 'Home'),
   splash('splash', title: 'Splash'),
-  selectLanguage('selectLanguage', title: 'Select Language'),
   moreRecommendation('moreRecommendation', title: 'More Recommendation'),
   purchaseTest('purchaseTest', title: 'PurchaseTest'),
   payment('payment', title: 'Payment'),
@@ -90,7 +88,6 @@ enum Routes with OctopusRoute {
       ),
       child: const SplashRouteWrapper(),
     ),
-    .selectLanguage => const SelectLanguage(),
     .moreRecommendation => MultiBlocProvider(
       providers: [
         BlocProvider(

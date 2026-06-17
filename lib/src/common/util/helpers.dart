@@ -34,7 +34,7 @@ sealed class Helpers {
     stops: [0.1, 0.3, 0.5],
     begin: Alignment(-1, -0.7),
     end: Alignment(1, 0.7),
-    tileMode: TileMode.clamp,
+    tileMode: .clamp,
   );
 
   static Future<({String path, double scale})?> getPlatformSpecificLogo() async {
