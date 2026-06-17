@@ -115,3 +115,15 @@ macos-dmg: pre-build ## Build macOS app and package as DMG
 		"build/macos/Build/Products/Release/QuizlyMarket.app"
 	@echo "✅ DMG created successfully"
 
+
+DEPLOY_HOST := corelabs-server
+DEPLOY_PATH := /opt/quizly/web/
+
+.PHONY: web-deploy
+web-deploy: pre-build ## Build Flutter web release and deploy to quizly.corelabs.uz (own server)
+	@cd packages/quizlymarket_landing && npm install && npm run build
+	@mkdir -p web/landing
+	@cp -R packages/quizlymarket_landing/dist/* web/landing/
+	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
+	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
+	@rsync -avz --delete build/web/ $(DEPLOY_HOST):$(DEPLOY_PATH)

@@ -1,6 +1,6 @@
 // External links / endpoints. Update store URLs before going live.
 export const LINKS = {
-  webApp: '/#/selectLanguage',
+  webApp: '/#/login',
   appStore: '#',
   googlePlay: '#',
   telegramBot: 'https://t.me/quizlymarketbot',

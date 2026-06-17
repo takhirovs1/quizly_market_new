@@ -1,5 +1,5 @@
 {
   "ENVIRONMENT": "staging",
-  "BASE_URL": "https://quizly-market-backend-ct7x.onrender.com",
-  "TELEGRAM_API_BASE_URL": "https://quizly-market-backend-ct7x.onrender.com"
+  "BASE_URL": "https://apiquizly.corelabs.uz",
+  "TELEGRAM_API_BASE_URL": "https://apiquizly.corelabs.uz"
 }
