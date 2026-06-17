@@ -19,10 +19,10 @@ class HeaderWidget extends StatelessWidget {
             ],
           ),
           child: DecoratedBox(
-            decoration: BoxDecoration(color: context.x.colors.white, borderRadius: .circular(24)),
+            decoration: BoxDecoration(color: context.x.colors.primary, borderRadius: .circular(24)),
             child: Padding(
               padding: const .all(20),
-              child: Assets.lib.images.logoPng.image(package: 'ui', width: 56, height: 56),
+              child: Assets.lib.images.logo.image(package: 'ui', width: 56, height: 56),
             ),
           ),
         ),

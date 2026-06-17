@@ -43,7 +43,10 @@ final class AuthenticationController extends ChangeNotifier {
     setState(AuthenticationState.processing(user: state.user, message: 'Restoring session...'));
 
     await _repository.restore();
-    setState(AuthenticationState.idle(user: state.user));
+    // Read the resolved user after restore() so the idle state reflects the
+    // Firebase-persisted session immediately rather than waiting for the stream.
+    final user = await _repository.getUser();
+    setState(.idle(user: user));
   }
 
   Future<void> login() async {}

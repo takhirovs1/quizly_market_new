@@ -1,101 +1,125 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../feature/authentication/model/auth_service_response.dart';
+import '../util/platform_info.dart';
+import '../util/telegram_detector.dart';
+import 'auth_service_windows_stub.dart' if (dart.library.io) 'auth_service_windows.dart';
+
+const _webClientId = '568369386495-mhssl36boosa0qjksku66rr9rngk2lvm.apps.googleusercontent.com';
 
 final class AuthService {
   const AuthService._();
 
-  static final GoogleSignIn _googleSignIn = .instance;
+  static bool _googleInitialized = false;
 
-  static Future<AuthServiceResponse?> signInWithGoogleNew() async {
+  // ---------------------------------------------------------------------------
+  // Google Sign-In
+  // ---------------------------------------------------------------------------
+
+  static Future<AuthServiceResponse?> signInWithGoogle() {
+    if (kIsWeb && isTelegramMiniApp()) throw const AuthServiceException(.telegramWebviewBlocked);
+    if (kIsWeb) return _signInWithGoogleWeb();
+    if (PlatformInfo.isWindows) return signInWithGoogleWindows();
+    return _signInWithGoogleNative();
+  }
+
+  static Future<AuthServiceResponse?> _signInWithGoogleWeb() async {
     try {
-      await _googleSignIn.initialize();
-
-      // ignore: unnecessary_nullable_for_final_variable_declarations
-      final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
-
-      if (googleUser == null) return null;
-
-      String? accessToken;
-      try {
-        final authorization = await googleUser.authorizationClient.authorizationForScopes(['email', 'profile']);
-        accessToken = authorization?.accessToken;
-
-        if (accessToken == null || accessToken.isEmpty) {
-          final newAuth = await googleUser.authorizationClient.authorizeScopes(['email', 'profile']);
-          accessToken = newAuth.accessToken;
-        }
-      } on Object catch (error) {
-        log('signInWithGoogleNew error: $error');
-        return null;
-      }
-
-      String? firstName;
-      String? lastName;
-      if (googleUser.displayName != null && googleUser.displayName!.isNotEmpty) {
-        final nameParts = googleUser.displayName!.trim().split(' ');
-        if (nameParts.isNotEmpty) {
-          firstName = nameParts.first;
-          if (nameParts.length > 1) {
-            lastName = nameParts.sublist(1).join(' ');
-          }
-        }
-      }
-
-      final idToken = googleUser.authentication.idToken ?? '';
-
-      return AuthServiceResponse(
-        accessToken: idToken,
-        email: googleUser.email,
-        firstName: firstName,
-        lastName: lastName,
-        photo: googleUser.photoUrl,
-      );
+      final userCred = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+      final idToken = (userCred.credential as OAuthCredential?)?.idToken;
+      if (idToken == null || idToken.isEmpty) return null;
+      return AuthServiceResponse(idToken: idToken);
+    } on FirebaseAuthException {
+      rethrow;
     } on Object catch (error) {
-      log('signInWithGoogleNew error: $error');
+      log('signInWithGoogleWeb error: $error');
       return null;
     }
   }
 
-  static Future<AuthServiceResponse?> signInWithApple() async {
+  static Future<AuthServiceResponse?> _signInWithGoogleNative() async {
+    try {
+      if (!_googleInitialized) {
+        await GoogleSignIn.instance.initialize(serverClientId: _webClientId);
+        _googleInitialized = true;
+      }
+      final account = await GoogleSignIn.instance.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        log('signInWithGoogleNative: idToken is null');
+        return null;
+      }
+      return AuthServiceResponse(idToken: idToken);
+    } on FirebaseAuthException {
+      rethrow;
+    } on Object catch (error) {
+      log('signInWithGoogleNative error: $error');
+      return null;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Apple Sign-In
+  // ---------------------------------------------------------------------------
+
+  static Future<AuthServiceResponse?> signInWithApple() {
+    if (kIsWeb && isTelegramMiniApp()) throw const AuthServiceException(.telegramWebviewBlocked);
+    if (kIsWeb) return _signInWithAppleWeb();
+    return _signInWithAppleNative();
+  }
+
+  static Future<AuthServiceResponse?> _signInWithAppleWeb() async {
+    try {
+      final userCred = await FirebaseAuth.instance.signInWithPopup(
+        AppleAuthProvider()
+          ..addScope('email')
+          ..addScope('name'),
+      );
+      final idToken = (userCred.credential as OAuthCredential?)?.idToken;
+      if (idToken == null || idToken.isEmpty) return null;
+      return AuthServiceResponse(idToken: idToken);
+    } on FirebaseAuthException {
+      rethrow;
+    } on Object catch (error) {
+      log('signInWithAppleWeb error: $error');
+      return null;
+    }
+  }
+
+  static Future<AuthServiceResponse?> _signInWithAppleNative() async {
     try {
       final apple = await SignInWithApple.getAppleIDCredential(
         scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
       );
-      final oauth = OAuthProvider(
-        'apple.com',
-      ).credential(idToken: apple.identityToken, accessToken: apple.authorizationCode);
-      final userCred = await FirebaseAuth.instance.signInWithCredential(oauth);
-
-      var firstName = apple.givenName;
-      var lastName = apple.familyName;
-
-      if ((firstName == null || firstName.isEmpty) && userCred.user?.displayName != null) {
-        final nameParts = userCred.user!.displayName!.trim().split(' ');
-        if (nameParts.isNotEmpty) {
-          firstName = nameParts.first;
-          if (nameParts.length > 1) {
-            lastName = nameParts.sublist(1).join(' ');
-          }
-        }
-      }
-
-      log('apple: ${apple.toString()}');
-
-      return AuthServiceResponse(
-        accessToken: userCred.credential?.accessToken,
-        email: userCred.user?.email ?? apple.email,
-        firstName: firstName,
-        lastName: lastName,
-        photo: userCred.user?.photoURL,
-      );
+      final idToken = apple.identityToken;
+      if (idToken == null || idToken.isEmpty) return null;
+      return AuthServiceResponse(idToken: idToken);
+    } on FirebaseAuthException {
+      rethrow;
     } on Object catch (error) {
-      log('signInWithApple error: $error');
+      log('signInWithAppleNative error: $error');
       return null;
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Error types
+// ---------------------------------------------------------------------------
+
+enum AuthErrorCode { telegramWebviewBlocked, cancelled, accountExistsWithDifferentCredential, networkError, unknown }
+
+final class AuthServiceException implements Exception {
+  const AuthServiceException(this.code, [this.message]);
+
+  final AuthErrorCode code;
+  final String? message;
+
+  @override
+  String toString() => 'AuthServiceException($code${message != null ? ': $message' : ''})';
 }

@@ -99,15 +99,15 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     'Database',
     (dependencies) async {
       dependencies.localSource = await LocalSource.instance;
-      if (defaultTargetPlatform == .macOS || defaultTargetPlatform == .windows) {
-        await dependencies.localSource.setAccessToken(
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODE0NTkwNDgsImlhdCI6MTc4MTQ1NTQ0OCwiaXNzIjoicXVpemx5Iiwic3ViIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlkIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwicm9sZSI6ImN1c3RvbWVyIn0.Z0qudqzizABZckyKhm3_T-wgWQMYqQ9CNoNJmZms0zY',
-        );
-        await dependencies.localSource.setRefreshToken(
-          'a9183d9b2be9020b5cec0ef8783e5cc937e8f38ac459ffc4d363212b5515658e',
-        );
-        await dependencies.localSource.setId('8435fc63-69b3-404e-a138-0993adcd97b3');
-      }
+      // if (defaultTargetPlatform == .macOS || defaultTargetPlatform == .windows) {
+      //   await dependencies.localSource.setAccessToken(
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODE0NTkwNDgsImlhdCI6MTc4MTQ1NTQ0OCwiaXNzIjoicXVpemx5Iiwic3ViIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlkIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwicm9sZSI6ImN1c3RvbWVyIn0.Z0qudqzizABZckyKhm3_T-wgWQMYqQ9CNoNJmZms0zY',
+      //   );
+      //   await dependencies.localSource.setRefreshToken(
+      //     'a9183d9b2be9020b5cec0ef8783e5cc937e8f38ac459ffc4d363212b5515658e',
+      //   );
+      //   await dependencies.localSource.setId('8435fc63-69b3-404e-a138-0993adcd97b3');
+      // }
     },
   ),
 
@@ -261,7 +261,10 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     'Repositories',
     (dependencies) {
       dependencies.repository = RepositoryContainer(
-        authenticationRepository: AuthenticationRepositoryImpl(apiService: dependencies.apiService),
+        authenticationRepository: AuthenticationRepositoryImpl(
+          apiService: dependencies.apiService,
+          localSource: dependencies.localSource,
+        ),
         mainRepository: MainRepositoryImpl(dio: dependencies.dios.dio),
         myTestRepository: MyTestRepositoryImpl(dio: dependencies.dios.dio),
         profileRepository: ProfileRepositoryImpl(dio: dependencies.dios.dio),

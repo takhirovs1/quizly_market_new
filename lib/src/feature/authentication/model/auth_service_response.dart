@@ -1,8 +1,7 @@
 class AuthServiceResponse {
-  AuthServiceResponse({this.accessToken, this.email, this.firstName, this.lastName, this.photo});
-  String? accessToken;
-  String? email;
-  String? firstName;
-  String? lastName;
-  String? photo;
+  const AuthServiceResponse({required this.idToken});
+
+  /// The identity token from the provider (Google / Apple).
+  /// Sent to the backend as `id_token` to obtain backend JWT tokens.
+  final String idToken;
 }

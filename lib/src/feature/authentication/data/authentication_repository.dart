@@ -1,6 +1,12 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:local_source/local_source.dart';
+
 import '../../../common/service/api_service.dart';
+import '../../../common/service/auth_service.dart';
+import '../model/auth_service_response.dart';
+import '../model/auth_token_response.dart';
 import '../model/user.dart';
 
 abstract interface class IAuthenticationRepository {
@@ -17,12 +23,17 @@ abstract interface class IAuthenticationRepository {
   Future<User> login();
 
   Future<void> signOut();
+
+  Future<AuthServiceResponse?> signInWithGoogle();
+
+  Future<AuthServiceResponse?> signInWithApple();
 }
 
 class AuthenticationRepositoryImpl implements IAuthenticationRepository {
-  AuthenticationRepositoryImpl({required this.apiService});
+  AuthenticationRepositoryImpl({required this.apiService, required this.localSource});
 
   final ApiService apiService;
+  final LocalSource localSource;
 
   final StreamController<User> _userController = StreamController<User>.broadcast();
   User _user = const .unauthenticated();
@@ -34,20 +45,70 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
   FutureOr<User> getUser() => _user;
 
   @override
-  Future<void> signOut() => Future<void>.sync(() {
-    const user = User.unauthenticated();
-
-    _userController.add(_user = user);
-  });
+  Future<void> restore() async {
+    if (localSource.isUserAuthenticated) {
+      _userController.add(
+        _user = .authenticated(
+          id: localSource.id,
+          token: localSource.accessToken,
+          refreshToken: localSource.refreshToken,
+        ),
+      );
+    } else {
+      _userController.add(_user = const .unauthenticated());
+    }
+  }
 
   @override
-  Future<void> restore() async {}
+  Future<void> signOut() async {
+    await fb.FirebaseAuth.instance.signOut();
+    _userController.add(_user = const .unauthenticated());
+  }
 
   @override
-  Future<User> login() async => const User.authenticated(id: '', token: '', refreshToken: '');
+  Future<User> login() async => _user;
 
   @override
   Future<User> fetchUser({required final String token}) {
-    throw const FormatException('AuthenticationRepositoryImpl > fetchUser > Invalid response body');
+    throw const FormatException('AuthenticationRepositoryImpl > fetchUser > not implemented');
+  }
+
+  @override
+  Future<AuthServiceResponse?> signInWithGoogle() =>
+      _signIn(provider: AuthService.signInWithGoogle, endpoint: '/api/auth/google');
+
+  @override
+  Future<AuthServiceResponse?> signInWithApple() =>
+      _signIn(provider: AuthService.signInWithApple, endpoint: '/api/auth/apple');
+
+  Future<AuthServiceResponse?> _signIn({
+    required Future<AuthServiceResponse?> Function() provider,
+    required String endpoint,
+  }) async {
+    final serviceResponse = await provider();
+    if (serviceResponse == null) return null;
+
+    final json = await apiService.request<Map<String, Object?>>(
+      endpoint,
+      method: .post,
+      data: {'id_token': serviceResponse.idToken},
+    );
+    final tokenResponse = AuthTokenResponse.fromJson(json);
+
+    await Future.wait([
+      localSource.setAccessToken(tokenResponse.accessToken),
+      localSource.setRefreshToken(tokenResponse.refreshToken),
+      localSource.setId(tokenResponse.userId),
+    ]);
+
+    _userController.add(
+      _user = .authenticated(
+        id: tokenResponse.userId,
+        token: tokenResponse.accessToken,
+        refreshToken: tokenResponse.refreshToken,
+      ),
+    );
+
+    return serviceResponse;
   }
 }
