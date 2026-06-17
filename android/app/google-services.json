@@ -7,20 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:568369386495:android:dcf3206f6a31f9431e4dca",
+        "mobilesdk_app_id": "1:568369386495:android:d6db9921a4db4cd81e4dca",
         "android_client_info": {
-          "package_name": "com.quizly.app"
+          "package_name": "uz.corelabs.quizly"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "568369386495-umvco3b8jgp3l3bvdrmh7aj6q35drjsh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.quizly.app",
-            "certificate_hash": "14d8b710a878d2df1234f937954d0b1ca2ceba95"
-          }
-        },
         {
           "client_id": "568369386495-mhssl36boosa0qjksku66rr9rngk2lvm.apps.googleusercontent.com",
           "client_type": 3
@@ -39,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "568369386495-atugvfvfqo27nnqr96p2ko26i95o73o2.apps.googleusercontent.com",
+              "client_id": "568369386495-17m34mrumh2njfsov3mbu51i2k2gna84.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.quizly.app"
+                "bundle_id": "com.flutterbro.quizlyMarket"
               }
             }
           ]

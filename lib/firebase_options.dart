@@ -52,29 +52,29 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAWiCeNXuZh7skW7F9-pWWTt2TABs15IwQ',
-    appId: '1:568369386495:android:dcf3206f6a31f9431e4dca',
+    appId: '1:568369386495:android:d6db9921a4db4cd81e4dca',
     messagingSenderId: '568369386495',
     projectId: 'test-9cf8b',
     storageBucket: 'test-9cf8b.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA3j_HAwq0dyBi8KnCgPNUeUi7l85tYoOY',
-    appId: '1:568369386495:ios:9b83ac266c2e015e1e4dca',
-    messagingSenderId: '568369386495',
-    projectId: 'test-9cf8b',
-    storageBucket: 'test-9cf8b.firebasestorage.app',
-    iosBundleId: 'com.quizly.app',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA3j_HAwq0dyBi8KnCgPNUeUi7l85tYoOY',
-    appId: '1:568369386495:ios:acc99e27da3ad29c1e4dca',
+    appId: '1:568369386495:ios:39d9d30ea71c3f821e4dca',
     messagingSenderId: '568369386495',
     projectId: 'test-9cf8b',
     storageBucket: 'test-9cf8b.firebasestorage.app',
     androidClientId: '568369386495-umvco3b8jgp3l3bvdrmh7aj6q35drjsh.apps.googleusercontent.com',
-    iosClientId: '568369386495-17m34mrumh2njfsov3mbu51i2k2gna84.apps.googleusercontent.com',
-    iosBundleId: 'com.flutterbro.quizlyMarket',
+    iosClientId: '568369386495-a3h9sqtl78hh4aba0tjdlb848mocegk2.apps.googleusercontent.com',
+    iosBundleId: 'uz.corelabs.quizly',
+  );
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyA3j_HAwq0dyBi8KnCgPNUeUi7l85tYoOY',
+    appId: '1:568369386495:ios:39d9d30ea71c3f821e4dca',
+    messagingSenderId: '568369386495',
+    projectId: 'test-9cf8b',
+    storageBucket: 'test-9cf8b.firebasestorage.app',
+    androidClientId: '568369386495-umvco3b8jgp3l3bvdrmh7aj6q35drjsh.apps.googleusercontent.com',
+    iosClientId: '568369386495-a3h9sqtl78hh4aba0tjdlb848mocegk2.apps.googleusercontent.com',
+    iosBundleId: 'uz.corelabs.quizly',
   );
 }

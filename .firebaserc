@@ -1,5 +1,8 @@
 {
   "projects": {
+    "test": "test-9cf8b",
     "default": "test-9cf8b"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }

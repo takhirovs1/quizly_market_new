@@ -74,16 +74,23 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
   }
 
   @override
-  Future<AuthServiceResponse?> signInWithGoogle() =>
-      _signIn(provider: AuthService.signInWithGoogle, endpoint: '/api/auth/google');
+  Future<AuthServiceResponse?> signInWithGoogle() => _signIn(
+    provider: AuthService.signInWithGoogle,
+    endpoint: '/api/auth/google',
+    dataBuilder: (token) => {'id_token': token},
+  );
 
   @override
-  Future<AuthServiceResponse?> signInWithApple() =>
-      _signIn(provider: AuthService.signInWithApple, endpoint: '/api/auth/apple');
+  Future<AuthServiceResponse?> signInWithApple() => _signIn(
+    provider: AuthService.signInWithApple,
+    endpoint: '/api/auth/apple',
+    dataBuilder: (token) => {'identity_token': token, 'referral_code': ''},
+  );
 
   Future<AuthServiceResponse?> _signIn({
     required Future<AuthServiceResponse?> Function() provider,
     required String endpoint,
+    required Map<String, Object?> Function(String token) dataBuilder,
   }) async {
     final serviceResponse = await provider();
     if (serviceResponse == null) return null;
@@ -91,7 +98,7 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     final json = await apiService.request<Map<String, Object?>>(
       endpoint,
       method: .post,
-      data: {'id_token': serviceResponse.idToken},
+      data: dataBuilder(serviceResponse.idToken),
     );
     final tokenResponse = AuthTokenResponse.fromJson(json);
 
