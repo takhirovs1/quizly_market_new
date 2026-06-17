@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../common/util/app_enum.dart';
 import '../../../common/util/error_util.dart';
 import '../../../common/util/logger.dart' as log_util;
 import '../../../common/util/sequential_cubit.dart';
@@ -16,14 +17,14 @@ class TestView extends SequentialCubit<TestViewState> {
 
   final ITestViewRepository testViewRepository;
 
-  Future<void> getAttempts(String testId, {bool loadMore = false}) => handle<void>(
+  Future<void> getAttempts(String testId, TestMode mode, {bool loadMore = false}) => handle<void>(
     (emit) async {
       if (loadMore) {
         if (state.attempts.length >= state.total) return;
         final nextOffset = state.offset + state.limit;
         final result = await testViewRepository.getAttempts(
           testId,
-          TestAttemptRequest(limit: state.limit, offset: nextOffset),
+          TestAttemptRequest(limit: state.limit, offset: nextOffset, mode: mode),
         );
         emit(
           state.copyWith(

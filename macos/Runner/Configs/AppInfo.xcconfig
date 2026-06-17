@@ -8,7 +8,7 @@
 PRODUCT_NAME = QuizlyMarket
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.flutterbro.quizlyMarket
+PRODUCT_BUNDLE_IDENTIFIER = uz.corelabs.quizly
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.flutterbro. All rights reserved.

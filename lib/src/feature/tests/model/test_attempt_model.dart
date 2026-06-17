@@ -1,12 +1,14 @@
 import '../../../common/extension/string_extension.dart';
+import '../../../common/util/app_enum.dart';
 
 class TestAttemptRequest {
-  const TestAttemptRequest({this.limit = 20, this.offset = 0});
+  const TestAttemptRequest({this.limit = 20, this.offset = 0, this.mode});
 
   final int limit;
   final int offset;
+  final TestMode? mode;
 
-  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset};
+  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset, 'mode': mode?.value};
 }
 
 class TestAttemptResponse {

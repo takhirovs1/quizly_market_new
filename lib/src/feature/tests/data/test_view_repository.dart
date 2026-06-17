@@ -90,7 +90,7 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<void> archiveTest(String testId) async {
     try {
-      await dio.post<void>('/api/tests/$testId/archive');
+      await dio.post<void>('/api/payments/tests/$testId/archive');
     } catch (e, s) {
       info('ARCHIVE TEST API ERROR: $e $s');
       rethrow;
@@ -100,7 +100,7 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<void> unarchiveTest(String testId) async {
     try {
-      await dio.delete<void>('/api/tests/$testId/archive');
+      await dio.delete<void>('/api/payments/tests/$testId/archive');
     } catch (e, s) {
       info('UNARCHIVE TEST API ERROR: $e $s');
       rethrow;
