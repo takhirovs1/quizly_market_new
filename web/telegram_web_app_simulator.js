@@ -9,8 +9,7 @@
    */
 
 
-  const DEFAULT_TELEGRAM_INIT_DATA = "user=%7B%22id%22%3A1251798314%2C%22first_name%22%3A%22Takhirov%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Takhirovs%22%2C%22language_code%22%3A%22en%22%2C%22is_premium%22%3Atrue%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPv8sJMzN7dZuMSud-i2sgBEsm1XHx-1alxOrHEO5BX8.svg%22%7D&chat_instance=3624369482635394789&chat_type=private&auth_date=1781781691&signature=IiQgHnBEqgUTxR1QtgQl_1nXFjsJes5whCKcVlSdFeDKbMHjK_mweNpTTWWRIVgBR2AEHf9ovwU3bvm1vQGHCA&hash=fd4a50a680892b4ee80afd445d7cfdd2c993c17493d1961b7a52d29e52118244";
-
+  const DEFAULT_TELEGRAM_INIT_DATA = "user=%7B%22id%22%3A1251798314%2C%22first_name%22%3A%22Takhirov%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Takhirovs%22%2C%22language_code%22%3A%22en%22%2C%22is_premium%22%3Atrue%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPv8sJMzN7dZuMSud-i2sgBEsm1XHx-1alxOrHEO5BX8.svg%22%7D&chat_instance=3624369482635394789&chat_type=private&auth_date=1781782613&signature=rnlcA9bBNs5GSyu1Pu6_jfVitjaVAzr-VIE1ueOvBNXszrNHsN29UNrHzi4h7z96moLvwwqadO6YJ4Lk0es-BQ&hash=10d7662c540e095eb9e9d65146762615849c1beb77d14add7061cadaa3a9c18e";
 
   const parseDefaultInitData = (raw) => {
     const sp = new URLSearchParams(raw);

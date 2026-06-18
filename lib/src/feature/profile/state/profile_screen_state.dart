@@ -220,12 +220,10 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onArchivedTestsPressed() => context.octopus.push(Routes.archive);
   void onTeacherPressed() {}
   void onGoogleConnectPressed() {
-    if (context.telegramWebApp.initDataRaw.isNotEmpty) return;
     profileCubit.linkGoogle();
   }
 
   void onAppleConnectPressed() {
-    if (context.telegramWebApp.initDataRaw.isNotEmpty) return;
     profileCubit.linkApple();
   }
 
