@@ -24,7 +24,18 @@ class _ProfileScreenState extends ProfileScreenState {
       statusBarIconBrightness: Theme.of(context).brightness == .dark ? Brightness.light : Brightness.dark,
       statusBarBrightness: Theme.of(context).brightness,
     ),
-    child: BlocBuilder<ProfileCubit, ProfileState>(
+    child: BlocConsumer<ProfileCubit, ProfileState>(
+      listenWhen: (prev, curr) => curr.linkErrorCount != prev.linkErrorCount,
+      listener: (context, state) {
+        context.x.showNotification(
+          message: context.x.l10n.accountAlreadyLinked,
+          isError: true,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
+      },
       builder: (context, state) {
         final user = state.user;
         final isShimmer = user == null;
@@ -264,9 +275,9 @@ class _ProfileScreenState extends ProfileScreenState {
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         padding: const .symmetric(vertical: 16),
-                        itemCount: menuRows.length,
+                        itemCount: menuRowsFor(state.user).length,
                         itemBuilder: (context, index) {
-                          final row = menuRows[index];
+                          final row = menuRowsFor(state.user)[index];
                           return switch (row.type) {
                             .header => Padding(
                               padding: .only(top: index == 0 ? 0 : 8, bottom: 8),
@@ -449,9 +460,9 @@ class _ProfileScreenState extends ProfileScreenState {
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 padding: EdgeInsets.zero,
-                                itemCount: menuRows.length,
+                                itemCount: menuRowsFor(state.user).length,
                                 itemBuilder: (context, index) {
-                                  final row = menuRows[index];
+                                  final row = menuRowsFor(state.user)[index];
                                   return switch (row.type) {
                                     .header => Padding(
                                       padding: .only(top: index == 0 ? 0 : 16, bottom: 8),

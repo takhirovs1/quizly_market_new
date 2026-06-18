@@ -11,6 +11,7 @@ class ProfileModelResponse {
     this.lastName,
     this.fatherName,
     this.status,
+    this.email,
     this.phone,
     this.gender,
     this.role,
@@ -19,6 +20,8 @@ class ProfileModelResponse {
     this.premium,
     this.balance,
     this.telegramChatId,
+    this.googleId,
+    this.authMethods,
     this.referralCode,
     this.language,
     this.createdAt,
@@ -32,6 +35,7 @@ class ProfileModelResponse {
     lastName: json['last_name'] as String?,
     fatherName: json['father_name'] as String?,
     status: json['status'] as String?,
+    email: json['email'] as String?,
     phone: json['phone'] as String?,
     gender: json['gender'] as String?,
     role: json['role'] as String?,
@@ -40,6 +44,8 @@ class ProfileModelResponse {
     premium: json['premium'] as bool?,
     balance: json['balance'].toIntOrNull,
     telegramChatId: json['telegram_chat_id'].toIntOrNull,
+    googleId: json['google_id'] as String?,
+    authMethods: (json['auth_methods'] as List<Object?>?)?.cast<String>(),
     referralCode: json['referral_code'] as String?,
     language: json['language'] as String?,
     createdAt: json['created_at'].toDateTimeOrNull,
@@ -52,6 +58,7 @@ class ProfileModelResponse {
   final String? lastName;
   final String? fatherName;
   final String? status;
+  final String? email;
   final String? phone;
   final String? gender;
   final String? role;
@@ -60,10 +67,16 @@ class ProfileModelResponse {
   final bool? premium;
   final int? balance;
   final int? telegramChatId;
+  final String? googleId;
+  final List<String>? authMethods;
   final String? referralCode;
   final String? language;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+
+  bool get isGoogleLinked => authMethods?.contains('google') ?? false;
+  bool get isAppleLinked => authMethods?.contains('apple') ?? false;
+  bool get isTelegramLinked => authMethods?.contains('telegram') ?? false;
 
   String get displayName {
     if (name != null && name!.isNotEmpty) return name!;

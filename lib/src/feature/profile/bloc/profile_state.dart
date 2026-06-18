@@ -4,6 +4,7 @@ class ProfileState extends Equatable {
   const ProfileState({
     this.status = StateStatus.idle,
     this.errorMessage,
+    this.linkErrorCount = 0,
     this.user,
     this.transactions = const [],
     this.transactionsLimit = 20,
@@ -19,6 +20,7 @@ class ProfileState extends Equatable {
 
   final StateStatus status;
   final String? errorMessage;
+  final int linkErrorCount;
   final ProfileModelResponse? user;
   final List<Transaction> transactions;
   final int transactionsLimit;
@@ -31,12 +33,13 @@ class ProfileState extends Equatable {
   final int archiveOffset;
   final int archiveTotal;
 
-  bool get isArchiveLoadingMore => archiveStatus == StateStatus.loadingMore;
+  bool get isArchiveLoadingMore => archiveStatus == .loadingMore;
   bool get archiveHasMore => archiveTests.length < archiveTotal;
 
   ProfileState copyWith({
     StateStatus? status,
     String? errorMessage,
+    int? linkErrorCount,
     ProfileModelResponse? user,
     List<Transaction>? transactions,
     int? transactionsLimit,
@@ -51,6 +54,7 @@ class ProfileState extends Equatable {
   }) => ProfileState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
+    linkErrorCount: linkErrorCount ?? this.linkErrorCount,
     user: user ?? this.user,
     transactions: transactions ?? this.transactions,
     transactionsLimit: transactionsLimit ?? this.transactionsLimit,
@@ -68,6 +72,7 @@ class ProfileState extends Equatable {
   List<Object?> get props => [
     status,
     errorMessage,
+    linkErrorCount,
     user,
     transactions,
     transactionsLimit,

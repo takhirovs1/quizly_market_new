@@ -22,7 +22,7 @@ final class AuthService {
   // ---------------------------------------------------------------------------
 
   static Future<AuthServiceResponse?> signInWithGoogle() {
-    if (kIsWeb && isTelegramMiniApp()) throw const AuthServiceException(.telegramWebviewBlocked);
+    if (kIsWeb && isTelegramMiniApp()) return Future.value(null);
     if (kIsWeb) return _signInWithGoogleWeb();
     if (PlatformInfo.isWindows) return signInWithGoogleWindows();
     return _signInWithGoogleNative();
@@ -68,7 +68,7 @@ final class AuthService {
   // ---------------------------------------------------------------------------
 
   static Future<AuthServiceResponse?> signInWithApple() {
-    if (kIsWeb && isTelegramMiniApp()) throw const AuthServiceException(.telegramWebviewBlocked);
+    if (kIsWeb && isTelegramMiniApp()) return Future.value(null);
     if (kIsWeb) return _signInWithAppleWeb();
     return _signInWithAppleNative();
   }

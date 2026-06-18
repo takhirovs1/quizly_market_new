@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../../common/service/auth_service.dart';
 import '../../../common/util/app_enum.dart';
 import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
@@ -41,6 +43,38 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     },
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> linkGoogle() => handle<void>(
+    (emit) async {
+      final response = await AuthService.signInWithGoogle();
+      if (response == null) return;
+      await profileRepository.linkGoogle(response.idToken);
+      await loadProfile();
+    },
+    errorHandler: (emit, error, stackTrace) {
+      if (error is DioException && error.response?.statusCode == 409) {
+        emit(state.copyWith(linkErrorCount: state.linkErrorCount + 1));
+      } else {
+        emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+      }
+    },
+  );
+
+  Future<void> linkApple() => handle<void>(
+    (emit) async {
+      final response = await AuthService.signInWithApple();
+      if (response == null) return;
+      await profileRepository.linkApple(response.idToken);
+      await loadProfile();
+    },
+    errorHandler: (emit, error, stackTrace) {
+      if (error is DioException && error.response?.statusCode == 409) {
+        emit(state.copyWith(linkErrorCount: state.linkErrorCount + 1));
+      } else {
+        emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+      }
     },
   );
 

@@ -12,8 +12,13 @@ abstract interface class IProfileRepository {
   Future<void> updateLanguage(String language);
   Future<TopUpResponse> topUp(TopUpRequest request);
   Future<TransactionResponse> getTransactions(TransactionRequest request);
-  Future<({List<TestModel> items, int limit, int offset, int total})> getArchivedTests({int limit = 20, int offset = 0});
+  Future<({List<TestModel> items, int limit, int offset, int total})> getArchivedTests({
+    int limit = 20,
+    int offset = 0,
+  });
   Future<void> unarchiveTest(String testId);
+  Future<void> linkGoogle(String idToken);
+  Future<void> linkApple(String identityToken);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -69,5 +74,15 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   @override
   Future<void> unarchiveTest(String testId) async {
     await dio.delete<void>('/api/payments/tests/$testId/archive');
+  }
+
+  @override
+  Future<void> linkGoogle(String idToken) async {
+    await dio.post<void>('/api/auth/link/google', data: {'id_token': idToken});
+  }
+
+  @override
+  Future<void> linkApple(String identityToken) async {
+    await dio.post<void>('/api/auth/link/apple', data: {'identity_token': identityToken});
   }
 }

@@ -68,7 +68,7 @@ class _ActionListTileState extends ActionListTileState {
     final textStyle = context.x.textStyle;
 
     Widget? trailingWidget;
-    if (widget.isComingSoon || widget.comingSoonText.isNotEmpty) {
+    if (widget.isComingSoon) {
       trailingWidget = Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
@@ -78,7 +78,7 @@ class _ActionListTileState extends ActionListTileState {
         ),
         child: Text(widget.comingSoonText, style: textStyle.sfW500s11.copyWith(color: colors.primary, fontSize: 10)),
       );
-    } else if (widget.isConnected || widget.connectedText.isNotEmpty) {
+    } else if (widget.isConnected) {
       trailingWidget = Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
@@ -93,43 +93,41 @@ class _ActionListTileState extends ActionListTileState {
       );
     }
 
-    final showArrow =
-        !widget.isLogout &&
-        !widget.isComingSoon &&
-        !widget.isConnected &&
-        widget.comingSoonText.isEmpty &&
-        widget.connectedText.isEmpty;
+    final showArrow = !widget.isLogout && !widget.isComingSoon && !widget.isConnected;
 
-    return CupertinoButton(
-      onPressed: widget.onPressed,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: ThemeColors.of(context).buttonFill,
-      child: Material(
-        color: ThemeColors.of(context).transparent,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              spacing: 6,
-              children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: context.x.colors.scaffoldBackground),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: widget.icon ?? Icon(Icons.person, color: widget.iconColor, size: 20),
+    return IgnorePointer(
+      ignoring: widget.isConnected,
+      child: CupertinoButton(
+        onPressed: widget.onPressed,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        color: ThemeColors.of(context).buttonFill,
+        child: Material(
+          color: ThemeColors.of(context).transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                spacing: 6,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: context.x.colors.scaffoldBackground),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: widget.icon ?? Icon(Icons.person, color: widget.iconColor, size: 20),
+                    ),
                   ),
-                ),
-                Text(widget.leading, style: context.x.textStyle.sfW600s16.copyWith(color: widget.textColor)),
-              ],
-            ),
-            Row(
-              spacing: 8,
-              children: [
-                ?trailingWidget,
-                if (showArrow) Icon(Icons.keyboard_arrow_right_rounded, color: ThemeColors.of(context).onSecondary),
-              ],
-            ),
-          ],
+                  Text(widget.leading, style: context.x.textStyle.sfW600s16.copyWith(color: widget.textColor)),
+                ],
+              ),
+              Row(
+                spacing: 8,
+                children: [
+                  ?trailingWidget,
+                  if (showArrow) Icon(Icons.keyboard_arrow_right_rounded, color: ThemeColors.of(context).onSecondary),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

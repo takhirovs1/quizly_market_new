@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
@@ -8,6 +9,7 @@ import '../../../common/router/pages.dart';
 import '../../../common/util/locale_codec.dart';
 import '../../settings/screen/settings_scope.dart';
 import '../bloc/profile_cubit.dart';
+import '../model/profile_model.dart';
 import '../screen/profile_screen.dart';
 
 abstract class ProfileScreenState extends State<ProfileScreen> {
@@ -217,8 +219,16 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onArchivedTestsPressed() => context.octopus.push(Routes.archive);
   void onTeacherPressed() {}
-  void onGoogleConnectPressed() {}
-  void onAppleConnectPressed() {}
+  void onGoogleConnectPressed() {
+    if (context.telegramWebApp.initDataRaw.isNotEmpty) return;
+    profileCubit.linkGoogle();
+  }
+
+  void onAppleConnectPressed() {
+    if (context.telegramWebApp.initDataRaw.isNotEmpty) return;
+    profileCubit.linkApple();
+  }
+
   void onTelegramConnectPressed() {}
 
   void onSetHomePressed() {
@@ -228,7 +238,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onTermsPressed() => context.octopus.push(Routes.appDocuments);
 
-  List<ProfileListRow> get menuRows => [
+  List<ProfileListRow> menuRowsFor(ProfileModelResponse? user) => [
     ProfileListRow.header((c) => context.x.l10n.profileMain),
     ProfileListRow.item(
       (c) => context.x.l10n.topUpBalance,
@@ -276,30 +286,32 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       (c) => context.x.l10n.googleConnect,
       onGoogleConnectPressed,
       Assets.lib.vectors.google.svg(package: Constant.packageUi),
-      isComingSoon: true,
-      comingSoonText: (c) => c.x.l10n.comingSoon,
+      isConnected: user?.isGoogleLinked ?? false,
+      isComingSoon: user != null && !user.isGoogleLinked,
+      connectedText: (c) => c.x.l10n.accountLinked,
+      comingSoonText: (c) => c.x.l10n.connectAccount,
     ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.appleIdConnect,
-      onAppleConnectPressed,
-      Assets.lib.vectors.apple.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+    if (kIsWeb || defaultTargetPlatform == .iOS || defaultTargetPlatform == .macOS)
+      ProfileListRow.item(
+        (c) => context.x.l10n.appleIdConnect,
+        onAppleConnectPressed,
+        Assets.lib.vectors.apple.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+        isConnected: user?.isAppleLinked ?? false,
+        isComingSoon: user != null && !user.isAppleLinked,
+        connectedText: (c) => c.x.l10n.accountLinked,
+        comingSoonText: (c) => c.x.l10n.connectAccount,
       ),
-      isComingSoon: true,
-      comingSoonText: (c) => c.x.l10n.comingSoon,
-    ),
     ProfileListRow.item(
       (c) => context.x.l10n.telegramConnect,
       onTelegramConnectPressed,
-      Assets.lib.images.telegramLogo.image(
-        package: Constant.packageUi,
-        width: 20,
-        height: 20,
-        // color: context.x.colors.profileIcon,
-      ),
-      isConnected: true,
-      connectedText: (c) => c.x.l10n.connected,
+      Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
+      isConnected: user?.isTelegramLinked ?? false,
+      isComingSoon: user != null && !user.isTelegramLinked,
+      connectedText: (c) => c.x.l10n.accountLinked,
+      comingSoonText: (c) => c.x.l10n.connectAccount,
     ),
     ProfileListRow.spacer(16),
     ProfileListRow.header((c) => context.x.l10n.appearance),
