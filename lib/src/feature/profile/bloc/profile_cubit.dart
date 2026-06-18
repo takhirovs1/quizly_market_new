@@ -4,6 +4,7 @@ import '../../../common/util/app_enum.dart';
 import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
+import '../../my_tests/models/test_model.dart';
 import '../data/profile_repository.dart';
 import '../model/profile_model.dart';
 import '../model/topup_model.dart';
@@ -41,6 +42,68 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
+  );
+
+  Future<void> loadArchiveTests() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(archiveStatus: .loading));
+      final result = await profileRepository.getArchivedTests();
+      emit(
+        state.copyWith(
+          archiveStatus: .success,
+          archiveTests: result.items,
+          archiveLimit: result.limit,
+          archiveOffset: result.offset,
+          archiveTotal: result.total,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(archiveStatus: .error, archiveErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> loadMoreArchiveTests() => handle<void>(
+    (emit) async {
+      if (!state.archiveHasMore || state.isArchiveLoadingMore) return;
+      emit(state.copyWith(archiveStatus: .loadingMore));
+      final nextOffset = state.archiveOffset + state.archiveLimit;
+      final result = await profileRepository.getArchivedTests(limit: state.archiveLimit, offset: nextOffset);
+      emit(
+        state.copyWith(
+          archiveStatus: .success,
+          archiveTests: [...state.archiveTests, ...result.items],
+          archiveLimit: result.limit,
+          archiveOffset: result.offset,
+          archiveTotal: result.total,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(archiveStatus: .error, archiveErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> unarchiveTest(String testId) => handle<void>(
+    (emit) async {
+      await profileRepository.unarchiveTest(testId);
+      emit(
+        state.copyWith(
+          archiveTests: state.archiveTests.where((t) => t.id != testId).toList(),
+          archiveTotal: state.archiveTotal - 1,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(archiveStatus: .error, archiveErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  void deleteArchiveTest(String testId) => emit(
+    state.copyWith(
+      archiveTests: state.archiveTests.where((t) => t.id != testId).toList(),
+      archiveTotal: state.archiveTotal - 1,
+    ),
   );
 
   Future<void> getTransactions({bool loadMore = false}) => handle<void>(

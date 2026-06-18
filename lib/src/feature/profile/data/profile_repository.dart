@@ -7,19 +7,13 @@ import '../model/profile_model.dart';
 import '../model/topup_model.dart';
 import '../model/transaction_model.dart';
 
-class ArchiveTestRequest {
-  ArchiveTestRequest({this.limit = 20, this.offset = 0});
-  final int limit;
-  final int offset;
-  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset, 'archived': true};
-}
-
 abstract interface class IProfileRepository {
   Future<ProfileModelResponse> getProfile();
   Future<void> updateLanguage(String language);
   Future<TopUpResponse> topUp(TopUpRequest request);
   Future<TransactionResponse> getTransactions(TransactionRequest request);
-  Future<({List<TestModel> items, int limit, int offset, int total})> getArchivedTests(ArchiveTestRequest request);
+  Future<({List<TestModel> items, int limit, int offset, int total})> getArchivedTests({int limit = 20, int offset = 0});
+  Future<void> unarchiveTest(String testId);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -55,16 +49,25 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   }
 
   @override
-  Future<({List<TestModel> items, int limit, int offset, int total})> getArchivedTests(
-    ArchiveTestRequest request,
-  ) async {
-    final response = await dio.get<Map<String, Object?>>(Urls.getMyTests, queryParameters: request.toJson());
+  Future<({List<TestModel> items, int limit, int offset, int total})> getArchivedTests({
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final response = await dio.get<Map<String, Object?>>(
+      Urls.getMyTests,
+      queryParameters: {'limit': limit, 'offset': offset, 'archived': 'true'},
+    );
     final root = response.data ?? {};
     final dataList = root['data'] as List<Object?>? ?? [];
     final items = dataList.map((e) => TestModel.fromJson(e as Map<String, Object?>)).toList();
-    final limit = root['limit'].toIntOrNull ?? request.limit;
-    final offset = root['offset'].toIntOrNull ?? request.offset;
+    final resolvedLimit = root['limit'].toIntOrNull ?? limit;
+    final resolvedOffset = root['offset'].toIntOrNull ?? offset;
     final total = root['total'].toIntOrNull ?? 0;
-    return (items: items, limit: limit, offset: offset, total: total);
+    return (items: items, limit: resolvedLimit, offset: resolvedOffset, total: total);
+  }
+
+  @override
+  Future<void> unarchiveTest(String testId) async {
+    await dio.delete<void>('/api/payments/tests/$testId/archive');
   }
 }

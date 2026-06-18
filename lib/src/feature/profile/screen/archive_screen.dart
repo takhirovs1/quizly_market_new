@@ -4,8 +4,9 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/util/error_util.dart';
+import '../../../common/util/state_status.dart';
 import '../../my_tests/models/test_model.dart';
-import '../bloc/archive_cubit.dart';
+import '../bloc/profile_cubit.dart';
 import '../state/archive_screen_state.dart';
 
 class ArchiveScreen extends StatefulWidget {
@@ -41,18 +42,18 @@ class _ArchiveScreenState extends ArchiveScreenState {
         child: Divider(height: 1, thickness: 1, color: context.x.colors.divider),
       ),
     ),
-    body: BlocConsumer<ArchiveCubit, ArchiveCubitState>(
+    body: BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
-        if (state.status == .error && state.tests.isNotEmpty) {
-          ErrorUtil.showSnackBar(context, state.errorMessage ?? context.x.l10n.somethingWentWrong);
+        if (state.archiveStatus == StateStatus.error && state.archiveTests.isNotEmpty) {
+          ErrorUtil.showSnackBar(context, state.archiveErrorMessage ?? context.x.l10n.somethingWentWrong);
         }
       },
       builder: (context, state) {
-        if (state.status == .loading || state.status == .idle) {
+        if (state.archiveStatus == StateStatus.loading || state.archiveStatus == StateStatus.idle) {
           return const _ArchiveShimmer();
         }
 
-        if (state.status == .error && state.tests.isEmpty) {
+        if (state.archiveStatus == StateStatus.error && state.archiveTests.isEmpty) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -61,37 +62,37 @@ class _ArchiveScreenState extends ArchiveScreenState {
                 children: [
                   EmptyTestWidget(
                     title: context.x.l10n.somethingWentWrong,
-                    description: state.errorMessage ?? context.x.l10n.somethingWentWrong,
+                    description: state.archiveErrorMessage ?? context.x.l10n.somethingWentWrong,
                   ),
                   const SizedBox(height: 16),
-                  FilledButton(onPressed: archiveCubit.loadTests, child: Text(context.x.l10n.retry)),
+                  FilledButton(onPressed: profileCubit.loadArchiveTests, child: Text(context.x.l10n.retry)),
                 ],
               ),
             ),
           );
         }
 
-        if (state.tests.isEmpty) {
+        if (state.archiveTests.isEmpty) {
           return Center(
             child: EmptyTestWidget(title: context.x.l10n.archivedTests, description: context.x.l10n.noTestsFound),
           );
         }
 
         return RefreshIndicator.adaptive(
-          onRefresh: archiveCubit.loadTests,
+          onRefresh: profileCubit.loadArchiveTests,
           child: ListView.separated(
             controller: scrollController,
             padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 24 : 80),
-            itemCount: state.tests.length + (state.isLoadingMore ? 1 : 0),
+            itemCount: state.archiveTests.length + (state.isArchiveLoadingMore ? 1 : 0),
             separatorBuilder: (_, _) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              if (index >= state.tests.length) {
+              if (index >= state.archiveTests.length) {
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Center(child: CircularProgressIndicator.adaptive()),
                 );
               }
-              final test = state.tests[index];
+              final test = state.archiveTests[index];
               return _ArchiveTestCard(
                 test: test,
                 onUnarchive: () => onUnarchive(test.id ?? ''),
