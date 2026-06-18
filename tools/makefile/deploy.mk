@@ -88,6 +88,16 @@ web: pre-build ## Build Flutter web release and deploy to Firebase hosting
 	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
 	@firebase deploy --only hosting
 
+.PHONY: web-prod
+web-prod: pre-build ## Build Flutter web release (production config) and deploy to Firebase hosting
+	@cd packages/quizlymarket_landing && npm install && npm run build
+	@mkdir -p web/landing
+	@cp -R packages/quizlymarket_landing/dist/* web/landing/
+	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
+	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
+	@firebase deploy --only hosting
+
+
 .PHONY: web-win
 web-win: pre-build-win ## Build Flutter web release and deploy to Firebase hosting (Windows-safe)
 	@cd packages/quizlymarket_landing && npm install && npm run build

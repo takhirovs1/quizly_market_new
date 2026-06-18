@@ -11,6 +11,8 @@ import '../../feature/my_tests/screen/purchase_test_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
 import '../../feature/profile/screen/app_documents_screen.dart';
 import '../../feature/profile/screen/app_info_screen.dart';
+import '../../feature/profile/screen/archive_screen.dart';
+import '../../feature/profile/bloc/archive_cubit.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/profile/screen/referral_screen.dart';
@@ -51,7 +53,8 @@ enum Routes with OctopusRoute {
   testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode'),
   testResult('testResult', title: 'Test Result'),
   supportChat('supportChat', title: 'Support Chat'),
-  testSolving('testSolving', title: 'Test Solving');
+  testSolving('testSolving', title: 'Test Solving'),
+  archive('archive', title: 'Archive');
 
   const Routes(this.name, {this.title});
 
@@ -162,5 +165,16 @@ enum Routes with OctopusRoute {
       child: TestSolvingScreen(arguments: TestSolvingArguments.fromArguments(node.arguments)),
     ),
     .supportChat => const SupportChatScreen(),
+    .archive => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => ArchiveCubit(
+            profileRepository: context.x.dependencies.repository.profileRepository,
+            testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio),
+          )..loadTests(),
+        ),
+      ],
+      child: const ArchiveScreen(),
+    ),
   };
 }

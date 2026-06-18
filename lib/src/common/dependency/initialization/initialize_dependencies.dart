@@ -30,6 +30,7 @@ import '../../service/remote_config_service.dart';
 import '../../service/telegram_bot/telegram_bot_interceptor.dart';
 import '../../util/http_log_interceptor.dart';
 import '../../util/screen_util.dart';
+import '../../util/telegram_detector.dart';
 import '../model/app_metadata.dart';
 import '../model/debug_config.dart';
 import '../model/dependencies.dart';
@@ -201,6 +202,17 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
 
         l.s('Error initializing App Debug Settings: $error', stackTrace);
       }
+    },
+  ),
+
+  (
+    'Clear stale token for Telegram',
+    (dependencies) async {
+      if (!kIsWeb) return;
+      if (!isTelegramMiniApp()) return;
+      await dependencies.localSource.setAccessToken('');
+      await dependencies.localSource.setRefreshToken('');
+      l.i('Telegram Mini App detected — stale tokens cleared');
     },
   ),
 

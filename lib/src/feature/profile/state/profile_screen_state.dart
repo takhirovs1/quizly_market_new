@@ -215,7 +215,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onReferralPressed() => context.octopus.push(Routes.referral);
 
-  void onArchivedTestsPressed() {}
+  void onArchivedTestsPressed() => context.octopus.push(Routes.archive);
   void onTeacherPressed() {}
   void onGoogleConnectPressed() {}
   void onAppleConnectPressed() {}
