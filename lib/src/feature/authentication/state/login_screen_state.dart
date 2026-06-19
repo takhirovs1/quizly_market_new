@@ -9,6 +9,8 @@ import '../screen/login_screen.dart';
 
 abstract class LoginScreenState extends State<LoginScreen> {
   late final AuthCubit authCubit;
+  late final TextEditingController pinController;
+  late final FocusNode pinFocusNode;
 
   SocialLoginType? loadingType;
 
@@ -16,6 +18,8 @@ abstract class LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     authCubit = context.read<AuthCubit>();
+    pinController = TextEditingController();
+    pinFocusNode = FocusNode();
   }
 
   Future<void> signInWithGoogle() async {
@@ -40,9 +44,17 @@ abstract class LoginScreenState extends State<LoginScreen> {
     setState(() => loadingType = .telegram);
     try {
       await authCubit.signInWithTelegram();
+      if (mounted) pinFocusNode.requestFocus();
     } finally {
       if (mounted) setState(() => loadingType = null);
     }
+  }
+
+  Future<void> verifyTelegramOtp(String code) => authCubit.verifyTelegramOtp(code);
+
+  Future<void> cancelTelegramLogin() async {
+    pinController.clear();
+    await authCubit.cancelTelegramLogin();
   }
 
   void onAuthSuccess() => context.octopus.navigate(Routes.home.name);
@@ -58,6 +70,8 @@ abstract class LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    pinController.dispose();
+    pinFocusNode.dispose();
     authCubit.close();
     super.dispose();
   }

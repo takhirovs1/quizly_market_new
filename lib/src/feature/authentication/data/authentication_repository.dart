@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:local_source/local_source.dart';
 
+import '../../../common/constant/urls.dart';
 import '../../../common/service/api_service.dart';
 import '../../../common/service/auth_service.dart';
 import '../model/auth_service_response.dart';
 import '../model/auth_token_response.dart';
+import '../model/telegram_verify_request.dart';
 import '../model/user.dart';
 
 abstract interface class IAuthenticationRepository {
@@ -27,6 +29,8 @@ abstract interface class IAuthenticationRepository {
   Future<AuthServiceResponse?> signInWithGoogle();
 
   Future<AuthServiceResponse?> signInWithApple();
+
+  Future<void> signInWithTelegramOtp({required String deviceId, required String code});
 }
 
 class AuthenticationRepositoryImpl implements IAuthenticationRepository {
@@ -86,6 +90,30 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     endpoint: '/api/auth/apple',
     dataBuilder: (token) => {'identity_token': token, 'referral_code': ''},
   );
+
+  @override
+  Future<void> signInWithTelegramOtp({required String deviceId, required String code}) async {
+    final json = await apiService.request<Map<String, Object?>>(
+      Urls.mobileVerify,
+      method: .post,
+      data: TelegramVerifyRequest(deviceId: deviceId, code: code).toJson(),
+    );
+    final tokenResponse = AuthTokenResponse.fromJson(json);
+
+    await Future.wait([
+      localSource.setAccessToken(tokenResponse.accessToken),
+      localSource.setRefreshToken(tokenResponse.refreshToken),
+      localSource.setId(tokenResponse.userId),
+    ]);
+
+    _userController.add(
+      _user = .authenticated(
+        id: tokenResponse.userId,
+        token: tokenResponse.accessToken,
+        refreshToken: tokenResponse.refreshToken,
+      ),
+    );
+  }
 
   Future<AuthServiceResponse?> _signIn({
     required Future<AuthServiceResponse?> Function() provider,
