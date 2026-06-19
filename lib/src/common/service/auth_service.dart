@@ -49,7 +49,8 @@ final class AuthService {
         _googleInitialized = true;
       }
       final account = await GoogleSignIn.instance.authenticate();
-      final idToken = account.authentication.idToken;
+      final authentication = account.authentication;
+      final idToken = authentication.idToken;
       if (idToken == null || idToken.isEmpty) {
         log('signInWithGoogleNative: idToken is null');
         return null;

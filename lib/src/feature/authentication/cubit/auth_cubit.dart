@@ -52,8 +52,21 @@ class AuthCubit extends SequentialCubit<AuthState> {
   Future<void> signInWithTelegram() => handle<void>((emit) async {
     try {
       final deviceId = _generateDeviceId();
-      final uri = Uri.parse('${Constant.botUrl}?start=$deviceId');
-      await url_launcher.launchUrl(uri, mode: url_launcher.LaunchMode.externalApplication);
+      final username = Constant.botUrl.split('/').last;
+      final tgUri = Uri.parse('tg://resolve?domain=$username&start=$deviceId');
+
+      var launched = false;
+      try {
+        launched = await url_launcher.launchUrl(tgUri, mode: url_launcher.LaunchMode.externalApplication);
+      } on Object catch (_) {
+        launched = false;
+      }
+
+      if (!launched) {
+        final httpUri = Uri.parse('${Constant.botUrl}?start=$deviceId');
+        await url_launcher.launchUrl(httpUri, mode: url_launcher.LaunchMode.externalApplication);
+      }
+
       emit(state.copyWith(telegramDeviceId: deviceId, status: .idle, errorMessage: null));
     } on Object catch (error) {
       emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));

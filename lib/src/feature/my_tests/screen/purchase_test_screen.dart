@@ -232,28 +232,30 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                       left: 16,
                       right: 16,
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            priceText,
-                            style: context.x.textStyle.sfW700s16.copyWith(
-                              fontSize: 24,
-                              color: context.x.colors.primary,
+                    child: SafeArea(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              priceText,
+                              style: context.x.textStyle.sfW700s16.copyWith(
+                                fontSize: 24,
+                                color: context.x.colors.primary,
+                              ),
+                              textAlign: .center,
                             ),
-                            textAlign: .center,
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: CustomButton(
-                            borderRadius: 10,
-                            onTap: onBuyPressed,
-                            title: context.x.l10n.buy,
-                            isLoading: state.purchaseStatus.isLoading,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: CustomButton(
+                              borderRadius: 10,
+                              onTap: onBuyPressed,
+                              title: context.x.l10n.buy,
+                              isLoading: state.purchaseStatus.isLoading,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
