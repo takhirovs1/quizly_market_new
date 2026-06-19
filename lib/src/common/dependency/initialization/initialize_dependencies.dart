@@ -16,6 +16,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../firebase_options.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
+import '../../../feature/authentication/model/auth_token_response.dart';
 import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/main/data/main_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
@@ -235,6 +236,8 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
 
       final copyDio = Thunder.addDio(dio);
 
+      Future<String>? refreshFuture;
+
       copyDio.interceptors.addAll(<Interceptor>[
         InterceptorsWrapper(
           onRequest: (options, handler) {
@@ -249,7 +252,59 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
           },
           onError: (error, handler) async {
             if (error.response?.statusCode == 401) {
-              await Future<void>.delayed(const Duration(seconds: 1), dependencies.authenticationController.signOut);
+              final refreshToken = dependencies.localSource.refreshToken;
+              if (refreshToken.isEmpty) {
+                await dependencies.authenticationController.signOut();
+                return handler.next(error);
+              }
+
+              try {
+                final newAccessToken = await (refreshFuture ??= () async {
+                  try {
+                    final response =
+                        await Dio(
+                          BaseOptions(
+                            baseUrl: Config.apiBaseUrl,
+                            headers: <String, String>{
+                              'Api-Version': '1.0',
+                              'Accept': 'application/json',
+                              'Charset': 'utf-8',
+                              'X-Platform-Type': 'mobile',
+                            },
+                            connectTimeout: const Duration(seconds: 15),
+                            receiveTimeout: const Duration(seconds: 15),
+                          ),
+                        ).post<Map<String, Object?>>(
+                          '/api/auth/refresh',
+                          data: <String, Object?>{'refresh_token': refreshToken},
+                        );
+
+                    final responseData = response.data;
+                    if (responseData == null) {
+                      throw Exception('Response body is null');
+                    }
+
+                    final tokenResponse = AuthTokenResponse.fromJson(responseData);
+
+                    await dependencies.repository.authenticationRepository.updateTokens(
+                      accessToken: tokenResponse.accessToken,
+                      refreshToken: tokenResponse.refreshToken,
+                    );
+
+                    return tokenResponse.accessToken;
+                  } finally {
+                    refreshFuture = null;
+                  }
+                }());
+
+                final options = error.requestOptions;
+                options.headers[io.HttpHeaders.authorizationHeader] = 'Bearer $newAccessToken';
+                final retryResponse = await copyDio.fetch<Object?>(options);
+                return handler.resolve(retryResponse);
+              } on Object catch (_) {
+                await dependencies.authenticationController.signOut();
+                return handler.next(error);
+              }
             }
 
             handler.next(error);

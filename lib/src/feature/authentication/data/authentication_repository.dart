@@ -31,6 +31,8 @@ abstract interface class IAuthenticationRepository {
   Future<AuthServiceResponse?> signInWithApple();
 
   Future<void> signInWithTelegramOtp({required String deviceId, required String code});
+
+  Future<void> updateTokens({required String accessToken, required String refreshToken});
 }
 
 class AuthenticationRepositoryImpl implements IAuthenticationRepository {
@@ -107,12 +109,27 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     ]);
 
     _userController.add(
-      _user = .authenticated(
+      _user = User.authenticated(
         id: tokenResponse.userId,
         token: tokenResponse.accessToken,
         refreshToken: tokenResponse.refreshToken,
       ),
     );
+  }
+
+  @override
+  Future<void> updateTokens({required String accessToken, required String refreshToken}) async {
+    await Future.wait([localSource.setAccessToken(accessToken), localSource.setRefreshToken(refreshToken)]);
+
+    final currentUser = _user;
+    if (currentUser is AuthenticatedUser) {
+      _userController.add(_user = currentUser.copyWith(token: () => accessToken, refreshToken: () => refreshToken));
+    } else {
+      final userId = localSource.id;
+      if (userId.isNotEmpty) {
+        _userController.add(_user = User.authenticated(id: userId, token: accessToken, refreshToken: refreshToken));
+      }
+    }
   }
 
   Future<AuthServiceResponse?> _signIn({

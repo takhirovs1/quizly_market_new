@@ -190,20 +190,45 @@ class _ProfileScreenState extends ProfileScreenState {
                                         ),
                                         const SizedBox(height: 4),
                                         Padding(
-                                          padding: .symmetric(horizontal: phoneHorizontalPadding(layout.width)),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: phoneHorizontalPadding(layout.width),
+                                          ),
                                           child: isShimmer
                                               ? const ProfileShimmer(
                                                   child: ShimmerBox(width: 120, height: 16, radius: 4),
                                                 )
-                                              : Text(
-                                                  subtitleStr,
-                                                  maxLines: 1,
-                                                  overflow: .ellipsis,
-                                                  textAlign: .center,
-                                                  style: context.x.textStyle.sfW400s14.copyWith(
-                                                    fontSize: phoneSize(layout.width),
-                                                    color: context.x.colors.gray,
-                                                  ),
+                                              : Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    if (user?.telegramChatId != null) ...[
+                                                      Text(
+                                                        'Telegram ID: ${user!.telegramChatId}',
+                                                        style: context.x.textStyle.sfW400s14.copyWith(
+                                                          fontSize: phoneSize(layout.width),
+                                                          color: context.x.colors.gray,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 2),
+                                                    ],
+                                                    if (user?.username != null && user!.username!.isNotEmpty) ...[
+                                                      Text(
+                                                        '@${user.username}',
+                                                        style: context.x.textStyle.sfW400s14.copyWith(
+                                                          fontSize: phoneSize(layout.width),
+                                                          color: context.x.colors.gray,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 2),
+                                                    ],
+                                                    if (user?.email != null && user!.email!.isNotEmpty)
+                                                      Text(
+                                                        user.email!,
+                                                        style: context.x.textStyle.sfW400s14.copyWith(
+                                                          fontSize: phoneSize(layout.width),
+                                                          color: context.x.colors.gray,
+                                                        ),
+                                                      ),
+                                                  ],
                                                 ),
                                         ),
                                         const SizedBox(height: 6),
@@ -224,10 +249,12 @@ class _ProfileScreenState extends ProfileScreenState {
                                   child: Opacity(
                                     opacity: layout.titleAlpha,
                                     child: Padding(
-                                      padding: .symmetric(horizontal: collapsedTitleHorizontalPadding(layout.width)),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: collapsedTitleHorizontalPadding(layout.width),
+                                      ),
                                       child: Column(
-                                        crossAxisAlignment: .center,
-                                        mainAxisAlignment: .center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           SizedBox(height: context.telegramWebApp.safeAreaInset.top.toDouble() + 10),
                                           if (isShimmer)
@@ -236,8 +263,10 @@ class _ProfileScreenState extends ProfileScreenState {
                                             Text(
                                               displayNameStr,
                                               maxLines: 1,
-                                              overflow: .ellipsis,
-                                              textAlign: .center,
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: Alignment.center == Alignment.center
+                                                  ? TextAlign.center
+                                                  : TextAlign.left,
                                               style: context.x.textStyle.sfW700s16.copyWith(
                                                 fontSize: nameSizeCollapsed(layout.width),
                                                 color: context.x.colors.primary,
@@ -260,13 +289,13 @@ class _ProfileScreenState extends ProfileScreenState {
               body: RefreshIndicator.adaptive(
                 onRefresh: onRefresh,
                 child: ListView(
-                  padding: .only(top: 16, bottom: context.x.isMobile ? 16 : 24),
+                  padding: EdgeInsets.only(top: 16, bottom: context.x.isMobile ? 16 : 24),
                   shrinkWrap: true,
                   children: [
                     ProfilePaymentCard(
                       balance: user?.balance?.formatUzs ?? '0 UZS',
-                      cardNumber: '${user?.telegramChatId ?? user?.id ?? ""}',
-                      onCopyCardNumber: () => onCopyCardNumber('${user?.telegramChatId ?? user?.id ?? ""}'),
+                      cardNumber: user?.paymentCode ?? '',
+                      onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
                       isLoading: isShimmer,
                     ),
                     Padding(
@@ -415,12 +444,40 @@ class _ProfileScreenState extends ProfileScreenState {
                                       true => const ProfileShimmer(
                                         child: ShimmerBox(width: 120, height: 16, radius: 4),
                                       ),
-                                      false => Text(
-                                        subtitleStr,
-                                        maxLines: 1,
-                                        overflow: .ellipsis,
-                                        textAlign: .center,
-                                        style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
+                                      false => Column(
+                                        mainAxisSize: .min,
+                                        children: [
+                                          if (user?.telegramChatId != null) ...[
+                                            Row(
+                                              mainAxisAlignment: .center,
+                                              children: [
+                                                Text(
+                                                  'ID: ${user!.telegramChatId}',
+                                                  style: context.x.textStyle.sfW400s14.copyWith(
+                                                    color: context.x.colors.gray,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                if (user?.username != null && user!.username!.isNotEmpty) ...[
+                                                  Text(
+                                                    '@${user.username}',
+                                                    style: context.x.textStyle.sfW400s14.copyWith(
+                                                      color: context.x.colors.gray,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                ],
+                                              ],
+                                            ),
+                                          ],
+                                          if (user?.email != null && user!.email!.isNotEmpty)
+                                            Text(
+                                              user.email!,
+                                              style: context.x.textStyle.sfW400s14.copyWith(
+                                                color: context.x.colors.gray,
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     },
                                   ],
@@ -430,8 +487,8 @@ class _ProfileScreenState extends ProfileScreenState {
                             const SizedBox(height: 20),
                             ProfilePaymentCard(
                               balance: user?.balance?.formatUzs ?? '0 UZS',
-                              cardNumber: '${user?.telegramChatId ?? user?.id ?? ""}',
-                              onCopyCardNumber: () => onCopyCardNumber('${user?.telegramChatId ?? user?.id ?? ""}'),
+                              cardNumber: user?.paymentCode ?? '',
+                              onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
                               isLoading: isShimmer,
                               padding: EdgeInsets.zero,
                             ),

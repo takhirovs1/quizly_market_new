@@ -23,6 +23,7 @@ class ProfileModelResponse {
     this.googleId,
     this.authMethods,
     this.referralCode,
+    this.paymentCode,
     this.language,
     this.createdAt,
     this.updatedAt,
@@ -47,6 +48,7 @@ class ProfileModelResponse {
     googleId: json['google_id'] as String?,
     authMethods: (json['auth_methods'] as List<Object?>?)?.cast<String>(),
     referralCode: json['referral_code'] as String?,
+    paymentCode: json['payment_code'] as String?,
     language: json['language'] as String?,
     createdAt: json['created_at'].toDateTimeOrNull,
     updatedAt: json['updated_at'].toDateTimeOrNull,
@@ -70,6 +72,7 @@ class ProfileModelResponse {
   final String? googleId;
   final List<String>? authMethods;
   final String? referralCode;
+  final String? paymentCode;
   final String? language;
   final DateTime? createdAt;
   final DateTime? updatedAt;
