@@ -57,16 +57,24 @@ class _SocialLoginButtonState extends State<SocialLoginButton> with SingleTicker
         onPressed: widget.onPressed,
         isLoading: widget.isLoading,
       ),
-      SocialLoginType.apple => _AppleButton(title: widget.title, onPressed: widget.onPressed),
-      SocialLoginType.telegram => _TelegramButton(title: widget.title, onPressed: widget.onPressed),
+      SocialLoginType.apple => _AppleButton(
+        title: widget.title,
+        onPressed: widget.onPressed,
+        isLoading: widget.isLoading,
+      ),
+      SocialLoginType.telegram => _TelegramButton(
+        title: widget.title,
+        onPressed: widget.onPressed,
+        isLoading: widget.isLoading,
+      ),
     };
 
     if (!widget.isLoading) return button;
 
     final borderColor = switch (widget.type) {
       SocialLoginType.google => context.x.colors.primary,
-      SocialLoginType.apple => Colors.white.withValues(alpha: 0.8),
-      SocialLoginType.telegram => Colors.white.withValues(alpha: 0.8),
+      SocialLoginType.apple => context.x.colors.black,
+      SocialLoginType.telegram => context.x.colors.primary,
     };
 
     return CustomPaint(
@@ -86,7 +94,7 @@ class _GoogleButton extends StatelessWidget {
   Widget build(BuildContext context) => FilledButton(
     style: FilledButton.styleFrom(
       backgroundColor: context.x.colors.white,
-      side: isLoading ? BorderSide.none : BorderSide(color: context.x.colors.gray),
+      side: BorderSide(color: context.x.colors.gray),
       elevation: 0,
       fixedSize: const Size(double.infinity, 56),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -104,14 +112,16 @@ class _GoogleButton extends StatelessWidget {
 }
 
 class _AppleButton extends StatelessWidget {
-  const _AppleButton({required this.title, required this.onPressed});
+  const _AppleButton({required this.title, required this.onPressed, required this.isLoading});
   final String title;
   final VoidCallback onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) => FilledButton(
     style: FilledButton.styleFrom(
-      backgroundColor: context.x.colors.black,
+      backgroundColor: isLoading ? context.x.colors.white : context.x.colors.black,
+      side: isLoading ? BorderSide(color: context.x.colors.gray) : null,
       elevation: 0,
       fixedSize: const Size(double.infinity, 56),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -123,23 +133,30 @@ class _AppleButton extends StatelessWidget {
       children: [
         Assets.lib.vectors.apple.svg(
           package: 'ui',
-          colorFilter: ColorFilter.mode(context.x.colors.white, BlendMode.srcIn),
+          colorFilter: ColorFilter.mode(isLoading ? context.x.colors.black : context.x.colors.white, BlendMode.srcIn),
         ),
-        Text(title, style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white)),
+        Text(
+          title,
+          style: context.x.textStyle.sfW600s16.copyWith(
+            color: isLoading ? context.x.colors.black : context.x.colors.white,
+          ),
+        ),
       ],
     ),
   );
 }
 
 class _TelegramButton extends StatelessWidget {
-  const _TelegramButton({required this.title, required this.onPressed});
+  const _TelegramButton({required this.title, required this.onPressed, required this.isLoading});
   final String title;
   final VoidCallback onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) => FilledButton(
     style: FilledButton.styleFrom(
-      backgroundColor: context.x.colors.primary,
+      backgroundColor: isLoading ? context.x.colors.white : context.x.colors.primary,
+      side: isLoading ? BorderSide(color: context.x.colors.gray) : null,
       elevation: 0,
       fixedSize: const Size(double.infinity, 56),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -149,8 +166,18 @@ class _TelegramButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 8,
       children: [
-        Assets.lib.images.telegramLogo.image(package: 'ui', width: 24, height: 24, color: context.x.colors.white),
-        Text(title, style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white)),
+        Assets.lib.images.telegramLogo.image(
+          package: 'ui',
+          width: 24,
+          height: 24,
+          color: isLoading ? context.x.colors.primary : context.x.colors.white,
+        ),
+        Text(
+          title,
+          style: context.x.textStyle.sfW600s16.copyWith(
+            color: isLoading ? context.x.colors.primary : context.x.colors.white,
+          ),
+        ),
       ],
     ),
   );

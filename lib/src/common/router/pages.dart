@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 
 import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
+import '../../feature/authentication/screen/verify_otp_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
@@ -36,6 +37,7 @@ import '../util/logger.dart' as log_util;
 
 enum Routes with OctopusRoute {
   login('login', title: 'Login'),
+  verifyOtp('verifyOtp', title: 'Verify OTP'),
   home('home', title: 'Home'),
   splash('splash', title: 'Splash'),
   moreRecommendation('moreRecommendation', title: 'More Recommendation'),
@@ -65,11 +67,18 @@ enum Routes with OctopusRoute {
 
   @override
   Widget builder(BuildContext context, OctopusState state, OctopusNode node) => switch (this) {
-    .login => BlocProvider(
+    Routes.login => BlocProvider(
       create: (_) => AuthCubit(authenticationRepository: context.x.dependencies.repository.authenticationRepository),
       child: const LoginScreen(),
     ),
-    .home => MultiBlocProvider(
+    Routes.verifyOtp => BlocProvider(
+      create: (_) => AuthCubit(
+        authenticationRepository: context.x.dependencies.repository.authenticationRepository,
+        telegramDeviceId: node.arguments['deviceId'],
+      ),
+      child: const VerifyOtpScreen(),
+    ),
+    Routes.home => MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository)),
         BlocProvider(

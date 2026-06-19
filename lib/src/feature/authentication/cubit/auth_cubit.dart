@@ -14,7 +14,8 @@ import '../data/authentication_repository.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends SequentialCubit<AuthState> {
-  AuthCubit({required this.authenticationRepository}) : super(const AuthState());
+  AuthCubit({required this.authenticationRepository, String? telegramDeviceId})
+    : super(AuthState(telegramDeviceId: telegramDeviceId));
 
   final IAuthenticationRepository authenticationRepository;
 
@@ -53,7 +54,7 @@ class AuthCubit extends SequentialCubit<AuthState> {
       final deviceId = _generateDeviceId();
       final uri = Uri.parse('${Constant.botUrl}?start=$deviceId');
       await url_launcher.launchUrl(uri, mode: url_launcher.LaunchMode.externalApplication);
-      emit(state.copyWith(telegramDeviceId: deviceId));
+      emit(state.copyWith(telegramDeviceId: deviceId, status: .idle, errorMessage: null));
     } on Object catch (error) {
       emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     }

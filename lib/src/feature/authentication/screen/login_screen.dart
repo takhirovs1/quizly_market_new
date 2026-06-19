@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/router/pages.dart';
 import '../../../common/util/platform_info.dart';
 import '../../main/widget/header_widget.dart';
 import '../cubit/auth_cubit.dart';
@@ -30,6 +32,10 @@ class _LoginScreenState extends LoginScreenState {
     listener: (context, state) {
       if (state.status.isSuccess) onAuthSuccess();
       if (state.status.isError) onAuthError(state.errorMessage);
+      if (state.isTelegramOtpStep) {
+        context.octopus.push(Routes.verifyOtp, arguments: {'deviceId': state.telegramDeviceId ?? ''});
+        cancelTelegramLogin();
+      }
     },
     builder: (context, state) => Scaffold(
       backgroundColor: context.x.colors.white,
@@ -38,24 +44,25 @@ class _LoginScreenState extends LoginScreenState {
           constraints: const BoxConstraints(maxWidth: 460),
           child: SafeArea(
             child: Padding(
-              padding: const .all(24),
-              child: Column(
+              padding: const EdgeInsets.all(24),
+              child: Stack(
                 children: [
-                  HeaderWidget(title: context.x.l10n.quizlyMarket, subtitle: context.x.l10n.loginTitle),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    flex: 2,
-                    child: IgnorePointer(
-                      ignoring: loadingType != null || state.status.isLoading,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
-                        child: state.isTelegramOtpStep
-                            ? _buildOtpContent(context, state)
-                            : _buildSocialLoginContent(context),
+                  Column(
+                    children: [
+                      const SizedBox(height: 48),
+                      HeaderWidget(title: context.x.l10n.quizlyMarket, subtitle: context.x.l10n.loginTitle),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        flex: 2,
+                        child: IgnorePointer(
+                          ignoring: loadingType != null || state.status.isLoading,
+                          child: _buildSocialLoginContent(context),
+                        ),
                       ),
-                    ),
+                      const Spacer(),
+                    ],
                   ),
-                  const Spacer(),
+                  Align(alignment: Alignment.topRight, child: _buildLanguageButton(context)),
                 ],
               ),
             ),
@@ -77,67 +84,60 @@ class _LoginScreenState extends LoginScreenState {
     ),
   );
 
+  Widget _buildLanguageButton(BuildContext context) => GestureDetector(
+    onTap: onLanguagePressed,
+    behavior: HitTestBehavior.opaque,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: context.x.colors.gray.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(currentLanguageLabel, style: context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.text)),
+          const SizedBox(width: 4),
+          ValueListenableBuilder<bool>(
+            valueListenable: isLanguageSheetOpen,
+            builder: (context, isOpen, _) => AnimatedRotation(
+              turns: isOpen ? -0.5 : 0.0,
+              duration: const Duration(milliseconds: 250),
+              child: Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: context.x.colors.gray),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
   Widget _buildSocialLoginContent(BuildContext context) => Column(
     key: const ValueKey('social'),
-    crossAxisAlignment: .center,
-    mainAxisAlignment: .center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
       SocialLoginButton(
-        type: .google,
+        type: SocialLoginType.google,
         title: context.x.l10n.loginGoogle,
         onPressed: signInWithGoogle,
-        isLoading: loadingType == .google,
+        isLoading: loadingType == SocialLoginType.google,
       ),
       const SizedBox(height: 8),
       if (PlatformInfo.showAppleSignIn) ...[
         SocialLoginButton(
-          type: .apple,
+          type: SocialLoginType.apple,
           title: context.x.l10n.loginApple,
           onPressed: signInWithApple,
-          isLoading: loadingType == .apple,
+          isLoading: loadingType == SocialLoginType.apple,
         ),
         const SizedBox(height: 8),
       ],
       SocialLoginButton(
-        type: .telegram,
+        type: SocialLoginType.telegram,
         title: context.x.l10n.loginTelegram,
         onPressed: signInWithTelegram,
-        isLoading: loadingType == .telegram,
+        isLoading: loadingType == SocialLoginType.telegram,
       ),
-    ],
-  );
-
-  Widget _buildOtpContent(BuildContext context, AuthState state) => Column(
-    key: const ValueKey('otp'),
-    crossAxisAlignment: .center,
-    mainAxisAlignment: .center,
-    children: [
-      Text(
-        'Telegramga yuborilgan 6 xonali kodni kiriting',
-        style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-        textAlign: .center,
-      ),
-      const SizedBox(height: 24),
-      PinCode(
-        controller: pinController,
-        focusNode: pinFocusNode,
-        length: 6,
-        enabled: !state.status.isLoading,
-        onChanged: (value) {
-          if (value.length == 6) verifyTelegramOtp(value);
-        },
-      ),
-      const SizedBox(height: 16),
-      if (state.status.isLoading)
-        const CircularProgressIndicator.adaptive()
-      else
-        TextButton(
-          onPressed: cancelTelegramLogin,
-          child: Text(
-            context.x.l10n.cancel,
-            style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray),
-          ),
-        ),
     ],
   );
 }
