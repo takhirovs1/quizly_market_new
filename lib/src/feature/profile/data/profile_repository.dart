@@ -60,7 +60,7 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   }) async {
     final response = await dio.get<Map<String, Object?>>(
       Urls.getMyTests,
-      queryParameters: {'limit': limit, 'offset': offset, 'archived': 'true'},
+      queryParameters: {'limit': limit, 'offset': offset, 'archived': true},
     );
     final root = response.data ?? {};
     final dataList = root['data'] as List<Object?>? ?? [];
