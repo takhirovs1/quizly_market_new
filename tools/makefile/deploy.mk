@@ -137,3 +137,13 @@ web-deploy: pre-build ## Build Flutter web release and deploy to quizly.corelabs
 	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
 	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
 	@rsync -avz --delete build/web/ $(DEPLOY_HOST):$(DEPLOY_PATH)
+
+
+	# ─────────── BUILD COMMANDS FOR macOS App Store ───────────
+
+.PHONY: macos
+macos: pre-build ## Build macOS app for App Store (archive via Xcode)
+	@echo "📦 Building macOS app for App Store..."
+	@$(FLUTTER) build macos --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=macos
+	@echo "✅ Build done. Now open Xcode to Archive and upload:"
+	@open macos/Runner.xcworkspace
