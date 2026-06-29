@@ -52,6 +52,7 @@ mixin AppRouteInitialization on State<App> {
 
     // ignore: invalid_use_of_internal_member
     authenticationNavigator = Octopus(routes: Routes.values, defaultRoute: Routes.home, guards: <OctopusGuard>[guards]);
+    authNavigatorInstance = authenticationNavigator;
   }
 
   // #endregion lifecycle

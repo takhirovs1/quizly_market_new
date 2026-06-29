@@ -16,6 +16,9 @@ class ProfileState extends Equatable {
     this.archiveLimit = 20,
     this.archiveOffset = 0,
     this.archiveTotal = 0,
+    this.referralStatus = StateStatus.idle,
+    this.referralErrorMessage,
+    this.referralSummary,
   });
 
   final StateStatus status;
@@ -32,6 +35,9 @@ class ProfileState extends Equatable {
   final int archiveLimit;
   final int archiveOffset;
   final int archiveTotal;
+  final StateStatus referralStatus;
+  final String? referralErrorMessage;
+  final ReferralSummary? referralSummary;
 
   bool get isArchiveLoadingMore => archiveStatus == .loadingMore;
   bool get archiveHasMore => archiveTests.length < archiveTotal;
@@ -51,6 +57,9 @@ class ProfileState extends Equatable {
     int? archiveLimit,
     int? archiveOffset,
     int? archiveTotal,
+    StateStatus? referralStatus,
+    String? referralErrorMessage,
+    ReferralSummary? referralSummary,
   }) => ProfileState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
@@ -66,6 +75,9 @@ class ProfileState extends Equatable {
     archiveLimit: archiveLimit ?? this.archiveLimit,
     archiveOffset: archiveOffset ?? this.archiveOffset,
     archiveTotal: archiveTotal ?? this.archiveTotal,
+    referralStatus: referralStatus ?? this.referralStatus,
+    referralErrorMessage: referralErrorMessage ?? this.referralErrorMessage,
+    referralSummary: referralSummary ?? this.referralSummary,
   );
 
   @override
@@ -84,5 +96,8 @@ class ProfileState extends Equatable {
     archiveLimit,
     archiveOffset,
     archiveTotal,
+    referralStatus,
+    referralErrorMessage,
+    referralSummary,
   ];
 }

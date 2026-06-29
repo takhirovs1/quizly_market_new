@@ -8,7 +8,7 @@ class TestAttemptRequest {
   final int offset;
   final TestMode? mode;
 
-  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset, 'mode': mode?.value};
+  Map<String, Object?> toJson() => {'limit': limit, 'offset': offset, if (mode != null) 'mode': mode?.value};
 }
 
 class TestAttemptResponse {

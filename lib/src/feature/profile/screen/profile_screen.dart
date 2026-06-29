@@ -202,7 +202,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                   children: [
                                                     if (user?.telegramChatId != null) ...[
                                                       Text(
-                                                        'Telegram ID: ${user!.telegramChatId}',
+                                                        'Telegram ID: ${user.telegramChatId}',
                                                         style: context.x.textStyle.sfW400s14.copyWith(
                                                           fontSize: phoneSize(layout.width),
                                                           color: context.x.colors.gray,
@@ -210,7 +210,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                       ),
                                                       const SizedBox(height: 2),
                                                     ],
-                                                    if (user?.username != null && user!.username!.isNotEmpty) ...[
+                                                    if (user.username != null && user.username!.isNotEmpty) ...[
                                                       Text(
                                                         '@${user.username}',
                                                         style: context.x.textStyle.sfW400s14.copyWith(
@@ -220,7 +220,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                       ),
                                                       const SizedBox(height: 2),
                                                     ],
-                                                    if (user?.email != null && user!.email!.isNotEmpty)
+                                                    if (user?.email != null && user.email!.isNotEmpty)
                                                       Text(
                                                         user.email!,
                                                         style: context.x.textStyle.sfW400s14.copyWith(
@@ -458,7 +458,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
-                                                if (user?.username != null && user!.username!.isNotEmpty) ...[
+                                                if (user?.username != null && user.username!.isNotEmpty) ...[
                                                   Text(
                                                     '@${user.username}',
                                                     style: context.x.textStyle.sfW400s14.copyWith(

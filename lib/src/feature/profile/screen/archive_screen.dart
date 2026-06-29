@@ -20,27 +20,9 @@ class _ArchiveScreenState extends ArchiveScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: AppBar(
-      backgroundColor: context.x.colors.appBarBackground,
-      automaticallyImplyLeading: false,
-      scrolledUnderElevation: 0,
-      elevation: 0,
-      centerTitle: true,
-      leading: TextButton.icon(
-        onPressed: () => Navigator.of(context).maybePop(),
-        icon: Icon(Icons.close, color: context.x.colors.white, size: 18),
-        label: Text('Close', style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.white)),
-        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-      ),
-      leadingWidth: 90,
-      title: Text(
-        context.x.l10n.archivedTests,
-        style: context.x.textStyle.nunitoW600s24.copyWith(color: context.x.colors.white),
-      ),
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Divider(height: 1, thickness: 1, color: context.x.colors.divider),
-      ),
+    appBar: QuizAppBar(
+      title: context.x.l10n.archivedTests,
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
     ),
     body: BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {

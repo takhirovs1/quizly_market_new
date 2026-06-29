@@ -20,6 +20,10 @@ abstract interface class UserDataSource {
   // Onboarding Completed
   bool get onboardingCompleted;
   Future<void> setOnboardingCompleted({required bool completed});
+
+  // Device ID
+  String get deviceId;
+  Future<void> setDeviceId(String deviceId);
 }
 
 base mixin UserDataSourceImpl on PreferenceDao implements UserDataSource {
@@ -32,6 +36,7 @@ base mixin UserDataSourceImpl on PreferenceDao implements UserDataSource {
   PreferenceEntry<String> get _accessTokenKey => stringEntry(key: 'user.access_token');
   PreferenceEntry<String> get _refreshTokenKey => stringEntry(key: 'user.refresh_token');
   PreferenceEntry<bool> get _onboardingCompletedKey => boolEntry(key: 'user.onboarding_completed');
+  PreferenceEntry<String> get _deviceIdKey => stringEntry(key: 'user.device_id');
   // --- * end Storage Keys * ---
 
   /// Encrypted [accessToken] using [SecureStorage] to store it
@@ -68,6 +73,15 @@ base mixin UserDataSourceImpl on PreferenceDao implements UserDataSource {
   Future<void> setId(String id) async {
     cache[_idKey.key] = id;
     await _idKey.set(id);
+  }
+
+  /// Device ID
+  @override
+  String get deviceId => readFromCache<String>(_deviceIdKey) ?? '';
+  @override
+  Future<void> setDeviceId(String deviceId) async {
+    cache[_deviceIdKey.key] = deviceId;
+    await _deviceIdKey.set(deviceId);
   }
 
   /// Clear user info

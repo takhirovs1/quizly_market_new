@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io' as io;
+import 'dart:math' as math;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:flutter/foundation.dart';
@@ -21,6 +23,7 @@ import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/main/data/main_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
 import '../../../feature/profile/data/profile_repository.dart';
+import '../../router/pages.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';
 import '../../../feature/settings/model/app_settings.dart';
@@ -110,6 +113,16 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
       //   );
       //   await dependencies.localSource.setId('8435fc63-69b3-404e-a138-0993adcd97b3');
       // }
+
+      var deviceId = dependencies.localSource.deviceId;
+      if (deviceId.isEmpty) {
+        deviceId = await _getHardwareDeviceId();
+        if (deviceId.isEmpty) {
+          deviceId = _generateRandomUuid();
+        }
+        await dependencies.localSource.setDeviceId(deviceId);
+      }
+      l.i('TokenInterceptor | Device ID initialized: $deviceId');
     },
   ),
 
@@ -246,33 +259,65 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
                 io.HttpHeaders.authorizationHeader: 'Bearer ${dependencies.localSource.accessToken}',
               },
               'Content-Language': dependencies.localSource.localization?.languageCode ?? 'en',
+              'X-Device-ID': dependencies.localSource.deviceId,
             });
 
             handler.next(options);
           },
           onError: (error, handler) async {
             if (error.response?.statusCode == 401) {
+              l.w('TokenInterceptor | 401 Unauthorized received for path: ${error.requestOptions.path}');
+
+              final responseData = error.response?.data;
+              var isSessionExpiredError = false;
+              if (responseData is Map) {
+                final errVal = responseData['error'];
+                if (errVal is String && errVal.contains('session expired or signed in on another device')) {
+                  isSessionExpiredError = true;
+                }
+              } else if (responseData is String) {
+                if (responseData.contains('session expired or signed in on another device')) {
+                  isSessionExpiredError = true;
+                }
+              }
+
+              if (isSessionExpiredError) {
+                l.w('TokenInterceptor | Session limit exceeded / expired. Opening session screen...');
+                authNavigatorInstance?.push(Routes.session);
+                return handler.next(error);
+              }
+
               final refreshToken = dependencies.localSource.refreshToken;
               if (refreshToken.isEmpty) {
-                await dependencies.authenticationController.signOut();
+                l.w('TokenInterceptor | Refresh token is empty. Signing out...');
+                try {
+                  await dependencies.authenticationController.signOut();
+                } on Object catch (e, s) {
+                  l.s('TokenInterceptor | Error during signOut: $e', s);
+                }
                 return handler.next(error);
               }
 
               try {
+                l.i('TokenInterceptor | Attempting token refresh...');
                 final newAccessToken = await (refreshFuture ??= () async {
                   try {
+                    l.i('TokenInterceptor | Sending request to /api/auth/refresh');
                     final response =
-                        await Dio(
-                          BaseOptions(
-                            baseUrl: Config.apiBaseUrl,
-                            headers: <String, String>{
-                              'Api-Version': '1.0',
-                              'Accept': 'application/json',
-                              'Charset': 'utf-8',
-                              'X-Platform-Type': 'mobile',
-                            },
-                            connectTimeout: const Duration(seconds: 15),
-                            receiveTimeout: const Duration(seconds: 15),
+                        await Thunder.addDio(
+                          Dio(
+                            BaseOptions(
+                              baseUrl: Config.apiBaseUrl,
+                              headers: <String, String>{
+                                'Api-Version': '1.0',
+                                'Accept': 'application/json',
+                                'Charset': 'utf-8',
+                                'X-Platform-Type': 'mobile',
+                                'X-Device-ID': dependencies.localSource.deviceId,
+                              },
+                              connectTimeout: const Duration(seconds: 15),
+                              receiveTimeout: const Duration(seconds: 15),
+                            ),
                           ),
                         ).post<Map<String, Object?>>(
                           '/api/auth/refresh',
@@ -291,7 +336,11 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
                       refreshToken: tokenResponse.refreshToken,
                     );
 
+                    l.i('TokenInterceptor | Token refreshed successfully');
                     return tokenResponse.accessToken;
+                  } on Object catch (e, s) {
+                    l.s('TokenInterceptor | Token refresh request failed: $e', s);
+                    rethrow;
                   } finally {
                     refreshFuture = null;
                   }
@@ -301,8 +350,13 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
                 options.headers[io.HttpHeaders.authorizationHeader] = 'Bearer $newAccessToken';
                 final retryResponse = await copyDio.fetch<Object?>(options);
                 return handler.resolve(retryResponse);
-              } on Object catch (_) {
-                await dependencies.authenticationController.signOut();
+              } on Object catch (e, s) {
+                l.s('TokenInterceptor | Error handling token refresh: $e. Signing out...', s);
+                try {
+                  await dependencies.authenticationController.signOut();
+                } on Object catch (signOutError, signOutStack) {
+                  l.s('TokenInterceptor | Error during signOut: $signOutError', signOutStack);
+                }
                 return handler.next(error);
               }
             }
@@ -349,3 +403,46 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
 
   ('Load Data If User Is Authenticated', (dependencies) {}),
 ];
+
+Future<String> _getHardwareDeviceId() async {
+  try {
+    if (kIsWeb) return '';
+    final deviceInfo = DeviceInfoPlugin();
+    if (io.Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.id;
+    } else if (io.Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.identifierForVendor ?? '';
+    } else if (io.Platform.isMacOS) {
+      final macInfo = await deviceInfo.macOsInfo;
+      return macInfo.systemGUID ?? '';
+    } else if (io.Platform.isWindows) {
+      final windowsInfo = await deviceInfo.windowsInfo;
+      return windowsInfo.deviceId;
+    } else if (io.Platform.isLinux) {
+      final linuxInfo = await deviceInfo.linuxInfo;
+      return linuxInfo.machineId ?? '';
+    }
+  } on Object catch (e) {
+    l.w('TokenInterceptor | Failed to get hardware device ID: $e');
+  }
+  return '';
+}
+
+String _generateRandomUuid() {
+  final random = math.Random.secure();
+  return List.generate(36, (index) {
+    if (index == 8 || index == 13 || index == 18 || index == 23) {
+      return '-';
+    }
+    if (index == 14) {
+      return '4';
+    }
+    final hex = random.nextInt(16).toRadixString(16);
+    if (index == 19) {
+      return ((random.nextInt(16) & 0x3) | 0x8).toRadixString(16);
+    }
+    return hex;
+  }).join();
+}

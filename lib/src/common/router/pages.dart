@@ -4,7 +4,9 @@ import 'package:ui/ui.dart';
 
 import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
+import '../../feature/authentication/screen/session_screen.dart';
 import '../../feature/authentication/screen/verify_otp_screen.dart';
+import '../../feature/authentication/cubit/session_cubit.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
@@ -55,7 +57,8 @@ enum Routes with OctopusRoute {
   testResult('testResult', title: 'Test Result'),
   supportChat('supportChat', title: 'Support Chat'),
   testSolving('testSolving', title: 'Test Solving'),
-  archive('archive', title: 'Archive');
+  archive('archive', title: 'Archive'),
+  session('session', title: 'Sessions');
 
   const Routes(this.name, {this.title});
 
@@ -173,10 +176,16 @@ enum Routes with OctopusRoute {
       child: TestSolvingScreen(arguments: TestSolvingArguments.fromArguments(node.arguments)),
     ),
     .supportChat => const SupportChatScreen(),
-    .archive => BlocProvider(
+    Routes.archive => BlocProvider(
       create: (context) =>
           ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository)..loadArchiveTests(),
       child: const ArchiveScreen(),
     ),
+    Routes.session => BlocProvider(
+      create: (context) => SessionCubit(repository: context.x.dependencies.repository.authenticationRepository),
+      child: const SessionScreen(),
+    ),
   };
 }
+
+Octopus? authNavigatorInstance;

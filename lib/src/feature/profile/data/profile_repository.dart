@@ -4,6 +4,7 @@ import '../../../common/constant/urls.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../my_tests/models/test_model.dart';
 import '../model/profile_model.dart';
+import '../model/referral_summary_model.dart';
 import '../model/topup_model.dart';
 import '../model/transaction_model.dart';
 
@@ -19,6 +20,7 @@ abstract interface class IProfileRepository {
   Future<void> unarchiveTest(String testId);
   Future<void> linkGoogle(String idToken);
   Future<void> linkApple(String identityToken);
+  Future<ReferralSummary> getReferralSummary();
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -84,5 +86,11 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   @override
   Future<void> linkApple(String identityToken) async {
     await dio.post<void>('/api/auth/link/apple', data: {'identity_token': identityToken});
+  }
+
+  @override
+  Future<ReferralSummary> getReferralSummary() async {
+    final response = await dio.get<Map<String, Object?>>('/api/users/me/referrals/summary');
+    return ReferralSummary.fromJson(response.data ?? {});
   }
 }

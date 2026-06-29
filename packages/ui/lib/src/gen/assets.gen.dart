@@ -91,6 +91,9 @@ class $LibIconGen {
   /// File path: lib/icon/correct.svg
   SvgGenImage get correct => const SvgGenImage('lib/icon/correct.svg');
 
+  /// File path: lib/icon/desktop.svg
+  SvgGenImage get desktop => const SvgGenImage('lib/icon/desktop.svg');
+
   /// File path: lib/icon/documents.svg
   SvgGenImage get documents => const SvgGenImage('lib/icon/documents.svg');
 
@@ -184,6 +187,9 @@ class $LibIconGen {
   /// File path: lib/icon/referral.svg
   SvgGenImage get referral => const SvgGenImage('lib/icon/referral.svg');
 
+  /// File path: lib/icon/revoke.svg
+  SvgGenImage get revoke => const SvgGenImage('lib/icon/revoke.svg');
+
   /// File path: lib/icon/search.svg
   SvgGenImage get search => const SvgGenImage('lib/icon/search.svg');
 
@@ -250,6 +256,7 @@ class $LibIconGen {
     close,
     copyId,
     correct,
+    desktop,
     documents,
     emptyInbox,
     emptyTestDark,
@@ -281,6 +288,7 @@ class $LibIconGen {
     profile,
     questionMark,
     referral,
+    revoke,
     search,
     setHome,
     share,
@@ -397,6 +405,9 @@ class $LibImagesGen {
   /// File path: lib/images/xazna.jpg
   AssetGenImage get xazna => const AssetGenImage('lib/images/xazna.jpg');
 
+  /// File path: lib/images/zoom_robot.png
+  AssetGenImage get zoomRobot => const AssetGenImage('lib/images/zoom_robot.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
     click,
@@ -430,6 +441,7 @@ class $LibImagesGen {
     uzum,
     wrongIcon,
     xazna,
+    zoomRobot,
   ];
 }
 

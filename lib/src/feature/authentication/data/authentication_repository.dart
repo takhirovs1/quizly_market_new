@@ -8,6 +8,7 @@ import '../../../common/service/api_service.dart';
 import '../../../common/service/auth_service.dart';
 import '../model/auth_service_response.dart';
 import '../model/auth_token_response.dart';
+import '../model/session_model.dart';
 import '../model/telegram_verify_request.dart';
 import '../model/user.dart';
 
@@ -33,6 +34,12 @@ abstract interface class IAuthenticationRepository {
   Future<void> signInWithTelegramOtp({required String deviceId, required String code});
 
   Future<void> updateTokens({required String accessToken, required String refreshToken});
+
+  Future<List<SessionModel>> getSessions();
+
+  Future<void> revokeSession(String sessionId);
+
+  Future<void> refreshSessionToken();
 }
 
 class AuthenticationRepositoryImpl implements IAuthenticationRepository {
@@ -162,5 +169,31 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     );
 
     return serviceResponse;
+  }
+
+  @override
+  Future<List<SessionModel>> getSessions() async {
+    final json = await apiService.request<Map<String, Object?>>('/api/auth/sessions', method: Method.get);
+    return SessionResponse.fromJson(json).sessions;
+  }
+
+  @override
+  Future<void> revokeSession(String sessionId) async {
+    await apiService.request<void>('/api/auth/sessions/$sessionId', method: Method.delete);
+  }
+
+  @override
+  Future<void> refreshSessionToken() async {
+    final rToken = localSource.refreshToken;
+    if (rToken.isEmpty) {
+      throw Exception('Refresh token is empty');
+    }
+    final json = await apiService.request<Map<String, Object?>>(
+      '/api/auth/refresh',
+      method: Method.post,
+      data: <String, Object?>{'refresh_token': rToken},
+    );
+    final tokenResponse = AuthTokenResponse.fromJson(json);
+    await updateTokens(accessToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken);
   }
 }

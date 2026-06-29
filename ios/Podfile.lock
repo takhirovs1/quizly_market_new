@@ -65,7 +65,7 @@ PODS:
   - Firebase/RemoteConfig (12.15.0):
     - Firebase/CoreOnly
     - FirebaseRemoteConfig (~> 12.15.0)
-  - firebase_auth (6.5.3):
+  - firebase_auth (6.5.4):
     - Firebase/Auth (= 12.15.0)
     - firebase_core
     - Flutter
@@ -76,7 +76,7 @@ PODS:
     - Firebase/Crashlytics (= 12.15.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (16.4.0):
+  - firebase_messaging (16.4.1):
     - Firebase/Messaging (= 12.15.0)
     - firebase_core
     - Flutter
@@ -343,10 +343,10 @@ SPEC CHECKSUMS:
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Firebase: a8539b633d474fbeb654c7043f9c1649e274045b
-  firebase_auth: 34a7d6abe16fdb067929e525d5290399ed067763
+  firebase_auth: 78f0e9fa5dd3dce7e44164c53d2702eeffba360a
   firebase_core: fc23178af8ea070194d09031ae4198a9608a3d22
   firebase_crashlytics: 344bb168f55aee1086c6cdd0b105a9db018cd344
-  firebase_messaging: cbffc91e44e4e29d5a255c63f6cde1d1a7f98745
+  firebase_messaging: 870b2939a7f7cc52bc38ca0250127c45b42f4bad
   firebase_remote_config: 3c6c60acab323f3e2f5dc25d35cfe5be984c7bd3
   FirebaseABTesting: 04cab3e6db77b86af50b6cf7c825a13e04beca52
   FirebaseAppCheckInterop: 5083c9acf65f206832fe659e1c676b7bc3d55e8a

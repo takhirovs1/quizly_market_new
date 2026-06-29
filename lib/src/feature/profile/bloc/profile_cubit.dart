@@ -9,6 +9,7 @@ import '../../../common/util/state_status.dart';
 import '../../my_tests/models/test_model.dart';
 import '../data/profile_repository.dart';
 import '../model/profile_model.dart';
+import '../model/referral_summary_model.dart';
 import '../model/topup_model.dart';
 import '../model/transaction_model.dart';
 
@@ -175,6 +176,17 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     },
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> getReferralSummary() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(referralStatus: .loading));
+      final referralSummary = await profileRepository.getReferralSummary();
+      emit(state.copyWith(referralStatus: .success, referralSummary: referralSummary));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(referralStatus: .error, referralErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 }

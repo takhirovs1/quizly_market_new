@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
@@ -80,10 +81,18 @@ class _ReferralScreenState extends ReferralScreenState {
                     child: TabBarView(
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        if (state.user == null || state.status == StateStatus.loading)
+                        if (state.user == null ||
+                            state.status == StateStatus.loading ||
+                            state.referralSummary == null ||
+                            state.referralStatus == StateStatus.loading)
                           const _ReferralShimmer()
                         else
-                          _ReferralTap(referralLink: link, onCopy: onLinkCopy),
+                          _ReferralTap(
+                            referralLink: link,
+                            onCopy: onLinkCopy,
+                            totalReferrals: state.referralSummary!.totalReferrals,
+                            totalEarned: state.referralSummary!.totalEarned,
+                          ),
                         const _AllBonusTap(),
                       ],
                     ),
@@ -119,10 +128,17 @@ class _ReferralScreenState extends ReferralScreenState {
 }
 
 class _ReferralTap extends StatelessWidget {
-  const _ReferralTap({required this.referralLink, required this.onCopy});
+  const _ReferralTap({
+    required this.referralLink,
+    required this.onCopy,
+    required this.totalReferrals,
+    required this.totalEarned,
+  });
 
   final String referralLink;
   final VoidCallback onCopy;
+  final int totalReferrals;
+  final int totalEarned;
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -143,7 +159,10 @@ class _ReferralTap extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     children: [
-                      Text('20', style: context.x.textStyle.sfW700s18.copyWith(color: context.x.colors.text)),
+                      Text(
+                        '$totalReferrals',
+                        style: context.x.textStyle.sfW700s18.copyWith(color: context.x.colors.text),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         context.x.l10n.invitedFriends,
@@ -165,7 +184,10 @@ class _ReferralTap extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     children: [
-                      Text('20 000 so‘m', style: context.x.textStyle.sfW700s18.copyWith(color: context.x.colors.text)),
+                      Text(
+                        '${NumberFormat('#,###').format(totalEarned).replaceAll(',', ' ')} so‘m',
+                        style: context.x.textStyle.sfW700s18.copyWith(color: context.x.colors.text),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         context.x.l10n.earnedBonus,

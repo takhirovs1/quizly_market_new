@@ -36,7 +36,10 @@ class TestView extends SequentialCubit<TestViewState> {
         );
       } else {
         emit(state.copyWith(status: StateStatus.loading));
-        final result = await testViewRepository.getAttempts(testId, const TestAttemptRequest(limit: 20, offset: 0));
+        final result = await testViewRepository.getAttempts(
+          testId,
+          TestAttemptRequest(limit: 20, offset: 0, mode: mode),
+        );
         emit(
           state.copyWith(
             status: StateStatus.success,
