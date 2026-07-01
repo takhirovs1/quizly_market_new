@@ -10,6 +10,7 @@ import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
 import '../data/authentication_repository.dart';
+import '../model/session_model.dart';
 
 part 'auth_state.dart';
 
@@ -88,6 +89,39 @@ class AuthCubit extends SequentialCubit<AuthState> {
   Future<void> cancelTelegramLogin() => handle<void>((emit) {
     emit(const AuthState());
   });
+
+  Future<void> loadSessions() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(sessionStatus: StateStatus.loading));
+      final sessions = await authenticationRepository.getSessions();
+      emit(state.copyWith(sessionStatus: StateStatus.success, sessions: sessions));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(sessionStatus: StateStatus.error, revokeErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<bool> revokeSession(String sessionId) async {
+    final result = await handle<bool>(
+      (emit) async {
+        emit(state.copyWith(revokeStatus: StateStatus.loading));
+        await authenticationRepository.revokeSession(sessionId);
+        // After revoking, refresh current tokens to log back in
+        await authenticationRepository.refreshSessionToken();
+        emit(state.copyWith(revokeStatus: StateStatus.success));
+        return true;
+      },
+      errorHandler: (emit, error, stackTrace) {
+        emit(
+          state.copyWith(
+            revokeStatus: StateStatus.error,
+            revokeErrorMessage: ErrorUtil.toUserFriendlyMessage(error),
+          ),
+        );
+      },
+    );
+    return result ?? false;
+  }
 
   static String _generateDeviceId() {
     final rng = math.Random.secure();

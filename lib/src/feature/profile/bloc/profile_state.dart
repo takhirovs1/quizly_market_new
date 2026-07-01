@@ -19,6 +19,11 @@ class ProfileState extends Equatable {
     this.referralStatus = StateStatus.idle,
     this.referralErrorMessage,
     this.referralSummary,
+    this.referralItems = const [],
+    this.referralLimit = 20,
+    this.referralOffset = 0,
+    this.referralTotal = 0,
+    this.referralListStatus = StateStatus.idle,
   });
 
   final StateStatus status;
@@ -38,6 +43,14 @@ class ProfileState extends Equatable {
   final StateStatus referralStatus;
   final String? referralErrorMessage;
   final ReferralSummary? referralSummary;
+  final List<ReferralItem> referralItems;
+  final int referralLimit;
+  final int referralOffset;
+  final int referralTotal;
+  final StateStatus referralListStatus;
+
+  bool get referralHasMore => referralItems.length < referralTotal;
+  bool get isReferralListLoadingMore => referralListStatus == StateStatus.loadingMore;
 
   bool get isArchiveLoadingMore => archiveStatus == .loadingMore;
   bool get archiveHasMore => archiveTests.length < archiveTotal;
@@ -60,6 +73,11 @@ class ProfileState extends Equatable {
     StateStatus? referralStatus,
     String? referralErrorMessage,
     ReferralSummary? referralSummary,
+    List<ReferralItem>? referralItems,
+    int? referralLimit,
+    int? referralOffset,
+    int? referralTotal,
+    StateStatus? referralListStatus,
   }) => ProfileState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
@@ -78,6 +96,11 @@ class ProfileState extends Equatable {
     referralStatus: referralStatus ?? this.referralStatus,
     referralErrorMessage: referralErrorMessage ?? this.referralErrorMessage,
     referralSummary: referralSummary ?? this.referralSummary,
+    referralItems: referralItems ?? this.referralItems,
+    referralLimit: referralLimit ?? this.referralLimit,
+    referralOffset: referralOffset ?? this.referralOffset,
+    referralTotal: referralTotal ?? this.referralTotal,
+    referralListStatus: referralListStatus ?? this.referralListStatus,
   );
 
   @override
@@ -99,5 +122,10 @@ class ProfileState extends Equatable {
     referralStatus,
     referralErrorMessage,
     referralSummary,
+    referralItems,
+    referralLimit,
+    referralOffset,
+    referralTotal,
+    referralListStatus,
   ];
 }

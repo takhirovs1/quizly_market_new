@@ -9,6 +9,7 @@ import '../../../common/util/state_status.dart';
 import '../../my_tests/models/test_model.dart';
 import '../data/profile_repository.dart';
 import '../model/profile_model.dart';
+import '../model/referral_model.dart';
 import '../model/referral_summary_model.dart';
 import '../model/topup_model.dart';
 import '../model/transaction_model.dart';
@@ -187,6 +188,49 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     },
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(referralStatus: .error, referralErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
+  );
+
+  Future<void> getReferrals() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(referralListStatus: StateStatus.loading));
+      final result = await profileRepository.getReferrals(limit: 20, offset: 0);
+      emit(
+        state.copyWith(
+          referralListStatus: StateStatus.success,
+          referralItems: result.items,
+          referralLimit: result.limit,
+          referralOffset: result.offset,
+          referralTotal: result.total,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(referralListStatus: StateStatus.error));
+    },
+  );
+
+  Future<void> loadMoreReferrals() => handle<void>(
+    (emit) async {
+      if (!state.referralHasMore || state.isReferralListLoadingMore) return;
+      emit(state.copyWith(referralListStatus: StateStatus.loadingMore));
+      final nextOffset = state.referralOffset + state.referralLimit;
+      final result = await profileRepository.getReferrals(
+        limit: state.referralLimit,
+        offset: nextOffset,
+      );
+      emit(
+        state.copyWith(
+          referralListStatus: StateStatus.success,
+          referralItems: [...state.referralItems, ...result.items],
+          referralLimit: result.limit,
+          referralOffset: result.offset,
+          referralTotal: result.total,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(referralListStatus: StateStatus.error));
     },
   );
 }

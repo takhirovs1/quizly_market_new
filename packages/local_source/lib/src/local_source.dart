@@ -45,6 +45,7 @@ final class LocalSource extends PreferenceDao with UserDataSourceImpl, SettingsD
       instance._refreshTokenKey,
       instance._idKey,
       instance._deviceIdKey,
+      instance._referralCodeKey,
     ];
 
     for (final entry in entries) {

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import '../../../common/extension/context_extension.dart';
-import '../cubit/session_cubit.dart';
+import '../cubit/auth_cubit.dart';
 import '../screen/session_screen.dart';
 
 abstract class SessionState extends State<SessionScreen> {
-  late final SessionCubit cubit;
+  late final AuthCubit cubit;
 
   @override
   void initState() {
     super.initState();
-    cubit = context.read<SessionCubit>()..loadSessions();
+    cubit = context.read<AuthCubit>()..loadSessions();
   }
 
   void onRevoke(String sessionId) {

@@ -6,7 +6,7 @@ import 'package:ui/ui.dart';
 import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/util/state_status.dart';
-import '../cubit/session_cubit.dart';
+import '../cubit/auth_cubit.dart';
 import '../state/session_state.dart';
 
 class SessionScreen extends StatefulWidget {
@@ -18,9 +18,9 @@ class SessionScreen extends StatefulWidget {
 
 class _SessionScreenState extends SessionState {
   @override
-  Widget build(BuildContext context) => BlocConsumer<SessionCubit, SessionCubitState>(
+  Widget build(BuildContext context) => BlocConsumer<AuthCubit, AuthState>(
     listener: (context, state) {
-      if (state.status.isError) {
+      if (state.sessionStatus.isError) {
         context.x.showNotification(message: state.errorMessage ?? context.x.l10n.somethingWentWrong);
       }
       if (state.revokeStatus.isError) {
@@ -28,7 +28,7 @@ class _SessionScreenState extends SessionState {
       }
     },
     builder: (context, state) {
-      final isLoading = state.status == StateStatus.loading || state.revokeStatus == StateStatus.loading;
+      final isLoading = state.sessionStatus == .loading || state.revokeStatus == .loading;
 
       return Scaffold(
         backgroundColor: context.x.colors.scaffoldBackground,
@@ -94,7 +94,7 @@ class _SessionScreenState extends SessionState {
                           const SizedBox(height: 32),
 
                           // Sessions List
-                          if (state.status == StateStatus.loading && state.sessions.isEmpty)
+                          if (state.sessionStatus == StateStatus.loading && state.sessions.isEmpty)
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 40),
                               child: CircularProgressIndicator(),

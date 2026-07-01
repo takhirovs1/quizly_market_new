@@ -3,10 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
-import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/util/state_status.dart';
 import '../bloc/profile_cubit.dart';
+import '../model/referral_model.dart';
 import '../state/referral_screen_state.dart';
 
 class ReferralScreen extends StatefulWidget {
@@ -329,56 +329,225 @@ class _ReferralTap extends StatelessWidget {
   );
 }
 
-class _AllBonusTap extends StatelessWidget {
+class _AllBonusTap extends StatefulWidget {
   const _AllBonusTap();
 
   @override
-  Widget build(BuildContext context) {
-    // ignore: literal_only_boolean_expressions
-    if (true)
+  State<_AllBonusTap> createState() => _AllBonusTapState();
+}
+
+class _AllBonusTapState extends State<_AllBonusTap> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      context.read<ProfileCubit>().loadMoreReferrals();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocBuilder<ProfileCubit, ProfileState>(
+    builder: (context, state) {
+      // Loading initial
+      if (state.referralListStatus == StateStatus.loading) {
+        return const _AllBonusShimmer();
+      }
+
+      // Empty
+      if (state.referralItems.isEmpty) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: EmptyTestWidget(title: context.x.l10n.noInvitationsYet, description: context.x.l10n.referralInfo),
+        );
+      }
+
       return ListView.separated(
-        itemCount: 20,
-        itemBuilder: (context, index) => Padding(
-          padding: const .symmetric(horizontal: 16),
+        controller: _scrollController,
+        itemCount: state.referralItems.length + (state.referralHasMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == state.referralItems.length) {
+            // Load-more footer
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+              ),
+            );
+          }
+          return _ReferralListItem(item: state.referralItems[index]);
+        },
+        separatorBuilder: (context, separatorIndex) {
+          if (separatorIndex >= state.referralItems.length - 1) return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.only(left: 66),
+            child: Divider(height: 20, color: context.x.colors.divider),
+          );
+        },
+      );
+    },
+  );
+}
+
+class _ReferralListItem extends StatelessWidget {
+  const _ReferralListItem({required this.item});
+  final ReferralItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateStr = item.signedUpAt != null ? DateFormat('HH:mm dd.MM.yyyy').format(item.signedUpAt!.toLocal()) : '';
+    final bonusStr = '+${NumberFormat('#,###').format(item.bonusAmount).replaceAll(',', ' ')} UZS';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        spacing: 10,
+        children: [
+          // Avatar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: item.referredAvatar.isNotEmpty
+                ? Image.network(
+                    item.referredAvatar,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, _) => _DefaultAvatar(name: item.referredName),
+                  )
+                : _DefaultAvatar(name: item.referredName),
+          ),
+          // Name + date
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.referredName.isNotEmpty ? item.referredName : '—',
+                  style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.text),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (dateStr.isNotEmpty)
+                  Text(dateStr, style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray)),
+              ],
+            ),
+          ),
+          // Bonus
+          if (item.bonusAmount > 0)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(bonusStr, style: context.x.textStyle.sfW700s18.copyWith(color: context.x.colors.primary)),
+                Text(
+                  context.x.l10n.referral,
+                  style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.primary),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DefaultAvatar extends StatelessWidget {
+  const _DefaultAvatar({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final letter = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: context.x.colors.primary.withValues(alpha: 0.15), shape: BoxShape.circle),
+      child: Text(letter, style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.primary)),
+    );
+  }
+}
+
+class _AllBonusShimmer extends StatelessWidget {
+  const _AllBonusShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final baseColor = isLight ? Colors.grey[300]! : Colors.grey[800]!;
+    final highlightColor = isLight ? Colors.grey[100]! : Colors.grey[700]!;
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: ListView.separated(
+        itemCount: 8,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemBuilder: (context, _) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Row(
             spacing: 10,
             children: [
-              ClipRRect(
-                borderRadius: .circular(100),
-                child: Image.asset(Assets.lib.images.logo.path, width: 40, height: 40, package: Constant.packageUi),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 14,
+                      width: 120,
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 12,
+                      width: 80,
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                    ),
+                  ],
+                ),
               ),
               Column(
-                crossAxisAlignment: .start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Takhirovs', style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.text)),
-                  Text('23:30 12.11.2026', style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray)),
-                ],
-              ),
-              const Spacer(),
-              Column(
-                crossAxisAlignment: .end,
-                children: [
-                  Text('+1,000 UZS', style: context.x.textStyle.sfW700s18.copyWith(color: context.x.colors.primary)),
-                  Text(
-                    context.x.l10n.referral,
-                    style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.primary),
+                  Container(
+                    height: 14,
+                    width: 70,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 12,
+                    width: 50,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
                   ),
                 ],
               ),
             ],
           ),
         ),
-        separatorBuilder: (context, index) => Padding(
-          padding: const .only(left: 66),
-          child: Divider(height: 20, color: context.x.colors.divider),
+        separatorBuilder: (context, _) => Padding(
+          padding: const EdgeInsets.only(left: 66),
+          child: Divider(height: 20, color: Colors.white.withValues(alpha: 0.3)),
         ),
-      );
-    else
-      // ignore: dead_code
-      return Padding(
-        padding: const .all(16),
-        child: EmptyTestWidget(title: context.x.l10n.noInvitationsYet, description: context.x.l10n.referralInfo),
-      );
+      ),
+    );
   }
 }
 

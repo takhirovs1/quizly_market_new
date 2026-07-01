@@ -5,19 +5,19 @@ class SuccessDialog extends StatelessWidget {
   const SuccessDialog({
     required this.title,
     required this.description,
-    required this.cancelButtonText,
     required this.successButtonText,
-    required this.onCancelButtonPressed,
     required this.onSuccessButtonPressed,
+    this.cancelButtonText,
+    this.onCancelButtonPressed,
     this.isError = false,
     super.key,
   });
 
   final String title;
   final String description;
-  final String cancelButtonText;
+  final String? cancelButtonText;
   final String successButtonText;
-  final VoidCallback onCancelButtonPressed;
+  final VoidCallback? onCancelButtonPressed;
   final VoidCallback onSuccessButtonPressed;
   final bool isError;
 
@@ -61,30 +61,31 @@ class SuccessDialog extends StatelessWidget {
                   Row(
                     spacing: 12,
                     children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            shadowColor: context.x.colors.transparent,
-                            overlayColor: context.x.colors.primary,
-                            backgroundColor: context.x.colors.dialogCancelButton,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            padding: const EdgeInsets.all(14),
-                            fixedSize: const Size(double.infinity, 50),
-                          ),
-                          onPressed: onCancelButtonPressed,
-                          child: Text(
-                            cancelButtonText,
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.x.textStyle.sfW500s16.copyWith(
-                              fontSize: 17,
-                              color: context.x.colors.bannerPriceText,
+                      if (cancelButtonText != null && onCancelButtonPressed != null)
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shadowColor: context.x.colors.transparent,
+                              overlayColor: context.x.colors.primary,
+                              backgroundColor: context.x.colors.dialogCancelButton,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: const EdgeInsets.all(14),
+                              fixedSize: const Size(double.infinity, 50),
+                            ),
+                            onPressed: onCancelButtonPressed,
+                            child: Text(
+                              cancelButtonText!,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.x.textStyle.sfW500s16.copyWith(
+                                fontSize: 17,
+                                color: context.x.colors.bannerPriceText,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(

@@ -90,14 +90,14 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
   Future<AuthServiceResponse?> signInWithGoogle() => _signIn(
     provider: AuthService.signInWithGoogle,
     endpoint: '/api/auth/google',
-    dataBuilder: (token) => {'id_token': token},
+    dataBuilder: (token) => {'id_token': token, 'referral_code': localSource.referralCode},
   );
 
   @override
   Future<AuthServiceResponse?> signInWithApple() => _signIn(
     provider: AuthService.signInWithApple,
     endpoint: '/api/auth/apple',
-    dataBuilder: (token) => {'identity_token': token, 'referral_code': ''},
+    dataBuilder: (token) => {'identity_token': token, 'referral_code': localSource.referralCode},
   );
 
   @override
@@ -105,7 +105,7 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     final json = await apiService.request<Map<String, Object?>>(
       Urls.mobileVerify,
       method: .post,
-      data: TelegramVerifyRequest(deviceId: deviceId, code: code).toJson(),
+      data: TelegramVerifyRequest(deviceId: deviceId, code: code, referralCode: localSource.referralCode).toJson(),
     );
     final tokenResponse = AuthTokenResponse.fromJson(json);
 

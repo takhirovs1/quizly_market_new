@@ -4,6 +4,7 @@ import '../../../common/constant/urls.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../my_tests/models/test_model.dart';
 import '../model/profile_model.dart';
+import '../model/referral_model.dart';
 import '../model/referral_summary_model.dart';
 import '../model/topup_model.dart';
 import '../model/transaction_model.dart';
@@ -21,6 +22,7 @@ abstract interface class IProfileRepository {
   Future<void> linkGoogle(String idToken);
   Future<void> linkApple(String identityToken);
   Future<ReferralSummary> getReferralSummary();
+  Future<ReferralListResponse> getReferrals({int limit = 20, int offset = 0});
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -92,5 +94,14 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   Future<ReferralSummary> getReferralSummary() async {
     final response = await dio.get<Map<String, Object?>>('/api/users/me/referrals/summary');
     return ReferralSummary.fromJson(response.data ?? {});
+  }
+
+  @override
+  Future<ReferralListResponse> getReferrals({int limit = 20, int offset = 0}) async {
+    final response = await dio.get<Map<String, Object?>>(
+      '/api/users/me/referrals',
+      queryParameters: {'limit': limit, 'offset': offset},
+    );
+    return ReferralListResponse.fromJson(response.data ?? {});
   }
 }

@@ -52,7 +52,8 @@ abstract class ReferralScreenState extends State<ReferralScreen> {
   void initState() {
     cubit = context.read<ProfileCubit>()
       ..loadProfile()
-      ..getReferralSummary();
+      ..getReferralSummary()
+      ..getReferrals();
     super.initState();
     context.setupTelegramBackButton();
   }

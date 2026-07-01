@@ -185,36 +185,42 @@ class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
       if (context.mounted) {
         final startParam = context.telegramWebApp.startParam;
         if (startParam != null && startParam.isNotEmpty) {
-          try {
-            final repo = context.x.dependencies.repository.myTestRepository;
-            final response = await repo.getTestByCode(TestByCodeRequest(code: startParam));
-            final isPurchased = response.data?.isPurchased ?? false;
-            final testId = response.data?.id ?? startParam;
-            if (context.mounted) {
-              if (isPurchased) {
+          if (startParam.startsWith('r')) {
+            context.octopus.navigate('home');
+          } else {
+            try {
+              final repo = context.x.dependencies.repository.myTestRepository;
+              final response = await repo.getTestByCode(TestByCodeRequest(code: startParam));
+              final isPurchased = response.data?.isPurchased ?? false;
+              final testId = response.data?.id ?? startParam;
+              if (context.mounted) {
+                if (isPurchased) {
+                  context.octopus.setState(
+                    (s) => s
+                      ..clear()
+                      ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                      ..add(OctopusNode(name: Routes.testMode.name, arguments: {'id': testId}, children: const [])),
+                  );
+                } else {
+                  context.octopus.setState(
+                    (s) => s
+                      ..clear()
+                      ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                      ..add(OctopusNode(name: Routes.purchaseTest.name, arguments: {'id': testId}, children: const [])),
+                  );
+                }
+              }
+            } on Object catch (_) {
+              if (context.mounted) {
                 context.octopus.setState(
                   (s) => s
                     ..clear()
                     ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
-                    ..add(OctopusNode(name: Routes.testMode.name, arguments: {'id': testId}, children: const [])),
-                );
-              } else {
-                context.octopus.setState(
-                  (s) => s
-                    ..clear()
-                    ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
-                    ..add(OctopusNode(name: Routes.purchaseTest.name, arguments: {'id': testId}, children: const [])),
+                    ..add(
+                      OctopusNode(name: Routes.purchaseTest.name, arguments: {'id': startParam}, children: const []),
+                    ),
                 );
               }
-            }
-          } on Object catch (_) {
-            if (context.mounted) {
-              context.octopus.setState(
-                (s) => s
-                  ..clear()
-                  ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
-                  ..add(OctopusNode(name: Routes.purchaseTest.name, arguments: {'id': startParam}, children: const [])),
-              );
             }
           }
         } else {

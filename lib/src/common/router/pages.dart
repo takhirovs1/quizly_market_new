@@ -6,7 +6,6 @@ import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/authentication/screen/session_screen.dart';
 import '../../feature/authentication/screen/verify_otp_screen.dart';
-import '../../feature/authentication/cubit/session_cubit.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
@@ -182,7 +181,8 @@ enum Routes with OctopusRoute {
       child: const ArchiveScreen(),
     ),
     Routes.session => BlocProvider(
-      create: (context) => SessionCubit(repository: context.x.dependencies.repository.authenticationRepository),
+      create: (context) =>
+          AuthCubit(authenticationRepository: context.x.dependencies.repository.authenticationRepository),
       child: const SessionScreen(),
     ),
   };

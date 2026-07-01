@@ -24,6 +24,10 @@ abstract interface class UserDataSource {
   // Device ID
   String get deviceId;
   Future<void> setDeviceId(String deviceId);
+
+  // Referral Code
+  String get referralCode;
+  Future<void> setReferralCode(String referralCode);
 }
 
 base mixin UserDataSourceImpl on PreferenceDao implements UserDataSource {
@@ -37,6 +41,7 @@ base mixin UserDataSourceImpl on PreferenceDao implements UserDataSource {
   PreferenceEntry<String> get _refreshTokenKey => stringEntry(key: 'user.refresh_token');
   PreferenceEntry<bool> get _onboardingCompletedKey => boolEntry(key: 'user.onboarding_completed');
   PreferenceEntry<String> get _deviceIdKey => stringEntry(key: 'user.device_id');
+  PreferenceEntry<String> get _referralCodeKey => stringEntry(key: 'user.referral_code');
   // --- * end Storage Keys * ---
 
   /// Encrypted [accessToken] using [SecureStorage] to store it
@@ -84,18 +89,29 @@ base mixin UserDataSourceImpl on PreferenceDao implements UserDataSource {
     await _deviceIdKey.set(deviceId);
   }
 
+  /// Referral Code
+  @override
+  String get referralCode => readFromCache<String>(_referralCodeKey) ?? '';
+  @override
+  Future<void> setReferralCode(String referralCode) async {
+    cache[_referralCodeKey.key] = referralCode;
+    await _referralCodeKey.set(referralCode);
+  }
+
   /// Clear user info
   Future<void> clearUserData() async {
     cache[_idKey.key] = '';
     cache[_accessTokenKey.key] = '';
     cache[_refreshTokenKey.key] = '';
     cache[_onboardingCompletedKey.key] = false;
+    cache[_referralCodeKey.key] = '';
 
     await Future.wait<void>([
       _idKey.remove(),
       _accessTokenKey.remove(),
       _refreshTokenKey.remove(),
       _onboardingCompletedKey.remove(),
+      _referralCodeKey.remove(),
     ]);
   }
 }

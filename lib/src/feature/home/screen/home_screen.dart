@@ -80,6 +80,57 @@ abstract class HomeScreenState extends State<HomeScreen> {
 
 class _HomeScreenState extends HomeScreenState {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkReferralDialog();
+    });
+  }
+
+  void _checkReferralDialog() {
+    if (!mounted) return;
+    final localSource = context.x.dependencies.localSource;
+    final referralCode = localSource.referralCode;
+    if (referralCode.isEmpty) return;
+
+    // Verify via API: load current user's profile and compare
+    // referral codes to ensure user didn't click their own link.
+    context.x.dependencies.repository.profileRepository
+        .getProfile()
+        .then((user) {
+          if (!mounted) return;
+          // Clear saved code regardless of outcome — it's a one-time flag.
+          localSource.setReferralCode('');
+
+          // If the saved code matches the user's own referral code → self-referral, skip.
+          if (user.referralCode != null && user.referralCode == referralCode) return;
+
+          // Another user's link was used → a signup bonus was credited → show the dialog.
+          showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => Dialog(
+              backgroundColor: context.x.colors.transparent,
+              child: Center(
+                child: SuccessDialog(
+                  title: context.x.l10n.referralBonusTitle,
+                  description: context.x.l10n.referralBonusDescription,
+                  successButtonText: context.x.l10n.understand,
+                  onSuccessButtonPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ),
+          );
+        })
+        .catchError((_) {
+          // On error, clear the code silently — don't show the dialog.
+          localSource.setReferralCode('');
+        });
+  }
+
+  @override
   Widget build(BuildContext context) => Theme(
     data: Theme.of(context).copyWith(
       canvasColor: Colors.transparent,
@@ -111,7 +162,7 @@ class _HomeScreenState extends HomeScreenState {
             return ColoredBox(
               color: context.x.colors.dialogBackground,
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: .only(
                   bottom: context.telegramWebApp.isSupported
                       ? context.telegramWebApp.safeAreaInset.bottom.toDouble()
                       : 0.0,
@@ -131,7 +182,7 @@ class _HomeScreenState extends HomeScreenState {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+                  padding: const .only(bottom: 24, left: 24, right: 24),
                   child: SizedBox(
                     width: 500,
                     child: QuizNavigationBar(

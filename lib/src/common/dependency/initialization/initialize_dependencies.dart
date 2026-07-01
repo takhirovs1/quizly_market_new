@@ -17,16 +17,17 @@ import 'package:ui/ui.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../firebase_options.dart';
+import '../../../../core/telegram/telegram_service.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
 import '../../../feature/authentication/model/auth_token_response.dart';
 import '../../../feature/authentication/state/authentication_controller.dart';
 import '../../../feature/main/data/main_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
 import '../../../feature/profile/data/profile_repository.dart';
-import '../../router/pages.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';
 import '../../../feature/settings/model/app_settings.dart';
+import '../../router/pages.dart';
 import '../../constant/config.dart';
 import '../../constant/pubspec.yaml.g.dart';
 import '../../service/api_service.dart';
@@ -106,13 +107,22 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
       dependencies.localSource = await LocalSource.instance;
       // if (defaultTargetPlatform == .macOS || defaultTargetPlatform == .windows) {
       //   await dependencies.localSource.setAccessToken(
-      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODE0NTkwNDgsImlhdCI6MTc4MTQ1NTQ0OCwiaXNzIjoicXVpemx5Iiwic3ViIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlkIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwicm9sZSI6ImN1c3RvbWVyIn0.Z0qudqzizABZckyKhm3_T-wgWQMYqQ9CNoNJmZms0zY',
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODE0NTkwNDgsImlhdCI6MTc4MTQ1NTQ0OCwiaXNzIjoicXVpemx5Iiwic3ViIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlkIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlpIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwicm9sZSI6ImN1c3RvbWVyIn0.Z0qudqzizABZckyKhm3_T-wgWQMYqQ9CNoNJmZms0zY',
       //   );
       //   await dependencies.localSource.setRefreshToken(
       //     'a9183d9b2be9020b5cec0ef8783e5cc937e8f38ac459ffc4d363212b5515658e',
       //   );
       //   await dependencies.localSource.setId('8435fc63-69b3-404e-a138-0993adcd97b3');
       // }
+
+      final tg = TelegramService.instance;
+      if (tg.isSupported) {
+        final startParam = tg.startParam;
+        if (startParam != null && startParam.startsWith('r')) {
+          final referralCode = startParam.substring(1);
+          await dependencies.localSource.setReferralCode(referralCode);
+        }
+      }
 
       var deviceId = dependencies.localSource.deviceId;
       if (deviceId.isEmpty) {
