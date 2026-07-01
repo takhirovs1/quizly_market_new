@@ -97,7 +97,9 @@ class AuthCubit extends SequentialCubit<AuthState> {
       emit(state.copyWith(sessionStatus: StateStatus.success, sessions: sessions));
     },
     errorHandler: (emit, error, stackTrace) {
-      emit(state.copyWith(sessionStatus: StateStatus.error, revokeErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+      emit(
+        state.copyWith(sessionStatus: StateStatus.error, revokeErrorMessage: ErrorUtil.toUserFriendlyMessage(error)),
+      );
     },
   );
 
@@ -113,10 +115,7 @@ class AuthCubit extends SequentialCubit<AuthState> {
       },
       errorHandler: (emit, error, stackTrace) {
         emit(
-          state.copyWith(
-            revokeStatus: StateStatus.error,
-            revokeErrorMessage: ErrorUtil.toUserFriendlyMessage(error),
-          ),
+          state.copyWith(revokeStatus: StateStatus.error, revokeErrorMessage: ErrorUtil.toUserFriendlyMessage(error)),
         );
       },
     );

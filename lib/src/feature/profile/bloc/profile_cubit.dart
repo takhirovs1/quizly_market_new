@@ -215,10 +215,7 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
       if (!state.referralHasMore || state.isReferralListLoadingMore) return;
       emit(state.copyWith(referralListStatus: StateStatus.loadingMore));
       final nextOffset = state.referralOffset + state.referralLimit;
-      final result = await profileRepository.getReferrals(
-        limit: state.referralLimit,
-        offset: nextOffset,
-      );
+      final result = await profileRepository.getReferrals(limit: state.referralLimit, offset: nextOffset);
       emit(
         state.copyWith(
           referralListStatus: StateStatus.success,

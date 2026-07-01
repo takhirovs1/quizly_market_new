@@ -34,19 +34,13 @@ class ReferralItem {
 
 /// Paginated response for `GET /api/users/me/referrals`.
 class ReferralListResponse {
-  const ReferralListResponse({
-    required this.items,
-    required this.limit,
-    required this.offset,
-    required this.total,
-  });
+  const ReferralListResponse({required this.items, required this.limit, required this.offset, required this.total});
 
   factory ReferralListResponse.fromJson(Map<String, Object?> json) {
     // The API wraps the list in "data"
     final dataRaw = json['data'];
     final dataList = dataRaw is List<Object?> ? dataRaw : <Object?>[];
-    final items =
-        dataList.whereType<Map<String, Object?>>().map(ReferralItem.fromJson).toList();
+    final items = dataList.whereType<Map<String, Object?>>().map(ReferralItem.fromJson).toList();
     return ReferralListResponse(
       items: items,
       limit: json['limit'].toIntOrNull ?? 20,
