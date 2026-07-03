@@ -9,4 +9,10 @@ class Constant {
   static const packageUi = 'ui';
 
   static const botUrl = 'https://t.me/prjkttest_bot';
+  static const appShortName = 'app';
+
+  static String get miniAppUrl {
+    final username = botUrl.split('/').last;
+    return 'https://t.me/$username/$appShortName';
+  }
 }

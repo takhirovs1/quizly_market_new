@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/constant/constant.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../../common/util/app_enum.dart';
@@ -155,7 +156,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
       final provider = selected.id == 1 ? PaymentProvider.payme : PaymentProvider.click;
       final detail = myTestCubit.state.demoTestDetail;
       final code = (detail?.code != null && detail!.code!.isNotEmpty) ? detail.code! : widget.testId;
-      final redirectUrl = 'https://t.me/@prjkttest_bot?startapp=$code';
+      final redirectUrl = '${Constant.miniAppUrl}?startapp=$code';
 
       final response = await myTestCubit.checkoutTest(
         testId: widget.testId,

@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/constant/constant.dart';
 import '../../../common/util/state_status.dart';
 import '../bloc/profile_cubit.dart';
 import '../model/referral_model.dart';
@@ -21,7 +22,7 @@ class _ReferralScreenState extends ReferralScreenState {
   Widget build(BuildContext context) => BlocBuilder<ProfileCubit, ProfileState>(
     builder: (context, state) {
       final referralCode = state.user?.referralCode ?? '';
-      final link = 'https://t.me/prjkttest_bot?startapp=r$referralCode';
+      final link = '${Constant.miniAppUrl}?startapp=r$referralCode';
       return DefaultTabController(
         length: 2,
         child: Scaffold(

@@ -4,13 +4,14 @@ import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/constant/constant.dart';
 import '../bloc/profile_cubit.dart';
 import '../screen/referral_screen.dart';
 
 abstract class ReferralScreenState extends State<ReferralScreen> {
   late final ProfileCubit cubit;
 
-  String get referralLink => 'https://t.me/prjkttest_bot?startapp=r${cubit.state.user?.referralCode}';
+  String get referralLink => '${Constant.miniAppUrl}?startapp=r${cubit.state.user?.referralCode}';
 
   Future<void> onShareReferralLink() async {
     if (context.telegramWebApp.isSupported) {

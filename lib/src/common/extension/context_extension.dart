@@ -226,8 +226,8 @@ extension TelegramWebAppX on BuildContext {
     String? code,
   }) {
     final link = code != null && code.isNotEmpty
-        ? 'https://t.me/@prjkttest_bot?startapp=$code'
-        : '${Constant.botUrl}?startapp=1234567';
+        ? '${Constant.miniAppUrl}?startapp=$code'
+        : '${Constant.miniAppUrl}?startapp=1234567';
     final message = x.l10n.shareTestCopy(title, description, questionAmount, link);
     if (telegramWebApp.isSupported) {
       final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
