@@ -25,6 +25,7 @@ abstract interface class IProfileRepository {
   Future<ReferralListResponse> getReferrals({int limit = 20, int offset = 0});
   Future<ReferralVerifyResponse> verifyReferral();
   Future<void> unlinkProvider(String provider);
+  Future<String> getDocument(String key);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -116,5 +117,18 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   @override
   Future<void> unlinkProvider(String provider) async {
     await dio.delete<void>('/api/auth/link/$provider');
+  }
+
+  @override
+  Future<String> getDocument(String key) async {
+    final response = await dio.get<Map<String, Object?>>('/api/documents/key/$key');
+    final root = response.data ?? {};
+    final data = root['data'];
+    if (data is Map<String, Object?>) {
+      return (data['content'] as String?) ?? '';
+    } else if (data is String) {
+      return data;
+    }
+    return '';
   }
 }

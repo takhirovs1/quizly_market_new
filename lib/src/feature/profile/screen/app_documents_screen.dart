@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:ui/ui.dart';
 
@@ -89,18 +90,67 @@ class _AppDocumentsScreenState extends AppDocumentsState {
       child: TabBarView(
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          Padding(
-            padding: .only(bottom: isMobile ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0),
-            child: MarkdownTab(data: kTermsOfUseMarkdown, styleSheet: markdownStyle(context)),
+          _buildTabContent(
+            isLoading: isLoadingTerms,
+            error: termsError,
+            data: termsOfUseMarkdown,
+            onRetry: loadDocuments,
+            isMobile: isMobile,
+            context: context,
           ),
-          Padding(
-            padding: .only(bottom: isMobile ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0),
-            child: MarkdownTab(data: kPrivacyPolicyMarkdown, styleSheet: markdownStyle(context)),
+          _buildTabContent(
+            isLoading: isLoadingPrivacy,
+            error: privacyError,
+            data: privacyPolicyMarkdown,
+            onRetry: loadDocuments,
+            isMobile: isMobile,
+            context: context,
           ),
         ],
       ),
     ),
   ];
+
+  Widget _buildTabContent({
+    required bool isLoading,
+    required String? error,
+    required String data,
+    required VoidCallback onRetry,
+    required bool isMobile,
+    required BuildContext context,
+  }) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
+    if (error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              EmptyTestWidget(title: context.x.l10n.errorOccurred, description: context.x.l10n.somethingWentWrong),
+              // const SizedBox(height: 16),
+              // CupertinoButton(
+              //   color: context.x.colors.primary,
+              //   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              //   borderRadius: BorderRadius.circular(10),
+              //   onPressed: onRetry,
+              //   child: Text(
+              //     context.x.l10n.retry,
+              //     style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white),
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: EdgeInsets.only(bottom: isMobile ? context.telegramWebApp.safeAreaInset.bottom.toDouble() : 0),
+      child: MarkdownTab(data: data, styleSheet: markdownStyle(context)),
+    );
+  }
 }
 
 class MarkdownTab extends StatelessWidget {
@@ -111,7 +161,7 @@ class MarkdownTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-    padding: const .all(16),
+    padding: const EdgeInsets.all(16),
     child: MarkdownBody(data: data, selectable: true, styleSheet: styleSheet),
   );
 }
