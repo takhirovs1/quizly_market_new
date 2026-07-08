@@ -53,13 +53,15 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
       final response = await AuthService.signInWithGoogle();
       if (response == null) return;
       await profileRepository.linkGoogle(response.idToken);
-      await loadProfile();
+      emit(state.copyWith(status: StateStatus.loading));
+      final user = await profileRepository.getProfile();
+      emit(state.copyWith(status: StateStatus.success, user: user));
     },
     errorHandler: (emit, error, stackTrace) {
       if (error is DioException && error.response?.statusCode == 409) {
         emit(state.copyWith(linkErrorCount: state.linkErrorCount + 1));
       } else {
-        emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+        emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
       }
     },
   );
@@ -69,14 +71,28 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
       final response = await AuthService.signInWithApple();
       if (response == null) return;
       await profileRepository.linkApple(response.idToken);
-      await loadProfile();
+      emit(state.copyWith(status: StateStatus.loading));
+      final user = await profileRepository.getProfile();
+      emit(state.copyWith(status: StateStatus.success, user: user));
     },
     errorHandler: (emit, error, stackTrace) {
       if (error is DioException && error.response?.statusCode == 409) {
         emit(state.copyWith(linkErrorCount: state.linkErrorCount + 1));
       } else {
-        emit(state.copyWith(status: .error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+        emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
       }
+    },
+  );
+
+  Future<void> unlinkProvider(String provider) => handle<void>(
+    (emit) async {
+      await profileRepository.unlinkProvider(provider);
+      emit(state.copyWith(status: StateStatus.loading));
+      final user = await profileRepository.getProfile();
+      emit(state.copyWith(status: StateStatus.success, user: user));
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 

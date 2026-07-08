@@ -220,14 +220,52 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onArchivedTestsPressed() => context.octopus.push(Routes.archive);
   void onTeacherPressed() {}
   void onGoogleConnectPressed() {
-    profileCubit.linkGoogle();
+    final user = profileCubit.state.user;
+    if (user != null && user.isGoogleLinked) {
+      _showUnlinkConfirmation('google', 'Google');
+    } else {
+      profileCubit.linkGoogle();
+    }
   }
 
   void onAppleConnectPressed() {
-    profileCubit.linkApple();
+    final user = profileCubit.state.user;
+    if (user != null && user.isAppleLinked) {
+      _showUnlinkConfirmation('apple', 'Apple');
+    } else {
+      profileCubit.linkApple();
+    }
   }
 
-  void onTelegramConnectPressed() {}
+  void onTelegramConnectPressed() {
+    final user = profileCubit.state.user;
+    if (user != null && user.isTelegramLinked) {
+      _showUnlinkConfirmation('telegram', 'Telegram');
+    }
+  }
+
+  void _showUnlinkConfirmation(String providerKey, String providerName) {
+    context.telegramWebApp.hapticImpact(.light);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: dialogContext.x.colors.transparent,
+        child: Center(
+          child: LogoutDialog(
+            title: dialogContext.x.l10n.unlinkTitle(providerName),
+            description: dialogContext.x.l10n.unlinkDescription(providerName),
+            cancelButtonText: dialogContext.x.l10n.cancel,
+            successButtonText: dialogContext.x.l10n.unlink,
+            onCancelButtonPressed: () => dialogContext.bottomSheetPop(),
+            onSuccessButtonPressed: () async {
+              dialogContext.bottomSheetPop();
+              await profileCubit.unlinkProvider(providerKey);
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
   void onSetHomePressed() {
     context.telegramWebApp.hapticImpact(.light);
@@ -286,19 +324,21 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       Assets.lib.vectors.google.svg(package: Constant.packageUi),
       isConnected: user?.isGoogleLinked ?? false,
       isComingSoon: user != null && !user.isGoogleLinked,
+      canTapWhenConnected: true,
       connectedText: (c) => c.x.l10n.accountLinked,
       comingSoonText: (c) => c.x.l10n.connectAccount,
     ),
-    if (kIsWeb || defaultTargetPlatform == .iOS || defaultTargetPlatform == .macOS)
+    if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)
       ProfileListRow.item(
         (c) => context.x.l10n.appleIdConnect,
         onAppleConnectPressed,
         Assets.lib.vectors.apple.svg(
           package: Constant.packageUi,
-          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          colorFilter: .mode(context.x.colors.profileIcon, BlendMode.srcIn),
         ),
         isConnected: user?.isAppleLinked ?? false,
         isComingSoon: user != null && !user.isAppleLinked,
+        canTapWhenConnected: true,
         connectedText: (c) => c.x.l10n.accountLinked,
         comingSoonText: (c) => c.x.l10n.connectAccount,
       ),
@@ -308,6 +348,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
       isConnected: user?.isTelegramLinked ?? false,
       isComingSoon: user != null && !user.isTelegramLinked,
+      canTapWhenConnected: true,
       connectedText: (c) => c.x.l10n.accountLinked,
       comingSoonText: (c) => c.x.l10n.connectAccount,
     ),
@@ -504,24 +545,26 @@ class ProfileListRow {
     bool isLogout = false,
     bool isComingSoon = false,
     bool isConnected = false,
+    bool canTapWhenConnected = false,
     ProfileTitleBuilder? comingSoonText,
     ProfileTitleBuilder? connectedText,
   }) => ProfileListRow._(
-    .item,
+    ProfileListRowType.item,
     titleBuilder: titleBuilder,
     onTap: onTap,
     leading: leading,
     isLogout: isLogout,
     isComingSoon: isComingSoon,
     isConnected: isConnected,
+    canTapWhenConnected: canTapWhenConnected,
     comingSoonText: comingSoonText,
     connectedText: connectedText,
   );
 
-  factory ProfileListRow.spacer(double height) => ProfileListRow._(.spacer, spacerHeight: height);
+  factory ProfileListRow.spacer(double height) => ProfileListRow._(ProfileListRowType.spacer, spacerHeight: height);
 
   factory ProfileListRow.header(ProfileTitleBuilder titleBuilder) =>
-      ProfileListRow._(.header, titleBuilder: titleBuilder);
+      ProfileListRow._(ProfileListRowType.header, titleBuilder: titleBuilder);
   const ProfileListRow._(
     this.type, {
     this.titleBuilder,
@@ -531,6 +574,7 @@ class ProfileListRow {
     this.isLogout = false,
     this.isComingSoon = false,
     this.isConnected = false,
+    this.canTapWhenConnected = false,
     this.comingSoonText,
     this.connectedText,
   });
@@ -543,6 +587,7 @@ class ProfileListRow {
   final bool isLogout;
   final bool isComingSoon;
   final bool isConnected;
+  final bool canTapWhenConnected;
   final ProfileTitleBuilder? comingSoonText;
   final ProfileTitleBuilder? connectedText;
 }

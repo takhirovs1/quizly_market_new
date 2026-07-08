@@ -23,6 +23,8 @@ abstract interface class IProfileRepository {
   Future<void> linkApple(String identityToken);
   Future<ReferralSummary> getReferralSummary();
   Future<ReferralListResponse> getReferrals({int limit = 20, int offset = 0});
+  Future<ReferralVerifyResponse> verifyReferral();
+  Future<void> unlinkProvider(String provider);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -103,5 +105,16 @@ final class ProfileRepositoryImpl implements IProfileRepository {
       queryParameters: {'limit': limit, 'offset': offset},
     );
     return ReferralListResponse.fromJson(response.data ?? {});
+  }
+
+  @override
+  Future<ReferralVerifyResponse> verifyReferral() async {
+    final response = await dio.get<Map<String, Object?>>('/api/referrals/verify');
+    return ReferralVerifyResponse.fromJson(response.data ?? {});
+  }
+
+  @override
+  Future<void> unlinkProvider(String provider) async {
+    await dio.delete<void>('/api/auth/link/$provider');
   }
 }

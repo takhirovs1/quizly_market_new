@@ -20,6 +20,7 @@ class ActionListTile extends StatefulWidget {
     this.isComingSoon = false,
     this.isConnected = false,
     this.isLogout = false,
+    this.canTapWhenConnected = false,
     super.key, // ignore: unused_element
   });
 
@@ -31,6 +32,7 @@ class ActionListTile extends StatefulWidget {
   final bool isComingSoon;
   final bool isConnected;
   final bool isLogout;
+  final bool canTapWhenConnected;
   final String comingSoonText;
   final String connectedText;
 
@@ -93,10 +95,10 @@ class _ActionListTileState extends ActionListTileState {
       );
     }
 
-    final showArrow = !widget.isLogout && !widget.isComingSoon && !widget.isConnected;
+    final showArrow = !widget.isLogout && !widget.isComingSoon && (!widget.isConnected || widget.canTapWhenConnected);
 
     return IgnorePointer(
-      ignoring: widget.isConnected,
+      ignoring: widget.isConnected && !widget.canTapWhenConnected,
       child: CupertinoButton(
         onPressed: widget.onPressed,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

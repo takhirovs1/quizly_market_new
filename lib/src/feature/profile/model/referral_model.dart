@@ -54,3 +54,41 @@ class ReferralListResponse {
   final int offset;
   final int total;
 }
+
+class ReferralVerifyData {
+  const ReferralVerifyData({
+    required this.referred,
+    this.referrerId,
+    this.referrerName,
+    this.referrerAvatar,
+    this.bonusAmount,
+    this.referredAt,
+  });
+
+  factory ReferralVerifyData.fromJson(Map<String, Object?> json) => ReferralVerifyData(
+    referred: json['referred'] as bool? ?? false,
+    referrerId: json['referrer_id'] as String?,
+    referrerName: json['referrer_name'] as String?,
+    referrerAvatar: json['referrer_avatar'] as String?,
+    bonusAmount: json['bonus_amount'].toIntOrNull,
+    referredAt: json['referred_at'].toDateTimeOrNull,
+  );
+
+  final bool referred;
+  final String? referrerId;
+  final String? referrerName;
+  final String? referrerAvatar;
+  final int? bonusAmount;
+  final DateTime? referredAt;
+}
+
+class ReferralVerifyResponse {
+  const ReferralVerifyResponse({required this.data});
+
+  factory ReferralVerifyResponse.fromJson(Map<String, Object?> json) {
+    final dataMap = json['data'] as Map<String, Object?>? ?? {};
+    return ReferralVerifyResponse(data: ReferralVerifyData.fromJson(dataMap));
+  }
+
+  final ReferralVerifyData data;
+}

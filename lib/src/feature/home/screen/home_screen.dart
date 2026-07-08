@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
 import '../../my_tests/screen/my_tests_screen.dart';
 import '../../profile/screen/profile_screen.dart';
 import '../../recommendation/screen/recommendation_screen.dart';
@@ -93,19 +94,23 @@ class _HomeScreenState extends HomeScreenState {
     final referralCode = localSource.referralCode;
     if (referralCode.isEmpty) return;
 
-    // Verify via API: load current user's profile and compare
-    // referral codes to ensure user didn't click their own link.
     context.x.dependencies.repository.profileRepository
-        .getProfile()
-        .then((user) {
+        .verifyReferral()
+        .then((response) {
           if (!mounted) return;
           // Clear saved code regardless of outcome — it's a one-time flag.
           localSource.setReferralCode('');
 
-          // If the saved code matches the user's own referral code → self-referral, skip.
-          if (user.referralCode != null && user.referralCode == referralCode) return;
+          if (!response.data.referred) return;
 
-          // Another user's link was used → a signup bonus was credited → show the dialog.
+          final bonusAmount = response.data.bonusAmount;
+          var title = context.x.l10n.referralBonusTitle;
+          if (bonusAmount != null && bonusAmount > 0) {
+            final formattedAmount = bonusAmount.splitPerThree;
+            title = title.replaceAll('1 000', formattedAmount).replaceAll('1,000', formattedAmount);
+          }
+
+          // Show the dialog.
           showDialog<void>(
             context: context,
             barrierDismissible: false,
@@ -113,7 +118,7 @@ class _HomeScreenState extends HomeScreenState {
               backgroundColor: context.x.colors.transparent,
               child: Center(
                 child: SuccessDialog(
-                  title: context.x.l10n.referralBonusTitle,
+                  title: title,
                   description: context.x.l10n.referralBonusDescription,
                   successButtonText: context.x.l10n.understand,
                   onSuccessButtonPressed: () {

@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/util/state_status.dart';
 import '../bloc/profile_cubit.dart';
 import '../state/profile_screen_state.dart';
 import '../widget/profile_payment_card.dart';
@@ -25,16 +26,29 @@ class _ProfileScreenState extends ProfileScreenState {
       statusBarBrightness: Theme.of(context).brightness,
     ),
     child: BlocConsumer<ProfileCubit, ProfileState>(
-      listenWhen: (prev, curr) => curr.linkErrorCount != prev.linkErrorCount,
+      listenWhen: (prev, curr) =>
+          curr.linkErrorCount != prev.linkErrorCount ||
+          (curr.status == StateStatus.error && prev.status != StateStatus.error),
       listener: (context, state) {
-        context.x.showNotification(
-          message: context.x.l10n.accountAlreadyLinked,
-          isError: true,
-          top: switch (context.telegramWebApp.isSupported) {
-            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
-            false => MediaQuery.paddingOf(context).top + 56,
-          },
-        );
+        if (state.status == StateStatus.error && state.errorMessage != null) {
+          context.x.showNotification(
+            message: state.errorMessage!,
+            isError: true,
+            top: switch (context.telegramWebApp.isSupported) {
+              true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+              false => MediaQuery.paddingOf(context).top + 56,
+            },
+          );
+        } else {
+          context.x.showNotification(
+            message: context.x.l10n.accountAlreadyLinked,
+            isError: true,
+            top: switch (context.telegramWebApp.isSupported) {
+              true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+              false => MediaQuery.paddingOf(context).top + 56,
+            },
+          );
+        }
       },
       builder: (context, state) {
         final user = state.user;
@@ -326,6 +340,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                 isComingSoon: row.isComingSoon,
                                 isConnected: row.isConnected,
                                 isLogout: row.isLogout,
+                                canTapWhenConnected: row.canTapWhenConnected,
                                 comingSoonText: row.comingSoonText?.call(context) ?? '',
                                 connectedText: row.connectedText?.call(context) ?? '',
                               ),
@@ -539,6 +554,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                         isComingSoon: row.isComingSoon,
                                         isConnected: row.isConnected,
                                         isLogout: row.isLogout,
+                                        canTapWhenConnected: row.canTapWhenConnected,
                                         comingSoonText: row.comingSoonText?.call(context) ?? '',
                                         connectedText: row.connectedText?.call(context) ?? '',
                                       ),
