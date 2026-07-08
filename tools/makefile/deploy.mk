@@ -147,3 +147,6 @@ macos: pre-build ## Build macOS app for App Store (archive via Xcode)
 	@$(FLUTTER) build macos --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=macos
 	@echo "✅ Build done. Now open Xcode to Archive and upload:"
 	@open macos/Runner.xcworkspace
+
+
+	
