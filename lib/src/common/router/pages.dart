@@ -134,7 +134,7 @@ enum Routes with OctopusRoute {
       child: const PaymentHistoryScreen(),
     ),
     .appInfo => const AppInfoScreen(),
-    .appDocuments => const AppDocumentsScreen(),
+    Routes.appDocuments => AppDocumentsScreen(initialIndex: int.tryParse(node.arguments['index'] ?? '') ?? 0),
     .testMode => BlocProvider(
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:ui/ui.dart';
 
@@ -6,7 +5,9 @@ import '../../../common/extension/context_extension.dart';
 import '../state/app_documents_state.dart';
 
 class AppDocumentsScreen extends StatefulWidget {
-  const AppDocumentsScreen({super.key});
+  const AppDocumentsScreen({this.initialIndex = 0, super.key});
+
+  final int initialIndex;
 
   @override
   State<AppDocumentsScreen> createState() => _AppDocumentsScreenState();
@@ -19,6 +20,7 @@ class _AppDocumentsScreenState extends AppDocumentsState {
 
     return DefaultTabController(
       length: 2,
+      initialIndex: widget.initialIndex,
       child: Scaffold(
         backgroundColor: context.x.colors.scaffoldBackground,
         appBar: QuizAppBar(
