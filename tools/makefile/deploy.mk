@@ -59,7 +59,7 @@ apk-prod: pre-build ## Build Android APK (production config)
 
 .PHONY: aab
 aab: pre-build ## Build Android AAB
-	@$(FLUTTER) build appbundle --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=android
+	@$(FLUTTER) build appbundle --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=android
 	@open build/app/outputs/bundle/release/
 
 # ─────────── BUILD COMMANDS FOR iOS ───────────
