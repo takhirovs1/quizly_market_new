@@ -12,6 +12,7 @@ import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
 import '../../feature/profile/screen/app_documents_screen.dart';
+import '../../feature/profile/screen/edit_profile_screen.dart';
 import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/archive_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
@@ -57,7 +58,8 @@ enum Routes with OctopusRoute {
   supportChat('supportChat', title: 'Support Chat'),
   testSolving('testSolving', title: 'Test Solving'),
   archive('archive', title: 'Archive'),
-  session('session', title: 'Sessions');
+  session('session', title: 'Sessions'),
+  editProfile('editProfile', title: 'Edit Profile');
 
   const Routes(this.name, {this.title});
 
@@ -184,6 +186,10 @@ enum Routes with OctopusRoute {
       create: (context) =>
           AuthCubit(authenticationRepository: context.x.dependencies.repository.authenticationRepository),
       child: const SessionScreen(),
+    ),
+    Routes.editProfile => BlocProvider(
+      create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
+      child: const EditProfileScreen(),
     ),
   };
 }

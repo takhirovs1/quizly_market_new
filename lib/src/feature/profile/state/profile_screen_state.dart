@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -219,10 +220,17 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onArchivedTestsPressed() => context.octopus.push(Routes.archive);
   void onTeacherPressed() {}
+  int _linkedProvidersCount(ProfileModelResponse? user) {
+    if (user == null) return 0;
+    return (user.isGoogleLinked ? 1 : 0) + (user.isAppleLinked ? 1 : 0) + (user.isTelegramLinked ? 1 : 0);
+  }
+
   void onGoogleConnectPressed() {
     final user = profileCubit.state.user;
     if (user != null && user.isGoogleLinked) {
-      _showUnlinkConfirmation('google', 'Google');
+      if (_linkedProvidersCount(user) >= 2) {
+        _showUnlinkConfirmation('google', 'Google');
+      }
     } else {
       profileCubit.linkGoogle();
     }
@@ -231,17 +239,16 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   void onAppleConnectPressed() {
     final user = profileCubit.state.user;
     if (user != null && user.isAppleLinked) {
-      _showUnlinkConfirmation('apple', 'Apple');
+      if (_linkedProvidersCount(user) >= 2) {
+        _showUnlinkConfirmation('apple', 'Apple');
+      }
     } else {
       profileCubit.linkApple();
     }
   }
 
   void onTelegramConnectPressed() {
-    final user = profileCubit.state.user;
-    if (user != null && user.isTelegramLinked) {
-      _showUnlinkConfirmation('telegram', 'Telegram');
-    }
+    // Telegram cannot be unlinked
   }
 
   void _showUnlinkConfirmation(String providerKey, String providerName) {
@@ -274,144 +281,158 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
 
   void onTermsPressed() => context.octopus.push(Routes.appDocuments);
 
-  List<ProfileListRow> menuRowsFor(ProfileModelResponse? user) => [
-    ProfileListRow.header((c) => context.x.l10n.profileMain),
-    ProfileListRow.item(
-      (c) => context.x.l10n.topUpBalance,
-      onTopUpBalancePressed,
-      Assets.lib.vectors.topUpBalance.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-      ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.referral,
-      onReferralPressed,
-      Assets.lib.vectors.referral.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-      ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.paymentHistory,
-      onPaymentHistoryPressed,
-      Assets.lib.vectors.historyTransaction.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-      ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.archivedTests,
-      onArchivedTestsPressed,
-      Assets.lib.vectors.documents.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-      ),
-    ),
-    // ProfileListRow.item(
-    //   (c) => context.x.l10n.teacher,
-    //   onTeacherPressed,
-    //   Assets.lib.vectors.teacherSwap.svg(
-    //     package: Constant.packageUi,
-    //     colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-    //   ),
-    // ),
-    ProfileListRow.spacer(16),
-    ProfileListRow.header((c) => context.x.l10n.integrations),
-    ProfileListRow.item(
-      (c) => context.x.l10n.googleConnect,
-      onGoogleConnectPressed,
-      Assets.lib.vectors.google.svg(package: Constant.packageUi),
-      isConnected: user?.isGoogleLinked ?? false,
-      isComingSoon: user != null && !user.isGoogleLinked,
-      canTapWhenConnected: true,
-      connectedText: (c) => c.x.l10n.accountLinked,
-      comingSoonText: (c) => c.x.l10n.connectAccount,
-    ),
-    if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)
+  void onUpdateProfilePressed() {
+    context.octopus.push(Routes.editProfile);
+  }
+
+  List<ProfileListRow> menuRowsFor(ProfileModelResponse? user) {
+    final linkedCount = _linkedProvidersCount(user);
+    final canUnlinkSocial = linkedCount >= 2;
+
+    return [
+      ProfileListRow.header((c) => context.x.l10n.profileMain),
       ProfileListRow.item(
-        (c) => context.x.l10n.appleIdConnect,
-        onAppleConnectPressed,
-        Assets.lib.vectors.apple.svg(
-          package: Constant.packageUi,
-          colorFilter: .mode(context.x.colors.profileIcon, BlendMode.srcIn),
-        ),
-        isConnected: user?.isAppleLinked ?? false,
-        isComingSoon: user != null && !user.isAppleLinked,
-        canTapWhenConnected: true,
-        connectedText: (c) => c.x.l10n.accountLinked,
-        comingSoonText: (c) => c.x.l10n.connectAccount,
+        (c) => context.x.l10n.updateProfile,
+        onUpdateProfilePressed,
+        Icon(CupertinoIcons.pencil_circle, color: context.x.colors.profileIcon),
       ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.telegramConnect,
-      onTelegramConnectPressed,
-      Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
-      isConnected: user?.isTelegramLinked ?? false,
-      isComingSoon: user != null && !user.isTelegramLinked,
-      canTapWhenConnected: true,
-      connectedText: (c) => c.x.l10n.accountLinked,
-      comingSoonText: (c) => c.x.l10n.connectAccount,
-    ),
-    ProfileListRow.spacer(16),
-    ProfileListRow.header((c) => context.x.l10n.appearance),
-    ProfileListRow.item(
-      (c) => context.x.l10n.language,
-      onLanguagePressed,
-      Assets.lib.vectors.language.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-      ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.theme,
-      onThemePressed,
-      Assets.lib.vectors.themeIcon.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
-      ),
-    ),
-    if (context.telegramWebApp.isSupported && context.x.isMobile)
       ProfileListRow.item(
-        (c) => context.x.l10n.installOnHomeScreen,
-        onSetHomePressed,
-        Assets.lib.vectors.setHome.svg(
+        (c) => context.x.l10n.topUpBalance,
+        onTopUpBalancePressed,
+        Assets.lib.vectors.topUpBalance.svg(
           package: Constant.packageUi,
           colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
         ),
       ),
-    ProfileListRow.spacer(16),
-    ProfileListRow.header((c) => context.x.l10n.other),
-    ProfileListRow.item(
-      (c) => context.x.l10n.help,
-      onHelpPressed,
-      Assets.lib.vectors.support.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ProfileListRow.item(
+        (c) => context.x.l10n.referral,
+        onReferralPressed,
+        Assets.lib.vectors.referral.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
       ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.documents,
-      onTermsPressed,
-      Assets.lib.vectors.documents.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ProfileListRow.item(
+        (c) => context.x.l10n.paymentHistory,
+        onPaymentHistoryPressed,
+        Assets.lib.vectors.historyTransaction.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
       ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.app_info,
-      onAppInfoPressed,
-      Assets.lib.vectors.informationApp.svg(
-        package: Constant.packageUi,
-        colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      ProfileListRow.item(
+        (c) => context.x.l10n.archivedTests,
+        onArchivedTestsPressed,
+        Assets.lib.vectors.documents.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
       ),
-    ),
-    ProfileListRow.item(
-      (c) => context.x.l10n.logout,
-      onLogoutPressed,
-      Assets.lib.vectors.logout.svg(package: Constant.packageUi),
-      isLogout: true,
-    ),
-  ];
+      // ProfileListRow.item(
+      //   (c) => context.x.l10n.teacher,
+      //   onTeacherPressed,
+      //   Assets.lib.vectors.teacherSwap.svg(
+      //     package: Constant.packageUi,
+      //     colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      //   ),
+      // ),
+      ProfileListRow.spacer(16),
+      ProfileListRow.header((c) => context.x.l10n.integrations),
+      ProfileListRow.item(
+        (c) => context.x.l10n.googleConnect,
+        onGoogleConnectPressed,
+        Assets.lib.vectors.google.svg(package: Constant.packageUi),
+        isConnected: user?.isGoogleLinked ?? false,
+        isComingSoon: user != null && !user.isGoogleLinked,
+        canTapWhenConnected: canUnlinkSocial,
+        connectedText: (c) => c.x.l10n.accountLinked,
+        comingSoonText: (c) => c.x.l10n.connectAccount,
+      ),
+      if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)
+        ProfileListRow.item(
+          (c) => context.x.l10n.appleIdConnect,
+          onAppleConnectPressed,
+          Assets.lib.vectors.apple.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, BlendMode.srcIn),
+          ),
+          isConnected: user?.isAppleLinked ?? false,
+          isComingSoon: user != null && !user.isAppleLinked,
+          canTapWhenConnected: canUnlinkSocial,
+          connectedText: (c) => c.x.l10n.accountLinked,
+          comingSoonText: (c) => c.x.l10n.connectAccount,
+        ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.telegramConnect,
+        onTelegramConnectPressed,
+        Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
+        isConnected: user?.isTelegramLinked ?? false,
+        isComingSoon: user != null && !user.isTelegramLinked,
+        canTapWhenConnected: false,
+        connectedText: (c) => c.x.l10n.accountLinked,
+        comingSoonText: (c) => c.x.l10n.connectAccount,
+      ),
+      ProfileListRow.spacer(16),
+      ProfileListRow.header((c) => context.x.l10n.appearance),
+      ProfileListRow.item(
+        (c) => context.x.l10n.language,
+        onLanguagePressed,
+        Assets.lib.vectors.language.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.theme,
+        onThemePressed,
+        Assets.lib.vectors.themeIcon.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      if (context.telegramWebApp.isSupported && context.x.isMobile)
+        ProfileListRow.item(
+          (c) => context.x.l10n.installOnHomeScreen,
+          onSetHomePressed,
+          Assets.lib.vectors.setHome.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
+        ),
+      ProfileListRow.spacer(16),
+      ProfileListRow.header((c) => context.x.l10n.other),
+      ProfileListRow.item(
+        (c) => context.x.l10n.help,
+        onHelpPressed,
+        Assets.lib.vectors.support.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.documents,
+        onTermsPressed,
+        Assets.lib.vectors.documents.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.app_info,
+        onAppInfoPressed,
+        Assets.lib.vectors.informationApp.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.logout,
+        onLogoutPressed,
+        Assets.lib.vectors.logout.svg(package: Constant.packageUi),
+        isLogout: true,
+      ),
+    ];
+  }
 
   // Actions
 

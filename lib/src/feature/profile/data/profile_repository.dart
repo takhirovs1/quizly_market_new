@@ -26,6 +26,10 @@ abstract interface class IProfileRepository {
   Future<ReferralVerifyResponse> verifyReferral();
   Future<void> unlinkProvider(String provider);
   Future<String> getDocument(String key);
+  Future<ProfileModelResponse> uploadAvatar(String filePath);
+  Future<void> updateName(String name);
+  Future<void> deleteAccount();
+  Future<void> deleteArchiveTest(String testId);
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -130,5 +134,31 @@ final class ProfileRepositoryImpl implements IProfileRepository {
       return data;
     }
     return '';
+  }
+
+  @override
+  Future<ProfileModelResponse> uploadAvatar(String filePath) async {
+    final formData = FormData.fromMap({
+      'avatar': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+    });
+    final response = await dio.put<Map<String, Object?>>('/api/users/me/avatar', data: formData);
+    final root = response.data ?? {};
+    final data = root['data'] as Map<String, Object?>? ?? root;
+    return ProfileModelResponse.fromJson(data);
+  }
+
+  @override
+  Future<void> updateName(String name) async {
+    await dio.put<void>('/api/users/me', data: {'name': name});
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    await dio.delete<void>('/api/users/me');
+  }
+
+  @override
+  Future<void> deleteArchiveTest(String testId) async {
+    await dio.delete<void>('/api/payments/tests/$testId/archive');
   }
 }

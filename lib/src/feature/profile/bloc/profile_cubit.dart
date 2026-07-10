@@ -151,11 +151,19 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     },
   );
 
-  void deleteArchiveTest(String testId) => emit(
-    state.copyWith(
-      archiveTests: state.archiveTests.where((t) => t.id != testId).toList(),
-      archiveTotal: state.archiveTotal - 1,
-    ),
+  Future<void> deleteArchiveTest(String testId) => handle<void>(
+    (emit) async {
+      await profileRepository.deleteArchiveTest(testId);
+      emit(
+        state.copyWith(
+          archiveTests: state.archiveTests.where((t) => t.id != testId).toList(),
+          archiveTotal: state.archiveTotal - 1,
+        ),
+      );
+    },
+    errorHandler: (emit, error, stackTrace) {
+      emit(state.copyWith(archiveStatus: .error, archiveErrorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+    },
   );
 
   Future<void> getTransactions({bool loadMore = false}) => handle<void>(
@@ -245,5 +253,36 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     errorHandler: (emit, error, stackTrace) {
       emit(state.copyWith(referralListStatus: StateStatus.error));
     },
+  );
+
+  Future<void> updateName(String name) => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: .loading));
+      await profileRepository.updateName(name);
+      final user = await profileRepository.getProfile();
+      emit(state.copyWith(status: StateStatus.success, user: user));
+    },
+    errorHandler: (emit, error, stackTrace) =>
+        emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error))),
+  );
+
+  Future<void> uploadAvatar(String filePath) => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: StateStatus.loading));
+      final user = await profileRepository.uploadAvatar(filePath);
+      emit(state.copyWith(status: StateStatus.success, user: user));
+    },
+    errorHandler: (emit, error, stackTrace) =>
+        emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error))),
+  );
+
+  Future<void> deleteAccount() => handle<void>(
+    (emit) async {
+      emit(state.copyWith(status: StateStatus.loading));
+      await profileRepository.deleteAccount();
+      emit(state.copyWith(status: StateStatus.success));
+    },
+    errorHandler: (emit, error, stackTrace) =>
+        emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error))),
   );
 }
