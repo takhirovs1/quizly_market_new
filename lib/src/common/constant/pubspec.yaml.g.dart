@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.0+181',
+    representation: r'1.0.0+195',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.0+181',
+    canonical: r'1.0.0+195',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'181'],
+    build: <String>[r'195'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
     7,
-    8,
-    7,
-    56,
-    0,
-    8,
-    608,
+    13,
+    16,
+    58,
+    5,
+    992,
+    388,
   );
 
   /// Name
@@ -440,13 +440,13 @@ sealed class Pubspec {
     'thunder': r'^0.2.5',
     'dio': r'^5.9.1',
     'connectivity_plus': r'^7.0.0',
-    'firebase_core': r'^4.4.0',
-    'firebase_messaging': r'^16.1.1',
-    'firebase_remote_config': r'^6.1.4',
-    'firebase_crashlytics': r'^5.0.7',
+    'firebase_core': r'4.11.0',
+    'firebase_messaging': r'16.4.1',
+    'firebase_remote_config': r'6.5.3',
+    'firebase_crashlytics': r'5.2.4',
     'sign_in_with_apple': r'^7.0.1',
     'google_sign_in': r'^7.2.0',
-    'firebase_auth': r'^6.1.4',
+    'firebase_auth': r'6.5.4',
     'shelf': r'^1.4.2',
     'crypto': r'^3.0.5',
     'flutter_local_notifications': r'^20.1.0',
@@ -460,6 +460,7 @@ sealed class Pubspec {
     'flutter_markdown': r'^0.7.7+1',
     'image_picker': r'^1.2.2',
     'file_picker': r'^11.0.2',
+    'flutter_math_fork': r'^0.7.4',
   };
 
   /// Developer dependencies

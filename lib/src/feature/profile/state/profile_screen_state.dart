@@ -362,16 +362,17 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
           connectedText: (c) => c.x.l10n.accountLinked,
           comingSoonText: (c) => c.x.l10n.connectAccount,
         ),
-      ProfileListRow.item(
-        (c) => context.x.l10n.telegramConnect,
-        onTelegramConnectPressed,
-        Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
-        isConnected: user?.isTelegramLinked ?? false,
-        isComingSoon: user != null && !user.isTelegramLinked,
-        canTapWhenConnected: false,
-        connectedText: (c) => c.x.l10n.accountLinked,
-        comingSoonText: (c) => c.x.l10n.connectAccount,
-      ),
+      if (user == null || user.isTelegramLinked || !(user.isGoogleLinked || user.isAppleLinked))
+        ProfileListRow.item(
+          (c) => context.x.l10n.telegramConnect,
+          onTelegramConnectPressed,
+          Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
+          isConnected: user?.isTelegramLinked ?? false,
+          isComingSoon: user != null && !user.isTelegramLinked,
+          canTapWhenConnected: false,
+          connectedText: (c) => c.x.l10n.accountLinked,
+          comingSoonText: (c) => c.x.l10n.connectAccount,
+        ),
       ProfileListRow.spacer(16),
       ProfileListRow.header((c) => context.x.l10n.appearance),
       ProfileListRow.item(

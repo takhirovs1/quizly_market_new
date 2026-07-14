@@ -26,10 +26,11 @@ abstract interface class IProfileRepository {
   Future<ReferralVerifyResponse> verifyReferral();
   Future<void> unlinkProvider(String provider);
   Future<String> getDocument(String key);
-  Future<ProfileModelResponse> uploadAvatar(String filePath);
+  Future<ProfileModelResponse> uploadAvatar(List<int> bytes, String fileName);
   Future<void> updateName(String name);
   Future<void> deleteAccount();
   Future<void> deleteArchiveTest(String testId);
+  Future<void> updateProfile({required String firstName, required String lastName, required String? gender});
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
@@ -75,7 +76,10 @@ final class ProfileRepositoryImpl implements IProfileRepository {
     );
     final root = response.data ?? {};
     final dataList = root['data'] as List<Object?>? ?? [];
-    final items = dataList.map((e) => TestModel.fromJson(e as Map<String, Object?>)).toList();
+    final items = dataList
+        .map((e) => TestModel.fromJson(e as Map<String, Object?>))
+        .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
+        .toList();
     final resolvedLimit = root['limit'].toIntOrNull ?? limit;
     final resolvedOffset = root['offset'].toIntOrNull ?? offset;
     final total = root['total'].toIntOrNull ?? 0;
@@ -137,10 +141,8 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   }
 
   @override
-  Future<ProfileModelResponse> uploadAvatar(String filePath) async {
-    final formData = FormData.fromMap({
-      'avatar': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
-    });
+  Future<ProfileModelResponse> uploadAvatar(List<int> bytes, String fileName) async {
+    final formData = FormData.fromMap({'avatar': MultipartFile.fromBytes(bytes, filename: fileName)});
     final response = await dio.put<Map<String, Object?>>('/api/users/me/avatar', data: formData);
     final root = response.data ?? {};
     final data = root['data'] as Map<String, Object?>? ?? root;
@@ -160,5 +162,10 @@ final class ProfileRepositoryImpl implements IProfileRepository {
   @override
   Future<void> deleteArchiveTest(String testId) async {
     await dio.delete<void>('/api/payments/tests/$testId/archive');
+  }
+
+  @override
+  Future<void> updateProfile({required String firstName, required String lastName, required String? gender}) async {
+    await dio.patch<void>('/api/users/me', data: {'first_name': firstName, 'last_name': lastName, 'gender': gender});
   }
 }

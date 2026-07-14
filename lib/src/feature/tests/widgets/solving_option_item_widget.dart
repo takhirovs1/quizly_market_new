@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 import '../../../common/extension/context_extension.dart';
 import '../../my_tests/models/demo_test_model.dart';
+import 'latex_text_widget.dart';
+import 'question_image_widget.dart';
 
 class SolvingOptionItemWidget extends StatelessWidget {
   const SolvingOptionItemWidget({
@@ -45,6 +46,9 @@ class SolvingOptionItemWidget extends StatelessWidget {
       }
     }
 
+    final hasImage = option.image != null && option.image!.isNotEmpty;
+    final hasText = option.text != null && option.text!.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       child: Material(
@@ -79,9 +83,19 @@ class SolvingOptionItemWidget extends StatelessWidget {
                 _buildIndicator(context, colors, isDark),
                 const SizedBox(width: 14),
                 Expanded(
-                  child: Text(
-                    option.text ?? '',
-                    style: context.x.textStyle.sfW500s14.copyWith(color: textColor, fontSize: 15.5, height: 1.4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (hasImage) ...[
+                        QuestionImageWidget(imageUrl: option.image!, height: 120, borderRadius: 8, fit: BoxFit.contain),
+                        if (hasText) const SizedBox(height: 8),
+                      ],
+                      if (hasText)
+                        LatexTextWidget(
+                          text: option.text!,
+                          style: context.x.textStyle.sfW500s14.copyWith(color: textColor, fontSize: 15.5, height: 1.4),
+                        ),
+                    ],
                   ),
                 ),
               ],
@@ -117,7 +131,7 @@ class SolvingOptionItemWidget extends StatelessWidget {
       width: 22,
       height: 22,
       decoration: BoxDecoration(
-        shape: .circle,
+        shape: BoxShape.circle,
         border: Border.all(
           color: isSelected ? context.x.colors.primary : context.x.colors.gray.withValues(alpha: 0.4),
           width: isSelected ? 6 : 2,

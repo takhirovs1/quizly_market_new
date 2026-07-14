@@ -2,7 +2,7 @@ name: quizly_market
 description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+181
+version: 1.0.0+195
 
 environment:
   sdk: ^3.10.9
@@ -55,14 +55,14 @@ dependencies:
   connectivity_plus: ^7.0.0
 
   # firebase
-  firebase_core: ^4.4.0
-  firebase_messaging: ^16.1.1
-  firebase_remote_config: ^6.1.4
-  firebase_crashlytics: ^5.0.7
+  firebase_core: 4.11.0
+  firebase_messaging: 16.4.1
+  firebase_remote_config: 6.5.3
+  firebase_crashlytics: 5.2.4
 
   sign_in_with_apple: ^7.0.1
   google_sign_in: ^7.2.0
-  firebase_auth: ^6.1.4
+  firebase_auth: 6.5.4
   shelf: ^1.4.2
   crypto: ^3.0.5
 
@@ -81,6 +81,7 @@ dependencies:
   flutter_markdown: ^0.7.7+1
   image_picker: ^1.2.2
   file_picker: ^11.0.2
+  flutter_math_fork: ^0.7.4
 
 dev_dependencies:
   flutter_test:

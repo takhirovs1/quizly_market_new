@@ -106,17 +106,60 @@ class _EditProfileScreenState extends EditProfileState {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
 
-                    // Name editing field
-                    AppTextField(title: context.x.l10n.fullName, controller: nameController),
-                    const SizedBox(height: 24),
+                    // First name field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.x.l10n.firstName, style: textStyle.sfW500s14.copyWith(color: colors.text)),
+                        const SizedBox(height: 8),
+                        AppTextField(title: context.x.l10n.firstName, controller: firstNameController),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
 
-                    // Save Button
-                    CustomButton(
-                      title: context.x.l10n.save,
-                      onTap: onSavePressed,
-                      isLoading: state.status == StateStatus.loading,
+                    // Last name field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.x.l10n.lastName, style: textStyle.sfW500s14.copyWith(color: colors.text)),
+                        const SizedBox(height: 8),
+                        AppTextField(title: context.x.l10n.lastName, controller: lastNameController),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Username field (Read-only)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.x.l10n.username, style: textStyle.sfW500s14.copyWith(color: colors.text)),
+                        const SizedBox(height: 8),
+                        AppTextField(title: context.x.l10n.username, controller: usernameController, readOnly: true),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Gender selection
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.x.l10n.gender, style: textStyle.sfW500s14.copyWith(color: colors.text)),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: onGenderPressed,
+                          behavior: HitTestBehavior.opaque,
+                          child: IgnorePointer(
+                            child: AppTextField(
+                              title: context.x.l10n.gender,
+                              controller: genderController,
+                              readOnly: true,
+                              suffixWidget: Icon(CupertinoIcons.chevron_down, size: 16, color: colors.text),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -127,10 +170,19 @@ class _EditProfileScreenState extends EditProfileState {
             minimum: const EdgeInsets.only(bottom: 16),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: CupertinoButton(
-                onPressed: onDeleteAccountPressed,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(context.x.l10n.deleteAccount, style: textStyle.sfW600s16.copyWith(color: colors.error)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CustomButton(
+                    title: context.x.l10n.deleteAccount,
+                    onTap: onDeleteAccountPressed,
+                    color: colors.error,
+                    isOutline: true,
+                  ),
+                  const SizedBox(height: 8),
+                  CustomButton(title: context.x.l10n.save, onTap: onSavePressed, isLoading: isSaving),
+                ],
               ),
             ),
           ),

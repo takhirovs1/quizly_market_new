@@ -266,10 +266,10 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
         emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error))),
   );
 
-  Future<void> uploadAvatar(String filePath) => handle<void>(
+  Future<void> uploadAvatar(List<int> bytes, String fileName) => handle<void>(
     (emit) async {
       emit(state.copyWith(status: StateStatus.loading));
-      final user = await profileRepository.uploadAvatar(filePath);
+      final user = await profileRepository.uploadAvatar(bytes, fileName);
       emit(state.copyWith(status: StateStatus.success, user: user));
     },
     errorHandler: (emit, error, stackTrace) =>
@@ -285,4 +285,16 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
     errorHandler: (emit, error, stackTrace) =>
         emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error))),
   );
+
+  Future<void> updateProfile({required String firstName, required String lastName, required String? gender}) =>
+      handle<void>(
+        (emit) async {
+          emit(state.copyWith(status: StateStatus.loading));
+          await profileRepository.updateProfile(firstName: firstName, lastName: lastName, gender: gender);
+          final user = await profileRepository.getProfile();
+          emit(state.copyWith(status: StateStatus.success, user: user));
+        },
+        errorHandler: (emit, error, stackTrace) =>
+            emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error))),
+      );
 }

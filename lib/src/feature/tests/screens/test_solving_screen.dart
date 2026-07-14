@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
-import '../../../common/constant/config.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/util/app_enum.dart';
 import '../../my_tests/models/demo_test_model.dart';
@@ -12,6 +11,8 @@ import '../bloc/test_view.dart';
 import '../model/test_route_arguments.dart';
 import '../state/test_solving_screen_state.dart';
 import '../widgets/solving_option_item_widget.dart';
+import '../widgets/latex_text_widget.dart';
+import '../widgets/question_image_widget.dart';
 import '../widgets/test_mode_shimmer.dart';
 
 class TestSolvingScreen extends StatefulWidget {
@@ -318,32 +319,11 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
                                   ),
                                   if (question.image != null && question.image!.isNotEmpty) ...[
                                     const SizedBox(height: 16),
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Builder(
-                                        builder: (context) {
-                                          var imageUrl = question.image!;
-                                          if (!imageUrl.startsWith('http') && Config.apiBaseUrl.isNotEmpty) {
-                                            final base = Config.apiBaseUrl.endsWith('/')
-                                                ? Config.apiBaseUrl.substring(0, Config.apiBaseUrl.length - 1)
-                                                : Config.apiBaseUrl;
-                                            final path = imageUrl.startsWith('/') ? imageUrl : '/$imageUrl';
-                                            imageUrl = '$base$path';
-                                          }
-                                          return Image.network(
-                                            imageUrl,
-                                            width: double.infinity,
-                                            height: 200,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                                          );
-                                        },
-                                      ),
-                                    ),
+                                    QuestionImageWidget(imageUrl: question.image!, width: double.infinity, height: 200),
                                   ],
                                   const SizedBox(height: 16),
-                                  Text(
-                                    question.text ?? '',
+                                  LatexTextWidget(
+                                    text: question.text ?? '',
                                     style: context.x.textStyle.sfW600s16.copyWith(fontSize: 18),
                                   ),
                                   const SizedBox(height: 24),
@@ -518,32 +498,11 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Builder(
-              builder: (context) {
-                var imageUrl = question.image!;
-                if (!imageUrl.startsWith('http') && Config.apiBaseUrl.isNotEmpty) {
-                  final base = Config.apiBaseUrl.endsWith('/')
-                      ? Config.apiBaseUrl.substring(0, Config.apiBaseUrl.length - 1)
-                      : Config.apiBaseUrl;
-                  final path = imageUrl.startsWith('/') ? imageUrl : '/$imageUrl';
-                  imageUrl = '$base$path';
-                }
-                return Image.network(
-                  imageUrl,
-                  width: double.infinity,
-                  height: 320,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                );
-              },
-            ),
-          ),
+          child: QuestionImageWidget(imageUrl: question.image!, width: double.infinity, height: 320, borderRadius: 16),
         ),
       ],
-      Text(
-        question.text ?? '',
+      LatexTextWidget(
+        text: question.text ?? '',
         style: context.x.textStyle.sfW600s16.copyWith(fontSize: 20, height: 1.45, color: context.x.colors.text),
       ),
       const SizedBox(height: 28),
@@ -649,7 +608,10 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
   );
 
   Widget _buildBottomBar(BuildContext context) => SafeArea(
-    child: Padding(padding: const EdgeInsets.all(20), child: _buildNavigationButtons(context)),
+    child: Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 30),
+      child: _buildNavigationButtons(context),
+    ),
   );
 
   Widget _buildNavigationButtons(BuildContext context) {

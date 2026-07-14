@@ -49,10 +49,6 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   int correctAnswers = 0;
   int wrongAnswers = 0;
 
-  final SoundService _sound = .instance;
-
-  static const _correctSound = 'lib/audio/correct.mp3';
-
   late final DateTime startTime;
 
   @override
@@ -63,9 +59,6 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     log_util.info(
       'TestSolvingScreenState.initState: testId=${widget.testId}, attemptId=${widget.attemptId}, arguments.attemptId=${widget.arguments.attemptId}',
     );
-
-    // Preload sounds so they play instantly.
-    _sound.preload(_correctSound);
 
     if (widget.arguments.mode == TestMode.university) {
       final minutes = int.tryParse(widget.arguments.timeOptionName) ?? 30;
@@ -278,7 +271,6 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     if (option.isCorrect ?? false) {
       correctAnswers++;
       context.telegramWebApp.hapticNotification(.success);
-      _sound.play(_correctSound);
     } else {
       wrongAnswers++;
       context.telegramWebApp.hapticNotification(.error);

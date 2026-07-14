@@ -102,11 +102,6 @@ class _ProfileScreenState extends ProfileScreenState {
                       final layout = headerLayout(context, constraints);
 
                       final displayNameStr = user != null ? formatProfileName(user.displayName) : '';
-                      final idStr = user != null ? 'ID: ${user.telegramChatId ?? user.id ?? ""}' : '';
-                      final usernameStr = user != null && user.username != null && user.username!.isNotEmpty
-                          ? ' User: @${user.username}'
-                          : '';
-                      final subtitleStr = '$idStr$usernameStr';
 
                       final firstLetter = displayNameStr.isNotEmpty ? displayNameStr[0].toUpperCase() : '';
                       final fallbackAvatar = Container(
@@ -204,9 +199,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                         ),
                                         const SizedBox(height: 4),
                                         Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: phoneHorizontalPadding(layout.width),
-                                          ),
+                                          padding: .symmetric(horizontal: phoneHorizontalPadding(layout.width)),
                                           child: isShimmer
                                               ? const ProfileShimmer(
                                                   child: ShimmerBox(width: 120, height: 16, radius: 4),

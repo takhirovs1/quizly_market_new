@@ -339,6 +339,9 @@ class $LibImagesGen {
   /// File path: lib/images/logo_png.png
   AssetGenImage get logoPng => const AssetGenImage('lib/images/logo_png.png');
 
+  /// File path: lib/images/logo_splash.png
+  AssetGenImage get logoSplash => const AssetGenImage('lib/images/logo_splash.png');
+
   /// File path: lib/images/logout_quizbot.png
   AssetGenImage get logoutQuizbot => const AssetGenImage('lib/images/logout_quizbot.png');
 
@@ -419,6 +422,7 @@ class $LibImagesGen {
     flexedBiceps,
     logo,
     logoPng,
+    logoSplash,
     logoutQuizbot,
     memo,
     money,

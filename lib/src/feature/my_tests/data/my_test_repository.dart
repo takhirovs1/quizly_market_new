@@ -43,11 +43,17 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
     try {
       final response = await dio.get<Map<String, Object?>>(
         Urls.getMyTests,
-        queryParameters: <String, Object?>{...request.toJson(), 'purchased': true},
+        queryParameters: <String, Object?>{
+          ...request.toJson(),
+          if (request.search == null || request.search!.isEmpty) 'purchased': true,
+        },
       );
       final root = response.data ?? {};
       final dataList = root['data'] as List<Object?>? ?? [];
-      final items = dataList.map((e) => TestModel.fromJson(e as Map<String, Object?>)).toList();
+      final items = dataList
+          .map((e) => TestModel.fromJson(e as Map<String, Object?>))
+          .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
+          .toList();
       final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
       final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
       final total = root['total'].toIntOrNull ?? 0;
@@ -65,7 +71,10 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       final response = await dio.get<Map<String, Object?>>('/api/tests/top', queryParameters: request.toJson());
       final root = response.data ?? {};
       final dataList = root['data'] as List<Object?>? ?? [];
-      final items = dataList.map((e) => TestModel.fromJson(e as Map<String, Object?>)).toList();
+      final items = dataList
+          .map((e) => TestModel.fromJson(e as Map<String, Object?>))
+          .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
+          .toList();
       final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
       final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
       final total = root['total'].toIntOrNull ?? 0;

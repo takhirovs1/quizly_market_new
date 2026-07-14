@@ -24,6 +24,7 @@ class MyTestState extends Equatable {
     this.purchaseStatus = StateStatus.idle,
     this.purchaseData,
     this.purchaseErrorMessage,
+    this.exampleTestDetail,
   });
 
   final StateStatus status;
@@ -48,6 +49,7 @@ class MyTestState extends Equatable {
   final StateStatus purchaseStatus;
   final TestPurchaseData? purchaseData;
   final String? purchaseErrorMessage;
+  final DemoTestDetail? exampleTestDetail;
 
   MyTestState copyWith({
     StateStatus? status,
@@ -72,6 +74,7 @@ class MyTestState extends Equatable {
     StateStatus? purchaseStatus,
     TestPurchaseData? purchaseData,
     String? purchaseErrorMessage,
+    DemoTestDetail? exampleTestDetail,
   }) => MyTestState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
@@ -95,6 +98,7 @@ class MyTestState extends Equatable {
     purchaseStatus: purchaseStatus ?? this.purchaseStatus,
     purchaseData: purchaseData ?? this.purchaseData,
     purchaseErrorMessage: purchaseErrorMessage ?? this.purchaseErrorMessage,
+    exampleTestDetail: exampleTestDetail ?? this.exampleTestDetail,
   );
 
   @override
@@ -121,5 +125,6 @@ class MyTestState extends Equatable {
     purchaseStatus,
     purchaseData,
     purchaseErrorMessage,
+    exampleTestDetail,
   ];
 }

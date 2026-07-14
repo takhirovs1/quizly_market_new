@@ -107,12 +107,12 @@ class _AppTextFieldState extends AppTextFieldController {
         borderSide: BorderSide(width: 0, color: context.x.colors.transparent),
         borderRadius: BorderRadius.circular(12),
       ),
-      prefixIconConstraints: const BoxConstraints(minWidth: 48, minHeight: 56),
-      prefixIcon: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [const SizedBox(width: 16), widget.prefixWidget ?? const SizedBox.shrink()],
-      ),
+      prefixIconConstraints: widget.prefixWidget != null ? const BoxConstraints(minWidth: 48, minHeight: 56) : null,
+      prefixIcon: widget.prefixWidget != null
+          ? Row(mainAxisSize: MainAxisSize.min, children: [const SizedBox(width: 16), widget.prefixWidget!])
+          : null,
       hint: AppText.w400s16(widget.title, color: context.x.colors.bannerSecondaryText),
+      suffixIcon: widget.suffixWidget,
     ),
   );
 }

@@ -35,7 +35,9 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   void initState() {
     super.initState();
     scrollController = ScrollController()..addListener(_onScroll);
-    myTestCubit = context.read<MyTestCubit>()..initialize();
+    myTestCubit = context.read<MyTestCubit>()
+      ..initialize()
+      ..getExampleTest('87f107c1-d6b1-4da4-8461-5a140b94ae32');
     searchController = TextEditingController()..addListener(_onSearchChanged);
   }
 
@@ -68,7 +70,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   }
 
   void onBuyTestPressed(TestModel test) {
-    if (test.isPurchased == true) {
+    if (test.id == '87f107c1-d6b1-4da4-8461-5a140b94ae32' || test.isPurchased == true) {
       context.octopus.push(Routes.testMode, arguments: <String, String>{'id': test.id?.toString() ?? ''});
     } else {
       context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});

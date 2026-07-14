@@ -118,30 +118,37 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   ),
                                 ],
                               ),
-                              TestCardWidget(
-                                title: 'Ingliz tili grammatikasi',
-                                companyName: 'QuizlyMarket',
-                                description:
-                                    'A1-B2 darajadagi grammatika qoidalarini mustahkamlash uchun mo\'ljallangan test to\'plami.',
-                                price: context.x.l10n.free,
-                                questionAmount: context.x.l10n.questionAmountText(25),
-                                buyButtonText: context.x.l10n.tryItNow,
-                                onBuyButtonPressed: () {},
-                                isFree: true,
-                                onShareButtonPressed: () => onShareTestPressed(
-                                  TestModel(
-                                    name: 'Ingliz tili grammatikasi',
-                                    categoryName: 'QuizlyMarket',
-                                    description:
-                                        'A1-B2 darajadagi grammatika qoidalarini mustahkamlash uchun mo\'ljallangan test to\'plami.',
-                                    price: 0,
-                                    questionCount: 25,
+                              if (state.exampleTestDetail == null)
+                                const TestCardShimmer()
+                              else
+                                TestCardWidget(
+                                  title: state.exampleTestDetail!.name ?? '',
+                                  companyName: 'QuizlyMarket',
+                                  description: state.exampleTestDetail!.description ?? '',
+                                  price: context.x.l10n.free,
+                                  questionAmount: context.x.l10n.questionAmountText(
+                                    state.exampleTestDetail!.questionCount ?? 0,
                                   ),
+                                  buyButtonText: context.x.l10n.tryItNow,
+                                  onBuyButtonPressed: () => context.octopus.push(
+                                    Routes.testMode,
+                                    arguments: <String, String>{'id': '87f107c1-d6b1-4da4-8461-5a140b94ae32'},
+                                  ),
+                                  isFree: true,
+                                  onShareButtonPressed: () => onShareTestPressed(
+                                    TestModel(
+                                      id: '87f107c1-d6b1-4da4-8461-5a140b94ae32',
+                                      name: state.exampleTestDetail!.name ?? '',
+                                      categoryName: 'QuizlyMarket',
+                                      description: state.exampleTestDetail!.description ?? '',
+                                      price: 0,
+                                      questionCount: state.exampleTestDetail!.questionCount ?? 0,
+                                    ),
+                                  ),
+                                  textBought: context.x.l10n.textBought,
+                                  isLiked: false,
+                                  // onLikeButtonPressed: () {},
                                 ),
-                                textBought: context.x.l10n.textBought,
-                                isLiked: false,
-                                // onLikeButtonPressed: () {},
-                              ),
                               const SizedBox(height: 16),
                               const AnimatedReferralBanner(),
                             ],

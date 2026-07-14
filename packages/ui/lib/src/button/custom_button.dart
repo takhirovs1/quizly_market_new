@@ -14,6 +14,7 @@ class CustomButton extends StatefulWidget {
     this.textStyle,
     this.borderRadius = 16,
     this.isLoading = false,
+    this.isOutline = false,
   });
 
   final VoidCallback? onTap;
@@ -23,6 +24,7 @@ class CustomButton extends StatefulWidget {
   final TextStyle? textStyle;
   final double borderRadius;
   final bool isLoading;
+  final bool isOutline;
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
@@ -76,28 +78,48 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
                 strokeWidth: stroke,
               )
             : null,
-        child: FilledButton(
-          onPressed: (widget.isLoading || widget.onTap == null) ? null : widget.onTap,
-          style: FilledButton.styleFrom(
-            backgroundColor: widget.isLoading ? buttonColor.withValues(alpha: 0.1) : buttonColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(widget.borderRadius)),
-            fixedSize: const Size(double.infinity, 50),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              widget.title,
-              style:
-                  widget.textStyle ??
-                  TextStyle(
-                    color: widget.isLoading ? buttonColor : (widget.textColor ?? Colors.white),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+        child: widget.isOutline
+            ? OutlinedButton(
+                onPressed: (widget.isLoading || widget.onTap == null) ? null : widget.onTap,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: buttonColor,
+                  side: BorderSide(color: buttonColor, width: 1),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(widget.borderRadius)),
+                  fixedSize: const Size(double.infinity, 50),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    widget.title,
+                    style:
+                        widget.textStyle ??
+                        TextStyle(color: widget.textColor ?? buttonColor, fontSize: 17, fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
                   ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
+                ),
+              )
+            : FilledButton(
+                onPressed: (widget.isLoading || widget.onTap == null) ? null : widget.onTap,
+                style: FilledButton.styleFrom(
+                  backgroundColor: widget.isLoading ? buttonColor.withValues(alpha: 0.1) : buttonColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(widget.borderRadius)),
+                  fixedSize: const Size(double.infinity, 50),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    widget.title,
+                    style:
+                        widget.textStyle ??
+                        TextStyle(
+                          color: widget.isLoading ? buttonColor : (widget.textColor ?? Colors.white),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
       ),
     );
   }

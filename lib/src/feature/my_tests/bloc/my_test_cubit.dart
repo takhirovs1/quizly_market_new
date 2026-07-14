@@ -320,4 +320,11 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       return null;
     },
   );
+
+  Future<void> getExampleTest(String testId) => handle<void>((emit) async {
+    try {
+      final response = await myTestRepository.getTestDetail(DemoTestRequest(testId: testId));
+      emit(state.copyWith(exampleTestDetail: response.data));
+    } on Object catch (_) {}
+  });
 }
