@@ -105,19 +105,19 @@ class TestCardWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
               children: [
-                if (isPurchased)
-                  Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui')
-                else if (!isFree)
-                  Assets.lib.images.money.image(width: 16, height: 16, package: 'ui')
-                else
-                  Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui'),
-                const SizedBox(width: 4),
-                Text(
-                  isPurchased ? (textBought ?? '') : price,
-                  style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(width: 8),
+                if (!isPurchased) ...[
+                  if (!isFree)
+                    Assets.lib.images.money.image(width: 16, height: 16, package: 'ui')
+                  else
+                    Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui'),
+                  const SizedBox(width: 4),
+                  Text(
+                    price,
+                    style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 Flexible(
                   child: Align(
                     alignment: Alignment.centerRight,

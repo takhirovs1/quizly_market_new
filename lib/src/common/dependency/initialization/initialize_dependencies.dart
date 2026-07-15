@@ -278,6 +278,16 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
             if (error.response?.statusCode == 401) {
               l.w('TokenInterceptor | 401 Unauthorized received for path: ${error.requestOptions.path}');
 
+              if (error.requestOptions.path.endsWith('/api/auth/refresh')) {
+                l.w('TokenInterceptor | 401 Unauthorized received for refresh request: signing out...');
+                try {
+                  await dependencies.authenticationController.signOut();
+                } on Object catch (signOutError, signOutStack) {
+                  l.s('TokenInterceptor | Error during signOut: $signOutError', signOutStack);
+                }
+                return handler.next(error);
+              }
+
               final responseData = error.response?.data;
               var isSessionExpiredError = false;
               if (responseData is Map) {
@@ -349,7 +359,11 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
                     l.i('TokenInterceptor | Token refreshed successfully');
                     return tokenResponse.accessToken;
                   } on Object catch (e, s) {
-                    l.s('TokenInterceptor | Token refresh request failed: $e', s);
+                    if (e is DioException && e.response?.statusCode == 401) {
+                      l.w('TokenInterceptor | Token refresh request failed with 401 Unauthorized: $e', s);
+                    } else {
+                      l.s('TokenInterceptor | Token refresh request failed: $e', s);
+                    }
                     rethrow;
                   } finally {
                     refreshFuture = null;
@@ -361,13 +375,37 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
                 final retryResponse = await copyDio.fetch<Object?>(options);
                 return handler.resolve(retryResponse);
               } on Object catch (e, s) {
-                l.s('TokenInterceptor | Error handling token refresh: $e. Signing out...', s);
-                try {
-                  await dependencies.authenticationController.signOut();
-                } on Object catch (signOutError, signOutStack) {
-                  l.s('TokenInterceptor | Error during signOut: $signOutError', signOutStack);
+                final is401 = e is DioException && e.response?.statusCode == 401;
+                if (is401) {
+                  l.w('TokenInterceptor | Error handling token refresh (401 Unauthorized): signing out...');
+                  try {
+                    await dependencies.authenticationController.signOut();
+                  } on Object catch (signOutError, signOutStack) {
+                    l.s('TokenInterceptor | Error during signOut: $signOutError', signOutStack);
+                  }
+                  return handler.next(error);
+                } else {
+                  l.s('TokenInterceptor | Error handling token refresh: $e. Not signing out (non-401 error).', s);
+                  if (e is DioException) {
+                    return handler.next(
+                      DioException(
+                        requestOptions: error.requestOptions,
+                        response: e.response,
+                        type: e.type,
+                        error: e.error,
+                        stackTrace: e.stackTrace,
+                        message: e.message,
+                      ),
+                    );
+                  }
+                  return handler.next(
+                    DioException(
+                      requestOptions: error.requestOptions,
+                      error: e,
+                      stackTrace: s,
+                    ),
+                  );
                 }
-                return handler.next(error);
               }
             }
 

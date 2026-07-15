@@ -53,13 +53,16 @@ final class AuthenticationController extends ChangeNotifier {
 
   /// Sign out.
   Future<void> signOut() async {
-    await _repository.signOut();
-    await _localSource.clearAllPersonalData();
+    setState(.processing(user: state.user, message: 'Logging out...'));
+    try {
+      await _repository.signOut();
+      await _localSource.clearAllPersonalData();
 
-    await _userStreamSubscription?.cancel();
-    _userStreamSubscription = null;
-
-    setState(AuthenticationState.processing(user: state.user, message: 'Logging out...'));
+      await _userStreamSubscription?.cancel();
+      _userStreamSubscription = null;
+    } finally {
+      setState(const .idle(user: .unauthenticated()));
+    }
   }
 
   @override

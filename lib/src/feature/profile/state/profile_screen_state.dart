@@ -288,6 +288,7 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
   List<ProfileListRow> menuRowsFor(ProfileModelResponse? user) {
     final linkedCount = _linkedProvidersCount(user);
     final canUnlinkSocial = linkedCount >= 2;
+    final isPremium = user?.premium == true;
 
     return [
       ProfileListRow.header((c) => context.x.l10n.profileMain),
@@ -296,30 +297,32 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
         onUpdateProfilePressed,
         Icon(CupertinoIcons.pencil_circle, color: context.x.colors.profileIcon),
       ),
-      ProfileListRow.item(
-        (c) => context.x.l10n.topUpBalance,
-        onTopUpBalancePressed,
-        Assets.lib.vectors.topUpBalance.svg(
-          package: Constant.packageUi,
-          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      if (!isPremium) ...[
+        ProfileListRow.item(
+          (c) => context.x.l10n.topUpBalance,
+          onTopUpBalancePressed,
+          Assets.lib.vectors.topUpBalance.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
         ),
-      ),
-      ProfileListRow.item(
-        (c) => context.x.l10n.referral,
-        onReferralPressed,
-        Assets.lib.vectors.referral.svg(
-          package: Constant.packageUi,
-          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ProfileListRow.item(
+          (c) => context.x.l10n.referral,
+          onReferralPressed,
+          Assets.lib.vectors.referral.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
         ),
-      ),
-      ProfileListRow.item(
-        (c) => context.x.l10n.paymentHistory,
-        onPaymentHistoryPressed,
-        Assets.lib.vectors.historyTransaction.svg(
-          package: Constant.packageUi,
-          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ProfileListRow.item(
+          (c) => context.x.l10n.paymentHistory,
+          onPaymentHistoryPressed,
+          Assets.lib.vectors.historyTransaction.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
         ),
-      ),
+      ],
       ProfileListRow.item(
         (c) => context.x.l10n.archivedTests,
         onArchivedTestsPressed,

@@ -299,12 +299,13 @@ class _ProfileScreenState extends ProfileScreenState {
                   padding: EdgeInsets.only(top: 16, bottom: context.x.isMobile ? 16 : 24),
                   shrinkWrap: true,
                   children: [
-                    ProfilePaymentCard(
-                      balance: user?.balance?.formatUzs ?? '0 UZS',
-                      cardNumber: user?.paymentCode ?? '',
-                      onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
-                      isLoading: isShimmer,
-                    ),
+                    if (user?.premium != true)
+                      ProfilePaymentCard(
+                        balance: user?.balance?.formatUzs ?? '0 UZS',
+                        cardNumber: user?.paymentCode ?? '',
+                        onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
+                        isLoading: isShimmer,
+                      ),
                     Padding(
                       padding: menuSliverPadding(context),
                       child: ListView.builder(
@@ -492,14 +493,16 @@ class _ProfileScreenState extends ProfileScreenState {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            ProfilePaymentCard(
-                              balance: user?.balance?.formatUzs ?? '0 UZS',
-                              cardNumber: user?.paymentCode ?? '',
-                              onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
-                              isLoading: isShimmer,
-                              padding: EdgeInsets.zero,
-                            ),
+                            if (user?.premium != true) ...[
+                              const SizedBox(height: 20),
+                              ProfilePaymentCard(
+                                balance: user?.balance?.formatUzs ?? '0 UZS',
+                                cardNumber: user?.paymentCode ?? '',
+                                onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
+                                isLoading: isShimmer,
+                                padding: EdgeInsets.zero,
+                              ),
+                            ],
                           ],
                         ),
                       ),
