@@ -1,7 +1,6 @@
-import 'package:dio/dio.dart';
-
 import '../../../common/constant/urls.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/service/api_client.dart';
 import '../../my_tests/models/test_model.dart';
 import '../model/profile_model.dart';
 import '../model/referral_model.dart';
@@ -34,35 +33,31 @@ abstract interface class IProfileRepository {
 }
 
 final class ProfileRepositoryImpl implements IProfileRepository {
-  const ProfileRepositoryImpl({required this.dio});
-  final Dio dio;
+  const ProfileRepositoryImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<ProfileModelResponse> getProfile() async {
-    final response = await dio.get<Map<String, Object?>>(Urls.getMe);
-    final root = response.data ?? {};
+    final root = await apiClient.get(Urls.getMe);
     final data = root['data'] as Map<String, Object?>? ?? root;
     return ProfileModelResponse.fromJson(data);
   }
 
   @override
   Future<void> updateLanguage(String language) async {
-    await dio.put<void>(Urls.updateLanguage, data: {'language': language});
+    await apiClient.put(Urls.updateLanguage, body: {'language': language});
   }
 
   @override
   Future<TopUpResponse> topUp(TopUpRequest request) async {
-    final response = await dio.post<Map<String, Object?>>(Urls.topUp, data: request.toJson());
-    return TopUpResponse.fromJson(response.data ?? {});
+    final response = await apiClient.post(Urls.topUp, body: request.toJson());
+    return TopUpResponse.fromJson(response);
   }
 
   @override
   Future<TransactionResponse> getTransactions(TransactionRequest request) async {
-    final response = await dio.get<Map<String, Object?>>(
-      '/api/payments/wallet/transactions',
-      queryParameters: request.toJson(),
-    );
-    return TransactionResponse.fromJson(response.data ?? {});
+    final response = await apiClient.get('/api/payments/wallet/transactions', queryParameters: request.toJson());
+    return TransactionResponse.fromJson(response);
   }
 
   @override
@@ -70,11 +65,10 @@ final class ProfileRepositoryImpl implements IProfileRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    final response = await dio.get<Map<String, Object?>>(
+    final root = await apiClient.get(
       Urls.getMyTests,
       queryParameters: {'limit': limit, 'offset': offset, 'archived': true},
     );
-    final root = response.data ?? {};
     final dataList = root['data'] as List<Object?>? ?? [];
     final items = dataList
         .map((e) => TestModel.fromJson(e as Map<String, Object?>))
@@ -88,49 +82,48 @@ final class ProfileRepositoryImpl implements IProfileRepository {
 
   @override
   Future<void> unarchiveTest(String testId) async {
-    await dio.delete<void>('/api/payments/tests/$testId/archive');
+    await apiClient.delete('/api/payments/tests/$testId/archive');
   }
 
   @override
   Future<void> linkGoogle(String idToken) async {
-    await dio.post<void>('/api/auth/link/google', data: {'id_token': idToken});
+    await apiClient.post('/api/auth/link/google', body: {'id_token': idToken});
   }
 
   @override
   Future<void> linkApple(String identityToken) async {
-    await dio.post<void>('/api/auth/link/apple', data: {'identity_token': identityToken});
+    await apiClient.post('/api/auth/link/apple', body: {'identity_token': identityToken});
   }
 
   @override
   Future<ReferralSummary> getReferralSummary() async {
-    final response = await dio.get<Map<String, Object?>>('/api/users/me/referrals/summary');
-    return ReferralSummary.fromJson(response.data ?? {});
+    final response = await apiClient.get('/api/users/me/referrals/summary');
+    return ReferralSummary.fromJson(response);
   }
 
   @override
   Future<ReferralListResponse> getReferrals({int limit = 20, int offset = 0}) async {
-    final response = await dio.get<Map<String, Object?>>(
+    final response = await apiClient.get(
       '/api/users/me/referrals',
       queryParameters: {'limit': limit, 'offset': offset},
     );
-    return ReferralListResponse.fromJson(response.data ?? {});
+    return ReferralListResponse.fromJson(response);
   }
 
   @override
   Future<ReferralVerifyResponse> verifyReferral() async {
-    final response = await dio.get<Map<String, Object?>>('/api/referrals/verify');
-    return ReferralVerifyResponse.fromJson(response.data ?? {});
+    final response = await apiClient.get('/api/referrals/verify');
+    return ReferralVerifyResponse.fromJson(response);
   }
 
   @override
   Future<void> unlinkProvider(String provider) async {
-    await dio.delete<void>('/api/auth/link/$provider');
+    await apiClient.delete('/api/auth/link/$provider');
   }
 
   @override
   Future<String> getDocument(String key) async {
-    final response = await dio.get<Map<String, Object?>>('/api/documents/key/$key');
-    final root = response.data ?? {};
+    final root = await apiClient.get('/api/documents/key/$key');
     final data = root['data'];
     if (data is Map<String, Object?>) {
       return (data['content'] as String?) ?? '';
@@ -142,30 +135,33 @@ final class ProfileRepositoryImpl implements IProfileRepository {
 
   @override
   Future<ProfileModelResponse> uploadAvatar(List<int> bytes, String fileName) async {
-    final formData = FormData.fromMap({'avatar': MultipartFile.fromBytes(bytes, filename: fileName)});
-    final response = await dio.put<Map<String, Object?>>('/api/users/me/avatar', data: formData);
-    final root = response.data ?? {};
+    final root = await apiClient.multipartPut(
+      '/api/users/me/avatar',
+      field: 'avatar',
+      bytes: bytes,
+      filename: fileName,
+    );
     final data = root['data'] as Map<String, Object?>? ?? root;
     return ProfileModelResponse.fromJson(data);
   }
 
   @override
   Future<void> updateName(String name) async {
-    await dio.put<void>('/api/users/me', data: {'name': name});
+    await apiClient.put('/api/users/me', body: {'name': name});
   }
 
   @override
   Future<void> deleteAccount() async {
-    await dio.delete<void>('/api/users/me');
+    await apiClient.delete('/api/users/me');
   }
 
   @override
   Future<void> deleteArchiveTest(String testId) async {
-    await dio.delete<void>('/api/payments/tests/$testId/archive');
+    await apiClient.delete('/api/payments/tests/$testId/archive');
   }
 
   @override
   Future<void> updateProfile({required String firstName, required String lastName, required String? gender}) async {
-    await dio.patch<void>('/api/users/me', data: {'first_name': firstName, 'last_name': lastName, 'gender': gender});
+    await apiClient.patch('/api/users/me', body: {'first_name': firstName, 'last_name': lastName, 'gender': gender});
   }
 }

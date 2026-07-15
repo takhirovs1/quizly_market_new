@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:local_source/local_source.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:thunder/thunder.dart';
 
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
@@ -14,54 +14,43 @@ import '../model/support_chat_model.dart';
 part 'support_chat_state.dart';
 
 class SupportChatCubit extends SequentialCubit<SupportChatCubitState> {
-  SupportChatCubit({
-    required this.repository,
-    required this.localSource,
-    required this.wsBaseUrl,
-  }) : super(const SupportChatCubitState());
+  SupportChatCubit({required this.repository, required this.localSource, required this.wsBaseUrl})
+    : super(const SupportChatCubitState());
 
   final ISupportChatRepository repository;
   final LocalSource localSource;
   final String wsBaseUrl;
 
-  WebSocketChannel? _channel;
-  StreamSubscription<dynamic>? _wsSubscription;
+  SocketClient? _socket;
+  StreamSubscription<Object?>? _msgSubscription;
 
-  Future<void> initialize() => handle<void>(
-    (emit) async {
-      emit(state.copyWith(status: .loading));
-      final messages = await repository.getMessages(limit: 30);
-      emit(
-        state.copyWith(
-          status: .success,
-          messages: messages,
-          hasMore: messages.length >= 30,
-          oldestCreatedAt: messages.isNotEmpty ? messages.first.createdAt.toIso8601String() : null,
-        ),
-      );
-      _connectWebSocket();
-    },
-    errorHandler: (emit, error, _) =>
-        emit(state.copyWith(status: .error, errorMessage: error.toString())),
-  );
+  Future<void> initialize() => handle<void>((emit) async {
+    emit(state.copyWith(status: .loading));
+    final messages = await repository.getMessages(limit: 30);
+    emit(
+      state.copyWith(
+        status: .success,
+        messages: messages,
+        hasMore: messages.length >= 30,
+        oldestCreatedAt: messages.isNotEmpty ? messages.first.createdAt.toIso8601String() : null,
+      ),
+    );
+    _connectWebSocket();
+  }, errorHandler: (emit, error, _) => emit(state.copyWith(status: .error, errorMessage: error.toString())));
 
-  Future<void> loadMore() => handle<void>(
-    (emit) async {
-      if (!state.hasMore || state.status.isLoadingMore) return;
-      emit(state.copyWith(status: .loadingMore));
-      final messages = await repository.getMessages(limit: 20, before: state.oldestCreatedAt);
-      emit(
-        state.copyWith(
-          status: .success,
-          messages: [...messages, ...state.messages],
-          hasMore: messages.length >= 20,
-          oldestCreatedAt: messages.isNotEmpty ? messages.first.createdAt.toIso8601String() : state.oldestCreatedAt,
-        ),
-      );
-    },
-    errorHandler: (emit, error, _) =>
-        emit(state.copyWith(status: .success)),
-  );
+  Future<void> loadMore() => handle<void>((emit) async {
+    if (!state.hasMore || state.status.isLoadingMore) return;
+    emit(state.copyWith(status: .loadingMore));
+    final messages = await repository.getMessages(limit: 20, before: state.oldestCreatedAt);
+    emit(
+      state.copyWith(
+        status: .success,
+        messages: [...messages, ...state.messages],
+        hasMore: messages.length >= 20,
+        oldestCreatedAt: messages.isNotEmpty ? messages.first.createdAt.toIso8601String() : state.oldestCreatedAt,
+      ),
+    );
+  }, errorHandler: (emit, error, _) => emit(state.copyWith(status: .success)));
 
   Future<void> sendMessage(String text, {List<String> photoPaths = const []}) => handle<void>(
     (emit) async {
@@ -72,19 +61,10 @@ class SupportChatCubit extends SequentialCubit<SupportChatCubitState> {
       );
       final message = await repository.sendMessage(request);
       final alreadyIn = state.messages.any((m) => m.id == message.id);
-      emit(
-        state.copyWith(
-          isSending: false,
-          messages: alreadyIn ? state.messages : [...state.messages, message],
-        ),
-      );
+      emit(state.copyWith(isSending: false, messages: alreadyIn ? state.messages : [...state.messages, message]));
     },
     errorHandler: (emit, error, _) => emit(
-      state.copyWith(
-        isSending: false,
-        sendErrorCount: state.sendErrorCount + 1,
-        errorMessage: error.toString(),
-      ),
+      state.copyWith(isSending: false, sendErrorCount: state.sendErrorCount + 1, errorMessage: error.toString()),
     ),
   );
 
@@ -101,27 +81,14 @@ class SupportChatCubit extends SequentialCubit<SupportChatCubitState> {
     final token = localSource.accessToken;
     if (token.isEmpty) return;
     final wsUrl = wsBaseUrl.replaceFirst('https://', 'wss://').replaceFirst('http://', 'ws://');
-    try {
-      _channel = .connect(.parse('$wsUrl/api/support/ws?token=${Uri.encodeComponent(token)}'));
-      _wsSubscription = _channel!.stream.listen(
-        (data) => _onWsFrame(data as String),
-        onError: (_) => Future<void>.delayed(const Duration(seconds: 5), _reconnect),
-        onDone: () => Future<void>.delayed(const Duration(seconds: 5), _reconnect),
-        cancelOnError: false,
-      );
-    } on Object catch (e) {
-      debugPrint('SupportChatCubit WS connect: $e');
-    }
-  }
-
-  void _reconnect() {
-    if (isClosed) return;
-    _wsSubscription?.cancel();
-    _channel?.sink.close();
-    _connectWebSocket();
+    final uri = Uri.parse('$wsUrl/api/support/ws?token=${Uri.encodeComponent(token)}');
+    _socket = Thunder.socketClient(uri: uri, label: 'Support Chat', reconnectInterval: const Duration(seconds: 5));
+    _msgSubscription = _socket!.messages.listen((data) => _onWsFrame(data?.toString() ?? ''));
+    _socket!.connect().ignore();
   }
 
   void _onWsFrame(String raw) {
+    if (raw.isEmpty) return;
     try {
       final map = jsonDecode(raw) as Map<String, Object?>;
       if (map['type'] != 'message.created') return;
@@ -138,8 +105,8 @@ class SupportChatCubit extends SequentialCubit<SupportChatCubitState> {
 
   @override
   Future<void> close() async {
-    await _wsSubscription?.cancel();
-    await _channel?.sink.close();
+    await _msgSubscription?.cancel();
+    await _socket?.close();
     return super.close();
   }
 }

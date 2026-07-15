@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
-
 import '../../../common/extension/number_extension.dart';
+import '../../../common/service/api_client.dart';
 import '../../../common/util/logger.dart';
 import '../../my_tests/models/test_model.dart';
 
@@ -13,13 +12,13 @@ abstract interface class IRecommendationRepository {
 }
 
 final class RecommendationRepositoryImpl implements IRecommendationRepository {
-  const RecommendationRepositoryImpl({required this.dio});
-  final Dio dio;
+  const RecommendationRepositoryImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<void> likeTest(String testId) async {
     try {
-      await dio.post<void>('/api/tests/$testId/like');
+      await apiClient.post('/api/tests/$testId/like');
     } catch (e, s) {
       info('LIKE TEST API ERROR: $e $s');
       rethrow;
@@ -29,7 +28,7 @@ final class RecommendationRepositoryImpl implements IRecommendationRepository {
   @override
   Future<void> unlikeTest(String testId) async {
     try {
-      await dio.delete<void>('/api/tests/$testId/like');
+      await apiClient.delete('/api/tests/$testId/like');
     } catch (e, s) {
       info('UNLIKE TEST API ERROR: $e $s');
       rethrow;
@@ -41,17 +40,15 @@ final class RecommendationRepositoryImpl implements IRecommendationRepository {
     TestModelRequest request,
   ) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/top', queryParameters: request.toJson());
-      final root = response.data ?? {};
-      final dataList = root['data'] as List<Object?>? ?? [];
+      final response = await apiClient.get('/api/tests/top', queryParameters: request.toJson());
+      final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
           .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
           .toList();
-      final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
-      final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
-      final total = root['total'].toIntOrNull ?? 0;
-
+      final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
+      final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;
+      final total = response['total'].toIntOrNull ?? 0;
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('RECOMMENDATION TESTS API ERROR: $e $s');
@@ -62,21 +59,19 @@ final class RecommendationRepositoryImpl implements IRecommendationRepository {
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getLikedTests(TestModelRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/liked', queryParameters: request.toJson());
-      final root = response.data ?? {};
-      final dataList = root['data'] as List<Object?>? ?? [];
+      final response = await apiClient.get('/api/tests/liked', queryParameters: request.toJson());
+      final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
           .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
           .toList();
-      final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
-      final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
-      final total = root['total'].toIntOrNull ?? 0;
-
+      final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
+      final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;
+      final total = response['total'].toIntOrNull ?? 0;
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('LIKED TESTS API ERROR: $e $s');
-      if (e is DioException && e.response?.statusCode == 403) {
+      if (e is ApiResponseException && e.statusCode == 403) {
         return (items: <TestModel>[], limit: request.limit ?? 20, offset: request.offset ?? 0, total: 0);
       }
       rethrow;
@@ -86,17 +81,15 @@ final class RecommendationRepositoryImpl implements IRecommendationRepository {
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getAllTests(TestModelRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests', queryParameters: request.toJson());
-      final root = response.data ?? {};
-      final dataList = root['data'] as List<Object?>? ?? [];
+      final response = await apiClient.get('/api/tests', queryParameters: request.toJson());
+      final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
           .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
           .toList();
-      final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
-      final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
-      final total = root['total'].toIntOrNull ?? 0;
-
+      final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
+      final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;
+      final total = response['total'].toIntOrNull ?? 0;
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('ALL TESTS API ERROR: $e $s');

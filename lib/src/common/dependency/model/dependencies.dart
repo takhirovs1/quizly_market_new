@@ -1,5 +1,4 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dio/dio.dart';
 import 'package:local_source/local_source.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
@@ -10,7 +9,7 @@ import '../../../feature/main/data/main_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
 import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
-import '../../service/api_service.dart';
+import '../../service/api_client.dart';
 import 'app_metadata.dart';
 import 'debug_config.dart';
 import 'firebase_remote_config_values.dart';
@@ -28,11 +27,8 @@ class Dependencies {
   /// Database
   late final LocalSource localSource;
 
-  /// [DioContainer] for network requests
-  late final DioContainer dios;
-
-  /// [ApiService] for network requests
-  late final ApiService apiService;
+  /// [ApiClient] for network requests
+  late final ApiClient apiClient;
 
   /// A controller for the [AuthenticationScope] navigator.
   late final ValueNotifier<List<OctopusRoute>> authNavigator;
@@ -60,27 +56,6 @@ class Dependencies {
 
   @override
   String toString() => 'Dependencies{}';
-}
-
-//--- Container models --- //
-/// [DioContainer] is a container for [Dio] instances.
-@immutable
-final class DioContainer {
-  const DioContainer({required this.dio});
-
-  List<Dio> get all => [dio];
-
-  final Dio dio;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is DioContainer && other.dio == dio;
-  }
-
-  @override
-  int get hashCode => dio.hashCode;
 }
 
 /// [RepositoryContainer] is a container for Repository instances.

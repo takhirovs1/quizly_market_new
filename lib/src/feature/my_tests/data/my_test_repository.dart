@@ -1,7 +1,6 @@
-import 'package:dio/dio.dart';
-
 import '../../../common/constant/urls.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/service/api_client.dart';
 import '../../../common/util/logger.dart';
 import '../models/demo_test_model.dart';
 import '../models/test_by_code_model.dart';
@@ -24,14 +23,14 @@ abstract interface class IMyTestRepository {
 }
 
 final class MyTestRepositoryImpl implements IMyTestRepository {
-  const MyTestRepositoryImpl({required this.dio});
-  final Dio dio;
+  const MyTestRepositoryImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<WalletResponse> getWallet(WalletRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/payments/wallet');
-      return WalletResponse.fromJson(response.data ?? {});
+      final response = await apiClient.get('/api/payments/wallet');
+      return WalletResponse.fromJson(response);
     } catch (e, s) {
       info('GET WALLET API ERROR: $e $s');
       rethrow;
@@ -41,23 +40,21 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getMyTests(TestModelRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>(
+      final response = await apiClient.get(
         Urls.getMyTests,
         queryParameters: <String, Object?>{
           ...request.toJson(),
           if (request.search == null || request.search!.isEmpty) 'purchased': true,
         },
       );
-      final root = response.data ?? {};
-      final dataList = root['data'] as List<Object?>? ?? [];
+      final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
           .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
           .toList();
-      final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
-      final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
-      final total = root['total'].toIntOrNull ?? 0;
-
+      final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
+      final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;
+      final total = response['total'].toIntOrNull ?? 0;
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('MY TESTS API ERROR: $e $s');
@@ -68,17 +65,15 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<({List<TestModel> items, int limit, int offset, int total})> getTopTests(TestModelRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/top', queryParameters: request.toJson());
-      final root = response.data ?? {};
-      final dataList = root['data'] as List<Object?>? ?? [];
+      final response = await apiClient.get('/api/tests/top', queryParameters: request.toJson());
+      final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
           .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
           .toList();
-      final limit = root['limit'].toIntOrNull ?? request.limit ?? 20;
-      final offset = root['offset'].toIntOrNull ?? request.offset ?? 0;
-      final total = root['total'].toIntOrNull ?? 0;
-
+      final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
+      final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;
+      final total = response['total'].toIntOrNull ?? 0;
       return (items: items, limit: limit, offset: offset, total: total);
     } catch (e, s) {
       info('TOP TESTS API ERROR: $e $s');
@@ -89,8 +84,8 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<DemoTestResponse> getDemoTest(DemoTestRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/${request.testId}/demo');
-      return DemoTestResponse.fromJson(response.data ?? {});
+      final response = await apiClient.get('/api/tests/${request.testId}/demo');
+      return DemoTestResponse.fromJson(response);
     } catch (e, s) {
       info('GET DEMO TEST API ERROR: $e $s');
       rethrow;
@@ -100,8 +95,8 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<DemoTestResponse> getTestDetail(DemoTestRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/${request.testId}');
-      return DemoTestResponse.fromJson(response.data ?? {});
+      final response = await apiClient.get('/api/tests/${request.testId}');
+      return DemoTestResponse.fromJson(response);
     } catch (e, s) {
       info('GET TEST DETAIL API ERROR: $e $s');
       rethrow;
@@ -111,8 +106,8 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<TestByCodeResponse> getTestByCode(TestByCodeRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>('/api/tests/code/${request.code}');
-      return TestByCodeResponse.fromJson(response.data ?? {});
+      final response = await apiClient.get('/api/tests/code/${request.code}');
+      return TestByCodeResponse.fromJson(response);
     } catch (e, s) {
       info('GET TEST BY CODE API ERROR: $e $s');
       rethrow;
@@ -122,7 +117,7 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<void> likeTest(String testId) async {
     try {
-      await dio.post<void>('/api/tests/$testId/like');
+      await apiClient.post('/api/tests/$testId/like');
     } catch (e, s) {
       info('LIKE TEST API ERROR: $e $s');
       rethrow;
@@ -132,7 +127,7 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<void> unlikeTest(String testId) async {
     try {
-      await dio.delete<void>('/api/tests/$testId/like');
+      await apiClient.delete('/api/tests/$testId/like');
     } catch (e, s) {
       info('UNLIKE TEST API ERROR: $e $s');
       rethrow;
@@ -142,11 +137,8 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<TestPurchaseResponse> purchaseTest(TestPurchaseRequest request) async {
     try {
-      final response = await dio.post<Map<String, Object?>>(
-        '/api/payments/tests/${request.testId}/purchase',
-        data: request.toJson(),
-      );
-      return TestPurchaseResponse.fromJson(response.data ?? {});
+      final response = await apiClient.post('/api/payments/tests/${request.testId}/purchase', body: request.toJson());
+      return TestPurchaseResponse.fromJson(response);
     } catch (e, s) {
       info('PURCHASE TEST API ERROR: $e $s');
       rethrow;
@@ -156,11 +148,8 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
   @override
   Future<TestCheckoutResponse> checkoutTest(String testId, TestCheckoutRequest request) async {
     try {
-      final response = await dio.post<Map<String, Object?>>(
-        '/api/payments/tests/$testId/checkout',
-        data: request.toJson(),
-      );
-      return TestCheckoutResponse.fromJson(response.data ?? {});
+      final response = await apiClient.post('/api/payments/tests/$testId/checkout', body: request.toJson());
+      return TestCheckoutResponse.fromJson(response);
     } catch (e, s) {
       info('CHECKOUT TEST API ERROR: $e $s');
       rethrow;

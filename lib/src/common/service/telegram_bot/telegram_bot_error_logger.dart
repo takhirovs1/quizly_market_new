@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:logbook/logbook.dart';
 
 import '../../constant/pubspec.yaml.g.dart';
@@ -18,13 +19,7 @@ sealed class TelegramBotErrorLogger {
 
   static DateTime? _lastErrorSendDate;
 
-  static final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://api.telegram.org',
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  static final http.Client _client = .new();
 
   static Future<void> log({
     required Object? error,
@@ -143,49 +138,31 @@ $additionalInfoFormatted
 
   static String _formatStackTrace(StackTrace stackTrace) {
     final trace = stackTrace.toString();
-    final truncatedTrace = trace.length > _maxStackTraceLength
-        ? '${trace.substring(0, _maxStackTraceLength)}...'
-        : trace;
-    return truncatedTrace;
-  }
-
-  // ignore: unused_element
-  static String _formatRouteData(Map<String, String?> routeData) {
-    if (routeData.isEmpty) return '';
-
-    final buffer = StringBuffer();
-
-    routeData.forEach((key, value) => buffer.writeln('├ ${_escapeHtml(key)}: ${_escapeHtml(value.toString())}'));
-
-    return buffer.toString();
+    return trace.length > _maxStackTraceLength ? '${trace.substring(0, _maxStackTraceLength)}...' : trace;
   }
 
   static String _formatAdditionalInfo(Map<String, Object?>? info) {
     if (info == null || info.isEmpty) return '';
-
-    final buffer = StringBuffer('\n<b>📋 Additional Context</b>\n');
-
-    info.forEach((key, value) {
-      buffer.writeln('├ <b>${_escapeHtml(key)}:</b> ${_escapeHtml(value.toString())}');
-    });
-
-    return buffer.toString();
+    final lines = info.entries.map((e) => '├ <b>${_escapeHtml(e.key)}:</b> ${_escapeHtml(e.value.toString())}');
+    return '\n<b>📋 Additional Context</b>\n${lines.join('\n')}\n';
   }
 
   static Future<void> _sendToTelegram(String message, DebugConfig config) async {
     try {
-      final payload = {
+      final payload = jsonEncode({
         'chat_id': config.telegramChatId,
         'text': message,
         'parse_mode': 'HTML',
         'disable_web_page_preview': true,
-      };
+      });
 
-      await _dio.post<Map<String, Object?>>('/bot${config.telegramBotToken}/sendMessage', data: payload);
-    } on Object catch (e) {
-      l.s(
-        '[TelegramBotErrorLogger._sendToTelegram] Error while sending error to Telegram: ${e is DioException ? e.response?.data : e}',
+      await _client.post(
+        Uri.parse('https://api.telegram.org/bot${config.telegramBotToken}/sendMessage'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: payload,
       );
+    } on Object catch (e) {
+      l.s('[TelegramBotErrorLogger._sendToTelegram] Error while sending error to Telegram: $e');
     }
   }
 
@@ -213,7 +190,7 @@ extension ErrorLoggingExtension on Object {
     required DebugConfig config,
     Map<String, Object?>? additionalInfo,
     bool forceError = false,
-  }) async => await TelegramBotErrorLogger.log(
+  }) => TelegramBotErrorLogger.log(
     error: this,
     stackTrace: stackTrace,
     config: config,

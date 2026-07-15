@@ -1,18 +1,16 @@
-import 'dart:convert';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
 import '../util/exception_util.dart';
+import 'api_client.dart';
 
 enum Method { get, post, put, patch, delete }
 
 @immutable
 class ApiService {
-  const ApiService(this.dio);
+  const ApiService(this.apiClient);
 
-  final Dio dio;
+  final ApiClient apiClient;
 
   Future<bool> checkConnection() async {
     final connection = await Connectivity().checkConnectivity();
@@ -20,35 +18,21 @@ class ApiService {
     return false;
   }
 
-  Future<T> request<T>(
+  Future<Map<String, Object?>> request(
     String path, {
     Method method = .get,
     Object? data,
-    Map<String, Object?>? headers,
     Map<String, Object?>? queryParams,
-    FormData? formData,
   }) async {
     if (!await checkConnection()) {
       throw Error.throwWithStackTrace(const ExceptionUtilBase.noConnection(), .current);
     }
-
-    final newHeaders = <String, Object?>{'content-Type': formData != null ? 'multipart/form-data' : 'application/json'};
-
-    if (headers != null) newHeaders.addAll(headers);
-
-    final response = await dio.request<Object?>(
-      path,
-      data: data ?? formData,
-      queryParameters: queryParams,
-      options: Options(method: method.name, headers: newHeaders),
-    );
-
-    if (response.statusCode == null || response.statusCode! > 204) {
-      throw Exception(response);
-    }
-
-    // if (kDebugMode) log('***** - : ${jsonEncode(response.data)}', name: '\x1B[38;5;200mR\x1B[0m');
-
-    return const JsonDecoder().cast<String, T>().convert(jsonEncode(response.data));
+    return switch (method) {
+      .get => apiClient.get(path, queryParameters: queryParams),
+      .post => apiClient.post(path, body: data),
+      .put => apiClient.put(path, body: data),
+      .patch => apiClient.patch(path, body: data),
+      .delete => apiClient.delete(path, body: data),
+    };
   }
 }

@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:local_source/local_source.dart';
 
 import '../../../common/constant/urls.dart';
-import '../../../common/service/api_service.dart';
+import '../../../common/service/api_client.dart';
 import '../../../common/service/auth_service.dart';
 import '../model/auth_service_response.dart';
 import '../model/auth_token_response.dart';
@@ -43,9 +43,9 @@ abstract interface class IAuthenticationRepository {
 }
 
 class AuthenticationRepositoryImpl implements IAuthenticationRepository {
-  AuthenticationRepositoryImpl({required this.apiService, required this.localSource});
+  AuthenticationRepositoryImpl({required this.apiClient, required this.localSource});
 
-  final ApiService apiService;
+  final ApiClient apiClient;
   final LocalSource localSource;
 
   final StreamController<User> _userController = StreamController<User>.broadcast();
@@ -102,10 +102,9 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
 
   @override
   Future<void> signInWithTelegramOtp({required String deviceId, required String code}) async {
-    final json = await apiService.request<Map<String, Object?>>(
+    final json = await apiClient.post(
       Urls.mobileVerify,
-      method: .post,
-      data: TelegramVerifyRequest(deviceId: deviceId, code: code, referralCode: localSource.referralCode).toJson(),
+      body: TelegramVerifyRequest(deviceId: deviceId, code: code, referralCode: localSource.referralCode).toJson(),
     );
     final tokenResponse = AuthTokenResponse.fromJson(json);
 
@@ -116,7 +115,7 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     ]);
 
     _userController.add(
-      _user = User.authenticated(
+      _user = .authenticated(
         id: tokenResponse.userId,
         token: tokenResponse.accessToken,
         refreshToken: tokenResponse.refreshToken,
@@ -147,11 +146,7 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     final serviceResponse = await provider();
     if (serviceResponse == null) return null;
 
-    final json = await apiService.request<Map<String, Object?>>(
-      endpoint,
-      method: .post,
-      data: dataBuilder(serviceResponse.idToken),
-    );
+    final json = await apiClient.post(endpoint, body: dataBuilder(serviceResponse.idToken));
     final tokenResponse = AuthTokenResponse.fromJson(json);
 
     await Future.wait([
@@ -173,13 +168,13 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
 
   @override
   Future<List<SessionModel>> getSessions() async {
-    final json = await apiService.request<Map<String, Object?>>('/api/auth/sessions', method: Method.get);
+    final json = await apiClient.get('/api/auth/sessions');
     return SessionResponse.fromJson(json).sessions;
   }
 
   @override
   Future<void> revokeSession(String sessionId) async {
-    await apiService.request<void>('/api/auth/sessions/$sessionId', method: Method.delete);
+    await apiClient.delete('/api/auth/sessions/$sessionId');
   }
 
   @override
@@ -188,11 +183,7 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
     if (rToken.isEmpty) {
       throw Exception('Refresh token is empty');
     }
-    final json = await apiService.request<Map<String, Object?>>(
-      '/api/auth/refresh',
-      method: Method.post,
-      data: <String, Object?>{'refresh_token': rToken},
-    );
+    final json = await apiClient.post('/api/auth/refresh', body: <String, Object?>{'refresh_token': rToken});
     final tokenResponse = AuthTokenResponse.fromJson(json);
     await updateTokens(accessToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken);
   }

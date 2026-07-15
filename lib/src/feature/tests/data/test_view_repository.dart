@@ -1,5 +1,4 @@
-import 'package:dio/dio.dart';
-
+import '../../../common/service/api_client.dart';
 import '../../../common/util/logger.dart';
 import '../../my_tests/models/demo_test_model.dart';
 import '../model/test_attempt_model.dart';
@@ -18,17 +17,14 @@ abstract interface class ITestViewRepository {
 }
 
 final class TestViewRepositoryImpl implements ITestViewRepository {
-  const TestViewRepositoryImpl({required this.dio});
-  final Dio dio;
+  const TestViewRepositoryImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<TestAttemptResponse> getAttempts(String testId, TestAttemptRequest request) async {
     try {
-      final response = await dio.get<Map<String, Object?>>(
-        '/api/tests/$testId/attempts',
-        queryParameters: request.toJson(),
-      );
-      return TestAttemptResponse.fromJson(response.data ?? {});
+      final response = await apiClient.get('/api/tests/$testId/attempts', queryParameters: request.toJson());
+      return TestAttemptResponse.fromJson(response);
     } catch (e, s) {
       info('GET ATTEMPTS API ERROR: $e $s');
       rethrow;
@@ -39,11 +35,11 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   Future<DemoTestResponse> getTestDetail(String testId, TestDetailRequest request) async {
     try {
       final queryParams = request.toJson();
-      final response = await dio.get<Map<String, Object?>>(
+      final response = await apiClient.get(
         '/api/tests/$testId',
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
       );
-      return DemoTestResponse.fromJson(response.data ?? {});
+      return DemoTestResponse.fromJson(response);
     } catch (e, s) {
       info('GET TEST DETAIL API ERROR: $e $s');
       rethrow;
@@ -54,11 +50,11 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   Future<List<DemoQuestion>> getTestQuestions(String testId, TestDetailRequest request) async {
     try {
       final queryParams = request.toJson();
-      final response = await dio.get<Map<String, Object?>>(
+      final response = await apiClient.get(
         '/api/tests/$testId/questions',
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
       );
-      final dataMap = response.data?['data'] as Map<String, Object?>?;
+      final dataMap = response['data'] as Map<String, Object?>?;
       final list = dataMap?['questions'] as List<Object?>? ?? [];
       return list.map((e) => DemoQuestion.fromJson(e as Map<String, Object?>)).toList();
     } catch (e, s) {
@@ -70,7 +66,7 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<void> likeTest(String testId) async {
     try {
-      await dio.post<void>('/api/tests/$testId/like');
+      await apiClient.post('/api/tests/$testId/like');
     } catch (e, s) {
       info('LIKE TEST API ERROR: $e $s');
       rethrow;
@@ -80,7 +76,7 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<void> unlikeTest(String testId) async {
     try {
-      await dio.delete<void>('/api/tests/$testId/like');
+      await apiClient.delete('/api/tests/$testId/like');
     } catch (e, s) {
       info('UNLIKE TEST API ERROR: $e $s');
       rethrow;
@@ -90,7 +86,7 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<void> archiveTest(String testId) async {
     try {
-      await dio.post<void>('/api/payments/tests/$testId/archive');
+      await apiClient.post('/api/payments/tests/$testId/archive');
     } catch (e, s) {
       info('ARCHIVE TEST API ERROR: $e $s');
       rethrow;
@@ -100,7 +96,7 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<void> unarchiveTest(String testId) async {
     try {
-      await dio.delete<void>('/api/payments/tests/$testId/archive');
+      await apiClient.delete('/api/payments/tests/$testId/archive');
     } catch (e, s) {
       info('UNARCHIVE TEST API ERROR: $e $s');
       rethrow;
@@ -110,9 +106,9 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   @override
   Future<StartAttemptResponse> startAttempt(String testId, StartAttemptRequest request) async {
     try {
-      final response = await dio.post<Map<String, Object?>>('/api/tests/$testId/attempts', data: request.toJson());
-      info('START ATTEMPT RESP: ${response.data}');
-      return StartAttemptResponse.fromJson(response.data ?? {});
+      final response = await apiClient.post('/api/tests/$testId/attempts', body: request.toJson());
+      info('START ATTEMPT RESP: $response');
+      return StartAttemptResponse.fromJson(response);
     } catch (e, s) {
       info('START ATTEMPT API ERROR: $e $s');
       rethrow;
@@ -123,12 +119,9 @@ final class TestViewRepositoryImpl implements ITestViewRepository {
   Future<FinishAttemptResponse> finishAttempt(String testId, String attemptId, FinishAttemptRequest request) async {
     try {
       info('FINISH ATTEMPT REQ: testId=$testId, attemptId=$attemptId, body=${request.toJson()}');
-      final response = await dio.post<Map<String, Object?>>(
-        '/api/tests/$testId/attempts/$attemptId/finish',
-        data: request.toJson(),
-      );
-      info('FINISH ATTEMPT RESP: ${response.data}');
-      return FinishAttemptResponse.fromJson(response.data ?? {});
+      final response = await apiClient.post('/api/tests/$testId/attempts/$attemptId/finish', body: request.toJson());
+      info('FINISH ATTEMPT RESP: $response');
+      return FinishAttemptResponse.fromJson(response);
     } catch (e, s) {
       info('FINISH ATTEMPT API ERROR: $e $s');
       rethrow;

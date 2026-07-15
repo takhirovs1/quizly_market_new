@@ -1,22 +1,15 @@
 class SupportPhotoModel {
   const SupportPhotoModel({required this.path, required this.url});
 
-  factory SupportPhotoModel.fromJson(Map<String, Object?> json) => SupportPhotoModel(
-    path: json['path'] as String? ?? '',
-    url: json['url'] as String? ?? '',
-  );
+  factory SupportPhotoModel.fromJson(Map<String, Object?> json) =>
+      SupportPhotoModel(path: json['path'] as String? ?? '', url: json['url'] as String? ?? '');
 
   final String path;
   final String url;
 }
 
 class SupportReplyToModel {
-  const SupportReplyToModel({
-    required this.id,
-    required this.sender,
-    required this.hasPhoto,
-    this.textPreview,
-  });
+  const SupportReplyToModel({required this.id, required this.sender, required this.hasPhoto, this.textPreview});
 
   factory SupportReplyToModel.fromJson(Map<String, Object?> json) => SupportReplyToModel(
     id: json['id'] as String? ?? '',
@@ -89,9 +82,7 @@ class SupportChatModel {
     id: json['id'] as String? ?? '',
     status: json['status'] as String? ?? 'new',
     unreadCount: json['unread_count'] as int? ?? 0,
-    lastMessageAt: json['last_message_at'] is String
-        ? DateTime.tryParse(json['last_message_at'] as String)
-        : null,
+    lastMessageAt: json['last_message_at'] is String ? DateTime.tryParse(json['last_message_at'] as String) : null,
     createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
   );
 
@@ -119,10 +110,8 @@ class SendMessageRequest {
 class UploadedFileModel {
   const UploadedFileModel({required this.path, required this.url});
 
-  factory UploadedFileModel.fromJson(Map<String, Object?> json) => UploadedFileModel(
-    path: json['path'] as String? ?? '',
-    url: json['url'] as String? ?? '',
-  );
+  factory UploadedFileModel.fromJson(Map<String, Object?> json) =>
+      UploadedFileModel(path: json['path'] as String? ?? '', url: json['url'] as String? ?? '');
 
   final String path;
   final String url;

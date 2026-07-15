@@ -67,10 +67,7 @@ abstract class SupportChatState extends State<SupportChatScreen> {
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: colors.buttonFill,
-                  borderRadius: .circular(12),
-                ),
+                decoration: BoxDecoration(color: colors.buttonFill, borderRadius: .circular(12)),
                 child: Row(
                   spacing: 8,
                   children: [
@@ -80,10 +77,7 @@ abstract class SupportChatState extends State<SupportChatScreen> {
                       height: 22,
                       colorFilter: .mode(colors.text, .srcIn),
                     ),
-                    Text(
-                      context.x.l10n.sendImage,
-                      style: textStyle.sfW500s14.copyWith(color: colors.text),
-                    ),
+                    Text(context.x.l10n.sendImage, style: textStyle.sfW500s14.copyWith(color: colors.text)),
                   ],
                 ),
               ),

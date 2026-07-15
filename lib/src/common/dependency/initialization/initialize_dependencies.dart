@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'dart:collection';
+import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:math' as math;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:local_source/local_source.dart';
 import 'package:logbook/logbook.dart';
@@ -30,7 +30,7 @@ import '../../../feature/settings/model/app_settings.dart';
 import '../../router/pages.dart';
 import '../../constant/config.dart';
 import '../../constant/pubspec.yaml.g.dart';
-import '../../service/api_service.dart';
+import '../../service/api_client.dart';
 import '../../service/remote_config_service.dart';
 import '../../service/telegram_bot/telegram_bot_interceptor.dart';
 import '../../util/http_log_interceptor.dart';
@@ -105,15 +105,6 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     'Database',
     (dependencies) async {
       dependencies.localSource = await LocalSource.instance;
-      // if (defaultTargetPlatform == .macOS || defaultTargetPlatform == .windows) {
-      //   await dependencies.localSource.setAccessToken(
-      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODE0NTkwNDgsImlhdCI6MTc4MTQ1NTQ0OCwiaXNzIjoicXVpemx5Iiwic3ViIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlkIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwidWlpIjoiODQzNWZjNjMtNjliMy00MDRlLWExMzgtMDk5M2FkY2Q5N2IzIiwicm9sZSI6ImN1c3RvbWVyIn0.Z0qudqzizABZckyKhm3_T-wgWQMYqQ9CNoNJmZms0zY',
-      //   );
-      //   await dependencies.localSource.setRefreshToken(
-      //     'a9183d9b2be9020b5cec0ef8783e5cc937e8f38ac459ffc4d363212b5515658e',
-      //   );
-      //   await dependencies.localSource.setId('8435fc63-69b3-404e-a138-0993adcd97b3');
-      // }
 
       final tg = TelegramService.instance;
       if (tg.isSupported) {
@@ -159,17 +150,6 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     },
   ),
 
-  // (
-  //   'Wakelock',
-  //   (dependencies) async {
-  //     final wakelockEnabled = dependencies.localSource.wakelockEnabled;
-  //     if (wakelockEnabled) {
-  //       await WakelockPlus.enable();
-  //     } else {
-  //       await WakelockPlus.disable();
-  //     }
-  //   },
-  // ),
   (
     'Wakelock',
     (dependencies) async {
@@ -241,186 +221,61 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
   ),
 
   (
-    'Services Dio',
+    'Services',
     (dependencies) {
-      final dio = Dio(
-        BaseOptions(
-          baseUrl: Config.apiBaseUrl,
-          headers: <String, String>{
-            'Api-Version': '1.0',
-            'Accept': 'application/json',
-            'Charset': 'utf-8',
-            'X-Platform-Type': 'mobile',
-          },
-          connectTimeout: const Duration(minutes: 1),
-          receiveTimeout: const Duration(minutes: 1),
-        ),
-      );
-
-      final copyDio = Thunder.addDio(dio);
-
-      Future<String>? refreshFuture;
-
-      copyDio.interceptors.addAll(<Interceptor>[
-        InterceptorsWrapper(
-          onRequest: (options, handler) {
-            options.headers.addAll({
-              if (dependencies.localSource.accessToken.isNotEmpty) ...{
-                io.HttpHeaders.authorizationHeader: 'Bearer ${dependencies.localSource.accessToken}',
-              },
-              'Content-Language': dependencies.localSource.localization?.languageCode ?? 'en',
+      dependencies.apiClient = ApiClient(
+        baseUrl: Config.apiBaseUrl,
+        defaultHeaders: const <String, String>{
+          'Api-Version': '1.0',
+          'Accept': 'application/json',
+          'Charset': 'utf-8',
+          'X-Platform-Type': 'mobile',
+        },
+        getAccessToken: () => dependencies.localSource.accessToken,
+        getRefreshToken: () => dependencies.localSource.refreshToken,
+        getLocale: () => dependencies.localSource.localization?.languageCode ?? 'en',
+        getDeviceId: () => dependencies.localSource.deviceId,
+        onRefreshToken: (refreshToken) async {
+          l.i('ApiClient | Refreshing token via /api/auth/refresh');
+          final response = await http.post(
+            .parse('${Config.apiBaseUrl}/api/auth/refresh'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Api-Version': '1.0',
+              'Accept': 'application/json',
+              'X-Platform-Type': 'mobile',
               'X-Device-ID': dependencies.localSource.deviceId,
-            });
-
-            handler.next(options);
-          },
-          onError: (error, handler) async {
-            if (error.response?.statusCode == 401) {
-              l.w('TokenInterceptor | 401 Unauthorized received for path: ${error.requestOptions.path}');
-
-              if (error.requestOptions.path.endsWith('/api/auth/refresh')) {
-                l.w('TokenInterceptor | 401 Unauthorized received for refresh request: signing out...');
-                try {
-                  await dependencies.authenticationController.signOut();
-                } on Object catch (signOutError, signOutStack) {
-                  l.s('TokenInterceptor | Error during signOut: $signOutError', signOutStack);
-                }
-                return handler.next(error);
-              }
-
-              final responseData = error.response?.data;
-              var isSessionExpiredError = false;
-              if (responseData is Map) {
-                final errVal = responseData['error'];
-                if (errVal is String && errVal.contains('session expired or signed in on another device')) {
-                  isSessionExpiredError = true;
-                }
-              } else if (responseData is String) {
-                if (responseData.contains('session expired or signed in on another device')) {
-                  isSessionExpiredError = true;
-                }
-              }
-
-              if (isSessionExpiredError) {
-                l.w('TokenInterceptor | Session limit exceeded / expired. Opening session screen...');
-                authNavigatorInstance?.push(Routes.session);
-                return handler.next(error);
-              }
-
-              final refreshToken = dependencies.localSource.refreshToken;
-              if (refreshToken.isEmpty) {
-                l.w('TokenInterceptor | Refresh token is empty. Signing out...');
-                try {
-                  await dependencies.authenticationController.signOut();
-                } on Object catch (e, s) {
-                  l.s('TokenInterceptor | Error during signOut: $e', s);
-                }
-                return handler.next(error);
-              }
-
-              try {
-                l.i('TokenInterceptor | Attempting token refresh...');
-                final newAccessToken = await (refreshFuture ??= () async {
-                  try {
-                    l.i('TokenInterceptor | Sending request to /api/auth/refresh');
-                    final response =
-                        await Thunder.addDio(
-                          Dio(
-                            BaseOptions(
-                              baseUrl: Config.apiBaseUrl,
-                              headers: <String, String>{
-                                'Api-Version': '1.0',
-                                'Accept': 'application/json',
-                                'Charset': 'utf-8',
-                                'X-Platform-Type': 'mobile',
-                                'X-Device-ID': dependencies.localSource.deviceId,
-                              },
-                              connectTimeout: const Duration(seconds: 15),
-                              receiveTimeout: const Duration(seconds: 15),
-                            ),
-                          ),
-                        ).post<Map<String, Object?>>(
-                          '/api/auth/refresh',
-                          data: <String, Object?>{'refresh_token': refreshToken},
-                        );
-
-                    final responseData = response.data;
-                    if (responseData == null) {
-                      throw Exception('Response body is null');
-                    }
-
-                    final tokenResponse = AuthTokenResponse.fromJson(responseData);
-
-                    await dependencies.repository.authenticationRepository.updateTokens(
-                      accessToken: tokenResponse.accessToken,
-                      refreshToken: tokenResponse.refreshToken,
-                    );
-
-                    l.i('TokenInterceptor | Token refreshed successfully');
-                    return tokenResponse.accessToken;
-                  } on Object catch (e, s) {
-                    if (e is DioException && e.response?.statusCode == 401) {
-                      l.w('TokenInterceptor | Token refresh request failed with 401 Unauthorized: $e', s);
-                    } else {
-                      l.s('TokenInterceptor | Token refresh request failed: $e', s);
-                    }
-                    rethrow;
-                  } finally {
-                    refreshFuture = null;
-                  }
-                }());
-
-                final options = error.requestOptions;
-                options.headers[io.HttpHeaders.authorizationHeader] = 'Bearer $newAccessToken';
-                final retryResponse = await copyDio.fetch<Object?>(options);
-                return handler.resolve(retryResponse);
-              } on Object catch (e, s) {
-                final is401 = e is DioException && e.response?.statusCode == 401;
-                if (is401) {
-                  l.w('TokenInterceptor | Error handling token refresh (401 Unauthorized): signing out...');
-                  try {
-                    await dependencies.authenticationController.signOut();
-                  } on Object catch (signOutError, signOutStack) {
-                    l.s('TokenInterceptor | Error during signOut: $signOutError', signOutStack);
-                  }
-                  return handler.next(error);
-                } else {
-                  l.s('TokenInterceptor | Error handling token refresh: $e. Not signing out (non-401 error).', s);
-                  if (e is DioException) {
-                    return handler.next(
-                      DioException(
-                        requestOptions: error.requestOptions,
-                        response: e.response,
-                        type: e.type,
-                        error: e.error,
-                        stackTrace: e.stackTrace,
-                        message: e.message,
-                      ),
-                    );
-                  }
-                  return handler.next(
-                    DioException(
-                      requestOptions: error.requestOptions,
-                      error: e,
-                      stackTrace: s,
-                    ),
-                  );
-                }
-              }
-            }
-
-            handler.next(error);
-          },
-        ),
-
-        if (kReleaseMode) TelegramBotInterceptor(config: dependencies.appDebugSettings.value),
-
-        const HttpLogInterceptor(),
-      ]);
-
-      dependencies
-        ..dios = DioContainer(dio: copyDio)
-        ..apiService = ApiService(copyDio);
+            },
+            body: '{"refresh_token":"$refreshToken"}',
+          );
+          if (response.statusCode > 204) {
+            throw ApiResponseException(statusCode: response.statusCode, message: 'HTTP ${response.statusCode}');
+          }
+          final json = jsonDecode(response.body) as Map<String, Object?>;
+          final tokenResponse = AuthTokenResponse.fromJson(json);
+          await dependencies.repository.authenticationRepository.updateTokens(
+            accessToken: tokenResponse.accessToken,
+            refreshToken: tokenResponse.refreshToken,
+          );
+        },
+        onSignOut: () async {
+          l.w('ApiClient | Unrecoverable 401 — signing out');
+          try {
+            await dependencies.authenticationController.signOut();
+          } on Object catch (e, s) {
+            l.s('ApiClient | Error during signOut: $e', s);
+          }
+        },
+        onSessionExpired: () {
+          l.w('ApiClient | Session expired — opening session screen');
+          authNavigatorInstance?.push(Routes.session);
+        },
+        middlewares: [
+          if (kReleaseMode) telegramBotMiddleware(dependencies.appDebugSettings.value),
+          Thunder.middleware,
+          httpLogMiddleware,
+        ],
+      );
     },
   ),
 
@@ -431,12 +286,12 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
     (dependencies) {
       dependencies.repository = RepositoryContainer(
         authenticationRepository: AuthenticationRepositoryImpl(
-          apiService: dependencies.apiService,
+          apiClient: dependencies.apiClient,
           localSource: dependencies.localSource,
         ),
-        mainRepository: MainRepositoryImpl(dio: dependencies.dios.dio),
-        myTestRepository: MyTestRepositoryImpl(dio: dependencies.dios.dio),
-        profileRepository: ProfileRepositoryImpl(dio: dependencies.dios.dio),
+        mainRepository: MainRepositoryImpl(apiClient: dependencies.apiClient),
+        myTestRepository: MyTestRepositoryImpl(apiClient: dependencies.apiClient),
+        profileRepository: ProfileRepositoryImpl(apiClient: dependencies.apiClient),
       );
     },
   ),

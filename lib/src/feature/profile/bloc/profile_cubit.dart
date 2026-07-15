@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../../common/service/api_client.dart';
 import '../../../common/service/auth_service.dart';
 import '../../../common/util/app_enum.dart';
 import '../../../common/util/error_util.dart';
@@ -58,7 +58,7 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
       emit(state.copyWith(status: StateStatus.success, user: user));
     },
     errorHandler: (emit, error, stackTrace) {
-      if (error is DioException && error.response?.statusCode == 409) {
+      if (error is ApiResponseException && error.statusCode == 409) {
         emit(state.copyWith(linkErrorCount: state.linkErrorCount + 1));
       } else {
         emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
@@ -76,7 +76,7 @@ class ProfileCubit extends SequentialCubit<ProfileState> {
       emit(state.copyWith(status: StateStatus.success, user: user));
     },
     errorHandler: (emit, error, stackTrace) {
-      if (error is DioException && error.response?.statusCode == 409) {
+      if (error is ApiResponseException && error.statusCode == 409) {
         emit(state.copyWith(linkErrorCount: state.linkErrorCount + 1));
       } else {
         emit(state.copyWith(status: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));

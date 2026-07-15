@@ -113,7 +113,10 @@ class TestCardWidget extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     price,
-                    style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
+                    style: context.x.textStyle.sfW700s16.copyWith(
+                      fontSize: 15,
+                      color: context.x.colors.bannerPriceText,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(width: 8),

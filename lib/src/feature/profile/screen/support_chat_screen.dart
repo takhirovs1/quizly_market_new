@@ -80,60 +80,44 @@ class _SupportChatScreenState extends SupportChatState {
     SupportChatCubitState state,
     ThemeColors colors,
     AppTypography textStyle,
-  ) =>
-      Column(
-        children: [
-          Expanded(
-            child: state.status.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : Stack(
-                    alignment: .topCenter,
-                    children: [
-                      ListView.builder(
-                        controller: scrollController,
-                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
-                        itemCount: state.messages.length,
-                        itemBuilder: (context, index) =>
-                            _buildMessage(context, state.messages[index], colors, textStyle),
-                      ),
-                      if (state.status.isLoadingMore)
-                        Positioned(
-                          top: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: colors.buttonFill,
-                              borderRadius: .circular(16),
-                            ),
-                            child: const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          ),
-                        ),
-                    ],
+  ) => Column(
+    children: [
+      Expanded(
+        child: state.status.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Stack(
+                alignment: .topCenter,
+                children: [
+                  ListView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+                    itemCount: state.messages.length,
+                    itemBuilder: (context, index) => _buildMessage(context, state.messages[index], colors, textStyle),
                   ),
-          ),
-          _buildInputBar(context, state, colors, textStyle),
-        ],
-      );
+                  if (state.status.isLoadingMore)
+                    Positioned(
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(color: colors.buttonFill, borderRadius: .circular(16)),
+                        child: const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                    ),
+                ],
+              ),
+      ),
+      _buildInputBar(context, state, colors, textStyle),
+    ],
+  );
 
-  Widget _buildMessage(
-    BuildContext context,
-    SupportMessageModel msg,
-    ThemeColors colors,
-    AppTypography textStyle,
-  ) {
+  Widget _buildMessage(BuildContext context, SupportMessageModel msg, ThemeColors colors, AppTypography textStyle) {
     final isUser = msg.isUser;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Align(
         alignment: isUser ? .centerRight : .centerLeft,
         child: Container(
-          constraints: BoxConstraints(
-            maxWidth: context.x.isMobile ? MediaQuery.sizeOf(context).width * 0.85 : 480,
-          ),
+          constraints: BoxConstraints(maxWidth: context.x.isMobile ? MediaQuery.sizeOf(context).width * 0.85 : 480),
           decoration: BoxDecoration(
             color: isUser ? colors.primary : colors.buttonFill,
             borderRadius: BorderRadius.only(
@@ -151,26 +135,16 @@ class _SupportChatScreenState extends SupportChatState {
               if (!isUser)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    'Quizly support',
-                    style: textStyle.sfW400s14.copyWith(color: colors.gray),
-                  ),
+                  child: Text('Quizly support', style: textStyle.sfW400s14.copyWith(color: colors.gray)),
                 ),
               if (msg.replyTo != null) _buildReplyPreview(msg.replyTo!, colors, textStyle, isUser),
               if (msg.photos.isNotEmpty) _buildPhotos(msg.photos),
               if (msg.text != null && msg.text!.isNotEmpty)
-                Text(
-                  msg.text!,
-                  style: textStyle.sfW400s14.copyWith(
-                    color: isUser ? Colors.white : colors.text,
-                  ),
-                ),
+                Text(msg.text!, style: textStyle.sfW400s14.copyWith(color: isUser ? Colors.white : colors.text)),
               const SizedBox(height: 4),
               Text(
                 msg.formattedTime,
-                style: textStyle.sfW400s12.copyWith(
-                  color: isUser ? Colors.white.withValues(alpha: 0.7) : colors.gray,
-                ),
+                style: textStyle.sfW400s12.copyWith(color: isUser ? Colors.white.withValues(alpha: 0.7) : colors.gray),
               ),
             ],
           ),
@@ -179,32 +153,20 @@ class _SupportChatScreenState extends SupportChatState {
     );
   }
 
-  Widget _buildReplyPreview(
-    SupportReplyToModel reply,
-    ThemeColors colors,
-    AppTypography textStyle,
-    bool isUser,
-  ) =>
+  Widget _buildReplyPreview(SupportReplyToModel reply, ThemeColors colors, AppTypography textStyle, bool isUser) =>
       Container(
         margin: const EdgeInsets.only(bottom: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           border: Border(
-            left: BorderSide(
-              color: isUser ? Colors.white.withValues(alpha: 0.6) : colors.primary,
-              width: 3,
-            ),
+            left: BorderSide(color: isUser ? Colors.white.withValues(alpha: 0.6) : colors.primary, width: 3),
           ),
-          color: isUser
-              ? Colors.white.withValues(alpha: 0.15)
-              : colors.primary.withValues(alpha: 0.08),
+          color: isUser ? Colors.white.withValues(alpha: 0.15) : colors.primary.withValues(alpha: 0.08),
           borderRadius: .circular(4),
         ),
         child: Text(
           reply.textPreview ?? (reply.hasPhoto ? '🖼 Photo' : ''),
-          style: textStyle.sfW400s12.copyWith(
-            color: isUser ? Colors.white.withValues(alpha: 0.8) : colors.gray,
-          ),
+          style: textStyle.sfW400s12.copyWith(color: isUser ? Colors.white.withValues(alpha: 0.8) : colors.gray),
           maxLines: 1,
           overflow: .ellipsis,
         ),
@@ -233,106 +195,95 @@ class _SupportChatScreenState extends SupportChatState {
     SupportChatCubitState state,
     ThemeColors colors,
     AppTypography textStyle,
-  ) =>
-      ListenableBuilder(
-        listenable: messageFocusNode,
-        builder: (context, _) {
-          final isFocused = messageFocusNode.hasFocus;
-          return Container(
-            padding: EdgeInsets.only(
-              left: 12,
-              right: 12,
-              top: 8,
-              bottom: isFocused
-                  ? context.telegramWebApp.contentSafeAreaInset.bottom + 12
-                  : context.telegramWebApp.contentSafeAreaInset.bottom + 24,
-            ),
-            decoration: BoxDecoration(
-              color: context.x.isMobile ? colors.scaffoldBackground : colors.cardBackground2,
-              border: Border(top: BorderSide(color: colors.divider, width: 0.5)),
-            ),
-            child: Row(
-              children: [
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => _showAttachmentBottomSheet(context),
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      borderRadius: .circular(12),
-                      border: Border.all(color: colors.primary, width: 1.5),
-                    ),
-                    child: Icon(Icons.attach_file_rounded, color: colors.primary, size: 20),
-                  ),
+  ) => ListenableBuilder(
+    listenable: messageFocusNode,
+    builder: (context, _) {
+      final isFocused = messageFocusNode.hasFocus;
+      return Container(
+        padding: EdgeInsets.only(
+          left: 12,
+          right: 12,
+          top: 8,
+          bottom: isFocused
+              ? context.telegramWebApp.contentSafeAreaInset.bottom + 12
+              : context.telegramWebApp.contentSafeAreaInset.bottom + 24,
+        ),
+        decoration: BoxDecoration(
+          color: context.x.isMobile ? colors.scaffoldBackground : colors.cardBackground2,
+          border: Border(top: BorderSide(color: colors.divider, width: 0.5)),
+        ),
+        child: Row(
+          children: [
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () => _showAttachmentBottomSheet(context),
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: .circular(12),
+                  border: Border.all(color: colors.primary, width: 1.5),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SizedBox(
-                    height: 44,
-                    child: TextField(
-                      controller: messageController,
-                      focusNode: messageFocusNode,
-                      onSubmitted: (_) => sendMessage(),
-                      style: textStyle.sfW400s14.copyWith(color: colors.text),
-                      decoration: InputDecoration(
-                        hintText: context.x.l10n.messageInputHint,
-                        hintStyle: textStyle.sfW400s14.copyWith(color: colors.gray),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        filled: true,
-                        fillColor: colors.textFieldBackground,
-                        border: OutlineInputBorder(
-                          borderRadius: .circular(22),
-                          borderSide: BorderSide(color: colors.divider),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: .circular(22),
-                          borderSide: BorderSide(color: colors.divider),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: .circular(22),
-                          borderSide: BorderSide(color: colors.primary),
-                        ),
-                      ),
+                child: Icon(Icons.attach_file_rounded, color: colors.primary, size: 20),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: SizedBox(
+                height: 44,
+                child: TextField(
+                  controller: messageController,
+                  focusNode: messageFocusNode,
+                  onSubmitted: (_) => sendMessage(),
+                  style: textStyle.sfW400s14.copyWith(color: colors.text),
+                  decoration: InputDecoration(
+                    hintText: context.x.l10n.messageInputHint,
+                    hintStyle: textStyle.sfW400s14.copyWith(color: colors.gray),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    filled: true,
+                    fillColor: colors.textFieldBackground,
+                    border: OutlineInputBorder(
+                      borderRadius: .circular(22),
+                      borderSide: BorderSide(color: colors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: .circular(22),
+                      borderSide: BorderSide(color: colors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: .circular(22),
+                      borderSide: BorderSide(color: colors.primary),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ValueListenableBuilder<bool>(
-                  valueListenable: isSendActive,
-                  builder: (context, active, _) => CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: active && !state.isSending ? sendMessage : null,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: active ? colors.primary : colors.transparent,
-                        borderRadius: .circular(12),
-                        border: Border.all(
-                          color: active ? colors.primary : colors.divider,
-                          width: 1.5,
-                        ),
-                      ),
-                      child: state.isSending
-                          ? Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: CircularProgressIndicator(
-                                color: colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Icon(
-                              Icons.send,
-                              color: active ? colors.white : colors.gray,
-                              size: 20,
-                            ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          );
-        },
+            const SizedBox(width: 8),
+            ValueListenableBuilder<bool>(
+              valueListenable: isSendActive,
+              builder: (context, active, _) => CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: active && !state.isSending ? sendMessage : null,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: active ? colors.primary : colors.transparent,
+                    borderRadius: .circular(12),
+                    border: Border.all(color: active ? colors.primary : colors.divider, width: 1.5),
+                  ),
+                  child: state.isSending
+                      ? Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: CircularProgressIndicator(color: colors.white, strokeWidth: 2),
+                        )
+                      : Icon(Icons.send, color: active ? colors.white : colors.gray, size: 20),
+                ),
+              ),
+            ),
+          ],
+        ),
       );
+    },
+  );
 }

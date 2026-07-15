@@ -92,7 +92,7 @@ enum Routes with OctopusRoute {
         ),
         BlocProvider(
           create: (context) => RecommendationCubit(
-            recommendationRepository: RecommendationRepositoryImpl(dio: context.x.dependencies.dios.dio),
+            recommendationRepository: RecommendationRepositoryImpl(apiClient: context.x.dependencies.apiClient),
           ),
         ),
       ],
@@ -112,7 +112,7 @@ enum Routes with OctopusRoute {
         ),
         BlocProvider(
           create: (context) => RecommendationCubit(
-            recommendationRepository: RecommendationRepositoryImpl(dio: context.x.dependencies.dios.dio),
+            recommendationRepository: RecommendationRepositoryImpl(apiClient: context.x.dependencies.apiClient),
           ),
         ),
       ],
@@ -141,26 +141,29 @@ enum Routes with OctopusRoute {
     Routes.appDocuments => AppDocumentsScreen(initialIndex: int.tryParse(node.arguments['index'] ?? '') ?? 0),
     .testMode => BlocProvider(
       create: (context) =>
-          TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+          TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient))
             ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest()),
       child: TestModeScreen(testId: node.arguments['id'] ?? ''),
     ),
     .testCustomMode => BlocProvider(
-      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-        ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest())
-        ..getAttempts(node.arguments['id'] ?? '', .custom),
+      create: (context) =>
+          TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient))
+            ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest())
+            ..getAttempts(node.arguments['id'] ?? '', .custom),
       child: const TestCustomModeScreen(),
     ),
     .testUniversityMode => BlocProvider(
-      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
-        ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest())
-        ..getAttempts(node.arguments['id'] ?? '', .university),
+      create: (context) =>
+          TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient))
+            ..getTestDetail(node.arguments['id'] ?? '', const TestDetailRequest())
+            ..getAttempts(node.arguments['id'] ?? '', .university),
       child: const TestUniversityModeScreen(),
     ),
     .testGroupMode => const TestGroupModeScreen(),
     .testFlashcardMode => const TestFlashcardMode(),
     .testResult => BlocProvider(
-      create: (context) => TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio)),
+      create: (context) =>
+          TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient)),
       child: TestResultScreen(arguments: TestResultArguments.fromArguments(node.arguments)),
     ),
     .testSolving => BlocProvider(
@@ -173,16 +176,16 @@ enum Routes with OctopusRoute {
         final firstChunkEnd = (apiStart + 19).clamp(apiStart, apiEnd);
         final rangeStr = '$apiStart-$firstChunkEnd';
 
-        return TestView(testViewRepository: TestViewRepositoryImpl(dio: context.x.dependencies.dios.dio))
+        return TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient))
           ..getTestDetail(args.testId, TestDetailRequest(shuffle: args.shuffleOptionName, range: rangeStr));
       },
       child: TestSolvingScreen(arguments: TestSolvingArguments.fromArguments(node.arguments)),
     ),
     .supportChat => BlocProvider(
       create: (context) => SupportChatCubit(
-        repository: SupportChatRepositoryImpl(dio: context.x.dependencies.dios.dio),
+        repository: SupportChatRepositoryImpl(apiClient: context.x.dependencies.apiClient),
         localSource: context.x.dependencies.localSource,
-        wsBaseUrl: context.x.dependencies.dios.dio.options.baseUrl,
+        wsBaseUrl: context.x.dependencies.apiClient.baseUrl,
       ),
       child: const SupportChatScreen(),
     ),

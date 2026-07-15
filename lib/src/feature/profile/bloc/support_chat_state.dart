@@ -38,13 +38,5 @@ class SupportChatCubitState extends Equatable {
   );
 
   @override
-  List<Object?> get props => [
-    status,
-    messages,
-    isSending,
-    hasMore,
-    oldestCreatedAt,
-    errorMessage,
-    sendErrorCount,
-  ];
+  List<Object?> get props => [status, messages, isSending, hasMore, oldestCreatedAt, errorMessage, sendErrorCount];
 }

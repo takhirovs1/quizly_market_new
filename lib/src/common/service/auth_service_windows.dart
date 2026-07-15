@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart' hide Response;
+import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:url_launcher/url_launcher.dart';
@@ -104,10 +104,9 @@ Future<Map<String, dynamic>?> _exchangeCodeForTokens({
   required String redirectUri,
 }) async {
   try {
-    final dio = Dio();
-    final response = await dio.post<Map<String, dynamic>>(
-      'https://oauth2.googleapis.com/token',
-      data: {
+    final response = await http.post(
+      .parse('https://oauth2.googleapis.com/token'),
+      body: {
         'client_id': _windowsClientId,
         'client_secret': _windowsClientSecret,
         'redirect_uri': redirectUri,
@@ -115,9 +114,9 @@ Future<Map<String, dynamic>?> _exchangeCodeForTokens({
         'code': authCode,
         'code_verifier': codeVerifier,
       },
-      options: Options(contentType: Headers.formUrlEncodedContentType),
     );
-    return response.data;
+    if (response.statusCode != 200) return null;
+    return jsonDecode(response.body) as Map<String, dynamic>?;
   } on Object catch (_) {
     return null;
   }
