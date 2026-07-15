@@ -11,6 +11,8 @@ import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
+import '../../feature/profile/bloc/support_chat_cubit.dart';
+import '../../feature/profile/data/support_chat_repository.dart';
 import '../../feature/profile/screen/app_documents_screen.dart';
 import '../../feature/profile/screen/edit_profile_screen.dart';
 import '../../feature/profile/screen/app_info_screen.dart';
@@ -176,7 +178,14 @@ enum Routes with OctopusRoute {
       },
       child: TestSolvingScreen(arguments: TestSolvingArguments.fromArguments(node.arguments)),
     ),
-    .supportChat => const SupportChatScreen(),
+    .supportChat => BlocProvider(
+      create: (context) => SupportChatCubit(
+        repository: SupportChatRepositoryImpl(dio: context.x.dependencies.dios.dio),
+        localSource: context.x.dependencies.localSource,
+        wsBaseUrl: context.x.dependencies.dios.dio.options.baseUrl,
+      ),
+      child: const SupportChatScreen(),
+    ),
     Routes.archive => BlocProvider(
       create: (context) =>
           ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository)..loadArchiveTests(),

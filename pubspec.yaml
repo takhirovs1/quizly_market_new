@@ -53,6 +53,7 @@ dependencies:
   thunder: ^0.2.5
   dio: ^5.9.1
   connectivity_plus: ^7.0.0
+  web_socket_channel: ^3.0.2
 
   # firebase
   firebase_core: 4.11.0

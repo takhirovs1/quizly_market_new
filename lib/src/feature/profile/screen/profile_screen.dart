@@ -205,9 +205,9 @@ class _ProfileScreenState extends ProfileScreenState {
                                                   child: ShimmerBox(width: 120, height: 16, radius: 4),
                                                 )
                                               : Column(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisSize: .min,
                                                   children: [
-                                                    if (user?.telegramChatId != null) ...[
+                                                    if (user.telegramChatId != null) ...[
                                                       Text(
                                                         'Telegram ID: ${user.telegramChatId}',
                                                         style: context.x.textStyle.sfW400s14.copyWith(
@@ -227,7 +227,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                       ),
                                                       const SizedBox(height: 2),
                                                     ],
-                                                    if (user?.email != null && user.email!.isNotEmpty)
+                                                    if (user.email != null && user.email!.isNotEmpty)
                                                       Text(
                                                         user.email!,
                                                         style: context.x.textStyle.sfW400s14.copyWith(
@@ -352,11 +352,6 @@ class _ProfileScreenState extends ProfileScreenState {
         } else {
           // Desktop Version Layout
           final displayNameStr = user != null ? formatProfileName(user.displayName) : '';
-          final idStr = user != null ? 'ID: ${user.telegramChatId ?? user.id ?? ""}' : '';
-          final usernameStr = user != null && user.username != null && user.username!.isNotEmpty
-              ? ' User: @${user.username}'
-              : '';
-          final subtitleStr = '$idStr$usernameStr';
 
           final firstLetter = displayNameStr.isNotEmpty ? displayNameStr[0].toUpperCase() : '';
           final fallbackAvatar = Container(
@@ -467,7 +462,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
-                                                if (user?.username != null && user.username!.isNotEmpty) ...[
+                                                if (user.username != null && user.username!.isNotEmpty) ...[
                                                   Text(
                                                     '@${user.username}',
                                                     style: context.x.textStyle.sfW400s14.copyWith(

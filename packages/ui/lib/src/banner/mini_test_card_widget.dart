@@ -98,24 +98,25 @@ class MiniTestCardWidget extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Row(
-            spacing: 4,
-            children: [
-              if (isPurchased)
-                Assets.lib.images.partyPopper.image(width: 16, height: 16, package: 'ui')
-              else
+          if (!isPurchased) ...[
+            Row(
+              spacing: 4,
+              children: [
                 Assets.lib.images.money.image(width: 16, height: 16, package: 'ui'),
-              Expanded(
-                child: Text(
-                  price,
-                  style: context.x.textStyle.sfW700s16.copyWith(fontSize: 15, color: context.x.colors.bannerPriceText),
-                  overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Text(
+                    price,
+                    style: context.x.textStyle.sfW700s16.copyWith(
+                      fontSize: 15,
+                      color: context.x.colors.bannerPriceText,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
+              ],
+            ),
+            const SizedBox(height: 4),
+          ],
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
