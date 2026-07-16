@@ -6,25 +6,34 @@ abstract class SupportChatState extends State<SupportChatScreen> {
   late final ScrollController scrollController;
   late final ValueNotifier<bool> isSendActive;
 
+  // Reply & pin state (triggers setState via setters)
+  SupportMessageModel? replyToMessage;
+  SupportMessageModel? pinnedMessage;
+
   SupportChatCubit get _cubit => context.read<SupportChatCubit>();
 
   void sendMessage() {
     final text = messageController.text.trim();
     if (text.isEmpty) return;
-    _cubit.sendMessage(text);
+    _cubit.sendMessage(text, replyToId: replyToMessage?.id);
     messageController.clear();
     messageFocusNode.unfocus();
+    setState(() => replyToMessage = null);
     _scrollToBottom();
   }
 
-  void _scrollToBottom() {
+  void setReplyTo(SupportMessageModel? msg) => setState(() => replyToMessage = msg);
+  void setPinned(SupportMessageModel? msg) => setState(() => pinnedMessage = msg);
+
+  // With ListView reverse:true, position 0 = newest messages at visual bottom.
+  // jumpTo(0) always shows the latest message instantly.
+  void _scrollToBottom({bool instant = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+      if (!scrollController.hasClients) return;
+      if (instant) {
+        scrollController.jumpTo(0);
+      } else if (scrollController.position.pixels > 0) {
+        scrollController.animateTo(0, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
       }
     });
   }
@@ -95,13 +104,15 @@ abstract class SupportChatState extends State<SupportChatScreen> {
     isSendActive = ValueNotifier<bool>(false);
     messageController = TextEditingController()..addListener(_onMessageChanged);
     messageFocusNode = FocusNode();
+    // With reverse:true, reaching maxScrollExtent means scrolled to oldest → trigger loadMore
     scrollController = ScrollController()..addListener(_onScroll);
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _cubit.initialize());
   }
 
   void _onScroll() {
-    if (scrollController.position.pixels <= 80) _cubit.loadMore();
+    final pos = scrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 80) _cubit.loadMore();
   }
 
   @override

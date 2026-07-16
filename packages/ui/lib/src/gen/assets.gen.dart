@@ -402,6 +402,9 @@ class $LibImagesGen {
   /// File path: lib/images/uzum.jpeg
   AssetGenImage get uzum => const AssetGenImage('lib/images/uzum.jpeg');
 
+  /// File path: lib/images/wallhaven-7pzqz3.png
+  AssetGenImage get wallhaven7pzqz3 => const AssetGenImage('lib/images/wallhaven-7pzqz3.png');
+
   /// File path: lib/images/wrong_icon.png
   AssetGenImage get wrongIcon => const AssetGenImage('lib/images/wrong_icon.png');
 
@@ -443,6 +446,7 @@ class $LibImagesGen {
     timer2Icon,
     timerIcon,
     uzum,
+    wallhaven7pzqz3,
     wrongIcon,
     xazna,
     zoomRobot,

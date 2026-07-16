@@ -52,12 +52,13 @@ class SupportChatCubit extends SequentialCubit<SupportChatCubitState> {
     );
   }, errorHandler: (emit, error, _) => emit(state.copyWith(status: .success)));
 
-  Future<void> sendMessage(String text, {List<String> photoPaths = const []}) => handle<void>(
+  Future<void> sendMessage(String text, {List<String> photoPaths = const [], String? replyToId}) => handle<void>(
     (emit) async {
       emit(state.copyWith(isSending: true));
       final request = SendMessageRequest(
         text: text.trim().isEmpty ? null : text.trim(),
         photoPaths: photoPaths.isEmpty ? null : photoPaths,
+        replyToId: replyToId,
       );
       final message = await repository.sendMessage(request);
       final alreadyIn = state.messages.any((m) => m.id == message.id);

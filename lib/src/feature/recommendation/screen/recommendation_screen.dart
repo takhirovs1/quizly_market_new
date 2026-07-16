@@ -30,7 +30,6 @@ class _RecommendationScreenState extends RecommendationScreenState {
     ),
     body: Column(
       children: [
-        const SizedBox(height: 8),
         Padding(
           padding: const .symmetric(horizontal: 16, vertical: 8),
           child: Row(
