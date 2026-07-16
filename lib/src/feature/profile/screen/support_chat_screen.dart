@@ -1,12 +1,19 @@
+import 'dart:async';
+import 'dart:io' as io;
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../bloc/profile_cubit.dart';
 import '../bloc/support_chat_cubit.dart';
 import '../model/support_chat_model.dart';
 
@@ -14,31 +21,15 @@ part '../state/support_chat_state.dart';
 
 // ─── Date-separator helper ───────────────────────────────────────────────────
 
-String _dayLabel(DateTime date) {
+String _dayLabel(BuildContext context, DateTime date) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final yesterday = today.subtract(const Duration(days: 1));
-  final d = DateTime(date.year, date.month, date.day);
-  if (d == today) return 'Bugun';
-  if (d == yesterday) return 'Kecha';
-  return '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year}';
-}
-
-// Builds a flat list of items ordered oldest→newest.
-// ListView uses reverse:true so index-0 is visual bottom.
-List<Object> _buildItems(List<SupportMessageModel> messages) {
-  final items = <Object>[];
-  DateTime? lastDay;
-  for (final m in messages) {
-    final day = DateTime(m.createdAt.year, m.createdAt.month, m.createdAt.day);
-    if (lastDay == null || day != lastDay) {
-      items.add(day);
-      lastDay = day;
-    }
-    items.add(m);
-  }
-  // reverse so newest is at index 0 (visual bottom with reverse:true)
-  return items.reversed.toList();
+  final local = date.toLocal();
+  final d = DateTime(local.year, local.month, local.day);
+  if (d == today) return context.x.l10n.today;
+  if (d == yesterday) return context.x.l10n.yesterday;
+  return '${local.day}.${local.month.toString().padLeft(2, '0')}.${local.year}';
 }
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
@@ -51,9 +42,6 @@ class SupportChatScreen extends StatefulWidget {
 }
 
 class _SupportChatScreenState extends SupportChatState {
-  // Tracks the current "visible" date label shown in the sticky overlay
-  String _currentStickyLabel = '';
-
   @override
   Widget build(BuildContext context) {
     final colors = context.x.colors;
@@ -68,7 +56,7 @@ class _SupportChatScreenState extends SupportChatState {
       resizeToAvoidBottomInset: true,
       backgroundColor: headerBg,
       appBar: QuizAppBar(
-        title: 'Yordam',
+        title: context.x.l10n.supportChatTitle,
         telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
       ),
       body: SafeArea(
@@ -167,40 +155,39 @@ class _SupportChatScreenState extends SupportChatState {
           ),
         )
       else
-        // NotificationListener detects scroll to find the top-visible date
         NotificationListener<ScrollNotification>(
           onNotification: (n) {
-            _updateStickyLabel(n, state.messages);
+            final pos = n.metrics;
+            if (pos.pixels >= pos.maxScrollExtent - 80) {
+              _cubit.loadMore();
+            }
+            if (n is ScrollUpdateNotification) {
+              _onScrollUpdate();
+            }
             return false;
           },
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
-              // Messages ListView
-              Builder(
-                builder: (context) {
-                  final items = _buildItems(state.messages);
-                  return ListView.builder(
-                    controller: scrollController,
-                    reverse: true,
-                    padding: const EdgeInsets.only(left: 12, right: 12, top: 44, bottom: 8),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      if (item is DateTime) {
-                        return _buildInlineDate(item);
-                      }
-                      if (item is SupportMessageModel) {
-                        return _buildMessage(context, item, colors, textStyle, isDark);
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  );
+              // Messages Grouped ListView
+              GroupedListView<SupportMessageModel, DateTime>(
+                elements: state.messages,
+                groupBy: (msg) {
+                  final l = msg.createdAt.toLocal();
+                  return DateTime(l.year, l.month, l.day);
                 },
+                groupComparator: (a, b) => a.compareTo(b),
+                itemComparator: (a, b) => a.createdAt.compareTo(b.createdAt),
+                groupSeparatorBuilder: (date) => _buildInlineDate(context, date),
+                groupStickyHeaderBuilder: (msg) => _buildStickyHeader(context, msg),
+                itemBuilder: (context, msg) => _buildMessage(context, msg, colors, textStyle, isDark),
+                order: .DESC,
+                reverse: true,
+                controller: scrollController,
+                useStickyGroupSeparators: true,
+                floatingHeader: true,
+                padding: const .only(left: 12, right: 12, top: 44, bottom: 8),
               ),
-
-              // Sticky date label at top (Telegram-style)
-              if (_currentStickyLabel.isNotEmpty) Positioned(top: 8, child: _buildDateChip(_currentStickyLabel)),
 
               // Load-more indicator
               if (state.status.isLoadingMore)
@@ -231,31 +218,26 @@ class _SupportChatScreenState extends SupportChatState {
     ],
   );
 
-  /// Updates [_currentStickyLabel] by finding which date group is at the top.
-  void _updateStickyLabel(ScrollNotification n, List<SupportMessageModel> messages) {
-    if (messages.isEmpty) return;
-    // With reverse:true the "top" of the screen = most recent scroll position.
-    // We look at the scroll offset to find the closest date group.
-    // Simple heuristic: determine the date of the latest visible message.
-    // We compute which day corresponds to the current scroll position by
-    // traversing from the bottom of the message list.
-    final pos = scrollController.hasClients ? scrollController.position.pixels : 0.0;
-    final maxExtent = scrollController.hasClients ? scrollController.position.maxScrollExtent : 0.0;
-    // Fraction of how far scrolled toward oldest messages
-    final fraction = maxExtent > 0 ? (pos / maxExtent).clamp(0.0, 1.0) : 0.0;
-    // Map fraction to message index (0 = newest, len-1 = oldest)
-    final idx = (fraction * (messages.length - 1)).round().clamp(0, messages.length - 1);
-    final msg = messages[messages.length - 1 - idx];
-    final label = _dayLabel(msg.createdAt);
-    if (label != _currentStickyLabel) {
-      setState(() => _currentStickyLabel = label);
-    }
+  Widget _buildStickyHeader(BuildContext context, SupportMessageModel msg) {
+    final date = DateTime(msg.createdAt.year, msg.createdAt.month, msg.createdAt.day);
+    return IgnorePointer(
+      ignoring: !showStickyHeader,
+      child: AnimatedOpacity(
+        opacity: showStickyHeader ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Padding(padding: const .only(top: 10, bottom: 6), child: _buildDateChip(_dayLabel(context, date))),
+        ),
+      ),
+    );
   }
 
   // Inline date separator (appears in the list, scrolls with messages)
-  Widget _buildInlineDate(DateTime date) => Padding(
+  Widget _buildInlineDate(BuildContext context, DateTime date) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Center(child: _buildDateChip(_dayLabel(date))),
+    child: Center(child: _buildDateChip(_dayLabel(context, date))),
   );
 
   // Shared date chip widget
@@ -297,9 +279,9 @@ class _SupportChatScreenState extends SupportChatState {
               crossAxisAlignment: .start,
               mainAxisSize: .min,
               children: [
-                const Text(
-                  'Pinned Message',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF3B82F6)),
+                Text(
+                  context.x.l10n.pinnedMessage,
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF3B82F6)),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -357,81 +339,78 @@ class _SupportChatScreenState extends SupportChatState {
     final hasText = msg.text != null && msg.text!.isNotEmpty;
     final hasPhotos = msg.photos.isNotEmpty;
 
-    return GestureDetector(
-      onLongPress: () => _showMessageActions(context, msg, colors, textStyle),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: Align(
-          alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.sizeOf(context).width * (context.x.isMobile ? 0.72 : 0.62),
-            ),
-            child: Column(
-              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Photos (outside bubble, Telegram-style)
-                if (hasPhotos) _buildPhotos(context, msg.photos, isUser, isDark, borderRadius),
+    final key = messageKeys.putIfAbsent(msg.id, () => GlobalKey());
+    final isHighlighted = msg.id == highlightedMessageId;
 
-                // Text bubble (only if there's text)
-                if (hasText || msg.replyTo != null)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: bubbleBg,
-                      borderRadius: hasPhotos
-                          ? BorderRadius.only(
-                              bottomLeft: Radius.circular(isUser ? 16 : 0),
-                              bottomRight: Radius.circular(isUser ? 0 : 16),
-                            )
-                          : borderRadius,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
+    return AnimatedContainer(
+      key: key,
+      duration: const Duration(milliseconds: 300),
+      color: isHighlighted
+          ? (isDark ? Colors.blue.withValues(alpha: 0.18) : Colors.blue.withValues(alpha: 0.1))
+          : Colors.transparent,
+      width: double.infinity,
+      child: GestureDetector(
+        onLongPressStart: (details) => _showMessageActions(context, msg, colors, textStyle, details.globalPosition),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 4, left: 12, right: 12),
+          child: Align(
+            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width * (context.x.isMobile ? 0.72 : 0.62),
+              ),
+              child: Column(
+                crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Photos (outside bubble, Telegram-style)
+                  if (hasPhotos) _buildPhotos(context, msg, isUser, isDark, borderRadius),
+
+                  // Text bubble (only if there's text)
+                  if (hasText || msg.replyTo != null)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: bubbleBg,
+                        borderRadius: hasPhotos
+                            ? BorderRadius.only(
+                                bottomLeft: Radius.circular(isUser ? 16 : 0),
+                                bottomRight: Radius.circular(isUser ? 0 : 16),
+                              )
+                            : borderRadius,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.fromLTRB(11, 8, 11, 7),
+                      child: Column(
+                        crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Reply preview
+                          if (msg.replyTo != null) _buildReplyPreview(msg.replyTo!, colors, textStyle, isUser, isDark),
+
+                          // Text
+                          if (hasText) Text(msg.text!, style: TextStyle(fontSize: 13.5, color: textColor, height: 1.5)),
+
+                          const SizedBox(height: 2),
+
+                          // Timestamp
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(msg.formattedTime, style: TextStyle(fontSize: 9, color: timeColor, height: 1)),
+                              if (isUser) ...[const SizedBox(width: 3), _DoubleCheck(color: checkColor)],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    padding: const EdgeInsets.fromLTRB(11, 8, 11, 7),
-                    child: Column(
-                      crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Reply preview
-                        if (msg.replyTo != null) _buildReplyPreview(msg.replyTo!, colors, textStyle, isUser, isDark),
-
-                        // Text
-                        if (hasText) Text(msg.text!, style: TextStyle(fontSize: 13.5, color: textColor, height: 1.5)),
-
-                        const SizedBox(height: 2),
-
-                        // Timestamp
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(msg.formattedTime, style: TextStyle(fontSize: 9, color: timeColor, height: 1)),
-                            if (isUser) ...[const SizedBox(width: 3), _DoubleCheck(color: checkColor)],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // If only photos — show time overlay on the last photo
-                if (hasPhotos && !hasText && msg.replyTo == null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2, right: 4, left: 4),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-                      children: [
-                        Text(msg.formattedTime, style: TextStyle(fontSize: 9, color: timeColor, height: 1)),
-                        if (isUser) ...[const SizedBox(width: 3), _DoubleCheck(color: checkColor)],
-                      ],
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -443,12 +422,16 @@ class _SupportChatScreenState extends SupportChatState {
 
   Widget _buildPhotos(
     BuildContext context,
-    List<SupportPhotoModel> photos,
+    SupportMessageModel msg,
     bool isUser,
     bool isDark,
     BorderRadius bubbleRadius,
   ) {
+    final photos = msg.photos;
     final urls = photos.map((p) => p.url).toList();
+    final hasText = msg.text != null && msg.text!.isNotEmpty;
+    final showTimeOnImage = !hasText && msg.replyTo == null;
+
     return ClipRRect(
       borderRadius: bubbleRadius,
       child: Column(
@@ -458,32 +441,16 @@ class _SupportChatScreenState extends SupportChatState {
           final p = entry.value;
           return GestureDetector(
             onTap: () => _openImageViewer(context, urls, i),
-            child: Hero(
-              tag: 'chat_photo_${p.url}_$i',
-              child: Image.network(
-                p.url,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                loadingBuilder: (ctx, child, progress) {
-                  if (progress == null) return child;
-                  return Container(
-                    height: 180,
-                    color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: progress.expectedTotalBytes != null
-                            ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
-                            : null,
-                        color: const Color(0xFF3B82F6),
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (_, __, ___) => Container(
-                  height: 100,
-                  color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-                  child: const Center(child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 32)),
+            child: AspectRatio(
+              aspectRatio: 16 / 10,
+              child: Hero(
+                tag: 'chat_photo_${p.url}_$i',
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _buildNetworkImage(imageUrl: p.url, fit: BoxFit.cover, isDark: isDark),
+                    if (showTimeOnImage && i == photos.length - 1) _buildImageTimeOverlay(msg.formattedTime, isUser),
+                  ],
                 ),
               ),
             ),
@@ -493,13 +460,38 @@ class _SupportChatScreenState extends SupportChatState {
     );
   }
 
+  Widget _buildImageTimeOverlay(String time, bool isUser) => Positioned(
+    bottom: 8,
+    right: 8,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          color: Colors.black.withValues(alpha: 0.45),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                time,
+                style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              if (isUser) ...[const SizedBox(width: 3), _DoubleCheck(color: Colors.white.withValues(alpha: 0.9))],
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
   void _openImageViewer(BuildContext context, List<String> urls, int initialIndex) {
     Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: false,
         barrierColor: Colors.transparent,
-        pageBuilder: (_, __, ___) => _ChatImageViewer(urls: urls, initialIndex: initialIndex),
-        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+        pageBuilder: (_, _, _) => _ChatImageViewer(urls: urls, initialIndex: initialIndex),
+        transitionsBuilder: (_, anim, _, child) => FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 220),
       ),
     );
@@ -513,94 +505,242 @@ class _SupportChatScreenState extends SupportChatState {
     bool isUser,
     bool isDark,
   ) {
-    final lineColor = isUser
-        ? (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF3B82F6))
-        : const Color(0xFF3B82F6);
-    final bgColor = isUser
-        ? Colors.white.withValues(alpha: isDark ? 0.12 : 0.0)
-        : const Color(0xFF3B82F6).withValues(alpha: 0.08);
+    SupportMessageModel? repliedMsg;
+    for (final m in _cubit.state.messages) {
+      if (m.id == reply.id) {
+        repliedMsg = m;
+        break;
+      }
+    }
+    final photoUrl = repliedMsg != null && repliedMsg.photos.isNotEmpty ? repliedMsg.photos.first.url : null;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: lineColor, width: 3)),
-        color: bgColor,
-        borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
-      ),
-      child: Text(
-        reply.textPreview ?? (reply.hasPhoto ? '🖼 Photo' : ''),
-        style: textStyle.sfW400s12.copyWith(color: isUser ? Colors.white.withValues(alpha: 0.8) : colors.gray),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+    final Color lineColor;
+    final Color bgColor;
+    final Color titleColor;
+    final Color subtitleColor;
+
+    if (isUser) {
+      if (isDark) {
+        lineColor = Colors.white;
+        bgColor = Colors.white.withValues(alpha: 0.1);
+        titleColor = Colors.white;
+        subtitleColor = Colors.white.withValues(alpha: 0.85);
+      } else {
+        lineColor = const Color(0xFF3B82F6);
+        bgColor = const Color(0xFF3B82F6).withValues(alpha: 0.06);
+        titleColor = const Color(0xFF3B82F6);
+        subtitleColor = const Color(0xFF64748B);
+      }
+    } else {
+      if (isDark) {
+        lineColor = const Color(0xFF3B82F6);
+        bgColor = const Color(0xFF3B82F6).withValues(alpha: 0.1);
+        titleColor = const Color(0xFF3B82F6);
+        subtitleColor = Colors.white.withValues(alpha: 0.85);
+      } else {
+        lineColor = const Color(0xFF3B82F6);
+        bgColor = const Color(0xFF3B82F6).withValues(alpha: 0.06);
+        titleColor = const Color(0xFF3B82F6);
+        subtitleColor = const Color(0xFF64748B);
+      }
+    }
+
+    String senderName;
+    if (reply.sender == 'user') {
+      String? profileName;
+      try {
+        final profileState = context.read<ProfileCubit>().state;
+        final user = profileState.user;
+        profileName = (user?.name?.isNotEmpty == true ? user?.name : null) ?? user?.displayName;
+      } on Object catch (_) {}
+      senderName = profileName ?? context.x.l10n.you;
+    } else if (reply.sender == 'admin') {
+      senderName = 'Quizly Support';
+    } else {
+      senderName = reply.sender;
+    }
+
+    final hasImage = reply.hasPhoto && photoUrl != null;
+
+    return GestureDetector(
+      onTap: () => scrollToMessage(reply.id),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          border: Border(left: BorderSide(color: lineColor, width: 3)),
+          color: bgColor,
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (hasImage) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: _buildNetworkImage(
+                  imageUrl: photoUrl,
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.cover,
+                  isDark: isDark,
+                  placeholder: (context, url) => Container(
+                    width: 36,
+                    height: 36,
+                    color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
+                    child: const Center(
+                      child: SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(strokeWidth: 1.5, color: Color(0xFF3B82F6)),
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    width: 36,
+                    height: 36,
+                    color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
+                    child: const Icon(Icons.broken_image, size: 16, color: Colors.grey),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    senderName,
+                    style: textStyle.sfW500s12.copyWith(color: titleColor, fontWeight: FontWeight.w700),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    reply.textPreview ?? (reply.hasPhoto ? context.x.l10n.photo : ''),
+                    style: textStyle.sfW500s11.copyWith(color: subtitleColor, fontWeight: FontWeight.w400),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // ─── Long-press action sheet ───────────────────────────────────────────────
 
-  void _showMessageActions(BuildContext context, SupportMessageModel msg, ThemeColors colors, AppTypography textStyle) {
-    showModalBottomSheet<void>(
+  Future<void> _showMessageActions(
+    BuildContext context,
+    SupportMessageModel msg,
+    ThemeColors colors,
+    AppTypography textStyle,
+    Offset tapPosition,
+  ) async {
+    final position = RelativeRect.fromRect(
+      Rect.fromLTWH(tapPosition.dx, tapPosition.dy, 0, 0),
+      Offset.zero & MediaQuery.sizeOf(context),
+    );
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final menuBg = isDark ? const Color(0xFF1E2C3A) : Colors.white;
+    final textThemeColor = isDark ? Colors.white : const Color(0xFF202732);
+    final iconColor = isDark ? Colors.white70 : const Color(0xFF8A9BB0);
+
+    final isUserMessage = msg.sender == 'user';
+
+    final result = await showMenu<String>(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => BottomSheetView(
-        title: '',
-        isCenterTitle: false,
-        onClose: () => Navigator.pop(context),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      position: position,
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: menuBg,
+      constraints: const BoxConstraints(minWidth: 160, maxWidth: 200),
+      items: [
+        PopupMenuItem<String>(
+          value: 'reply',
+          height: 38,
+          child: Row(
             children: [
-              _actionTile(
-                icon: Icons.reply,
-                label: 'Reply',
-                colors: colors,
-                textStyle: textStyle,
-                onTap: () {
-                  Navigator.pop(context);
-                  setReplyTo(msg);
-                },
-              ),
-              const SizedBox(height: 8),
-              _actionTile(
-                icon: Icons.push_pin_outlined,
-                label: 'Pin message',
-                colors: colors,
-                textStyle: textStyle,
-                onTap: () {
-                  Navigator.pop(context);
-                  setPinned(msg);
-                },
-              ),
+              Icon(Icons.reply_rounded, color: iconColor, size: 20),
+              const SizedBox(width: 12),
+              Text(context.x.l10n.replyAction, style: TextStyle(color: textThemeColor, fontSize: 14)),
             ],
           ),
         ),
-      ),
+        if (msg.text != null && msg.text!.isNotEmpty)
+          PopupMenuItem<String>(
+            value: 'copy',
+            height: 38,
+            child: Row(
+              children: [
+                Icon(Icons.copy_rounded, color: iconColor, size: 20),
+                const SizedBox(width: 12),
+                Text(context.x.l10n.copy, style: TextStyle(color: textThemeColor, fontSize: 14)),
+              ],
+            ),
+          ),
+        if (isUserMessage && msg.text != null && msg.text!.isNotEmpty)
+          PopupMenuItem<String>(
+            value: 'edit',
+            height: 38,
+            child: Row(
+              children: [
+                Icon(Icons.edit_rounded, color: iconColor, size: 20),
+                const SizedBox(width: 12),
+                Text(context.x.l10n.edit, style: TextStyle(color: textThemeColor, fontSize: 14)),
+              ],
+            ),
+          ),
+        if (isUserMessage)
+          PopupMenuItem<String>(
+            value: 'delete',
+            height: 38,
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                const SizedBox(width: 12),
+                Text(context.x.l10n.delete, style: const TextStyle(color: Colors.redAccent, fontSize: 14)),
+              ],
+            ),
+          ),
+      ],
     );
-  }
 
-  Widget _actionTile({
-    required IconData icon,
-    required String label,
-    required ThemeColors colors,
-    required AppTypography textStyle,
-    required VoidCallback onTap,
-  }) => InkWell(
-    onTap: onTap,
-    borderRadius: .circular(12),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(color: colors.buttonFill, borderRadius: .circular(12)),
-      child: Row(
-        spacing: 10,
-        children: [
-          Icon(icon, color: colors.text, size: 20),
-          Text(label, style: textStyle.sfW500s14.copyWith(color: colors.text)),
-        ],
-      ),
-    ),
-  );
+    if (result == null) return;
+
+    switch (result) {
+      case 'reply':
+        setReplyTo(msg);
+        break;
+      case 'copy':
+        if (msg.text != null) {
+          await Clipboard.setData(ClipboardData(text: msg.text!));
+          if (context.mounted) {
+            context.x.showNotification(
+              message: context.x.l10n.messageCopied,
+              isError: false,
+              top: context.telegramWebApp.isSupported
+                  ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
+                  : MediaQuery.paddingOf(context).top + 56,
+            );
+          }
+        }
+        break;
+      case 'edit':
+        setEditingMessage(msg);
+        break;
+      case 'delete':
+        _cubit.deleteMessage(msg.id);
+        break;
+    }
+  }
 
   // ─── Input bar ─────────────────────────────────────────────────────────────
 
@@ -640,18 +780,31 @@ class _SupportChatScreenState extends SupportChatState {
                     borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
                   ),
                 ),
+                if (replyToMessage!.photos.isNotEmpty) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: _buildNetworkImage(
+                      imageUrl: replyToMessage!.photos.first.url,
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.cover,
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 Expanded(
                   child: Column(
                     crossAxisAlignment: .start,
                     mainAxisSize: .min,
                     children: [
                       Text(
-                        replyToMessage!.isUser ? 'Sizga javob' : 'Quizly support ga javob',
+                        replyToMessage!.isUser ? context.x.l10n.replyToYou : context.x.l10n.replyToSupport,
                         style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF3B82F6)),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        replyToMessage!.text ?? (replyToMessage!.photos.isNotEmpty ? '🖼 Photo' : ''),
+                        replyToMessage!.text ?? (replyToMessage!.photos.isNotEmpty ? context.x.l10n.photoLabel : ''),
                         style: textStyle.sfW400s12.copyWith(color: colors.gray),
                         maxLines: 1,
                         overflow: .ellipsis,
@@ -661,6 +814,55 @@ class _SupportChatScreenState extends SupportChatState {
                 ),
                 GestureDetector(
                   onTap: () => setReplyTo(null),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(Icons.close, size: 18, color: colors.gray),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        // ── Editing banner ────────────────────────────────────────────────
+        if (editingMessage != null)
+          Container(
+            padding: const EdgeInsets.fromLTRB(0, 8, 12, 8),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF13172A) : const Color(0xFFF5F7FB),
+              border: Border(top: BorderSide(color: borderColor)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 3,
+                  height: 40,
+                  margin: const EdgeInsets.only(left: 12, right: 10),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF10B981),
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        context.x.l10n.edit,
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF10B981)),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        editingMessage!.text ?? '',
+                        style: textStyle.sfW400s12.copyWith(color: colors.gray),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => setEditingMessage(null),
                   child: Padding(
                     padding: const EdgeInsets.all(6),
                     child: Icon(Icons.close, size: 18, color: colors.gray),
@@ -776,7 +978,7 @@ class _SupportChatScreenState extends SupportChatState {
       height: size,
       decoration: BoxDecoration(
         color: filled ? const Color(0xFF3B82F6) : Colors.transparent,
-        borderRadius: .circular(12),
+        shape: BoxShape.circle,
         border: filled
             ? null
             : Border.all(color: isDark ? const Color(0xFF2A3347) : const Color(0xFFDEE2E9), width: 1.5),
@@ -844,7 +1046,7 @@ class _ChatImageViewer extends StatefulWidget {
 class _ChatImageViewerState extends State<_ChatImageViewer> {
   late PageController _pageCtrl;
   late int _current;
-  double _bgOpacity = 1.0;
+  double _bgOpacity = 1;
 
   @override
   void initState() {
@@ -891,27 +1093,19 @@ class _ChatImageViewerState extends State<_ChatImageViewer> {
               child: Center(
                 child: InteractiveViewer(
                   minScale: 0.8,
-                  maxScale: 5.0,
+                  maxScale: 5,
                   child: Hero(
                     tag: 'chat_photo_${widget.urls[index]}_$index',
-                    child: Image.network(
-                      widget.urls[index],
+                    child: _buildNetworkImage(
+                      imageUrl: widget.urls[index],
                       fit: BoxFit.contain,
-                      loadingBuilder: (ctx, child, progress) {
-                        if (progress == null) return child;
-                        return SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: CircularProgressIndicator(
-                            value: progress.expectedTotalBytes != null
-                                ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
-                                : null,
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        );
-                      },
-                      errorBuilder: (_, __, ___) =>
+                      isDark: true,
+                      placeholder: (context, url) => const SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: Center(child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
+                      ),
+                      errorWidget: (context, url, error) =>
                           const Icon(Icons.broken_image_outlined, color: Colors.white54, size: 64),
                     ),
                   ),
@@ -952,6 +1146,63 @@ class _ChatImageViewerState extends State<_ChatImageViewer> {
           ),
         ],
       ),
+    );
+  }
+}
+
+Widget _buildNetworkImage({
+  required String imageUrl,
+  required BoxFit fit,
+  required bool isDark,
+  double? width,
+  double? height,
+  Widget Function(BuildContext, String)? placeholder,
+  Widget Function(BuildContext, String, Object)? errorWidget,
+}) {
+  if (kIsWeb) {
+    return Image.network(
+      imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      loadingBuilder: (context, child, progress) {
+        if (progress == null) return child;
+        if (placeholder != null) return placeholder(context, imageUrl);
+        return Container(
+          width: width,
+          height: height,
+          color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
+          child: const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6), strokeWidth: 2)),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        if (errorWidget != null) return errorWidget(context, imageUrl, error);
+        return Container(
+          width: width,
+          height: height,
+          color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
+          child: const Center(child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 32)),
+        );
+      },
+    );
+  } else {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      placeholder: placeholder != null
+          ? (context, url) => placeholder(context, url)
+          : (context, url) => Container(
+              color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
+              child: const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6), strokeWidth: 2)),
+            ),
+      errorWidget: errorWidget != null
+          ? (context, url, error) => errorWidget(context, url, error)
+          : (context, url, error) => Container(
+              color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
+              child: const Center(child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 32)),
+            ),
     );
   }
 }

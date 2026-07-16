@@ -6,6 +6,8 @@ abstract interface class ISupportChatRepository {
   Future<List<SupportMessageModel>> getMessages({int limit = 20, String? before});
   Future<SupportMessageModel> sendMessage(SendMessageRequest request);
   Future<UploadedFileModel> uploadFile(List<int> bytes, String fileName);
+  Future<void> deleteMessage(String messageId);
+  Future<SupportMessageModel> editMessage(String messageId, String text);
 }
 
 final class SupportChatRepositoryImpl implements ISupportChatRepository {
@@ -42,5 +44,17 @@ final class SupportChatRepositoryImpl implements ISupportChatRepository {
     final response = await apiClient.multipartPost('/api/files', field: 'file', bytes: bytes, filename: fileName);
     final data = response['data'] as Map<String, Object?>? ?? {};
     return UploadedFileModel.fromJson(data);
+  }
+
+  @override
+  Future<void> deleteMessage(String messageId) async {
+    await apiClient.delete('/api/support/messages/$messageId');
+  }
+
+  @override
+  Future<SupportMessageModel> editMessage(String messageId, String text) async {
+    final response = await apiClient.put('/api/support/messages/$messageId', body: {'text': text});
+    final data = response['data'] as Map<String, Object?>? ?? {};
+    return SupportMessageModel.fromJson(data);
   }
 }

@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.0+202',
+    representation: r'1.0.0+204',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.0+202',
+    canonical: r'1.0.0+204',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'202'],
+    build: <String>[r'204'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
     7,
-    15,
-    18,
-    35,
+    16,
+    5,
     38,
-    223,
-    355,
+    0,
+    374,
+    963,
   );
 
   /// Name
@@ -427,6 +427,7 @@ sealed class Pubspec {
     'path_provider': r'^2.1.5',
     'permission_handler': r'^12.0.1',
     'keyboard_dismisser': r'^3.0.0',
+    'cached_network_image': r'^3.4.1',
     'platform_info': r'^5.0.0',
     'device_info_plus': r'^12.3.0',
     'throttling': r'^2.0.1',
@@ -461,6 +462,7 @@ sealed class Pubspec {
     'image_picker': r'^1.2.2',
     'file_picker': r'^11.0.2',
     'flutter_math_fork': r'^0.7.4',
+    'grouped_list': r'^6.0.0',
   };
 
   /// Developer dependencies

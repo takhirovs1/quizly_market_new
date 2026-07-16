@@ -78,6 +78,18 @@ class SupportChatCubit extends SequentialCubit<SupportChatCubitState> {
     }
   }
 
+  Future<void> deleteMessage(String messageId) => handle<void>((emit) async {
+    await repository.deleteMessage(messageId);
+    final updated = state.messages.where((m) => m.id != messageId).toList();
+    emit(state.copyWith(messages: updated));
+  });
+
+  Future<void> editMessage(String messageId, String text) => handle<void>((emit) async {
+    final updatedMessage = await repository.editMessage(messageId, text);
+    final updated = state.messages.map((m) => m.id == messageId ? updatedMessage : m).toList();
+    emit(state.copyWith(messages: updated));
+  });
+
   void _connectWebSocket() {
     final token = localSource.accessToken;
     if (token.isEmpty) return;
