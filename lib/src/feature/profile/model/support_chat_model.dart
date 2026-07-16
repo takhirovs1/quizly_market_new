@@ -33,6 +33,9 @@ class SupportMessageModel {
     required this.createdAt,
     this.text,
     this.replyTo,
+    this.viewed = false,
+    this.isPending = false,
+    this.isFailed = false,
   });
 
   factory SupportMessageModel.fromJson(Map<String, Object?> json) => SupportMessageModel(
@@ -47,6 +50,9 @@ class SupportMessageModel {
         ? SupportReplyToModel.fromJson(json['reply_to'] as Map<String, Object?>)
         : null,
     createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
+    viewed: json['viewed'] as bool? ?? false,
+    isPending: false,
+    isFailed: false,
   );
 
   final String id;
@@ -56,6 +62,9 @@ class SupportMessageModel {
   final List<SupportPhotoModel> photos;
   final SupportReplyToModel? replyTo;
   final DateTime createdAt;
+  final bool viewed;
+  final bool isPending;
+  final bool isFailed;
 
   bool get isUser => sender == 'user';
   bool get isAdmin => sender == 'admin';
@@ -67,6 +76,30 @@ class SupportMessageModel {
     final m = local.minute.toString().padLeft(2, '0');
     return '$h:$m';
   }
+
+  SupportMessageModel copyWith({
+    String? id,
+    String? chatId,
+    String? sender,
+    String? text,
+    List<SupportPhotoModel>? photos,
+    SupportReplyToModel? replyTo,
+    DateTime? createdAt,
+    bool? viewed,
+    bool? isPending,
+    bool? isFailed,
+  }) => SupportMessageModel(
+    id: id ?? this.id,
+    chatId: chatId ?? this.chatId,
+    sender: sender ?? this.sender,
+    text: text ?? this.text,
+    photos: photos ?? this.photos,
+    replyTo: replyTo ?? this.replyTo,
+    createdAt: createdAt ?? this.createdAt,
+    viewed: viewed ?? this.viewed,
+    isPending: isPending ?? this.isPending,
+    isFailed: isFailed ?? this.isFailed,
+  );
 }
 
 class SupportChatModel {

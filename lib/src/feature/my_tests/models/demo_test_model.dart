@@ -49,7 +49,7 @@ class DemoTestDetail {
       price: (json['price'] as num?)?.toInt(),
       academicYear: json['academic_year'] as String?,
       semester: (json['semester'] as num?)?.toInt(),
-      isPurchased: id == '87f107c1-d6b1-4da4-8461-5a140b94ae32' ? true : json['is_purchased'] as bool?,
+      isPurchased: id == 'a1d49775-0a29-435a-b145-93824979ab9f' ? true : json['is_purchased'] as bool?,
       isLiked: json['liked'] as bool?,
       likeCount: (json['like_count'] as num?)?.toInt(),
       questionCount: (json['question_count'] as num?)?.toInt(),

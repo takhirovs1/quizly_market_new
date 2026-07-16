@@ -263,14 +263,18 @@ class TelegramBackButtonManager {
 
     final wasTop = index == _callbacks.length - 1;
     if (wasTop) {
-      TelegramService.instance.hideBackButton(callback);
+      TelegramService.instance.removeBackButtonListener(callback);
     } else {
       TelegramService.instance.removeBackButtonListener(callback);
     }
     _callbacks.removeAt(index);
 
-    if (wasTop && _callbacks.isNotEmpty) {
-      TelegramService.instance.showBackButton(_callbacks.last);
+    if (wasTop) {
+      if (_callbacks.isNotEmpty) {
+        TelegramService.instance.showBackButton(_callbacks.last);
+      } else {
+        TelegramService.instance.hideBackButton(callback);
+      }
     }
   }
 }

@@ -57,7 +57,7 @@ abstract class RecommendationScreenState extends State<RecommendationScreen> {
   }
 
   void onBuyTestPressed(TestModel test) {
-    if (test.id == '87f107c1-d6b1-4da4-8461-5a140b94ae32' || test.isPurchased == true) {
+    if (test.id == 'a1d49775-0a29-435a-b145-93824979ab9f' || test.isPurchased == true) {
       context.octopus.push(Routes.testMode, arguments: <String, String>{'id': test.id?.toString() ?? ''});
     } else {
       context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});

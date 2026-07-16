@@ -33,6 +33,29 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
     },
   );
 
+  AuthenticationController? _authController;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authController = context.x.dependencies.authenticationController;
+    if (_authController != authController) {
+      _authController?.removeListener(_onAuthStateChanged);
+      _authController = authController..addListener(_onAuthStateChanged);
+    }
+  }
+
+  void _onAuthStateChanged() {
+    final user = _authController?.state.user;
+    if (user != null && !user.isAuthenticated) {
+      navigator.setState(
+        (s) => s
+          ..clear()
+          ..add(OctopusNode(name: Routes.login.name, arguments: const {}, children: const [])),
+      );
+    }
+  }
+
   // #region lifecycle
   // initState works -> AppRouteInitialization -> AppDebugConfigInitialization -> AppState
   @override
@@ -40,6 +63,12 @@ abstract class AppState extends State<App> with AppRouteInitialization, AppDebug
     super.initState();
 
     Future<void>.delayed(const Duration(seconds: 1), _appSettingsListener).ignore();
+  }
+
+  @override
+  void dispose() {
+    _authController?.removeListener(_onAuthStateChanged);
+    super.dispose();
   }
 
   // #endregion lifecycle

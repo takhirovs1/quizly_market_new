@@ -147,7 +147,7 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
     _reportController.dispose();
     _reportLoading.dispose();
     _reportButtonType.dispose();
-    context.teardownTelegramBackButton();
+    context.teardownTelegramBackButton(goBackToProfile);
   }
 }
 

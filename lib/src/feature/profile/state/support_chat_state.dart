@@ -64,11 +64,12 @@ abstract class SupportChatState extends State<SupportChatScreen> {
     });
   }
 
-  SupportChatCubit get _cubit => context.read<SupportChatCubit>();
+  late final SupportChatCubit _cubit;
 
   void sendMessage() {
     final text = messageController.text.trim();
     if (text.isEmpty) return;
+    _sendTyping(false);
     if (editingMessage != null) {
       _cubit.editMessage(editingMessage!.id, text);
       setEditingMessage(null);
@@ -112,12 +113,15 @@ abstract class SupportChatState extends State<SupportChatScreen> {
   Future<void> _pickImage() async {
     try {
       final picker = ImagePicker();
-      final image = await picker.pickImage(source: .gallery);
+      final image = await picker.pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final bytes = await image.readAsBytes();
       final uploaded = await _cubit.uploadFile(bytes, image.name);
       if (uploaded == null || !mounted) return;
-      _cubit.sendMessage('', photoPaths: [uploaded.path]);
+      _cubit.sendMessage(
+        '',
+        photos: [SupportPhotoModel(path: uploaded.path, url: uploaded.url)],
+      );
       _scrollToBottom();
     } on Object catch (e) {
       debugPrint('SupportChatState._pickImage: $e');
@@ -133,7 +137,10 @@ abstract class SupportChatState extends State<SupportChatScreen> {
       if (bytes == null) return;
       final uploaded = await _cubit.uploadFile(bytes, file.name);
       if (uploaded == null || !mounted) return;
-      _cubit.sendMessage('', photoPaths: [uploaded.path]);
+      _cubit.sendMessage(
+        '',
+        photos: [SupportPhotoModel(path: uploaded.path, url: uploaded.url)],
+      );
       _scrollToBottom();
     } on Object catch (e) {
       debugPrint('SupportChatState._pickFile: $e');
@@ -209,25 +216,83 @@ abstract class SupportChatState extends State<SupportChatScreen> {
     );
   }
 
-  void _onMessageChanged() => isSendActive.value = messageController.text.trim().isNotEmpty;
+  Timer? _sendTypingFalseTimer;
+  DateTime? _lastTypingSentTime;
+
+  void _onMessageChanged() {
+    isSendActive.value = messageController.text.trim().isNotEmpty;
+    _handleTypingProgress();
+  }
+
+  void _onFocusChanged() {
+    if (!messageFocusNode.hasFocus) {
+      _sendTyping(false);
+    }
+  }
+
+  void _handleTypingProgress() {
+    final text = messageController.text.trim();
+    if (text.isEmpty) {
+      _sendTyping(false);
+      return;
+    }
+
+    final now = DateTime.now();
+    if (_lastTypingSentTime == null || now.difference(_lastTypingSentTime!) > const Duration(seconds: 2)) {
+      _sendTyping(true);
+    }
+
+    _sendTypingFalseTimer?.cancel();
+    _sendTypingFalseTimer = Timer(const Duration(seconds: 3), () {
+      _sendTyping(false);
+    });
+  }
+
+  void _sendTyping(bool typing) {
+    if (typing) {
+      _lastTypingSentTime = DateTime.now();
+    } else {
+      _lastTypingSentTime = null;
+      _sendTypingFalseTimer?.cancel();
+    }
+    _cubit.sendTyping(typing);
+  }
+
+  void _onTelegramBackTapped() {
+    Navigator.of(context).maybePop();
+  }
 
   @override
   void initState() {
+    _cubit = context.read<SupportChatCubit>();
     isSendActive = ValueNotifier<bool>(false);
     messageController = TextEditingController()..addListener(_onMessageChanged);
-    messageFocusNode = FocusNode();
+    messageFocusNode = FocusNode()..addListener(_onFocusChanged);
     scrollController = ScrollController();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _cubit.initialize());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _cubit.initialize();
+      _cubit.markAsRead();
+      final initialMessage = widget.initialMessage;
+      if (initialMessage != null && initialMessage.isNotEmpty) {
+        _cubit.sendMessage(initialMessage);
+      }
+      context.setupTelegramBackButton(_onTelegramBackTapped);
+    });
   }
 
   @override
   void dispose() {
+    context.teardownTelegramBackButton(_onTelegramBackTapped);
     _stickyHeaderTimer?.cancel();
+    _sendTypingFalseTimer?.cancel();
+    _sendTyping(false);
     messageController
       ..removeListener(_onMessageChanged)
       ..dispose();
-    messageFocusNode.dispose();
+    messageFocusNode
+      ..removeListener(_onFocusChanged)
+      ..dispose();
     isSendActive.dispose();
     scrollController.dispose();
     super.dispose();
@@ -235,6 +300,6 @@ abstract class SupportChatState extends State<SupportChatScreen> {
 
   Future<void> openTelegramLink(String url) async {
     context.telegramWebApp.hapticImpact(.light);
-    await launchUrl(.parse(url));
+    await launchUrl(Uri.parse(url));
   }
 }

@@ -72,7 +72,7 @@ final class ProfileRepositoryImpl implements IProfileRepository {
     final dataList = root['data'] as List<Object?>? ?? [];
     final items = dataList
         .map((e) => TestModel.fromJson(e as Map<String, Object?>))
-        .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
+        .where((test) => test.id != 'a1d49775-0a29-435a-b145-93824979ab9f')
         .toList();
     final resolvedLimit = root['limit'].toIntOrNull ?? limit;
     final resolvedOffset = root['offset'].toIntOrNull ?? offset;

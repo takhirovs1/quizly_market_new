@@ -8,6 +8,7 @@ abstract interface class ISupportChatRepository {
   Future<UploadedFileModel> uploadFile(List<int> bytes, String fileName);
   Future<void> deleteMessage(String messageId);
   Future<SupportMessageModel> editMessage(String messageId, String text);
+  Future<void> markMessagesAsRead();
 }
 
 final class SupportChatRepositoryImpl implements ISupportChatRepository {
@@ -56,5 +57,10 @@ final class SupportChatRepositoryImpl implements ISupportChatRepository {
     final response = await apiClient.put('/api/support/messages/$messageId', body: {'text': text});
     final data = response['data'] as Map<String, Object?>? ?? {};
     return SupportMessageModel.fromJson(data);
+  }
+
+  @override
+  Future<void> markMessagesAsRead() async {
+    await apiClient.post('/api/support/messages/read');
   }
 }

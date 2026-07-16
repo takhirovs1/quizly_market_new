@@ -9,6 +9,7 @@ class SupportChatCubitState extends Equatable {
     this.oldestCreatedAt,
     this.errorMessage,
     this.sendErrorCount = 0,
+    this.isAdminTyping = false,
   });
 
   final StateStatus status;
@@ -18,6 +19,7 @@ class SupportChatCubitState extends Equatable {
   final String? oldestCreatedAt;
   final String? errorMessage;
   final int sendErrorCount;
+  final bool isAdminTyping;
 
   SupportChatCubitState copyWith({
     StateStatus? status,
@@ -27,6 +29,7 @@ class SupportChatCubitState extends Equatable {
     String? oldestCreatedAt,
     String? errorMessage,
     int? sendErrorCount,
+    bool? isAdminTyping,
   }) => SupportChatCubitState(
     status: status ?? this.status,
     messages: messages ?? this.messages,
@@ -35,8 +38,18 @@ class SupportChatCubitState extends Equatable {
     oldestCreatedAt: oldestCreatedAt ?? this.oldestCreatedAt,
     errorMessage: errorMessage ?? this.errorMessage,
     sendErrorCount: sendErrorCount ?? this.sendErrorCount,
+    isAdminTyping: isAdminTyping ?? this.isAdminTyping,
   );
 
   @override
-  List<Object?> get props => [status, messages, isSending, hasMore, oldestCreatedAt, errorMessage, sendErrorCount];
+  List<Object?> get props => [
+    status,
+    messages,
+    isSending,
+    hasMore,
+    oldestCreatedAt,
+    errorMessage,
+    sendErrorCount,
+    isAdminTyping,
+  ];
 }

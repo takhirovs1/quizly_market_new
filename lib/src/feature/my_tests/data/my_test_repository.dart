@@ -50,7 +50,7 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
-          .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
+          .where((test) => test.id != 'a1d49775-0a29-435a-b145-93824979ab9f')
           .toList();
       final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
       final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;
@@ -69,7 +69,7 @@ final class MyTestRepositoryImpl implements IMyTestRepository {
       final dataList = response['data'] as List<Object?>? ?? [];
       final items = dataList
           .map((e) => TestModel.fromJson(e as Map<String, Object?>))
-          .where((test) => test.id != '87f107c1-d6b1-4da4-8461-5a140b94ae32')
+          .where((test) => test.id != 'a1d49775-0a29-435a-b145-93824979ab9f')
           .toList();
       final limit = response['limit'].toIntOrNull ?? request.limit ?? 20;
       final offset = response['offset'].toIntOrNull ?? request.offset ?? 0;

@@ -187,7 +187,7 @@ enum Routes with OctopusRoute {
         localSource: context.x.dependencies.localSource,
         wsBaseUrl: context.x.dependencies.apiClient.baseUrl,
       ),
-      child: const SupportChatScreen(),
+      child: SupportChatScreen(initialMessage: node.arguments['message']),
     ),
     Routes.archive => BlocProvider(
       create: (context) =>

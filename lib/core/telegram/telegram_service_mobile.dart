@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'telegram_service.dart';
 
 /// Factory function invoked by the conditional import on non-web platforms.
@@ -53,10 +54,36 @@ class _MobileTelegramService extends TelegramService {
   void disableClosingConfirmation() {}
 
   @override
-  void hapticImpact(TelegramHapticImpact impact) {}
+  void hapticImpact(TelegramHapticImpact impact) {
+    switch (impact) {
+      case TelegramHapticImpact.light:
+        HapticFeedback.lightImpact();
+        break;
+      case TelegramHapticImpact.medium:
+        HapticFeedback.mediumImpact();
+        break;
+      case TelegramHapticImpact.heavy:
+        HapticFeedback.heavyImpact();
+        break;
+      case TelegramHapticImpact.rigid:
+      case TelegramHapticImpact.soft:
+        HapticFeedback.selectionClick();
+        break;
+    }
+  }
 
   @override
-  void hapticNotification(TelegramHapticNotification type) {}
+  void hapticNotification(TelegramHapticNotification type) {
+    switch (type) {
+      case TelegramHapticNotification.error:
+        HapticFeedback.vibrate();
+        break;
+      case TelegramHapticNotification.success:
+      case TelegramHapticNotification.warning:
+        HapticFeedback.mediumImpact();
+        break;
+    }
+  }
 
   @override
   void showBackButton(void Function() onPressed) {}

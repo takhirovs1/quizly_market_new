@@ -10,6 +10,7 @@ import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 import '../../feature/authentication/screen/authentication_scope.dart';
+import '../../feature/authentication/state/authentication_controller.dart';
 import '../../feature/settings/screen/settings_scope.dart';
 import '../constant/config.dart';
 import '../dependency/model/debug_config.dart';

@@ -132,12 +132,12 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   buyButtonText: context.x.l10n.tryItNow,
                                   onBuyButtonPressed: () => context.octopus.push(
                                     Routes.testMode,
-                                    arguments: <String, String>{'id': '87f107c1-d6b1-4da4-8461-5a140b94ae32'},
+                                    arguments: <String, String>{'id': 'a1d49775-0a29-435a-b145-93824979ab9f'},
                                   ),
                                   isFree: true,
                                   onShareButtonPressed: () => onShareTestPressed(
                                     TestModel(
-                                      id: '87f107c1-d6b1-4da4-8461-5a140b94ae32',
+                                      id: 'a1d49775-0a29-435a-b145-93824979ab9f',
                                       name: state.exampleTestDetail!.name ?? '',
                                       categoryName: 'QuizlyMarket',
                                       description: state.exampleTestDetail!.description ?? '',

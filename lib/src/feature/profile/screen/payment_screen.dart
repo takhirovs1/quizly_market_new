@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/constant/constant.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/string_extension.dart';
+import '../../../common/router/pages.dart';
 import '../bloc/profile_cubit.dart';
 import '../state/payment_screen_state.dart';
 import '../widget/payment_item_widget.dart';
@@ -243,7 +245,7 @@ class _PaymentScreenState extends PaymentScreenState {
         child: GestureDetector(
           onTap: () {
             context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
-            // onTapReport(parentContext: context);
+            context.octopus.push(Routes.supportChat, arguments: {'message': context.x.l10n.paymentIssueMessage});
           },
           child: Row(
             spacing: 8,
