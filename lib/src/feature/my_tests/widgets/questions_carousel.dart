@@ -55,22 +55,28 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
     }
   }
 
-  BoxDecoration _cardDecoration(BuildContext context) => BoxDecoration(
+  BoxDecoration _cardDecoration(BuildContext context, {required bool isActive}) => BoxDecoration(
     color: context.x.colors.cardBackground2,
-    borderRadius: .circular(24),
-    boxShadow: [
-      BoxShadow(color: context.x.colors.black.withValues(alpha: .08), offset: const Offset(0, 12), blurRadius: 56),
-      BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: .zero, blurRadius: 3),
-    ],
+    borderRadius: BorderRadius.circular(24),
+    boxShadow: isActive
+        ? [
+            BoxShadow(
+              color: context.x.colors.black.withValues(alpha: .08),
+              offset: const Offset(0, 12),
+              blurRadius: 56,
+            ),
+            BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: Offset.zero, blurRadius: 3),
+          ]
+        : null,
   );
 
-  Widget _buildCard(BuildContext context, DemoQuestion question, {Key? key}) => Padding(
+  Widget _buildCard(BuildContext context, DemoQuestion question, {required bool isActive, Key? key}) => Padding(
     key: key,
-    padding: const .symmetric(horizontal: 16),
+    padding: const EdgeInsets.symmetric(horizontal: 16),
     child: DecoratedBox(
-      decoration: _cardDecoration(context),
+      decoration: _cardDecoration(context, isActive: isActive),
       child: Padding(
-        padding: const .all(20),
+        padding: const EdgeInsets.all(20),
         child: QuestionCardWidget(question: question, languageCode: widget.languageCode),
       ),
     ),
@@ -122,7 +128,7 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
                   crossAxisAlignment: .stretch,
                   children: [
                     for (int i = 0; i < widget.questions.length; i++)
-                      _buildCard(context, widget.questions[i], key: _measureKeys[i]),
+                      _buildCard(context, widget.questions[i], isActive: true, key: _measureKeys[i]),
                   ],
                 ),
               ),
@@ -153,15 +159,24 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
                   },
                 ),
                 Expanded(
-                  child: SizedBox(
-                    height: _maxHeight,
-                    child: PageView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      clipBehavior: .none,
-                      controller: _pageController,
-                      itemCount: widget.questions.length,
-                      onPageChanged: (index) => widget.currentPage.value = index,
-                      itemBuilder: (context, index) => _buildCard(context, widget.questions[index]),
+                  child: ClipRect(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: SizedBox(
+                        height: _maxHeight,
+                        child: PageView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          clipBehavior: Clip.none,
+                          controller: _pageController,
+                          itemCount: widget.questions.length,
+                          onPageChanged: (index) => widget.currentPage.value = index,
+                          itemBuilder: (context, index) => ValueListenableBuilder<int>(
+                            valueListenable: widget.currentPage,
+                            builder: (context, current, _) =>
+                                _buildCard(context, widget.questions[index], isActive: index == current),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -185,21 +200,30 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
               ],
             )
           else
-            SizedBox(
-              height: _maxHeight,
-              child: PageView.builder(
-                clipBehavior: .none,
-                controller: _pageController,
-                itemCount: widget.questions.length,
-                onPageChanged: (index) => widget.currentPage.value = index,
-                itemBuilder: (context, index) => _buildCard(context, widget.questions[index]),
+            ClipRect(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: SizedBox(
+                  height: _maxHeight,
+                  child: PageView.builder(
+                    clipBehavior: Clip.none,
+                    controller: _pageController,
+                    itemCount: widget.questions.length,
+                    onPageChanged: (index) => widget.currentPage.value = index,
+                    itemBuilder: (context, index) => ValueListenableBuilder<int>(
+                      valueListenable: widget.currentPage,
+                      builder: (context, current, _) =>
+                          _buildCard(context, widget.questions[index], isActive: index == current),
+                    ),
+                  ),
+                ),
               ),
             ),
           const SizedBox(height: 8),
           ValueListenableBuilder(
             valueListenable: widget.currentPage,
             builder: (context, current, _) => Row(
-              mainAxisAlignment: .center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 PageIndicator(
                   selectedPage: current,
