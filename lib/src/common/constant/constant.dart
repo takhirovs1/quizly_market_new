@@ -8,7 +8,7 @@ class Constant {
   static const privacyPolicyUrl = '';
   static const packageUi = 'ui';
 
-  static const botUrl = 'https://t.me/prjkttest_bot';
+  static const botUrl = 'https://t.me/quizlymarketbot';
   static const appShortName = 'app';
 
   static String get miniAppUrl {
