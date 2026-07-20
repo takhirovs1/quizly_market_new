@@ -72,7 +72,7 @@ class _AppState extends AppState {
             child: Logbook(
               config: _logbookConfig,
               child: Thunder(
-                enabled: true,
+                enabled: false,
                 // enabled: debugConfig.debuggerEnabled,
                 color: context.x.theme.colorScheme.primary,
 
