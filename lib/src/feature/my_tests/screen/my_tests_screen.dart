@@ -62,7 +62,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                     onRefresh: onRefresh,
                     child: ListView(
                       controller: scrollController,
-                      padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                      padding: .only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
                       children: [
                         if (state.search.isNotEmpty && state.myTests.isEmpty) ...[
                           EmptyTestWidget(
