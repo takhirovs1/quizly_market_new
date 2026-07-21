@@ -12,6 +12,9 @@ class QuizAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.bottom,
     this.showBackButton,
     this.onBackPressed,
+    this.onTitlePointerDown,
+    this.onTitlePointerUp,
+    this.onTitlePointerCancel,
     super.key,
     this.telegramWebAppSafeAreaInsetTop,
   });
@@ -26,6 +29,9 @@ class QuizAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final VoidCallback? onBackPressed;
   final bool? showBackButton;
+  final PointerDownEventListener? onTitlePointerDown;
+  final PointerUpEventListener? onTitlePointerUp;
+  final PointerCancelEventListener? onTitlePointerCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +71,17 @@ class QuizAppBar extends StatelessWidget implements PreferredSizeWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: telegramWebAppSafeAreaInsetTop?.toDouble() ?? 0),
-          Text(
-            title,
-            style: context.x.textStyle.nunitoW600s24.copyWith(
-              color: context.x.colors.white,
-              fontWeight: FontWeight.w600,
+          Listener(
+            onPointerDown: onTitlePointerDown,
+            onPointerUp: onTitlePointerUp,
+            onPointerCancel: onTitlePointerCancel,
+            behavior: HitTestBehavior.opaque,
+            child: Text(
+              title,
+              style: context.x.textStyle.nunitoW600s24.copyWith(
+                color: context.x.colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           if (subtitle != null) subtitle as Widget,

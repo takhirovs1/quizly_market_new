@@ -29,6 +29,9 @@ class _MyTestsScreenState extends MyTestsScreenState {
     appBar: QuizAppBar(
       title: context.x.l10n.myTests,
       telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+      onTitlePointerDown: onTitlePointerDown,
+      onTitlePointerUp: onTitlePointerUp,
+      onTitlePointerCancel: onTitlePointerCancel,
     ),
     body: Column(
       crossAxisAlignment: .stretch,

@@ -72,8 +72,7 @@ class _AppState extends AppState {
             child: Logbook(
               config: _logbookConfig,
               child: Thunder(
-                enabled: false,
-                // enabled: debugConfig.debuggerEnabled,
+                enabled: debugConfig.debuggerEnabled,
                 color: context.x.theme.colorScheme.primary,
 
                 /// This scope [Overlay] is used to handle the overlay entries
