@@ -185,8 +185,31 @@ class _SplashRouteWrapperState extends State<SplashRouteWrapper> {
       if (context.mounted) {
         final startParam = context.telegramWebApp.startParam;
         if (startParam != null && startParam.isNotEmpty) {
-          if (startParam.startsWith('r')) {
-            context.octopus.navigate('home');
+          if (startParam == 'home') {
+            context.octopus.navigate(Routes.home.name);
+          } else if (startParam == 'topup') {
+            context.octopus.setState(
+              (s) => s
+                ..clear()
+                ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                ..add(OctopusNode(name: Routes.payment.name, arguments: const {}, children: const [])),
+            );
+          } else if (startParam == 'balance_history') {
+            context.octopus.setState(
+              (s) => s
+                ..clear()
+                ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                ..add(OctopusNode(name: Routes.paymentHistory.name, arguments: const {}, children: const [])),
+            );
+          } else if (startParam == 'support_chat') {
+            context.octopus.setState(
+              (s) => s
+                ..clear()
+                ..add(OctopusNode(name: Routes.home.name, arguments: const {}, children: const []))
+                ..add(OctopusNode(name: Routes.supportChat.name, arguments: const {}, children: const [])),
+            );
+          } else if (startParam.startsWith('r')) {
+            context.octopus.navigate(Routes.home.name);
           } else {
             try {
               final repo = context.x.dependencies.repository.myTestRepository;

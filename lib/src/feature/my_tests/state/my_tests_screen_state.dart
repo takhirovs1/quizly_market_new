@@ -144,40 +144,83 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: context.x.colors.cardBackground,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Password',
-          style: context.x.textStyle.nunitoW600s24.copyWith(color: context.x.colors.white, fontSize: 20),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: context.x.colors.dialogBackground,
+        shape: RoundedRectangleBorder(borderRadius: const .all(.circular(16))),
+        child: Padding(
+          padding: const .all(20),
+          child: Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
+            children: [
+              Text(
+                'Password',
+                textAlign: .center,
+                style: context.x.textStyle.sfW700s28.copyWith(fontSize: 20, color: context.x.colors.dialogText),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                autofocus: true,
+                keyboardType: .number,
+                cursorColor: context.x.colors.primary,
+                style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.dialogText),
+                decoration: InputDecoration(
+                  hintText: 'Enter password',
+                  hintStyle: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                  filled: true,
+                  fillColor: context.x.colors.textFieldBackground,
+                  contentPadding: const .symmetric(horizontal: 16, vertical: 14),
+                  border: OutlineInputBorder(borderRadius: const .all(.circular(12)), borderSide: .none),
+                  enabledBorder: OutlineInputBorder(borderRadius: const .all(.circular(12)), borderSide: .none),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: const .all(.circular(12)),
+                    borderSide: BorderSide(color: context.x.colors.primary, width: 1.5),
+                  ),
+                ),
+                onSubmitted: (_) => _submitPassword(dialogContext, passwordController.text),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                spacing: 12,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: context.x.colors.transparent,
+                        surfaceTintColor: context.x.colors.transparent,
+                        backgroundColor: context.x.colors.dialogCancelButton,
+                        shape: RoundedRectangleBorder(borderRadius: const .all(.circular(10))),
+                        padding: const .symmetric(vertical: 14),
+                      ),
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: Text(
+                        context.x.l10n.cancel,
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.bannerPriceText),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: context.x.colors.transparent,
+                        surfaceTintColor: context.x.colors.transparent,
+                        backgroundColor: context.x.colors.primary,
+                        shape: RoundedRectangleBorder(borderRadius: const .all(.circular(10))),
+                        padding: const .symmetric(vertical: 14),
+                      ),
+                      onPressed: () => _submitPassword(dialogContext, passwordController.text),
+                      child: Text('OK', style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        content: TextField(
-          controller: passwordController,
-          obscureText: true,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          style: context.x.textStyle.w500s16.copyWith(color: context.x.colors.white),
-          decoration: InputDecoration(
-            hintText: 'Password',
-            hintStyle: context.x.textStyle.w500s16.copyWith(color: context.x.colors.secondary),
-            filled: true,
-            fillColor: context.x.colors.textFieldBackground,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-          ),
-          onSubmitted: (_) => _submitPassword(dialogContext, passwordController.text),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text(context.x.l10n.cancel, style: TextStyle(color: context.x.colors.secondary)),
-          ),
-          ElevatedButton(
-            onPressed: () => _submitPassword(dialogContext, passwordController.text),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }

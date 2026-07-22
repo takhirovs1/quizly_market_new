@@ -23,11 +23,18 @@ class _WebTelegramService extends TelegramService {
   @override
   String? get startParam {
     try {
-      final param = Uri.base.queryParameters['tgWebAppStartParam'];
+      final webAppStartParam = _tg.initDataUnsafe?.startParam;
+      if (webAppStartParam != null && webAppStartParam.isNotEmpty) {
+        return webAppStartParam;
+      }
+      final param =
+          Uri.base.queryParameters['tgWebAppStartParam'] ??
+          Uri.base.queryParameters['startapp'] ??
+          Uri.base.queryParameters['start_param'];
       if (param != null && param.isNotEmpty) {
         return param;
       }
-    } catch (_) {}
+    } on Object catch (_) {}
     return null;
   }
 
