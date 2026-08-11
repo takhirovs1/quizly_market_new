@@ -81,18 +81,22 @@ ipa-prod: pre-build ## Build iOS IPA (production config)
 
 .PHONY: web
 web: pre-build ## Build Flutter web release and deploy to Firebase hosting
-	@cd packages/quizlymarket_landing && npm install && npm run build
-	@mkdir -p web/landing
-	@cp -R packages/quizlymarket_landing/dist/* web/landing/
+	@if [ -d "packages/quizlymarket_landing" ]; then \
+		cd packages/quizlymarket_landing && npm install && npm run build && \
+		mkdir -p ../../web/landing && \
+		cp -R dist/* ../../web/landing/ ; \
+	fi
 	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
 	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
 	@firebase deploy --only hosting
 
 .PHONY: web-prod
 web-prod: pre-build ## Build Flutter web release (production config) and deploy to Firebase hosting
-	@cd packages/quizlymarket_landing && npm install && npm run build
-	@mkdir -p web/landing
-	@cp -R packages/quizlymarket_landing/dist/* web/landing/
+	@if [ -d "packages/quizlymarket_landing" ]; then \
+		cd packages/quizlymarket_landing && npm install && npm run build && \
+		mkdir -p ../../web/landing && \
+		cp -R dist/* ../../web/landing/ ; \
+	fi
 	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
 	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
 	@firebase deploy --only hosting
@@ -100,9 +104,12 @@ web-prod: pre-build ## Build Flutter web release (production config) and deploy 
 
 .PHONY: web-win
 web-win: pre-build-win ## Build Flutter web release and deploy to Firebase hosting (Windows-safe)
-	@cd packages/quizlymarket_landing && npm install && npm run build
-	@if not exist web\landing mkdir web\landing
-	@xcopy /E /I /Y packages\quizlymarket_landing\dist\* web\landing\
+	@if exist packages\quizlymarket_landing ( \
+		cd packages\quizlymarket_landing && npm install && npm run build && \
+		if not exist ..\..\web\landing mkdir ..\..\web\landing && \
+		xcopy /E /I /Y dist\* ..\..\web\landing\ && \
+		cd ..\.. \
+	)
 	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
 	@firebase deploy --only hosting
 
@@ -131,9 +138,11 @@ DEPLOY_PATH := /opt/quizly/web/
 
 .PHONY: web-deploy
 web-deploy: pre-build ## Build Flutter web release and deploy to quizly.corelabs.uz (own server)
-	@cd packages/quizlymarket_landing && npm install && npm run build
-	@mkdir -p web/landing
-	@cp -R packages/quizlymarket_landing/dist/* web/landing/
+	@if [ -d "packages/quizlymarket_landing" ]; then \
+		cd packages/quizlymarket_landing && npm install && npm run build && \
+		mkdir -p ../../web/landing && \
+		cp -R dist/* ../../web/landing/ ; \
+	fi
 	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
 	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
 	@rsync -avz --delete build/web/ $(DEPLOY_HOST):$(DEPLOY_PATH)

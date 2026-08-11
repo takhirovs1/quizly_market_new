@@ -7,7 +7,6 @@ import 'package:logbook/logbook.dart';
 import 'package:octopus/octopus.dart';
 import 'package:thunder/thunder.dart';
 import 'package:ui/ui.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 import '../../feature/authentication/screen/authentication_scope.dart';
 import '../../feature/authentication/state/authentication_controller.dart';

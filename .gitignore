@@ -64,3 +64,5 @@ requests/
 
 # Generated web landing directory
 /web/landing/
+packages/quizlymarket_landing/
+

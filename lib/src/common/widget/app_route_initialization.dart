@@ -13,27 +13,6 @@ mixin AppRouteInitialization on State<App> {
   void initState() {
     super.initState();
 
-    if (kIsWeb) {
-      final isTelegram = context.telegramWebApp.isSupported;
-      if (!isTelegram) {
-        final uri = Uri.base;
-        final hasFragmentRoute =
-            uri.fragment.isNotEmpty && Routes.values.any((route) => uri.fragment.contains(route.name));
-        final hasPathRoute =
-            uri.path.isNotEmpty && uri.path != '/' && Routes.values.any((route) => uri.path.contains(route.name));
-
-        if (!hasFragmentRoute && !hasPathRoute) {
-          url_launcher
-              .launchUrl(
-                Uri.parse('/landing/'),
-                mode: url_launcher.LaunchMode.platformDefault,
-                webOnlyWindowName: '_self',
-              )
-              .ignore();
-        }
-      }
-    }
-
     authGuard = AuthenticationGuard(
       getUser: () => context.x.dependencies.authenticationController.state.user,
       routes: <String>{Routes.login.name},
