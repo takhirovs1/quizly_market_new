@@ -7,7 +7,10 @@ import 'package:logbook/logbook.dart';
 import 'package:octopus/octopus.dart';
 import 'package:thunder/thunder.dart';
 import 'package:ui/ui.dart';
+import 'package:universal_html/html.dart' as html;
 
+import '../../core/di/service_locator.dart';
+import '../../core/services/web_update_notifier.dart';
 import '../../feature/authentication/screen/authentication_scope.dart';
 import '../../feature/authentication/state/authentication_controller.dart';
 import '../../feature/settings/screen/settings_scope.dart';
@@ -62,34 +65,79 @@ class _AppState extends AppState {
     theme: AppThemeData.light(),
 
     // Scopes
-    builder: (context, child) =>
-        /// This scope [MediaQuery] is used to handle the screen size and orientation
-        MediaQuery(
-          key: _appKey,
-          data: MediaQuery.of(context).copyWith(textScaler: .noScaling),
-          child: KeyboardDismisser(
-            child: Logbook(
-              config: _logbookConfig,
-              child: Thunder(
-                enabled: debugConfig.debuggerEnabled,
-                color: context.x.theme.colorScheme.primary,
+    builder: (context, child) {
+      final appWidget = MediaQuery(
+        key: _appKey,
+        data: MediaQuery.of(context).copyWith(textScaler: .noScaling),
+        child: KeyboardDismisser(
+          child: Logbook(
+            config: _logbookConfig,
+            child: Thunder(
+              enabled: debugConfig.debuggerEnabled,
+              color: context.x.theme.colorScheme.primary,
 
-                /// This scope [Overlay] is used to handle the overlay entries
-                child: Overlay(
-                  key: _overlayKey,
-                  clipBehavior: .none,
-                  initialEntries: <OverlayEntry>[
-                    _scopes,
+              /// This scope [Overlay] is used to handle the overlay entries
+              child: Overlay(
+                key: _overlayKey,
+                clipBehavior: .none,
+                initialEntries: <OverlayEntry>[
+                  _scopes,
 
-                    // You can any other overlay entries here for debugging
-                    // Important: this list is immutable
-                  ],
-                ),
+                  // You can any other overlay entries here for debugging
+                  // Important: this list is immutable
+                ],
               ),
             ),
           ),
         ),
+      );
+
+      if (!kIsWeb) return appWidget;
+
+      return ListenableBuilder(
+        listenable: getIt<WebUpdateNotifier>(),
+        builder: (context, _) {
+          if (!getIt<WebUpdateNotifier>().hasUpdate) return appWidget;
+          return Stack(
+            children: [
+              appWidget,
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: ColoredBox(
+                  color: const Color(0xFF1C59F2),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const .symmetric(horizontal: 16, vertical: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              context.x.l10n.newVersionAvailable,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => html.window.location.reload(),
+                            child: Text(
+                              context.x.l10n.updateButton,
+                              style: const TextStyle(color: Color(0xFF41D6FF)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
   );
+
   void _configureTelegramShell() {
     if (!kIsWeb) return;
 

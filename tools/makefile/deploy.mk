@@ -2,126 +2,110 @@
 # 🚀 DEPLOYMENT COMMANDS
 # ──────────────────────
 
-# Build Name and Number from pubspec.yaml
 BUILD_NAME=$(shell grep '^version: ' pubspec.yaml | cut -d+ -f1 | sed 's/version: //')
 BUILD_NUMBER=$(shell grep '^version: ' pubspec.yaml | cut -d+ -f2)
 
 .PHONY: help-deploy
-help-deploy: ## Show all available deployment-related commands
-	@echo 'Usage: make <OPTIONS> ... <TARGETS>'
-	@echo ''
+help-deploy:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: pre-build
-pre-build: increment-build clean_all gen ## Run before build tasks
-
-.PHONY: pre-build-win
-pre-build-win: ## Run before build tasks (Windows-safe)
-	@make increment-build-win
-	@make clean_all-win
-	@make gen
-
-# ─────────── VERSION MANAGEMENT ───────────
+# ─────────── VERSION ───────────
 
 .PHONY: increment-build
-increment-build: ## Increment build number in pubspec.yaml
+increment-build:
 	@sed -i '' 's/\(^version: *[0-9.]*\)+\([0-9]*\)/\1+'"$$(($$(grep '^version:' pubspec.yaml | cut -d+ -f2) + 1))"'/' pubspec.yaml
 	@echo "\nBuild number incremented to $$(($(BUILD_NUMBER) + 1))\n"
 
-.PHONY: increment-build-win
-increment-build-win: ## Increment build number in pubspec.yaml (Windows-safe)
-	@CURRENT=$$(grep '^version:' pubspec.yaml | head -n1); \
-	NAME=$${CURRENT%%+*}; \
-	NUM=$${CURRENT##*+}; \
-	NEW_NUM=$$((NUM + 1)); \
-	sed -i.bak "s/^version: .*/$${NAME}+$$NEW_NUM/" pubspec.yaml; \
-	echo "\nBuild number incremented to $$NEW_NUM\n"
+.PHONY: pre-build
+pre-build: increment-build clean_all gen
 
+# ─────────── WEB: Telegram Mini App → Firebase Hosting ───────────
 
-# ─────────── BUILD COMMANDS FOR ANDROID ───────────
+.PHONY: tma
+tma: pre-build ## Build & deploy Telegram Mini App to Firebase Hosting
+	@if [ -d "packages/quizlymarket_landing" ]; then \
+		cd packages/quizlymarket_landing && npm install && npm run build && \
+		mkdir -p ../../web/landing && \
+		cp -R dist/* ../../web/landing/ ; \
+	fi
+	@echo '{"version":"$(shell date +%s)"}' > web/version.json
+	@$(FLUTTER) build web --release --source-maps \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=web
+	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
+	@firebase deploy --only hosting
 
-.PHONY: apk
-apk: pre-build ## Build Android APK (development config)
-	@$(FLUTTER) build apk --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/development.json --dart-define=config.platform=android
-	@open build/app/outputs/apk/release/
+# ─────────── WEB: Own Server Deploy ───────────
 
-.PHONY: apk-stage
-apk-stage: pre-build ## Build Android APK (staging config)
-	@$(FLUTTER) build apk --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/staging.json --dart-define=config.platform=android
-	@open build/app/outputs/apk/release/
+DEPLOY_HOST := corelabs-server
+DEPLOY_PATH := /opt/quizly/web/
 
-.PHONY: apk-prod
-apk-prod: pre-build ## Build Android APK (production config)
-	@$(FLUTTER) build apk --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=android
-	@open build/app/outputs/apk/release/
+.PHONY: web-deploy
+web-deploy: pre-build ## Build & deploy web to quizlymarket.corelabs.uz (own server)
+	@if [ -d "packages/quizlymarket_landing" ]; then \
+		cd packages/quizlymarket_landing && npm install && npm run build && \
+		mkdir -p ../../web/landing && \
+		cp -R dist/* ../../web/landing/ ; \
+	fi
+	@echo '{"version":"$(shell date +%s)"}' > web/version.json
+	@$(FLUTTER) build web --release --source-maps \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=web
+	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
+	@rsync -avz --delete build/web/ $(DEPLOY_HOST):$(DEPLOY_PATH)
 
-# ─────────── BUILD COMMANDS FOR ANDROID aab ───────────
-
-.PHONY: aab
-aab: pre-build ## Build Android AAB
-	@$(FLUTTER) build appbundle --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=android
-	@open build/app/outputs/bundle/release/
-
-# ─────────── BUILD COMMANDS FOR iOS ───────────
+# ─────────── iOS ───────────
 
 .PHONY: ipa
-ipa: pre-build ## Build iOS IPA (development config)
-	@$(FLUTTER) build ipa --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/development.json --dart-define=config.platform=ios
-	@open build/ios/archive/Runner.xcarchive
-
-.PHONY: ipa-stage
-ipa-stage: pre-build ## Build iOS IPA (staging config)
-	@$(FLUTTER) build ipa --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/staging.json --dart-define=config.platform=ios
+ipa: pre-build ## Build iOS IPA (development)
+	@$(FLUTTER) build ipa \
+		--build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) \
+		--dart-define-from-file=config/development.json \
+		--dart-define=config.platform=ios
 	@open build/ios/archive/Runner.xcarchive
 
 .PHONY: ipa-prod
-ipa-prod: pre-build ## Build iOS IPA (production config)
-	@$(FLUTTER) build ipa --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=ios
+ipa-prod: pre-build ## Build iOS IPA (production) and open Xcode to upload
+	@$(FLUTTER) build ipa \
+		--build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=ios
 	@open build/ios/archive/Runner.xcarchive
 
-.PHONY: web
-web: pre-build ## Build Flutter web release and deploy to Firebase hosting
-	@if [ -d "packages/quizlymarket_landing" ]; then \
-		cd packages/quizlymarket_landing && npm install && npm run build && \
-		mkdir -p ../../web/landing && \
-		cp -R dist/* ../../web/landing/ ; \
-	fi
-	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
-	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
-	@firebase deploy --only hosting
+# ─────────── Android ───────────
 
-.PHONY: web-prod
-web-prod: pre-build ## Build Flutter web release (production config) and deploy to Firebase hosting
-	@if [ -d "packages/quizlymarket_landing" ]; then \
-		cd packages/quizlymarket_landing && npm install && npm run build && \
-		mkdir -p ../../web/landing && \
-		cp -R dist/* ../../web/landing/ ; \
-	fi
-	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
-	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
-	@firebase deploy --only hosting
+.PHONY: apk
+apk: pre-build ## Build Android APK (development)
+	@$(FLUTTER) build apk --release \
+		--build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) \
+		--dart-define-from-file=config/development.json \
+		--dart-define=config.platform=android
+	@open build/app/outputs/apk/release/
 
+.PHONY: aab
+aab: pre-build ## Build Android AAB (production) for Play Store
+	@$(FLUTTER) build appbundle --release \
+		--build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=android
+	@open build/app/outputs/bundle/release/
 
-.PHONY: web-win
-web-win: pre-build-win ## Build Flutter web release and deploy to Firebase hosting (Windows-safe)
-	@if exist packages\quizlymarket_landing ( \
-		cd packages\quizlymarket_landing && npm install && npm run build && \
-		if not exist ..\..\web\landing mkdir ..\..\web\landing && \
-		xcopy /E /I /Y dist\* ..\..\web\landing\ && \
-		cd ..\.. \
-	)
-	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
-	@firebase deploy --only hosting
+# ─────────── macOS ───────────
 
-# ─────────── BUILD COMMANDS FOR macOS ───────────
+.PHONY: macos
+macos: pre-build ## Build macOS for App Store (archive via Xcode)
+	@$(FLUTTER) build macos --release \
+		--build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=macos
+	@open macos/Runner.xcworkspace
 
 .PHONY: macos-dmg
-macos-dmg: pre-build ## Build macOS app and package as DMG
-	@echo "🛠️ Installing create-dmg tool..."
+macos-dmg: pre-build ## Build macOS DMG (direct distribution)
 	@brew install create-dmg || true
-	@echo "📦 Building macOS app..."
-	@$(FLUTTER) build macos --release --dart-define-from-file=config/production.json --dart-define=config.platform=macos
-	@echo "💿 Creating DMG image..."
+	@$(FLUTTER) build macos --release \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=macos
 	@rm -f QuizlyMarket.dmg
 	@create-dmg \
 		--volname "QuizlyMarket" \
@@ -130,32 +114,3 @@ macos-dmg: pre-build ## Build macOS app and package as DMG
 		--app-drop-link 450 200 \
 		"QuizlyMarket.dmg" \
 		"build/macos/Build/Products/Release/QuizlyMarket.app"
-	@echo "✅ DMG created successfully"
-
-
-DEPLOY_HOST := corelabs-server
-DEPLOY_PATH := /opt/quizly/web/
-
-.PHONY: web-deploy
-web-deploy: pre-build ## Build Flutter web release and deploy to quizly.corelabs.uz (own server)
-	@if [ -d "packages/quizlymarket_landing" ]; then \
-		cd packages/quizlymarket_landing && npm install && npm run build && \
-		mkdir -p ../../web/landing && \
-		cp -R dist/* ../../web/landing/ ; \
-	fi
-	@$(FLUTTER) build web --release --source-maps --dart-define-from-file=config/production.json --dart-define=config.platform=web
-	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
-	@rsync -avz --delete build/web/ $(DEPLOY_HOST):$(DEPLOY_PATH)
-
-
-	# ─────────── BUILD COMMANDS FOR macOS App Store ───────────
-
-.PHONY: macos
-macos: pre-build ## Build macOS app for App Store (archive via Xcode)
-	@echo "📦 Building macOS app for App Store..."
-	@$(FLUTTER) build macos --release --build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) --dart-define-from-file=config/production.json --dart-define=config.platform=macos
-	@echo "✅ Build done. Now open Xcode to Archive and upload:"
-	@open macos/Runner.xcworkspace
-
-
-	
