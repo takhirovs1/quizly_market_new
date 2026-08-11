@@ -14,12 +14,7 @@ class WebUpdateService {
     try {
       final response = await _dio.get<Object>(
         '/version.json',
-        options: Options(
-          responseType: .plain,
-          headers: const <String, String>{
-            'Cache-Control': 'no-cache',
-          },
-        ),
+        options: Options(responseType: .plain, headers: const <String, String>{'Cache-Control': 'no-cache'}),
       );
       if (response.statusCode == 200 && response.data != null) {
         final version = _parseVersion(response.data);
@@ -37,19 +32,11 @@ class WebUpdateService {
     try {
       final response = await _dio.get<Object>(
         '/version.json',
-        options: Options(
-          responseType: .plain,
-          headers: const <String, String>{
-            'Cache-Control': 'no-cache',
-          },
-        ),
+        options: Options(responseType: .plain, headers: const <String, String>{'Cache-Control': 'no-cache'}),
       );
       if (response.statusCode == 200 && response.data != null) {
         final serverVersion = _parseVersion(response.data);
-        if (serverVersion != null &&
-            serverVersion.isNotEmpty &&
-            _cachedVersion != null &&
-            _cachedVersion!.isNotEmpty) {
+        if (serverVersion != null && serverVersion.isNotEmpty && _cachedVersion != null && _cachedVersion!.isNotEmpty) {
           return serverVersion != _cachedVersion;
         }
       }

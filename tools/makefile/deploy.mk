@@ -28,11 +28,11 @@ tma: pre-build ## Build & deploy Telegram Mini App to Firebase Hosting
 		mkdir -p ../../web/landing && \
 		cp -R dist/* ../../web/landing/ ; \
 	fi
-	@echo '{"version":"$(shell date +%s)"}' > web/version.json
 	@$(FLUTTER) build web --release --source-maps \
 		--dart-define-from-file=config/production.json \
 		--dart-define=config.platform=web
 	@sed -i '' '/sourceMappingURL=flutter\.js\.map/d' build/web/flutter.js || true
+	@echo '{"version":"$(shell date +%s)"}' > build/web/version.json
 	@firebase deploy --only hosting
 
 # ─────────── WEB: Own Server Deploy ───────────

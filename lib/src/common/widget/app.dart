@@ -120,10 +120,7 @@ class _AppState extends AppState {
                           ),
                           TextButton(
                             onPressed: () => html.window.location.reload(),
-                            child: Text(
-                              context.x.l10n.updateButton,
-                              style: const TextStyle(color: Color(0xFF41D6FF)),
-                            ),
+                            child: Text(context.x.l10n.updateButton, style: const TextStyle(color: Color(0xFF41D6FF))),
                           ),
                         ],
                       ),

@@ -14,8 +14,7 @@ import '../screen/my_tests_screen.dart';
 
 abstract class MyTestsScreenState extends State<MyTestsScreen> {
   static bool isSessionThunderEnabled = false;
-  int _titleTapCount = 0;
-  DateTime? _lastTitleTapTime;
+  Timer? _holdTimer;
 
   late final MyTestCubit myTestCubit;
   late final ScrollController scrollController;
@@ -69,6 +68,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
 
   @override
   void dispose() {
+    _holdTimer?.cancel();
     searchController.dispose();
     _debounceTimer?.cancel();
     scrollController.dispose();
@@ -106,26 +106,20 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   }
 
   void onTitlePointerDown(PointerDownEvent event) {
-    if (!isSessionThunderEnabled) {
-      final appDebugSettings = context.x.dependencies.appDebugSettings;
-      appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: true);
-    }
-
-    final now = DateTime.now();
-    if (_lastTitleTapTime != null && now.difference(_lastTitleTapTime!) < const Duration(milliseconds: 500)) {
-      _titleTapCount++;
-    } else {
-      _titleTapCount = 1;
-    }
-    _lastTitleTapTime = now;
-
-    if (_titleTapCount >= 10) {
-      _titleTapCount = 0;
+    _holdTimer?.cancel();
+    _holdTimer = Timer(const Duration(seconds: 10), () {
+      if (!mounted) return;
+      if (!isSessionThunderEnabled) {
+        final appDebugSettings = context.x.dependencies.appDebugSettings;
+        appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: true);
+      }
       _showPasswordDialog();
-    }
+    });
   }
 
   void onTitlePointerUp(PointerUpEvent event) {
+    _holdTimer?.cancel();
+    _holdTimer = null;
     if (!isSessionThunderEnabled) {
       final appDebugSettings = context.x.dependencies.appDebugSettings;
       appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: false);
@@ -133,6 +127,8 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   }
 
   void onTitlePointerCancel(PointerCancelEvent event) {
+    _holdTimer?.cancel();
+    _holdTimer = null;
     if (!isSessionThunderEnabled) {
       final appDebugSettings = context.x.dependencies.appDebugSettings;
       appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: false);
@@ -146,7 +142,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
       barrierDismissible: false,
       builder: (dialogContext) => Dialog(
         backgroundColor: context.x.colors.dialogBackground,
-        shape: RoundedRectangleBorder(borderRadius: const .all(.circular(16))),
+        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(16))),
         child: Padding(
           padding: const .all(20),
           child: Column(
@@ -172,8 +168,8 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
                   filled: true,
                   fillColor: context.x.colors.textFieldBackground,
                   contentPadding: const .symmetric(horizontal: 16, vertical: 14),
-                  border: OutlineInputBorder(borderRadius: const .all(.circular(12)), borderSide: .none),
-                  enabledBorder: OutlineInputBorder(borderRadius: const .all(.circular(12)), borderSide: .none),
+                  border: const OutlineInputBorder(borderRadius: .all(.circular(12)), borderSide: .none),
+                  enabledBorder: const OutlineInputBorder(borderRadius: .all(.circular(12)), borderSide: .none),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: const .all(.circular(12)),
                     borderSide: BorderSide(color: context.x.colors.primary, width: 1.5),
@@ -192,7 +188,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
                         shadowColor: context.x.colors.transparent,
                         surfaceTintColor: context.x.colors.transparent,
                         backgroundColor: context.x.colors.dialogCancelButton,
-                        shape: RoundedRectangleBorder(borderRadius: const .all(.circular(10))),
+                        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(10))),
                         padding: const .symmetric(vertical: 14),
                       ),
                       onPressed: () => Navigator.of(dialogContext).pop(),
@@ -209,7 +205,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
                         shadowColor: context.x.colors.transparent,
                         surfaceTintColor: context.x.colors.transparent,
                         backgroundColor: context.x.colors.primary,
-                        shape: RoundedRectangleBorder(borderRadius: const .all(.circular(10))),
+                        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(10))),
                         padding: const .symmetric(vertical: 14),
                       ),
                       onPressed: () => _submitPassword(dialogContext, passwordController.text),
