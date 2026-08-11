@@ -4,6 +4,8 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/service/update_service.dart';
+import '../../../common/widget/update_bottom_sheet.dart';
 import '../../settings/screen/settings_scope.dart';
 import '../cubit/auth_cubit.dart';
 import '../screen/login_screen.dart';
@@ -119,6 +121,17 @@ abstract class LoginScreenState extends State<LoginScreen> {
     authCubit = context.read<AuthCubit>();
     pinController = TextEditingController();
     pinFocusNode = FocusNode();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkUpdate();
+    });
+  }
+
+  Future<void> _checkUpdate() async {
+    final updateInfo = await UpdateService().checkUpdate();
+    if (!mounted) return;
+    if (updateInfo != null && (updateInfo.hasUpdate || updateInfo.isForced)) {
+      showUpdateBottomSheet(context, updateInfo);
+    }
   }
 
   Future<void> signInWithGoogle() async {

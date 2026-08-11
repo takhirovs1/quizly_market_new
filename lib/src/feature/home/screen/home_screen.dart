@@ -4,6 +4,8 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/service/update_service.dart';
+import '../../../common/widget/update_bottom_sheet.dart';
 import '../../my_tests/screen/my_tests_screen.dart';
 import '../../profile/screen/profile_screen.dart';
 import '../../recommendation/screen/recommendation_screen.dart';
@@ -84,8 +86,17 @@ class _HomeScreenState extends HomeScreenState {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkUpdate();
       _checkReferralDialog();
     });
+  }
+
+  Future<void> _checkUpdate() async {
+    final updateInfo = await UpdateService().checkUpdate();
+    if (!mounted) return;
+    if (updateInfo != null && (updateInfo.hasUpdate || updateInfo.isForced)) {
+      showUpdateBottomSheet(context, updateInfo);
+    }
   }
 
   void _checkReferralDialog() {
