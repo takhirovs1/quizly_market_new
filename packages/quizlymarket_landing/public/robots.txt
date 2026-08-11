@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://test-9cf8b.web.app/sitemap.xml

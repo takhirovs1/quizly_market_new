@@ -1,8 +1,0 @@
-/* Aggregated styles (import order preserves the cascade) */
-@import "./base.css";
-@import "./effects.css";
-@import "./layout.css";
-@import "./phone.css";
-@import "./sections.css";
-@import "./reveal.css";
-@import "./responsive.css";

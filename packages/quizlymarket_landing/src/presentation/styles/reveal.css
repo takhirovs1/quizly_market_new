@@ -1,3 +1,0 @@
-/* reveal.css — QuizlyMarket landing */
-.reveal{opacity:0;transform:translateY(26px);transition:.7s cubic-bezier(.2,.7,.2,1)}
-.reveal.in{opacity:1;transform:none}
