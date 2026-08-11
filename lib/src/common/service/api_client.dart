@@ -160,9 +160,18 @@ class ApiClient {
     try {
       return await fn(false);
     } on ApiResponseException catch (e) {
-      if (e.statusCode == 401) {
+      if (e.statusCode == 401 || e.statusCode == 403) {
         await _handle401(e);
-        return fn(true); // retry; any second 401 propagates to the caller
+        try {
+          return await fn(true); // retry; any second failure propagates to caller
+        } on ApiResponseException catch (retryErr) {
+          if (retryErr.statusCode == 401 || retryErr.statusCode == 403 || retryErr.statusCode >= 500) {
+            await onSignOut?.call();
+          }
+          rethrow;
+        }
+      } else if (e.statusCode >= 500) {
+        await onSignOut?.call();
       }
       rethrow;
     }
@@ -235,6 +244,7 @@ class ApiClient {
       final err = body['error'];
       if (err is String) errMsg = err;
       if (errMsg != null && errMsg.contains('session expired or signed in on another device')) {
+        await onSignOut?.call();
         onSessionExpired?.call();
         throw e;
       }

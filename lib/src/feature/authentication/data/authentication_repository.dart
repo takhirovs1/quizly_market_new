@@ -74,8 +74,12 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
 
   @override
   Future<void> signOut() async {
-    await fb.FirebaseAuth.instance.signOut();
     _userController.add(_user = const .unauthenticated());
+    try {
+      await fb.FirebaseAuth.instance.signOut();
+    } on Object {
+      /* ignore */
+    }
   }
 
   @override
