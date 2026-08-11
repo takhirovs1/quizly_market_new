@@ -6,11 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class UpdateInfo {
-  const UpdateInfo({
-    required this.hasUpdate,
-    required this.isForced,
-    required this.storeUrl,
-  });
+  const UpdateInfo({required this.hasUpdate, required this.isForced, required this.storeUrl});
 
   final bool hasUpdate;
   final bool isForced;
@@ -18,8 +14,7 @@ class UpdateInfo {
 }
 
 class UpdateService {
-  static const _androidStoreUrl =
-      'https://play.google.com/store/apps/details?id=uz.corelabs.quizlymarket';
+  static const _androidStoreUrl = 'https://play.google.com/store/apps/details?id=uz.corelabs.quizlymarket';
   static const _iosStoreUrl =
       'https://apps.apple.com/uz/app/quizlymarket/id6780981469'; // App Store ID kelganda almashtir
   static const _macosStoreUrl =
@@ -33,10 +28,7 @@ class UpdateService {
       final remoteConfig = FirebaseRemoteConfig.instance;
 
       await remoteConfig.setConfigSettings(
-        RemoteConfigSettings(
-          fetchTimeout: const Duration(seconds: 10),
-          minimumFetchInterval: const Duration(hours: 1),
-        ),
+        RemoteConfigSettings(fetchTimeout: const Duration(seconds: 10), minimumFetchInterval: const Duration(hours: 1)),
       );
 
       await remoteConfig.setDefaults({
