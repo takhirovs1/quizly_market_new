@@ -66,3 +66,8 @@ requests/
 /web/landing/
 packages/quizlymarket_landing/
 
+
+# Android build outputs
+*.apks
+*.aab
+*.apk
