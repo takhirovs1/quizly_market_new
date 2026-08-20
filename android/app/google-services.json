@@ -56,6 +56,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568369386495:android:72089428b15d414b1e4dca",
+        "android_client_info": {
+          "package_name": "uz.corelabs.quizlymarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "568369386495-mhssl36boosa0qjksku66rr9rngk2lvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWiCeNXuZh7skW7F9-pWWTt2TABs15IwQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "568369386495-mhssl36boosa0qjksku66rr9rngk2lvm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "568369386495-17m34mrumh2njfsov3mbu51i2k2gna84.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flutterbro.quizlyMarket"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
