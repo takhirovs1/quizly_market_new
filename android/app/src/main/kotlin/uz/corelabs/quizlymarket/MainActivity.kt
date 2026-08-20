@@ -1,4 +1,4 @@
-package uz.corelabs.quizly
+package uz.corelabs.quizlymarket
 
 import io.flutter.embedding.android.FlutterActivity
 
