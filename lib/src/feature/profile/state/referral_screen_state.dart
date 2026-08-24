@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:ui/ui.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../../common/extension/context_extension.dart';
 import '../../../common/constant/constant.dart';
+import '../../../common/extension/context_extension.dart';
 import '../bloc/profile_cubit.dart';
 import '../screen/referral_screen.dart';
 
@@ -20,15 +20,13 @@ abstract class ReferralScreenState extends State<ReferralScreen> {
       HapticFeedback.lightImpact();
     }
     final message = '${context.x.l10n.shareTextMessage}$referralLink';
-    final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
 
     if (context.telegramWebApp.isSupported) {
+      final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
       context.telegramWebApp.openTelegramLink(shareLink);
     } else {
-      final uri = Uri.parse(shareLink);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: .externalApplication);
-      }
+      // ignore: deprecated_member_use
+      await Share.share(message);
     }
   }
 

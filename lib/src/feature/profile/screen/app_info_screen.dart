@@ -23,23 +23,23 @@ class _AppInfoScreenState extends AppInfoState {
       ),
       body: SafeArea(
         child: isMobile
-            ? ListView(padding: const .fromLTRB(16, 16, 16, 24), children: _buildContent(context))
+            ? ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 24), children: _buildContent(context))
             : Center(
                 child: SingleChildScrollView(
-                  padding: const .symmetric(vertical: 24, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 600),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: context.x.colors.cardBackground2,
-                        borderRadius: .circular(20),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: context.x.colors.divider),
                       ),
                       child: Padding(
-                        padding: const .all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Column(
-                          crossAxisAlignment: .stretch,
-                          mainAxisSize: .min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
                           children: _buildContent(context),
                         ),
                       ),
@@ -65,8 +65,7 @@ class _AppInfoScreenState extends AppInfoState {
       leading: Assets.lib.vectors.google.svg(package: 'ui', width: 22, height: 22),
       title: 'GooglePlay',
       subtitle: ' - QuizlyMarket',
-      isComingSoon: true,
-      onTap: () => openLink('https://play.google.com/store'),
+      onTap: () => openLink('https://play.google.com/store/apps/details?id=uz.corelabs.quizlymarket'),
     ),
     const SizedBox(height: 10),
     LinkCard(
@@ -74,12 +73,23 @@ class _AppInfoScreenState extends AppInfoState {
         package: 'ui',
         width: 22,
         height: 22,
-        colorFilter: .mode(context.x.colors.text, .srcIn),
+        colorFilter: ColorFilter.mode(context.x.colors.text, BlendMode.srcIn),
       ),
       title: 'AppStore',
-      subtitle: ' - QuizlyMarket',
-      isComingSoon: true,
-      onTap: () => openLink('https://www.apple.com/app-store/'),
+      subtitle: ' - iPhone / iPad',
+      onTap: () => openLink('https://apps.apple.com/uz/app/quizlymarket/id6780981469'),
+    ),
+    const SizedBox(height: 10),
+    LinkCard(
+      leading: Assets.lib.vectors.apple.svg(
+        package: 'ui',
+        width: 22,
+        height: 22,
+        colorFilter: ColorFilter.mode(context.x.colors.text, BlendMode.srcIn),
+      ),
+      title: 'AppStore',
+      subtitle: ' - macOS',
+      onTap: () => openLink('https://apps.apple.com/uz/app/quizlymarket/id6780981469?mt=12'),
     ),
     const SizedBox(height: 10),
     LinkCard(
@@ -109,95 +119,4 @@ class _AppInfoScreenState extends AppInfoState {
     const SizedBox(height: 10),
     Text(appVersionLine(context), style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.text)),
   ];
-}
-
-class SectionTitle extends StatelessWidget {
-  const SectionTitle({required this.title, required this.color, super.key});
-  final String title;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Text(title, style: context.x.textStyle.sfW700s18.copyWith(color: color));
-}
-
-class LinkCard extends StatelessWidget {
-  const LinkCard({
-    required this.leading,
-    required this.title,
-    required this.onTap,
-    this.subtitle,
-    this.isComingSoon = false,
-    super.key,
-  });
-
-  final Widget leading;
-  final String title;
-  final String? subtitle;
-  final VoidCallback onTap;
-  final bool isComingSoon;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.x.colors;
-    final textStyle = context.x.textStyle;
-    return Material(
-      color: colors.scaffoldBackground,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: isComingSoon ? null : onTap,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.divider),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            child: Row(
-              children: [
-                SizedBox(width: 28, height: 28, child: Center(child: leading)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: RichText(
-                    maxLines: 3,
-                    overflow: .ellipsis,
-                    text: subtitle != null
-                        ? TextSpan(
-                            style: textStyle.sfW400s16.copyWith(color: colors.text),
-                            children: [
-                              TextSpan(
-                                text: title,
-                                style: textStyle.sfW700s16.copyWith(color: colors.text),
-                              ),
-                              TextSpan(text: subtitle ?? ''),
-                            ],
-                          )
-                        : TextSpan(
-                            text: title,
-                            style: textStyle.sfW700s16.copyWith(color: colors.text),
-                          ),
-                  ),
-                ),
-                if (isComingSoon) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const .symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: colors.primary.withValues(alpha: 0.1),
-                      borderRadius: .circular(20),
-                      border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
-                    ),
-                    child: Text(
-                      context.x.l10n.comingSoon,
-                      style: textStyle.sfW500s11.copyWith(color: colors.primary, fontSize: 10),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

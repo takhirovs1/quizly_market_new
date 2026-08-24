@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:thunder/thunder.dart';
 
@@ -44,6 +45,10 @@ class ApiClient {
     this.getRefreshToken,
     this.getLocale,
     this.getDeviceId,
+    this.getPlatform,
+    this.getAppVersion,
+    this.getScreenName,
+    this.getFunctionName,
     this.onRefreshToken,
     this.onSignOut,
     this.onSessionExpired,
@@ -102,6 +107,10 @@ class ApiClient {
   final String Function()? getRefreshToken;
   final String Function()? getLocale;
   final String Function()? getDeviceId;
+  final String Function()? getPlatform;
+  final String Function()? getAppVersion;
+  final String Function()? getScreenName;
+  final String Function()? getFunctionName;
 
   /// Called on 401 to exchange the refresh token for a new access token.
   /// Must store the new tokens (e.g., via LocalSource) so that the next
@@ -116,6 +125,17 @@ class ApiClient {
 
   late final ApiClientHandler _handler;
   Future<void>? _refreshFuture;
+  bool _isSigningOut = false;
+
+  Future<void> _safeSignOut() async {
+    if (_isSigningOut) return;
+    _isSigningOut = true;
+    try {
+      await onSignOut?.call();
+    } finally {
+      _isSigningOut = false;
+    }
+  }
 
   // ─── Public HTTP methods ───────────────────────────────────────────────────
 
@@ -166,12 +186,12 @@ class ApiClient {
           return await fn(true); // retry; any second failure propagates to caller
         } on ApiResponseException catch (retryErr) {
           if (retryErr.statusCode == 401 || retryErr.statusCode == 403 || retryErr.statusCode >= 500) {
-            await onSignOut?.call();
+            await _safeSignOut();
           }
           rethrow;
         }
       } else if (e.statusCode >= 500) {
-        await onSignOut?.call();
+        await _safeSignOut();
       }
       rethrow;
     }
@@ -223,6 +243,42 @@ class ApiClient {
     if (locale != null && locale.isNotEmpty) headers['Content-Language'] = locale;
     final deviceId = getDeviceId?.call();
     if (deviceId != null && deviceId.isNotEmpty) headers['X-Device-ID'] = deviceId;
+
+    final platform = getPlatform?.call() ?? (kIsWeb ? 'web' : defaultTargetPlatform.name);
+    if (platform.isNotEmpty) headers['X-Platform'] = platform;
+
+    final appVersion = getAppVersion?.call() ?? '';
+    if (appVersion.isNotEmpty) headers['X-App-Version'] = appVersion;
+
+    final screenName = getScreenName?.call() ?? '';
+    if (screenName.isNotEmpty) headers['X-Screen-Name'] = screenName;
+
+    final functionName = getFunctionName?.call() ?? _extractCallerFunctionName();
+    if (functionName.isNotEmpty) headers['X-Function-Name'] = functionName;
+  }
+
+  String _extractCallerFunctionName() {
+    try {
+      final lines = StackTrace.current.toString().split('\n');
+      for (final line in lines) {
+        if (line.contains('api_client.dart') ||
+            line.contains('ApiClient.') ||
+            line.contains('_extractCallerFunctionName') ||
+            line.contains('_applyHeaders') ||
+            line.contains('_send') ||
+            line.contains('_withRetry')) {
+          continue;
+        }
+        final match = RegExp(r'#\d+\s+([^\s\(]+)').firstMatch(line);
+        if (match != null) {
+          final name = match.group(1);
+          if (name != null && name.isNotEmpty && !name.contains('<anonymous')) {
+            return name;
+          }
+        }
+      }
+    } on Object catch (_) {}
+    return '';
   }
 
   Uri _buildUri(String path, Map<String, Object?>? queryParameters) {
@@ -244,7 +300,7 @@ class ApiClient {
       final err = body['error'];
       if (err is String) errMsg = err;
       if (errMsg != null && errMsg.contains('session expired or signed in on another device')) {
-        await onSignOut?.call();
+        await _safeSignOut();
         onSessionExpired?.call();
         throw e;
       }
@@ -252,7 +308,7 @@ class ApiClient {
 
     final refreshToken = getRefreshToken?.call() ?? '';
     if (refreshToken.isEmpty) {
-      await onSignOut?.call();
+      await _safeSignOut();
       throw e;
     }
 
@@ -260,7 +316,7 @@ class ApiClient {
       await (_refreshFuture ??= onRefreshToken!(refreshToken).whenComplete(() => _refreshFuture = null));
     } on Object {
       _refreshFuture = null;
-      await onSignOut?.call();
+      await _safeSignOut();
       rethrow;
     }
   }

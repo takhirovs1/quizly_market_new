@@ -345,7 +345,7 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
           imagePadding: payment.id != 0
               ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
               : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
-          hasShadow: false,
+          hasShadow: true,
           title: payment.title,
           titleWidget: (payment.id == 0 && state.walletStatus.isLoading)
               ? Shimmer.fromColors(

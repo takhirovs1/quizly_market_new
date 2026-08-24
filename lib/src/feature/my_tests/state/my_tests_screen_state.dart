@@ -62,7 +62,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     final currentScroll = scrollController.position.pixels;
     if (maxScroll - currentScroll <= 200) {
       _isLoadingMore = true;
-      myTestCubit.getTopTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
+      myTestCubit.getMyTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
     }
   }
 

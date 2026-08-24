@@ -23,7 +23,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       emit(state.copyWith(status: StateStatus.loading, search: search ?? ''));
       final results = await Future.wait([
         myTestRepository.getMyTests(TestModelRequest(limit: limit, offset: 0, search: search)),
-        myTestRepository.getTopTests(TestModelRequest(limit: limit, offset: 0, search: search)),
+        myTestRepository.getTopTests(TestModelRequest(limit: 13, offset: 0, search: search)),
       ]);
       final myResult = results[0];
       final topResult = results[1];
@@ -122,7 +122,7 @@ class MyTestCubit extends SequentialCubit<MyTestState> {
       } else {
         emit(state.copyWith(status: .loading, search: currentSearch));
         final result = await myTestRepository.getTopTests(
-          TestModelRequest(limit: 20, offset: 0, search: currentSearch.isEmpty ? null : currentSearch),
+          TestModelRequest(limit: 13, offset: 0, search: currentSearch.isEmpty ? null : currentSearch),
         );
         emit(
           state.copyWith(

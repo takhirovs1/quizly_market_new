@@ -235,6 +235,9 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
         getRefreshToken: () => dependencies.localSource.refreshToken,
         getLocale: () => dependencies.localSource.localization?.languageCode ?? 'en',
         getDeviceId: () => dependencies.localSource.deviceId,
+        getPlatform: () => dependencies.metadata.operatingSystem,
+        getAppVersion: () => dependencies.metadata.appVersion,
+        getScreenName: () => authNavigatorInstance?.state.children.lastOrNull?.name ?? '',
         onRefreshToken: (refreshToken) async {
           l.i('ApiClient | Refreshing token via /api/auth/refresh');
           final response = await http.post(
@@ -245,9 +248,14 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
               'Accept': 'application/json',
               'X-Platform-Type': 'mobile',
               'X-Device-ID': dependencies.localSource.deviceId,
+              'X-Platform': dependencies.metadata.operatingSystem,
+              'X-App-Version': dependencies.metadata.appVersion,
+              'X-Screen-Name': authNavigatorInstance?.state.children.lastOrNull?.name ?? '',
+              'X-Function-Name': 'ApiClient.onRefreshToken',
             },
             body: '{"refresh_token":"$refreshToken"}',
           );
+          l.i('ApiClient | Refresh response: ${response.statusCode} body: ${response.body}');
           if (response.statusCode > 204) {
             throw ApiResponseException(statusCode: response.statusCode, message: 'HTTP ${response.statusCode}');
           }
@@ -257,6 +265,7 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
             accessToken: tokenResponse.accessToken,
             refreshToken: tokenResponse.refreshToken,
           );
+          l.i('ApiClient | Tokens updated successfully');
         },
         onSignOut: () async {
           l.w('ApiClient | Unrecoverable 401 — signing out');

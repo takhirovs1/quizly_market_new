@@ -150,7 +150,6 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                   ),
                                   textBought: context.x.l10n.textBought,
                                   isLiked: false,
-                                  // onLikeButtonPressed: () {},
                                 ),
                               const SizedBox(height: 16),
                               const AnimatedReferralBanner(),
@@ -204,17 +203,12 @@ class _MyTestsScreenState extends MyTestsScreenState {
                             ],
                             false => [
                               ResponsiveRecommendationsList(
-                                tests: state.topTests,
+                                tests: state.topTests.take(12).toList(),
                                 crossAxisCount: crossAxisCount,
                                 onBuyButtonPressed: onBuyTestPressed,
                                 onShareButtonPressed: onShareTestPressed,
                                 onLikeButtonPressed: onLikeTestPressed,
                               ),
-                              if (state.isTopTestsLoadingMore)
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(child: CircularProgressIndicator.adaptive()),
-                                ),
                             ],
                           },
                         ],
