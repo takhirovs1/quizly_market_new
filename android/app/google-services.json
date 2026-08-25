@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "568369386495-dd6v0v5p6qeadpqsgo55mtqd9d96kri3.apps.googleusercontent.com",
+          "client_id": "568369386495-sfutacokhf3hp2e2qamjm02b20n0ase5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "uz.corelabs.quizlymarket",
-            "certificate_hash": "174292f093c22d0944e930f04edf9e91f827bda2"
+            "certificate_hash": "ed9b5bbd1c672dfe5dfbb28dd4a38c5138fc3639"
           }
         },
         {
