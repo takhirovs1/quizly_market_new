@@ -52,6 +52,9 @@ class $LibAudioGen {
 class $LibIconGen {
   const $LibIconGen();
 
+  /// File path: lib/icon/AI_icon.svg
+  SvgGenImage get aIIcon => const SvgGenImage('lib/icon/AI_icon.svg');
+
   /// File path: lib/icon/add_home.svg
   SvgGenImage get addHome => const SvgGenImage('lib/icon/add_home.svg');
 
@@ -238,11 +241,15 @@ class $LibIconGen {
   /// File path: lib/icon/upload2.svg
   SvgGenImage get upload2 => const SvgGenImage('lib/icon/upload2.svg');
 
+  /// File path: lib/icon/write_icon.svg
+  SvgGenImage get writeIcon => const SvgGenImage('lib/icon/write_icon.svg');
+
   /// File path: lib/icon/wrong.svg
   SvgGenImage get wrong => const SvgGenImage('lib/icon/wrong.svg');
 
   /// List of all assets
   List<SvgGenImage> get values => [
+    aIIcon,
     addHome,
     addUser,
     apple,
@@ -305,6 +312,7 @@ class $LibIconGen {
     university,
     upload,
     upload2,
+    writeIcon,
     wrong,
   ];
 }
@@ -556,6 +564,9 @@ class $LibLottieGen {
 class $LibVectorsGen {
   const $LibVectorsGen();
 
+  /// File path: lib/vectors/AI_icon.vec
+  SvgGenImage get aIIcon => const SvgGenImage.vec('lib/vectors/AI_icon.vec');
+
   /// File path: lib/vectors/add_home.vec
   SvgGenImage get addHome => const SvgGenImage.vec('lib/vectors/add_home.vec');
 
@@ -594,6 +605,9 @@ class $LibVectorsGen {
 
   /// File path: lib/vectors/correct.vec
   SvgGenImage get correct => const SvgGenImage.vec('lib/vectors/correct.vec');
+
+  /// File path: lib/vectors/desktop.vec
+  SvgGenImage get desktop => const SvgGenImage.vec('lib/vectors/desktop.vec');
 
   /// File path: lib/vectors/documents.vec
   SvgGenImage get documents => const SvgGenImage.vec('lib/vectors/documents.vec');
@@ -649,6 +663,9 @@ class $LibVectorsGen {
   /// File path: lib/vectors/icon_slider.vec
   SvgGenImage get iconSlider => const SvgGenImage.vec('lib/vectors/icon_slider.vec');
 
+  /// File path: lib/vectors/image_icon.vec
+  SvgGenImage get imageIcon => const SvgGenImage.vec('lib/vectors/image_icon.vec');
+
   /// File path: lib/vectors/information_app.vec
   SvgGenImage get informationApp => const SvgGenImage.vec('lib/vectors/information_app.vec');
 
@@ -684,6 +701,9 @@ class $LibVectorsGen {
 
   /// File path: lib/vectors/referral.vec
   SvgGenImage get referral => const SvgGenImage.vec('lib/vectors/referral.vec');
+
+  /// File path: lib/vectors/revoke.vec
+  SvgGenImage get revoke => const SvgGenImage.vec('lib/vectors/revoke.vec');
 
   /// File path: lib/vectors/search.vec
   SvgGenImage get search => const SvgGenImage.vec('lib/vectors/search.vec');
@@ -733,11 +753,15 @@ class $LibVectorsGen {
   /// File path: lib/vectors/upload2.vec
   SvgGenImage get upload2 => const SvgGenImage.vec('lib/vectors/upload2.vec');
 
+  /// File path: lib/vectors/write_icon.vec
+  SvgGenImage get writeIcon => const SvgGenImage.vec('lib/vectors/write_icon.vec');
+
   /// File path: lib/vectors/wrong.vec
   SvgGenImage get wrong => const SvgGenImage.vec('lib/vectors/wrong.vec');
 
   /// List of all assets
   List<SvgGenImage> get values => [
+    aIIcon,
     addHome,
     addUser,
     apple,
@@ -751,6 +775,7 @@ class $LibVectorsGen {
     close,
     copyId,
     correct,
+    desktop,
     documents,
     emptyInbox,
     emptyTestDark,
@@ -769,6 +794,7 @@ class $LibVectorsGen {
     icExternalLink,
     iconMap,
     iconSlider,
+    imageIcon,
     informationApp,
     instagram,
     language,
@@ -781,6 +807,7 @@ class $LibVectorsGen {
     profile,
     questionMark,
     referral,
+    revoke,
     search,
     setHome,
     share,
@@ -797,6 +824,7 @@ class $LibVectorsGen {
     university,
     upload,
     upload2,
+    writeIcon,
     wrong,
   ];
 }

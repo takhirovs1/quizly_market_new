@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -198,20 +197,10 @@ class _ArchiveShimmer extends StatelessWidget {
   const _ArchiveShimmer();
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == .dark;
-    return Shimmer.fromColors(
-      baseColor: isDark ? const Color(0x20FFFFFF) : const Color(0xFFE2E8F0),
-      highlightColor: isDark ? const Color(0x40FFFFFF) : const Color(0xFFF1F5F9),
-      child: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: 5,
-        separatorBuilder: (_, _) => const SizedBox(height: 10),
-        itemBuilder: (_, _) => Container(
-          height: 140,
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ListView.separated(
+    padding: const .all(16),
+    itemCount: 6,
+    separatorBuilder: (_, _) => const SizedBox(height: 10),
+    itemBuilder: (_, _) => const TestCardShimmer(),
+  );
 }

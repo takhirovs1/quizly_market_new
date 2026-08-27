@@ -1,90 +1,83 @@
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import 'my_uploaded_tests_screen.dart';
+import 'new_upload_screen.dart';
 
 class UploadScreen extends StatelessWidget {
   const UploadScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => DefaultTabController(
-    length: 2,
-    child: Scaffold(
-      backgroundColor: context.x.colors.scaffoldBackground,
-      appBar: QuizAppBar(
-        title: context.x.l10n.upload,
-        telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(bottom: context.x.isMobile ? 0 : 24),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: context.x.colors.bannerBackground,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: SizedBox(
-                  height: 45,
-                  child: TabBar(
-                    padding: const EdgeInsets.all(4),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    splashFactory: NoSplash.splashFactory,
-                    dividerColor: context.x.colors.transparent,
-                    isScrollable: false,
-                    physics: const NeverScrollableScrollPhysics(),
-                    labelPadding: EdgeInsets.zero,
-                    indicatorPadding: EdgeInsets.zero,
-                    overlayColor: WidgetStatePropertyAll(context.x.colors.transparent),
-                    indicator: BoxDecoration(
-                      color: context.x.colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: context.x.colors.black.withValues(alpha: .06),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+    final l10n = context.x.l10n;
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: colors.scaffoldBackground,
+        appBar: QuizAppBar(
+          title: l10n.upload,
+          telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+        ),
+        body: Padding(
+          padding: .only(bottom: context.x.isMobile ? 0 : 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Segmented Tab Switcher
+              Padding(
+                padding: const .fromLTRB(16, 16, 16, 12),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: colors.bannerBackground, borderRadius: .circular(10)),
+                  child: SizedBox(
+                    height: 45,
+                    child: TabBar(
+                      padding: const .all(4),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      splashFactory: NoSplash.splashFactory,
+                      dividerColor: colors.transparent,
+                      isScrollable: false,
+                      physics: const NeverScrollableScrollPhysics(),
+                      labelPadding: .zero,
+                      indicatorPadding: .zero,
+                      overlayColor: WidgetStatePropertyAll(colors.transparent),
+                      indicator: BoxDecoration(
+                        color: colors.white,
+                        borderRadius: .circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.black.withValues(alpha: .06),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      labelColor: colors.black,
+                      labelStyle: textStyle.sfW600s16,
+                      unselectedLabelColor: colors.bannerSecondaryText,
+                      unselectedLabelStyle: textStyle.sfW400s16,
+                      tabs: [
+                        Tab(text: l10n.uploadedMyTests),
+                        Tab(text: l10n.newUpload),
                       ],
                     ),
-                    labelColor: context.x.colors.black,
-                    labelStyle: context.x.textStyle.sfW600s16,
-                    unselectedLabelStyle: context.x.textStyle.sfW400s16,
-                    tabs: const [
-                      Tab(text: 'Mening testlarim'),
-                      Tab(text: 'Yangi yuklash'),
-                    ],
                   ),
                 ),
               ),
-            ),
-            const Expanded(
-              child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: EmptyTestWidget(
-                      title: 'Siz hali test yuklamadingiz',
-                      description:
-                          'Test yuklash orqali QuizlyMarket’da o’z testingizni yarating va harbir sotuvdan 20% cashback oling',
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: EmptyTestWidget(
-                      title: 'Siz hali test yuklamadingiz',
-                      description:
-                          'Test yuklash orqali QuizlyMarket’da o’z testingizni yarating va harbir sotuvdan 20% cashback oling',
-                    ),
-                  ),
-                ],
+
+              // TabBar Views
+              const Expanded(
+                child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [MyUploadedTestsScreen(), NewUploadScreen()],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
