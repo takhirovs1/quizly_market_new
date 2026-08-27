@@ -80,10 +80,7 @@ abstract class FileUploadState extends State<FileUploadScreen> {
         final file = result.files.first;
         setState(() {
           uploadedFileName = file.name;
-          fileIssues = [
-            '25-savol: To\'g\'ri javob yo\'q.',
-            '28-savol: Javoblar yozilmagan.',
-          ];
+          fileIssues = ['25-savol: To\'g\'ri javob yo\'q.', '28-savol: Javoblar yozilmagan.'];
         });
       }
     } on Object catch (_) {
@@ -107,13 +104,15 @@ abstract class FileUploadState extends State<FileUploadScreen> {
   }
 
   Future<void> onSubmitUpload() async {
-    if (isUploading) return;
-    setState(() => isUploading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 1200));
-    if (mounted) {
-      setState(() => isUploading = false);
-      context.octopus.pop();
-    }
+    context.octopus.push(
+      Routes.uploadConfirm,
+      arguments: {
+        'testName': testNameController.text.trim(),
+        'university': universityController.text.trim(),
+        'description': descriptionController.text.trim(),
+        'price': priceController.text.trim(),
+      },
+    );
   }
 }
 

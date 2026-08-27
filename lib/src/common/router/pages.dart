@@ -36,6 +36,7 @@ import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
 import '../../feature/upload/screen/file_upload_screen.dart';
+import '../../feature/upload/screen/upload_confirm_screen.dart';
 import '../dependency/widget/splash_screen.dart';
 import '../extension/context_extension.dart';
 import '../util/logger.dart' as log_util;
@@ -63,7 +64,8 @@ enum Routes with OctopusRoute {
   archive('archive', title: 'Archive'),
   session('session', title: 'Sessions'),
   editProfile('editProfile', title: 'Edit Profile'),
-  fileUpload('fileUpload', title: 'File Upload');
+  fileUpload('fileUpload', title: 'File Upload'),
+  uploadConfirm('uploadConfirm', title: 'Upload Confirm');
 
   const Routes(this.name, {this.title});
 
@@ -206,6 +208,12 @@ enum Routes with OctopusRoute {
       child: const EditProfileScreen(),
     ),
     Routes.fileUpload => const FileUploadScreen(),
+    Routes.uploadConfirm => UploadConfirmScreen(
+      testName: node.arguments['testName'],
+      university: node.arguments['university'],
+      description: node.arguments['description'],
+      price: node.arguments['price'],
+    ),
   };
 }
 

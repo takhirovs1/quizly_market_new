@@ -20,6 +20,9 @@ class $LibGen {
   /// Directory path: lib/audio
   $LibAudioGen get audio => const $LibAudioGen();
 
+  /// Directory path: lib/file
+  $LibFileGen get file => const $LibFileGen();
+
   /// Directory path: lib/icon
   $LibIconGen get icon => const $LibIconGen();
 
@@ -47,6 +50,16 @@ class $LibAudioGen {
 
   /// List of all assets
   List<String> get values => [correct, wrong, wrongV3];
+}
+
+class $LibFileGen {
+  const $LibFileGen();
+
+  /// File path: lib/file/test_upload_example.xlsx
+  String get testUploadExample => 'lib/file/test_upload_example.xlsx';
+
+  /// List of all assets
+  List<String> get values => [testUploadExample];
 }
 
 class $LibIconGen {
@@ -600,11 +613,17 @@ class $LibVectorsGen {
   /// File path: lib/vectors/cart.vec
   SvgGenImage get cart => const SvgGenImage.vec('lib/vectors/cart.vec');
 
+  /// File path: lib/vectors/cashback_icon.vec
+  SvgGenImage get cashbackIcon => const SvgGenImage.vec('lib/vectors/cashback_icon.vec');
+
   /// File path: lib/vectors/check.vec
   SvgGenImage get check => const SvgGenImage.vec('lib/vectors/check.vec');
 
   /// File path: lib/vectors/check_circle.vec
   SvgGenImage get checkCircle => const SvgGenImage.vec('lib/vectors/check_circle.vec');
+
+  /// File path: lib/vectors/check_tick_icon.vec
+  SvgGenImage get checkTickIcon => const SvgGenImage.vec('lib/vectors/check_tick_icon.vec');
 
   /// File path: lib/vectors/chevron_right.vec
   SvgGenImage get chevronRight => const SvgGenImage.vec('lib/vectors/chevron_right.vec');
@@ -623,6 +642,9 @@ class $LibVectorsGen {
 
   /// File path: lib/vectors/documents.vec
   SvgGenImage get documents => const SvgGenImage.vec('lib/vectors/documents.vec');
+
+  /// File path: lib/vectors/dollar_icon.vec
+  SvgGenImage get dollarIcon => const SvgGenImage.vec('lib/vectors/dollar_icon.vec');
 
   /// File path: lib/vectors/empty_inbox.vec
   SvgGenImage get emptyInbox => const SvgGenImage.vec('lib/vectors/empty_inbox.vec');
@@ -781,14 +803,17 @@ class $LibVectorsGen {
     attachFile,
     bigChevronRight,
     cart,
+    cashbackIcon,
     check,
     checkCircle,
+    checkTickIcon,
     chevronRight,
     close,
     copyId,
     correct,
     desktop,
     documents,
+    dollarIcon,
     emptyInbox,
     emptyTestDark,
     emptyTestLight,

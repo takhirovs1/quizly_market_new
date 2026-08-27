@@ -37,10 +37,7 @@ class _FileUploadScreenState extends FileUploadState {
                       children: _buildFormFields(context),
                     ),
                   ),
-                  Padding(
-                    padding: const .fromLTRB(16, 8, 16, 16),
-                    child: _buildSubmitButton(),
-                  ),
+                  Padding(padding: const .fromLTRB(16, 8, 16, 16), child: _buildSubmitButton()),
                 ],
               )
             : Center(
@@ -59,11 +56,7 @@ class _FileUploadScreenState extends FileUploadState {
                         child: Column(
                           crossAxisAlignment: .stretch,
                           mainAxisSize: .min,
-                          children: [
-                            ..._buildFormFields(context),
-                            const SizedBox(height: 12),
-                            _buildSubmitButton(),
-                          ],
+                          children: [..._buildFormFields(context), const SizedBox(height: 12), _buildSubmitButton()],
                         ),
                       ),
                     ),
@@ -208,11 +201,7 @@ class _FileUploadScreenState extends FileUploadState {
         hintStyle: textStyle.sfW400s16.copyWith(color: colors.bannerSecondaryText),
         style: textStyle.sfW500s16.copyWith(color: colors.text),
         keyboardType: .number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(9),
-          UZSFormatter(),
-        ],
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9), UZSFormatter()],
         fillColor: isDark ? colors.cardBackground2 : colors.buttonFill,
         enabledBorderColor: colors.transparent,
         borderColor: colors.primary,
@@ -230,11 +219,7 @@ class _FileUploadScreenState extends FileUploadState {
           mainAxisAlignment: .spaceBetween,
           children: [
             Text(l10n.showAuthorship, style: textStyle.sfW500s16.copyWith(color: colors.text)),
-            CupertinoSwitch(
-              value: showAuthorship,
-              onChanged: onToggleAuthorship,
-              activeTrackColor: colors.primary,
-            ),
+            CupertinoSwitch(value: showAuthorship, onChanged: onToggleAuthorship, activeTrackColor: colors.primary),
           ],
         ),
       ),
@@ -281,9 +266,7 @@ class _FileUploadScreenState extends FileUploadState {
             ? const SizedBox(
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator.adaptive(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
+                child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
               )
             : Text(
                 l10n.upload,

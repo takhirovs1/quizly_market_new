@@ -36,10 +36,7 @@ class UploadScreen extends StatelessWidget {
                     Padding(
                       padding: .fromLTRB(isMobile ? 16 : 24, 16, isMobile ? 16 : 24, 12),
                       child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colors.bannerBackground,
-                          borderRadius: .circular(10),
-                        ),
+                        decoration: BoxDecoration(color: colors.bannerBackground, borderRadius: .circular(10)),
                         child: SizedBox(
                           height: 45,
                           child: TabBar(
@@ -80,10 +77,7 @@ class UploadScreen extends StatelessWidget {
                     const Expanded(
                       child: TabBarView(
                         physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          MyUploadedTestsScreen(),
-                          NewUploadScreen(),
-                        ],
+                        children: [MyUploadedTestsScreen(), NewUploadScreen()],
                       ),
                     ),
                   ],
