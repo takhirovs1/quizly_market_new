@@ -43,6 +43,7 @@ flutter:
     - lib/lottie/
     - lib/audio/
     - lib/icon/
+    - lib/file/
 
   fonts:
     - family: SF Pro Display

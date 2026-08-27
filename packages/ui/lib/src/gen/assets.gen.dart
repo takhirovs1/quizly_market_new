@@ -76,11 +76,17 @@ class $LibIconGen {
   /// File path: lib/icon/cart.svg
   SvgGenImage get cart => const SvgGenImage('lib/icon/cart.svg');
 
+  /// File path: lib/icon/cashback_icon.svg
+  SvgGenImage get cashbackIcon => const SvgGenImage('lib/icon/cashback_icon.svg');
+
   /// File path: lib/icon/check.svg
   SvgGenImage get check => const SvgGenImage('lib/icon/check.svg');
 
   /// File path: lib/icon/check_circle.svg
   SvgGenImage get checkCircle => const SvgGenImage('lib/icon/check_circle.svg');
+
+  /// File path: lib/icon/check_tick_icon.svg
+  SvgGenImage get checkTickIcon => const SvgGenImage('lib/icon/check_tick_icon.svg');
 
   /// File path: lib/icon/chevron_right.svg
   SvgGenImage get chevronRight => const SvgGenImage('lib/icon/chevron_right.svg');
@@ -99,6 +105,9 @@ class $LibIconGen {
 
   /// File path: lib/icon/documents.svg
   SvgGenImage get documents => const SvgGenImage('lib/icon/documents.svg');
+
+  /// File path: lib/icon/dollar_icon.svg
+  SvgGenImage get dollarIcon => const SvgGenImage('lib/icon/dollar_icon.svg');
 
   /// File path: lib/icon/empty_inbox.svg
   SvgGenImage get emptyInbox => const SvgGenImage('lib/icon/empty_inbox.svg');
@@ -257,14 +266,17 @@ class $LibIconGen {
     attachFile,
     bigChevronRight,
     cart,
+    cashbackIcon,
     check,
     checkCircle,
+    checkTickIcon,
     chevronRight,
     close,
     copyId,
     correct,
     desktop,
     documents,
+    dollarIcon,
     emptyInbox,
     emptyTestDark,
     emptyTestLight,

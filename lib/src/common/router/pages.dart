@@ -14,9 +14,9 @@ import '../../feature/profile/bloc/profile_cubit.dart';
 import '../../feature/profile/bloc/support_chat_cubit.dart';
 import '../../feature/profile/data/support_chat_repository.dart';
 import '../../feature/profile/screen/app_documents_screen.dart';
-import '../../feature/profile/screen/edit_profile_screen.dart';
 import '../../feature/profile/screen/app_info_screen.dart';
 import '../../feature/profile/screen/archive_screen.dart';
+import '../../feature/profile/screen/edit_profile_screen.dart';
 import '../../feature/profile/screen/payment_history_screen.dart';
 import '../../feature/profile/screen/payment_screen.dart';
 import '../../feature/profile/screen/referral_screen.dart';
@@ -35,6 +35,7 @@ import '../../feature/tests/screens/test_mode_screen.dart';
 import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
+import '../../feature/upload/screen/file_upload_screen.dart';
 import '../dependency/widget/splash_screen.dart';
 import '../extension/context_extension.dart';
 import '../util/logger.dart' as log_util;
@@ -61,7 +62,8 @@ enum Routes with OctopusRoute {
   testSolving('testSolving', title: 'Test Solving'),
   archive('archive', title: 'Archive'),
   session('session', title: 'Sessions'),
-  editProfile('editProfile', title: 'Edit Profile');
+  editProfile('editProfile', title: 'Edit Profile'),
+  fileUpload('fileUpload', title: 'File Upload');
 
   const Routes(this.name, {this.title});
 
@@ -203,6 +205,7 @@ enum Routes with OctopusRoute {
       create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
       child: const EditProfileScreen(),
     ),
+    Routes.fileUpload => const FileUploadScreen(),
   };
 }
 

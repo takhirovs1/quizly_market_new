@@ -27,7 +27,7 @@ class UploadTypeTile extends StatelessWidget {
         child: Row(
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(shape: BoxShape.circle, color: isDark ? colors.cardBackground2 : colors.white),
+              decoration: BoxDecoration(shape: .circle, color: isDark ? colors.cardBackground2 : colors.white),
               child: SizedBox(width: 40, height: 40, child: Center(child: icon)),
             ),
             const SizedBox(width: 12),
