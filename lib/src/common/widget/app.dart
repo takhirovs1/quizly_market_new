@@ -51,7 +51,7 @@ class _AppState extends AppState {
   Widget build(BuildContext context) => MaterialApp(
     restorationScopeId: 'material_app',
     onGenerateTitle: (context) => context.x.l10n.title,
-    debugShowCheckedModeBanner: false,
+    debugShowCheckedModeBanner: kDebugMode,
 
     // Localizations
     localizationsDelegates: appLocalizationsDelegates,

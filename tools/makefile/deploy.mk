@@ -82,6 +82,14 @@ apk: pre-build ## Build Android APK (development)
 		--dart-define=config.platform=android
 	@open build/app/outputs/apk/release/
 
+.PHONY: apk-prod
+apk-prod: pre-build ## Build Android APK (production)
+	@$(FLUTTER) build apk --release \
+		--build-name=$(BUILD_NAME) --build-number=$(BUILD_NUMBER) \
+		--dart-define-from-file=config/production.json \
+		--dart-define=config.platform=android
+	@open build/app/outputs/apk/release/
+
 .PHONY: aab
 aab: pre-build ## Build Android AAB (production) for Play Store
 	@$(FLUTTER) build appbundle --release \
