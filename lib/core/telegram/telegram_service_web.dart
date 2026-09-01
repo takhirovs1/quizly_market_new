@@ -70,6 +70,12 @@ class _WebTelegramService extends TelegramService {
   @override
   void requestFullscreen() => _tg.requestFullscreen();
 
+  @override
+  void exitFullscreen() => _tg.exitFullscreen();
+
+  @override
+  bool get isFullscreen => _tg.isFullscreen;
+
   // ── Configuration ─────────────────────────────────────────────────
 
   @override

@@ -36,6 +36,7 @@ import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
 import '../../feature/upload/screen/file_upload_screen.dart';
+import '../../feature/upload/screen/manual_upload_screen.dart';
 import '../../feature/upload/screen/upload_confirm_screen.dart';
 import '../dependency/widget/splash_screen.dart';
 import '../extension/context_extension.dart';
@@ -65,6 +66,7 @@ enum Routes with OctopusRoute {
   session('session', title: 'Sessions'),
   editProfile('editProfile', title: 'Edit Profile'),
   fileUpload('fileUpload', title: 'File Upload'),
+  manualUpload('manualUpload', title: 'Manual Upload'),
   uploadConfirm('uploadConfirm', title: 'Upload Confirm');
 
   const Routes(this.name, {this.title});
@@ -207,8 +209,9 @@ enum Routes with OctopusRoute {
       create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
       child: const EditProfileScreen(),
     ),
-    Routes.fileUpload => const FileUploadScreen(),
-    Routes.uploadConfirm => UploadConfirmScreen(
+    .fileUpload => const FileUploadScreen(),
+    .manualUpload => const ManualUploadScreen(),
+    .uploadConfirm => UploadConfirmScreen(
       testName: node.arguments['testName'],
       university: node.arguments['university'],
       description: node.arguments['description'],

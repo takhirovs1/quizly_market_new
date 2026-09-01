@@ -185,6 +185,10 @@ extension TelegramWebAppX on BuildContext {
   void close() => telegramWebApp.close();
   void ready() => telegramWebApp.ready();
   void expand() => telegramWebApp.expand();
+  void requestFullscreen() => telegramWebApp.requestFullscreen();
+  void exitFullscreen() => telegramWebApp.exitFullscreen();
+  bool get isFullscreen => telegramWebApp.isFullscreen;
+  bool get isTelegramSupported => telegramWebApp.isSupported;
   void disableVerticalSwipes() => telegramWebApp.disableVerticalSwipes();
   void disableClosingConfirmation() => telegramWebApp.disableClosingConfirmation();
   void enableClosingConfirmation() => telegramWebApp.enableClosingConfirmation();

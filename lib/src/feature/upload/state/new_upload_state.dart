@@ -10,7 +10,7 @@ abstract class NewUploadState extends State<NewUploadScreen> {
   }
 
   void onCreateTestManually() {
-    // Create test manually action
+    context.octopus.push(Routes.manualUpload);
   }
 
   void onCreateAiTest() {

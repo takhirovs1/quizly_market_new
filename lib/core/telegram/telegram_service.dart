@@ -33,6 +33,8 @@ abstract class TelegramService {
   void expand();
   void close();
   void requestFullscreen();
+  void exitFullscreen();
+  bool get isFullscreen;
 
   // ── Configuration ─────────────────────────────────────────────────
 

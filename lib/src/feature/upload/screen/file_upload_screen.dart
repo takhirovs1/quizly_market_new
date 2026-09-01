@@ -367,7 +367,7 @@ class _FileUploadScreenState extends FileUploadState {
             onPressed: onRemoveUploadedFile,
             padding: const .all(6),
             minimumSize: .zero,
-            child: Icon(Icons.delete_outline_rounded, color: colors.primary, size: 24),
+            child: Icon(CupertinoIcons.xmark, color: colors.primary, size: 24),
           ),
         ],
       ),

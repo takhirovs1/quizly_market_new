@@ -45,6 +45,12 @@ class _MobileTelegramService extends TelegramService {
   void requestFullscreen() {}
 
   @override
+  void exitFullscreen() {}
+
+  @override
+  bool get isFullscreen => false;
+
+  @override
   void disableVerticalSwipes() {}
 
   @override
