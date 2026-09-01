@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/octopus.dart';
 
+import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../bloc/create_test_cubit.dart';
+import '../model/manual_test_create_model.dart';
 import '../model/test_question_model.dart';
 import '../screen/create_test_questions_screen.dart';
 
@@ -10,6 +13,9 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
 
   late final List<QuestionModel> questions;
   int? expandedIndex;
+  bool isCreating = false;
+
+  late final CreateTestCubit createTestCubit;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────
 
@@ -18,6 +24,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
     super.initState();
     questions = [QuestionModel()];
     expandedIndex = 0;
+    createTestCubit = CreateTestCubit(uploadRepository: context.x.dependencies.repository.uploadRepository);
   }
 
   @override
@@ -25,14 +32,14 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
     for (final q in questions) {
       q.dispose();
     }
+    createTestCubit.close();
     super.dispose();
   }
 
   // ── Guards ────────────────────────────────────────────────────────────
 
   /// All questions valid AND total count ≥ 10.
-  bool get canSubmit =>
-      questions.length >= minQuestionCount && questions.every((q) => q.isValid);
+  bool get canSubmit => questions.length >= minQuestionCount && questions.every((q) => q.isValid);
 
   /// Can only add a new question when the last one is fully complete.
   bool get canAddQuestion {
@@ -116,19 +123,53 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
 
   void onTextChanged(String _) => setState(() {});
 
-  // ── Submit ────────────────────────────────────────────────────────────
+  // ── Submit Manual Test ────────────────────────────────────────────────
 
-  void onUploadTest() {
-    if (!canSubmit) return;
+  Future<void> onUploadTest() async {
+    if (!canSubmit || isCreating) return;
 
-    context.octopus.push(
-      Routes.uploadConfirm,
-      arguments: {
-        'testName': widget.testName,
-        'university': widget.university,
-        if (widget.description?.isNotEmpty == true) 'description': widget.description!,
-        'questionCount': questions.length.toString(),
-      },
-    );
+    setState(() => isCreating = true);
+
+    try {
+      final questionDtos = <ManualQuestionDto>[];
+      for (var i = 0; i < questions.length; i++) {
+        final q = questions[i];
+        final optionDtos = <ManualOptionDto>[];
+        for (var j = 0; j < q.answers.length; j++) {
+          final a = q.answers[j];
+          optionDtos.add(ManualOptionDto(text: a.text, position: j + 1, isCorrect: a.isCorrect));
+        }
+        questionDtos.add(ManualQuestionDto(text: q.text, position: i + 1, options: optionDtos));
+      }
+
+      final request = ManualTestCreateRequest(
+        name: widget.testName,
+        description: widget.description,
+        questions: questionDtos,
+      );
+
+      await createTestCubit.submitManualTest(request);
+      final created = createTestCubit.state.createdTest;
+
+      if (created != null && mounted) {
+        context.octopus.push(
+          Routes.uploadConfirm,
+          arguments: {
+            'testId': created.id,
+            'testName': widget.testName,
+            'university': widget.university,
+            if (widget.description?.isNotEmpty == true) 'description': widget.description!,
+            'questionCount': questions.length.toString(),
+            if (created.price != null) 'price': created.price.toString(),
+          },
+        );
+      } else if (createTestCubit.state.errorMessage != null && mounted) {
+        context.x.showNotification(message: createTestCubit.state.errorMessage!, isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => isCreating = false);
+      }
+    }
   }
 }

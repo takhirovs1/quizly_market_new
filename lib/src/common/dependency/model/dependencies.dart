@@ -9,6 +9,7 @@ import '../../../feature/main/data/main_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
 import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
+import '../../../feature/upload/data/upload_repository.dart';
 import '../../service/api_client.dart';
 import 'app_metadata.dart';
 import 'debug_config.dart';
@@ -65,6 +66,7 @@ final class RepositoryContainer {
     required this.mainRepository,
     required this.myTestRepository,
     required this.profileRepository,
+    required this.uploadRepository,
   });
 
   /// [IAuthenticationRepository] for authentication
@@ -78,4 +80,7 @@ final class RepositoryContainer {
 
   /// [IProfileRepository] for profile / current user
   final IProfileRepository profileRepository;
+
+  /// [IUploadRepository] for customer test uploads
+  final IUploadRepository uploadRepository;
 }

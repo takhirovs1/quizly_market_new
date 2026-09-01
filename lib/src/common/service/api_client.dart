@@ -154,14 +154,37 @@ class ApiClient {
   Future<Map<String, Object?>> delete(String path, {Object? body}) =>
       _withRetry((isRetry) => _send('DELETE', path, body: body, isRetry: isRetry));
 
-  /// Multipart POST (e.g., file upload).
+  /// Get raw bytes (e.g. file download).
+  Future<List<int>> getBytes(String path, {Map<String, Object?>? queryParameters}) async {
+    final uri = _buildUri(path, queryParameters);
+    final request = http.Request('GET', uri);
+    _applyHeaders(request.headers, false);
+    final response = await http.Client().send(request);
+    if (response.statusCode > 204) {
+      throw ApiResponseException(statusCode: response.statusCode, message: 'HTTP ${response.statusCode}');
+    }
+    return response.stream.toBytes();
+  }
+
+  /// Multipart POST (e.g., file upload or import).
   Future<Map<String, Object?>> multipartPost(
     String path, {
     required String field,
     required List<int> bytes,
     required String filename,
+    Map<String, String>? fields,
+    Map<String, Object?>? queryParameters,
   }) => _withRetry(
-    (isRetry) => _sendMultipart('POST', path, field: field, bytes: bytes, filename: filename, isRetry: isRetry),
+    (isRetry) => _sendMultipart(
+      'POST',
+      path,
+      field: field,
+      bytes: bytes,
+      filename: filename,
+      fields: fields,
+      queryParameters: queryParameters,
+      isRetry: isRetry,
+    ),
   );
 
   /// Multipart PUT (e.g., avatar upload).
@@ -170,8 +193,19 @@ class ApiClient {
     required String field,
     required List<int> bytes,
     required String filename,
+    Map<String, String>? fields,
+    Map<String, Object?>? queryParameters,
   }) => _withRetry(
-    (isRetry) => _sendMultipart('PUT', path, field: field, bytes: bytes, filename: filename, isRetry: isRetry),
+    (isRetry) => _sendMultipart(
+      'PUT',
+      path,
+      field: field,
+      bytes: bytes,
+      filename: filename,
+      fields: fields,
+      queryParameters: queryParameters,
+      isRetry: isRetry,
+    ),
   );
 
   // ─── Internal helpers ──────────────────────────────────────────────────────
@@ -223,11 +257,16 @@ class ApiClient {
     required String field,
     required List<int> bytes,
     required String filename,
+    Map<String, String>? fields,
+    Map<String, Object?>? queryParameters,
     bool isRetry = false,
   }) async {
-    final uri = _buildUri(path, null);
+    final uri = _buildUri(path, queryParameters);
     final request = http.MultipartRequest(method, uri);
     _applyHeaders(request.headers, isRetry);
+    if (fields != null && fields.isNotEmpty) {
+      request.fields.addAll(fields);
+    }
     request.files.add(http.MultipartFile.fromBytes(field, bytes, filename: filename));
     final response = await _handler(ApiClientRequest(request), <String, Object?>{});
     final responseBody = response.body;

@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
+import '../bloc/file_upload_cubit.dart';
+import '../bloc/upload_pricing_cubit.dart';
 import '../state/file_upload_state.dart';
 
 class FileUploadScreen extends StatefulWidget {
@@ -20,49 +24,57 @@ class _FileUploadScreenState extends FileUploadState {
     final isDark = context.x.isDarkMode;
     final isMobile = context.x.isMobile;
 
-    return Scaffold(
-      backgroundColor: colors.scaffoldBackground,
-      appBar: QuizAppBar(
-        title: l10n.fileUploadTitle,
-        telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
-        showBackButton: true,
-      ),
-      body: SafeArea(
-        child: isMobile
-            ? Column(
-                children: [
-                  Expanded(
-                    child: ListView(
-                      padding: const .symmetric(horizontal: 16, vertical: 12),
-                      children: _buildFormFields(context),
-                    ),
-                  ),
-                  Padding(padding: const .fromLTRB(16, 8, 16, 16), child: _buildSubmitButton()),
-                ],
-              )
-            : Center(
-                child: SingleChildScrollView(
-                  padding: const .symmetric(vertical: 24, horizontal: 16),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: isDark ? colors.cardBackground2 : colors.white,
-                        borderRadius: .circular(20),
-                        border: Border.all(color: colors.divider),
+    return BlocListener<FileUploadCubit, FileUploadCubitState>(
+      bloc: fileUploadCubit,
+      listener: (context, state) {
+        if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
+          context.x.showNotification(message: state.errorMessage!, isError: true);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: colors.scaffoldBackground,
+        appBar: QuizAppBar(
+          title: l10n.fileUploadTitle,
+          telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+          showBackButton: true,
+        ),
+        body: SafeArea(
+          child: isMobile
+              ? Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: const .symmetric(horizontal: 16, vertical: 12),
+                        children: _buildFormFields(context),
                       ),
-                      child: Padding(
-                        padding: const .all(24),
-                        child: Column(
-                          crossAxisAlignment: .stretch,
-                          mainAxisSize: .min,
-                          children: [..._buildFormFields(context), const SizedBox(height: 12), _buildSubmitButton()],
+                    ),
+                    Padding(padding: const .fromLTRB(16, 8, 16, 16), child: _buildSubmitButton()),
+                  ],
+                )
+              : Center(
+                  child: SingleChildScrollView(
+                    padding: const .symmetric(vertical: 24, horizontal: 16),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 600),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: isDark ? colors.cardBackground2 : colors.white,
+                          borderRadius: .circular(20),
+                          border: Border.all(color: colors.divider),
+                        ),
+                        child: Padding(
+                          padding: const .all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: .min,
+                            children: [..._buildFormFields(context), const SizedBox(height: 12), _buildSubmitButton()],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -98,43 +110,90 @@ class _FileUploadScreenState extends FileUploadState {
       ),
       const SizedBox(height: 14),
 
-      // File Card & Action
-      if (uploadedFileName == null) ...[
-        // Instruction download card
-        _buildExampleFileCard(),
-        const SizedBox(height: 10),
-
-        // Attach file button
-        Align(
-          alignment: .centerLeft,
-          child: CupertinoButton(
-            onPressed: onAttachFile,
-            padding: .zero,
+      // Dynamic Pricing info card from UploadPricingCubit
+      BlocBuilder<UploadPricingCubit, UploadPricingState>(
+        bloc: pricingCubit,
+        builder: (context, pricingState) {
+          final pricing = pricingState.pricing;
+          return Container(
+            padding: const .all(12),
+            margin: const .only(bottom: 12),
+            decoration: BoxDecoration(
+              color: isDark ? colors.cardBackground2 : colors.buttonFill,
+              borderRadius: .circular(12),
+              border: Border.all(color: colors.divider),
+            ),
             child: Row(
-              mainAxisSize: .min,
               children: [
-                Assets.lib.vectors.attachFile.svg(
-                  package: 'ui',
-                  width: 22,
-                  height: 22,
-                  colorFilter: ColorFilter.mode(colors.primary, .srcIn),
-                ),
+                Icon(CupertinoIcons.info_circle, size: 18, color: colors.primary),
                 const SizedBox(width: 8),
-                Text(
-                  l10n.attachFile,
-                  style: textStyle.sfW500s16.copyWith(color: colors.primary, fontWeight: .w500),
+                Expanded(
+                  child: Text(
+                    l10n.pricingPerQuestionInfo(pricing.perQuestionPrice.formatUzs, pricing.cashbackPercent),
+                    style: textStyle.sfW500s14.copyWith(color: colors.text, fontSize: 13),
+                  ),
                 ),
               ],
             ),
-          ),
-        ),
-      ] else ...[
-        // Uploaded file card
-        _buildUploadedFileCard(),
+          );
+        },
+      ),
 
-        // Issues warning box if any
-        if (fileIssues.isNotEmpty) ...[const SizedBox(height: 10), _buildFileIssuesBox()],
-      ],
+      // File Card & Action
+      BlocBuilder<FileUploadCubit, FileUploadCubitState>(
+        bloc: fileUploadCubit,
+        builder: (context, state) {
+          if (state.fileName == null) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildExampleFileCard(),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: .centerLeft,
+                  child: CupertinoButton(
+                    onPressed: onAttachFile,
+                    padding: .zero,
+                    child: Row(
+                      mainAxisSize: .min,
+                      children: [
+                        Assets.lib.vectors.attachFile.svg(
+                          package: 'ui',
+                          width: 22,
+                          height: 22,
+                          colorFilter: ColorFilter.mode(colors.primary, .srcIn),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.attachFile,
+                          style: textStyle.sfW500s16.copyWith(color: colors.primary, fontWeight: .w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildUploadedFileCard(state),
+              if (state.validationStatus.isLoading) ...[
+                const SizedBox(height: 8),
+                const Center(child: CupertinoActivityIndicator()),
+              ] else if (state.errors.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                _buildFileIssuesBox(state.errors),
+              ] else if (state.warnings.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                _buildWarningsBox(state.warnings),
+              ],
+            ],
+          );
+        },
+      ),
       const SizedBox(height: 16),
 
       // Field 1: University / O'quv markaz nomi
@@ -211,10 +270,13 @@ class _FileUploadScreenState extends FileUploadState {
       ),
       const SizedBox(height: 14),
 
-      // Field 5: Mualiflikni korsatish Switch Tile
+      // Field 5: Mualliflikni ko'rsatish Switch Tile
       Container(
         padding: const .symmetric(horizontal: 16, vertical: 6),
-        decoration: BoxDecoration(color: colors.buttonFill, borderRadius: .circular(12)),
+        decoration: BoxDecoration(
+          color: isDark ? colors.cardBackground2 : colors.buttonFill,
+          borderRadius: .circular(12),
+        ),
         child: Row(
           mainAxisAlignment: .spaceBetween,
           children: [
@@ -253,26 +315,37 @@ class _FileUploadScreenState extends FileUploadState {
     final textStyle = context.x.textStyle;
     final l10n = context.x.l10n;
 
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: FilledButton(
-        onPressed: isUploading ? null : onSubmitUpload,
-        style: FilledButton.styleFrom(
-          backgroundColor: colors.primary,
-          shape: RoundedRectangleBorder(borderRadius: .circular(12)),
-        ),
-        child: isUploading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-              )
-            : Text(
-                l10n.upload,
-                style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: .w600),
-              ),
-      ),
+    return BlocBuilder<FileUploadCubit, FileUploadCubitState>(
+      bloc: fileUploadCubit,
+      builder: (context, state) {
+        final isLoading = state.importStatus.isLoading;
+        final isEnabled = state.isValid && !isLoading;
+
+        return SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: FilledButton(
+            onPressed: isEnabled ? onSubmitUpload : null,
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.primary,
+              disabledBackgroundColor: colors.primary.withValues(alpha: 0.4),
+              shape: RoundedRectangleBorder(borderRadius: .circular(12)),
+            ),
+            child: isLoading
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(colors.white),
+                    ),
+                  )
+                : Text(
+                    l10n.upload,
+                    style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: .w600),
+                  ),
+          ),
+        );
+      },
     );
   }
 
@@ -280,10 +353,14 @@ class _FileUploadScreenState extends FileUploadState {
     final colors = context.x.colors;
     final textStyle = context.x.textStyle;
     final l10n = context.x.l10n;
+    final isDark = context.x.isDarkMode;
 
     return Container(
       padding: const .symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(color: colors.buttonFill, borderRadius: .circular(12)),
+      decoration: BoxDecoration(
+        color: isDark ? colors.cardBackground2 : colors.buttonFill,
+        borderRadius: .circular(12),
+      ),
       child: Row(
         children: [
           Container(
@@ -324,26 +401,34 @@ class _FileUploadScreenState extends FileUploadState {
     );
   }
 
-  Widget _buildUploadedFileCard() {
+  Widget _buildUploadedFileCard(FileUploadCubitState state) {
     final colors = context.x.colors;
     final textStyle = context.x.textStyle;
     final l10n = context.x.l10n;
+    final isDark = context.x.isDarkMode;
+    final hasErrors = state.hasErrors;
 
     return Container(
       padding: const .symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(color: colors.buttonFill, borderRadius: .circular(12)),
+      decoration: BoxDecoration(
+        color: isDark ? colors.cardBackground2 : colors.buttonFill,
+        borderRadius: .circular(12),
+      ),
       child: Row(
         children: [
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(color: colors.error.withValues(alpha: 0.1), borderRadius: .circular(10)),
+            decoration: BoxDecoration(
+              color: (hasErrors ? colors.error : colors.primary).withValues(alpha: 0.1),
+              borderRadius: .circular(10),
+            ),
             child: Center(
               child: Assets.lib.vectors.fileIcon.svg(
                 package: 'ui',
                 width: 24,
                 height: 24,
-                colorFilter: ColorFilter.mode(colors.error, .srcIn),
+                colorFilter: ColorFilter.mode(hasErrors ? colors.error : colors.primary, .srcIn),
               ),
             ),
           ),
@@ -353,13 +438,18 @@ class _FileUploadScreenState extends FileUploadState {
               crossAxisAlignment: .start,
               children: [
                 Text(
-                  uploadedFileName ?? '',
+                  state.fileName ?? '',
                   style: textStyle.sfW500s16.copyWith(color: colors.text, fontWeight: .w500),
                   maxLines: 1,
                   overflow: .ellipsis,
                 ),
                 const SizedBox(height: 2),
-                Text(l10n.excelDocument, style: textStyle.sfW400s14.copyWith(color: colors.bannerSecondaryText)),
+                Text(
+                  state.questionCount > 0
+                      ? l10n.questionsFound(state.questionCount)
+                      : l10n.excelDocument,
+                  style: textStyle.sfW400s14.copyWith(color: colors.bannerSecondaryText),
+                ),
               ],
             ),
           ),
@@ -374,7 +464,7 @@ class _FileUploadScreenState extends FileUploadState {
     );
   }
 
-  Widget _buildFileIssuesBox() {
+  Widget _buildFileIssuesBox(List<dynamic> errors) {
     final colors = context.x.colors;
     final textStyle = context.x.textStyle;
     final l10n = context.x.l10n;
@@ -397,10 +487,30 @@ class _FileUploadScreenState extends FileUploadState {
           ),
         ),
         const SizedBox(height: 4),
-        ...fileIssues.map(
+        ...errors.map(
           (issue) => Padding(
             padding: const .only(top: 2),
-            child: Text('- $issue', style: textStyle.sfW400s14.copyWith(color: colors.text)),
+            child: Text(
+              issue is String ? '- $issue' : '- ${l10n.rowErrorMessage(issue.row as int, issue.message.toString())}',
+              style: textStyle.sfW400s14.copyWith(color: colors.error),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWarningsBox(List<String> warnings) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        ...warnings.map(
+          (w) => Padding(
+            padding: const .only(top: 2),
+            child: Text('ℹ $w', style: textStyle.sfW400s14.copyWith(color: colors.primary)),
           ),
         ),
       ],

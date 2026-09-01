@@ -161,12 +161,10 @@ class _ClearableAutofocusExample extends StatefulWidget {
   const _ClearableAutofocusExample({Key? key}) : super(key: key);
 
   @override
-  _ClearableAutofocusExampleState createState() =>
-      _ClearableAutofocusExampleState();
+  _ClearableAutofocusExampleState createState() => _ClearableAutofocusExampleState();
 }
 
-class _ClearableAutofocusExampleState
-    extends State<_ClearableAutofocusExample> {
+class _ClearableAutofocusExampleState extends State<_ClearableAutofocusExample> {
   late final _controller = MathFieldEditingController();
 
   @override

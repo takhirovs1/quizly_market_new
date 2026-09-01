@@ -47,10 +47,7 @@ import 'package:math_keyboard/math_keyboard.dart';
 /// functions at the moment.
 class MathKeyboardViewInsets extends StatefulWidget {
   /// Creates a [MathKeyboardViewInsets] widget around the [child] widget.
-  const MathKeyboardViewInsets({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const MathKeyboardViewInsets({Key? key, required this.child}) : super(key: key);
 
   /// The child widget tree that the math keyboard view insets should report to.
   ///
@@ -138,22 +135,19 @@ class MathKeyboardViewInsetsState extends State<MathKeyboardViewInsets> {
 class MathKeyboardViewInsetsQuery extends InheritedWidget {
   /// Creates a [MathKeyboardViewInsetsQuery] that provides the [bottomInset] to
   /// the [child] tree.
-  const MathKeyboardViewInsetsQuery({
-    Key? key,
-    required this.bottomInset,
-    required Widget child,
-  }) : super(key: key, child: child);
+  const MathKeyboardViewInsetsQuery({Key? key, required this.bottomInset, required Widget child})
+    : super(key: key, child: child);
 
   /// Depends on and returns an ancestor [MathKeyboardViewInsetsQuery].
   static MathKeyboardViewInsetsQuery of(BuildContext context) {
-    final result = context
-        .dependOnInheritedWidgetOfExactType<MathKeyboardViewInsetsQuery>();
+    final result = context.dependOnInheritedWidgetOfExactType<MathKeyboardViewInsetsQuery>();
     if (result != null) {
       return result;
     }
     throw FlutterError(
-        'MathKeyboardViewInsetsQuery.of() called with a context that does not '
-        'contain a MathKeyboardViewInsetsQuery.');
+      'MathKeyboardViewInsetsQuery.of() called with a context that does not '
+      'contain a MathKeyboardViewInsetsQuery.',
+    );
   }
 
   /// Returns whether any math keyboard is showing in the given [context] by

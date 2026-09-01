@@ -34,11 +34,7 @@ class MathKeyboard extends StatelessWidget {
     this.onSubmit,
     this.insetsState,
     this.slideAnimation,
-    this.padding = const EdgeInsets.only(
-      bottom: 4,
-      left: 4,
-      right: 4,
-    ),
+    this.padding = const EdgeInsets.only(bottom: 4, left: 4, right: 4),
   }) : super(key: key);
 
   /// The controller for editing the math field.
@@ -80,10 +76,7 @@ class MathKeyboard extends StatelessWidget {
     );
 
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, 1),
-        end: const Offset(0, 0),
-      ).animate(curvedSlideAnimation),
+      position: Tween<Offset>(begin: const Offset(0, 1), end: const Offset(0, 0)).animate(curvedSlideAnimation),
       child: Stack(
         children: [
           Positioned(
@@ -98,34 +91,22 @@ class MathKeyboard extends StatelessWidget {
                   top: false,
                   child: _KeyboardBody(
                     insetsState: insetsState,
-                    slideAnimation:
-                        slideAnimation == null ? null : curvedSlideAnimation,
+                    slideAnimation: slideAnimation == null ? null : curvedSlideAnimation,
                     child: Padding(
                       padding: padding,
                       child: Center(
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: 5e2,
-                          ),
+                          constraints: const BoxConstraints(maxWidth: 5e2),
                           child: Column(
                             children: [
                               if (type != MathKeyboardType.numberOnly)
-                                _Variables(
-                                  controller: controller,
-                                  variables: variables,
-                                ),
+                                _Variables(controller: controller, variables: variables),
                               Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 4,
-                                ),
+                                padding: const EdgeInsets.only(top: 4),
                                 child: _Buttons(
                                   controller: controller,
-                                  page1: type == MathKeyboardType.numberOnly
-                                      ? numberKeyboard
-                                      : standardKeyboard,
-                                  page2: type == MathKeyboardType.numberOnly
-                                      ? null
-                                      : functionKeyboard,
+                                  page1: type == MathKeyboardType.numberOnly ? numberKeyboard : standardKeyboard,
+                                  page2: type == MathKeyboardType.numberOnly ? null : functionKeyboard,
                                   onSubmit: onSubmit,
                                 ),
                               ),
@@ -147,12 +128,7 @@ class MathKeyboard extends StatelessWidget {
 
 /// Widget that reports about the math keyboard body's bottom inset.
 class _KeyboardBody extends StatefulWidget {
-  const _KeyboardBody({
-    Key? key,
-    this.insetsState,
-    this.slideAnimation,
-    required this.child,
-  }) : super(key: key);
+  const _KeyboardBody({Key? key, this.insetsState, this.slideAnimation, required this.child}) : super(key: key);
 
   final MathKeyboardViewInsetsState? insetsState;
 
@@ -216,8 +192,7 @@ class _KeyboardBodyState extends State<_KeyboardBody> {
       if (!mounted) return;
 
       final renderBox = context.findRenderObject() as RenderBox;
-      insetsState[ObjectKey(this)] =
-          renderBox.size.height * (widget.slideAnimation?.value ?? 1);
+      insetsState[ObjectKey(this)] = renderBox.size.height * (widget.slideAnimation?.value ?? 1);
     });
   }
 
@@ -231,11 +206,7 @@ class _KeyboardBodyState extends State<_KeyboardBody> {
 /// Widget showing the variables a user can use.
 class _Variables extends StatelessWidget {
   /// Constructs a [_Variables] Widget.
-  const _Variables({
-    Key? key,
-    required this.controller,
-    required this.variables,
-  }) : super(key: key);
+  const _Variables({Key? key, required this.controller, required this.variables}) : super(key: key);
 
   /// The editing controller for the math field that the variables are connected
   /// to.
@@ -256,13 +227,7 @@ class _Variables extends StatelessWidget {
             itemCount: variables.length,
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) {
-              return Center(
-                child: Container(
-                  height: 24,
-                  width: 1,
-                  color: Colors.white,
-                ),
-              );
+              return Center(child: Container(height: 24, width: 1, color: Colors.white));
             },
             itemBuilder: (context, index) {
               return SizedBox(
@@ -283,13 +248,7 @@ class _Variables extends StatelessWidget {
 /// Widget displaying the buttons.
 class _Buttons extends StatelessWidget {
   /// Constructs a [_Buttons] Widget.
-  const _Buttons({
-    Key? key,
-    required this.controller,
-    this.page1,
-    this.page2,
-    this.onSubmit,
-  }) : super(key: key);
+  const _Buttons({Key? key, required this.controller, this.page1, this.page2, this.onSubmit}) : super(key: key);
 
   /// The editing controller for the math field that the variables are connected
   /// to.
@@ -313,8 +272,7 @@ class _Buttons extends StatelessWidget {
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) {
-          final layout =
-              controller.secondPage ? page2! : page1 ?? numberKeyboard;
+          final layout = controller.secondPage ? page2! : page1 ?? numberKeyboard;
           return Column(
             children: [
               for (final row in layout)
@@ -328,10 +286,7 @@ class _Buttons extends StatelessWidget {
                             flex: config.flex,
                             label: config.label,
                             onTap: config.args != null
-                                ? () => controller.addFunction(
-                                      config.value,
-                                      config.args!,
-                                    )
+                                ? () => controller.addFunction(config.value, config.args!)
                                 : () => controller.addLeaf(config.value),
                             asTex: config.asTex,
                             highlightLevel: config.highlighted ? 1 : 0,
@@ -346,9 +301,7 @@ class _Buttons extends StatelessWidget {
                         else if (config is PageButtonConfig)
                           _BasicButton(
                             flex: config.flex,
-                            icon: controller.secondPage
-                                ? null
-                                : CustomKeyIcons.key_symbols,
+                            icon: controller.secondPage ? null : CustomKeyIcons.key_symbols,
                             label: controller.secondPage ? '123' : null,
                             onTap: controller.togglePage,
                             highlightLevel: 1,
@@ -394,8 +347,8 @@ class _BasicButton extends StatelessWidget {
     this.onTap,
     this.asTex = false,
     this.highlightLevel = 0,
-  })  : assert(label != null || icon != null),
-        super(key: key);
+  }) : assert(label != null || icon != null),
+       super(key: key);
 
   /// The flexible flex value.
   final int? flex;
@@ -419,18 +372,9 @@ class _BasicButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget result;
     if (label == null) {
-      result = Icon(
-        icon,
-        color: Colors.white,
-      );
+      result = Icon(icon, color: Colors.white);
     } else if (asTex) {
-      result = Math.tex(
-        label!,
-        options: MathOptions(
-          fontSize: 22,
-          color: Colors.white,
-        ),
-      );
+      result = Math.tex(label!, options: MathOptions(fontSize: 22, color: Colors.white));
     } else {
       var symbol = label;
       if (label == '.') {
@@ -439,13 +383,7 @@ class _BasicButton extends StatelessWidget {
         symbol = decimalSeparator(context);
       }
 
-      result = Text(
-        symbol!,
-        style: const TextStyle(
-          fontSize: 22,
-          color: Colors.white,
-        ),
-      );
+      result = Text(symbol!, style: const TextStyle(fontSize: 22, color: Colors.white));
     }
 
     result = KeyboardButton(
@@ -453,28 +391,19 @@ class _BasicButton extends StatelessWidget {
       color: highlightLevel > 1
           ? Theme.of(context).colorScheme.secondary
           : highlightLevel == 1
-              ? Colors.grey[900]
-              : null,
+          ? Colors.grey[900]
+          : null,
       child: result,
     );
 
-    return Expanded(
-      flex: flex ?? 2,
-      child: result,
-    );
+    return Expanded(flex: flex ?? 2, child: result);
   }
 }
 
 /// Keyboard button for navigation actions.
 class _NavigationButton extends StatelessWidget {
   /// Constructs a [_NavigationButton].
-  const _NavigationButton({
-    Key? key,
-    required this.flex,
-    this.icon,
-    this.iconSize = 36,
-    this.onTap,
-  }) : super(key: key);
+  const _NavigationButton({Key? key, required this.flex, this.icon, this.iconSize = 36, this.onTap}) : super(key: key);
 
   /// The flexible flex value.
   final int? flex;
@@ -496,11 +425,7 @@ class _NavigationButton extends StatelessWidget {
         onTap: onTap,
         onHold: onTap,
         color: Colors.grey[900],
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: iconSize,
-        ),
+        child: Icon(icon, color: Colors.white, size: iconSize),
       ),
     );
   }
@@ -509,11 +434,7 @@ class _NavigationButton extends StatelessWidget {
 /// Widget for variable keyboard buttons.
 class _VariableButton extends StatelessWidget {
   /// Constructs a [_VariableButton] widget.
-  const _VariableButton({
-    Key? key,
-    required this.name,
-    this.onTap,
-  }) : super(key: key);
+  const _VariableButton({Key? key, required this.name, this.onTap}) : super(key: key);
 
   /// The variable name.
   final String name;
@@ -525,13 +446,7 @@ class _VariableButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return KeyboardButton(
       onTap: onTap,
-      child: Math.tex(
-        name,
-        options: MathOptions(
-          fontSize: 22,
-          color: Colors.white,
-        ),
-      ),
+      child: Math.tex(name, options: MathOptions(fontSize: 22, color: Colors.white)),
     );
   }
 }

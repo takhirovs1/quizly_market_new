@@ -7,12 +7,7 @@ import '../state/create_test_questions_state.dart';
 import '../widget/question_card.dart';
 
 class CreateTestQuestionsScreen extends StatefulWidget {
-  const CreateTestQuestionsScreen({
-    required this.testName,
-    required this.university,
-    this.description,
-    super.key,
-  });
+  const CreateTestQuestionsScreen({required this.testName, required this.university, this.description, super.key});
 
   final String testName;
   final String university;
@@ -40,10 +35,7 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
           child: isMobile
               ? _buildBody(context)
               : Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 680),
-                    child: _buildBody(context),
-                  ),
+                  child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 680), child: _buildBody(context)),
                 ),
         ),
       ),
@@ -51,43 +43,43 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
   }
 
   Widget _buildBody(BuildContext context) => Column(
-        children: [
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                // ── Info header ───────────────────────────────────────────
-                SliverToBoxAdapter(child: _buildInfoHeader(context)),
+    children: [
+      Expanded(
+        child: CustomScrollView(
+          slivers: [
+            // ── Info header ───────────────────────────────────────────
+            SliverToBoxAdapter(child: _buildInfoHeader(context)),
 
-                // ── Question cards ────────────────────────────────────────
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: SliverList.builder(
-                    itemCount: questions.length,
-                    itemBuilder: (context, index) => QuestionCard(
-                      key: ValueKey(questions[index]),
-                      index: index,
-                      question: questions[index],
-                      onToggleExpand: () => onToggleExpand(index),
-                      onRemoveQuestion: () => removeQuestion(index),
-                      onAddAnswer: () => addAnswer(index),
-                      onRemoveAnswer: (ai) => removeAnswer(index, ai),
-                      onToggleCorrect: (ai) => toggleCorrect(index, ai),
-                      onTextChanged: onTextChanged,
-                    ),
-                  ),
+            // ── Question cards ────────────────────────────────────────
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverList.builder(
+                itemCount: questions.length,
+                itemBuilder: (context, index) => QuestionCard(
+                  key: ValueKey(questions[index]),
+                  index: index,
+                  question: questions[index],
+                  onToggleExpand: () => onToggleExpand(index),
+                  onRemoveQuestion: () => removeQuestion(index),
+                  onAddAnswer: () => addAnswer(index),
+                  onRemoveAnswer: (ai) => removeAnswer(index, ai),
+                  onToggleCorrect: (ai) => toggleCorrect(index, ai),
+                  onTextChanged: onTextChanged,
                 ),
-
-                // ── Add question button ────────────────────────────────────
-                SliverToBoxAdapter(child: _buildAddQuestionButton(context)),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
+              ),
             ),
-          ),
 
-          // ── Bottom upload button ──────────────────────────────────────────
-          _buildBottomBar(context),
-        ],
-      );
+            // ── Add question button ────────────────────────────────────
+            SliverToBoxAdapter(child: _buildAddQuestionButton(context)),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ],
+        ),
+      ),
+
+      // ── Bottom upload button ──────────────────────────────────────────
+      _buildBottomBar(context),
+    ],
+  );
 
   Widget _buildInfoHeader(BuildContext context) {
     final colors = context.x.colors;
@@ -127,8 +119,8 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
           // Min-questions subtitle
           Text(
             reachedMin
-                ? 'Minimum ${CreateTestQuestionsState.minQuestionCount} ta savolga yetdingiz ✓'
-                : 'Kamida ${CreateTestQuestionsState.minQuestionCount} ta savol bo\'lishi kerak',
+                ? context.x.l10n.minQuestionsCountReached(CreateTestQuestionsState.minQuestionCount)
+                : context.x.l10n.minQuestionsRequired(CreateTestQuestionsState.minQuestionCount),
             style: textStyle.sfW400s14.copyWith(
               color: reachedMin ? colors.primary : colors.bannerSecondaryText,
               fontWeight: reachedMin ? FontWeight.w500 : FontWeight.w400,
@@ -217,22 +209,30 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: AnimatedOpacity(
-        opacity: isEnabled ? 1.0 : 0.5,
+        opacity: (isEnabled && !isCreating) ? 1.0 : 0.5,
         duration: const Duration(milliseconds: 250),
         child: SizedBox(
           width: double.infinity,
           height: 50,
           child: FilledButton(
-            onPressed: isEnabled ? onUploadTest : null,
+            onPressed: (isEnabled && !isCreating) ? onUploadTest : null,
             style: FilledButton.styleFrom(
               backgroundColor: colors.primary,
               disabledBackgroundColor: colors.primary,
               shape: RoundedRectangleBorder(borderRadius: .circular(12)),
             ),
-            child: Text(
-              l10n.uploadTestButton,
-              style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
-            ),
+            child: isCreating
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(colors.white),
+                    ),
+                  )
+                : Text(
+                    l10n.uploadTestButton,
+                    style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
+                  ),
           ),
         ),
       ),

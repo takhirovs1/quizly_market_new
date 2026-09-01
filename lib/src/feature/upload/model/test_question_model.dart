@@ -3,9 +3,7 @@ import 'package:math_keyboard/math_keyboard.dart';
 
 /// Represents a single answer option for a question using MathField.
 class AnswerModel {
-  AnswerModel({this.isCorrect = false})
-      : controller = MathFieldEditingController(),
-        focusNode = FocusNode();
+  AnswerModel({this.isCorrect = false}) : controller = MathFieldEditingController(), focusNode = FocusNode();
 
   final MathFieldEditingController controller;
   final FocusNode focusNode;
@@ -23,10 +21,10 @@ class AnswerModel {
 /// Represents a single question with its answer options using MathField.
 class QuestionModel {
   QuestionModel()
-      : controller = MathFieldEditingController(),
-        focusNode = FocusNode(),
-        answers = [AnswerModel(), AnswerModel()],
-        isExpanded = true;
+    : controller = MathFieldEditingController(),
+      focusNode = FocusNode(),
+      answers = [AnswerModel(), AnswerModel()],
+      isExpanded = true;
 
   final MathFieldEditingController controller;
   final FocusNode focusNode;

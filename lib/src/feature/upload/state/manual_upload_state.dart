@@ -19,8 +19,7 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
 
   // ── Submit guard ──────────────────────────────────────────────────────
 
-  bool get canProceed =>
-      universityController.text.trim().isNotEmpty && testNameController.text.trim().isNotEmpty;
+  bool get canProceed => universityController.text.trim().isNotEmpty && testNameController.text.trim().isNotEmpty;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────
 

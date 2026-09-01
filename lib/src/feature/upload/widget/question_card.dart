@@ -43,10 +43,7 @@ class QuestionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? colors.cardBackground2 : colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isExpanded ? colors.primary : colors.divider,
-          width: isExpanded ? 1.5 : 1,
-        ),
+        border: Border.all(color: isExpanded ? colors.primary : colors.divider, width: isExpanded ? 1.5 : 1),
         boxShadow: isExpanded
             ? [BoxShadow(color: colors.primary.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4))]
             : [],
@@ -121,9 +118,7 @@ class QuestionCard extends StatelessWidget {
 
                         // Answers header
                         Row(
-                          children: [
-                            Text(l10n.answersLabel, style: textStyle.sfW500s16.copyWith(color: colors.text)),
-                          ],
+                          children: [Text(l10n.answersLabel, style: textStyle.sfW500s16.copyWith(color: colors.text))],
                         ),
                         const SizedBox(height: 10),
 
@@ -158,10 +153,7 @@ class QuestionCard extends StatelessWidget {
                               const SizedBox(width: 6),
                               Text(
                                 l10n.addAnswer,
-                                style: textStyle.sfW500s14.copyWith(
-                                  color: colors.primary,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: textStyle.sfW500s14.copyWith(color: colors.primary, fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),
@@ -202,40 +194,40 @@ class _MathQuestionField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: MathField(
-              controller: controller,
-              focusNode: focusNode,
-              variables: const ['x', 'y', 'z', 'a', 'b', 'c', 'n', 'k', 't'],
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: textStyle.sfW400s16.copyWith(color: colors.bannerSecondaryText),
-                filled: true,
-                fillColor: isDark ? colors.scaffoldBackground : colors.buttonFill,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: colors.primary, width: 1.2),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: colors.primary, width: 1.5),
-                ),
-              ),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: MathField(
+          controller: controller,
+          focusNode: focusNode,
+          variables: const ['x', 'y', 'z', 'a', 'b', 'c', 'n', 'k', 't'],
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: textStyle.sfW400s16.copyWith(color: colors.bannerSecondaryText),
+            filled: true,
+            fillColor: isDark ? colors.scaffoldBackground : colors.buttonFill,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.primary, width: 1.2),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.primary, width: 1.5),
             ),
           ),
-          const SizedBox(width: 8),
-          CupertinoButton(
-            padding: const EdgeInsets.only(top: 10),
-            minimumSize: Size.zero,
-            onPressed: onRemove,
-            child: Icon(CupertinoIcons.xmark, color: colors.error, size: 20),
-          ),
-        ],
-      );
+        ),
+      ),
+      const SizedBox(width: 8),
+      CupertinoButton(
+        padding: const EdgeInsets.only(top: 10),
+        minimumSize: Size.zero,
+        onPressed: onRemove,
+        child: Icon(CupertinoIcons.xmark, color: colors.error, size: 20),
+      ),
+    ],
+  );
 }
 
 class _MathAnswerRow extends StatelessWidget {
@@ -265,72 +257,64 @@ class _MathAnswerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Correct answer toggle
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: GestureDetector(
-              onTap: onToggleCorrect,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: isCorrect
-                    ? Icon(
-                        CupertinoIcons.checkmark_circle_fill,
-                        key: const ValueKey('checked'),
-                        color: colors.primary,
-                        size: 28,
-                      )
-                    : Icon(
-                        CupertinoIcons.circle,
-                        key: const ValueKey('unchecked'),
-                        color: colors.divider,
-                        size: 28,
-                      ),
-              ),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Correct answer toggle
+      Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: GestureDetector(
+          onTap: onToggleCorrect,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: isCorrect
+                ? Icon(
+                    CupertinoIcons.checkmark_circle_fill,
+                    key: const ValueKey('checked'),
+                    color: colors.primary,
+                    size: 28,
+                  )
+                : Icon(CupertinoIcons.circle, key: const ValueKey('unchecked'), color: colors.divider, size: 28),
+          ),
+        ),
+      ),
+      const SizedBox(width: 10),
+
+      // Answer MathField
+      Expanded(
+        child: MathField(
+          controller: controller,
+          focusNode: focusNode,
+          variables: const ['x', 'y', 'z', 'a', 'b', 'c', 'n', 'k', 't'],
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: isDark ? colors.scaffoldBackground : colors.buttonFill,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: isCorrect ? colors.primary : colors.divider, width: isCorrect ? 1.5 : 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.primary, width: 1.5),
             ),
           ),
-          const SizedBox(width: 10),
+        ),
+      ),
 
-          // Answer MathField
-          Expanded(
-            child: MathField(
-              controller: controller,
-              focusNode: focusNode,
-              variables: const ['x', 'y', 'z', 'a', 'b', 'c', 'n', 'k', 't'],
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: isDark ? colors.scaffoldBackground : colors.buttonFill,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: isCorrect ? colors.primary : colors.divider,
-                    width: isCorrect ? 1.5 : 1,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: colors.primary, width: 1.5),
-                ),
-              ),
-            ),
+      // Remove answer (only if > 2 answers)
+      if (canRemove) ...[
+        const SizedBox(width: 6),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            onPressed: onRemove,
+            child: Icon(CupertinoIcons.minus_circle, color: colors.error, size: 22),
           ),
-
-          // Remove answer (only if > 2 answers)
-          if (canRemove) ...[
-            const SizedBox(width: 6),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                onPressed: onRemove,
-                child: Icon(CupertinoIcons.minus_circle, color: colors.error, size: 22),
-              ),
-            ),
-          ],
-        ],
-      );
+        ),
+      ],
+    ],
+  );
 }

@@ -1,10 +1,15 @@
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../my_tests/models/demo_test_model.dart';
 import '../../my_tests/models/payment_model.dart';
+import '../../my_tests/models/wallet_model.dart';
+import '../bloc/upload_confirm_cubit.dart';
+import '../bloc/upload_pricing_cubit.dart';
 import '../screen/upload_confirm_screen.dart';
 
 abstract class UploadConfirmState extends State<UploadConfirmScreen> {
@@ -12,50 +17,61 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
   late final ValueNotifier<PaymentModel> selectedPayment;
   late final List<PaymentModel> paymentMethods;
   bool _isInitialized = false;
-  bool isSubmitting = false;
 
-  late final List<DemoQuestion> questions;
+  late final UploadConfirmCubit confirmCubit;
+  late final UploadPricingCubit pricingCubit;
+
+  List<DemoQuestion> questions = const [];
 
   @override
   void initState() {
     super.initState();
     currentPage = ValueNotifier<int>(0);
 
-    questions = const [
-      DemoQuestion(
-        id: '1',
-        text: "1. O'zbekiston qachon davlat mustaqilligini e'lon qilgan?",
-        position: 1,
-        options: [
-          DemoOption(id: 'a', text: '1990-yil 20-iyun', position: 1),
-          DemoOption(id: 'b', text: '1990-yil 20-iyun', position: 2),
-          DemoOption(id: 'c', text: '1990-yil 20-iyun', position: 3),
-          DemoOption(id: 'd', text: '1990-yil 20-iyun', position: 4),
-        ],
-      ),
-      DemoQuestion(
-        id: '2',
-        text: "2. O'zbekiston Respublikasi Konstitutsiyasi qachon qabul qilingan?",
-        position: 2,
-        options: [
-          DemoOption(id: 'a', text: '1992-yil 8-dekabr', position: 1),
-          DemoOption(id: 'b', text: '1991-yil 1-sentabr', position: 2),
-          DemoOption(id: 'c', text: '1993-yil 2-iyul', position: 3),
-          DemoOption(id: 'd', text: '1990-yil 20-iyun', position: 4),
-        ],
-      ),
-      DemoQuestion(
-        id: '3',
-        text: '3. Amir Temur tavallud topgan shahar qaysi?',
-        position: 3,
-        options: [
-          DemoOption(id: 'a', text: 'Kesh (Shahrisabz)', position: 1),
-          DemoOption(id: 'b', text: 'Samarqand', position: 2),
-          DemoOption(id: 'c', text: 'Buxoro', position: 3),
-          DemoOption(id: 'd', text: 'Toshkent', position: 4),
-        ],
-      ),
-    ];
+    final repo = context.x.dependencies.repository.uploadRepository;
+    confirmCubit = UploadConfirmCubit(uploadRepository: repo);
+    pricingCubit = UploadPricingCubit(uploadRepository: repo)..fetchPricing();
+
+    if (widget.testId != null && widget.testId!.isNotEmpty) {
+      confirmCubit.fetchQuote(widget.testId!);
+    }
+
+    _loadQuestions();
+    _loadWalletBalance();
+  }
+
+  Future<void> _loadQuestions() async {
+    final testId = widget.testId;
+    if (testId == null || testId.isEmpty) return;
+    try {
+      final loaded = await context.x.dependencies.repository.uploadRepository.getTestQuestions(testId);
+      if (mounted && loaded.isNotEmpty) {
+        setState(() {
+          questions = loaded;
+        });
+      }
+    } on Object catch (_) {}
+  }
+
+  Future<void> _loadWalletBalance() async {
+    try {
+      final wallet = await context.x.dependencies.repository.myTestRepository.getWallet(const WalletRequest());
+      final balance = wallet.data?.balance;
+      if (mounted && balance != null && paymentMethods.isNotEmpty) {
+        setState(() {
+          paymentMethods[0] = PaymentModel(
+            id: 0,
+            title: balance.formatUzs,
+            subtitle: context.x.l10n.quizlyMarketCard,
+            icon: Assets.lib.images.robot.path,
+            type: .card,
+          );
+          if (selectedPayment.value.id == 0) {
+            selectedPayment.value = paymentMethods[0];
+          }
+        });
+      }
+    } on Object catch (_) {}
   }
 
   @override
@@ -65,7 +81,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
       paymentMethods = [
         PaymentModel(
           id: 0,
-          title: '340 000 UZS',
+          title: 0.formatUzs,
           subtitle: context.x.l10n.quizlyMarketCard,
           icon: Assets.lib.images.robot.path,
           type: .card,
@@ -82,6 +98,8 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
   void dispose() {
     currentPage.dispose();
     selectedPayment.dispose();
+    confirmCubit.close();
+    pricingCubit.close();
     super.dispose();
   }
 
@@ -168,12 +186,60 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
   }
 
   Future<void> onConfirmUpload() async {
-    if (isSubmitting) return;
-    setState(() => isSubmitting = true);
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
-    if (mounted) {
-      setState(() => isSubmitting = false);
+    final testId = widget.testId;
+    if (testId == null || testId.isEmpty) {
       context.octopus.navigate(Routes.home.name);
+      return;
+    }
+
+    final isWallet = selectedPayment.value.type == .card || selectedPayment.value.id == 0;
+
+    if (isWallet) {
+      await confirmCubit.publishFromWallet(testId);
+      final state = confirmCubit.state;
+      if (state.publishStatus.isSuccess && mounted) {
+        context.x.showNotification(message: context.x.l10n.testSuccessfullyPublished);
+        context.octopus.navigate(Routes.home.name);
+      } else if (state.isInsufficientBalance && mounted) {
+        context.x.showNotification(
+          message: state.errorMessage ?? context.x.l10n.insufficientWalletBalance,
+          isError: true,
+        );
+      } else if (state.errorMessage != null && mounted) {
+        context.x.showNotification(message: state.errorMessage!, isError: true);
+      }
+    } else {
+      final isPayme = selectedPayment.value.id == 1;
+      final provider = isPayme ? 'payme' : 'click';
+      final url = await confirmCubit.publishViaCheckout(testId, provider: provider);
+
+      if (url != null && url.isNotEmpty) {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+
+        final paymentId = confirmCubit.state.checkoutResult?.paymentId;
+        if (paymentId != null) {
+          confirmCubit.startPaymentPolling(
+            paymentId,
+            onCompleted: () {
+              if (mounted) {
+                context.x.showNotification(message: context.x.l10n.testSuccessfullyPublished);
+                context.octopus.navigate(Routes.home.name);
+              }
+            },
+            onFailed: () {
+              if (mounted) {
+                context.x.showNotification(
+                  message: context.x.l10n.paymentCancelledOrFailed,
+                  isError: true,
+                );
+              }
+            },
+          );
+        }
+      }
     }
   }
 }

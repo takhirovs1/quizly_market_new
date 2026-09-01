@@ -27,6 +27,7 @@ import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
 import '../../../feature/settings/data/settings_repository.dart';
 import '../../../feature/settings/model/app_settings.dart';
+import '../../../feature/upload/data/upload_repository.dart';
 import '../../router/pages.dart';
 import '../../constant/config.dart';
 import '../../constant/pubspec.yaml.g.dart';
@@ -301,6 +302,7 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
         mainRepository: MainRepositoryImpl(apiClient: dependencies.apiClient),
         myTestRepository: MyTestRepositoryImpl(apiClient: dependencies.apiClient),
         profileRepository: ProfileRepositoryImpl(apiClient: dependencies.apiClient),
+        uploadRepository: UploadRepositoryImpl(apiClient: dependencies.apiClient),
       );
     },
   ),

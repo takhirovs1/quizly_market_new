@@ -43,13 +43,13 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
   }
 
   void _measureHeights(_) {
-    if (!mounted) return;
+    if (!mounted || widget.questions.isEmpty) return;
     var max = 0.0;
     for (final key in _measureKeys) {
       final h = key.currentContext?.size?.height ?? 0.0;
       if (h > max) max = h;
     }
-    final targetHeight = max > 0 ? max.ceilToDouble() + 2.0 : null;
+    final targetHeight = max > 0 ? max.ceilToDouble() : null;
     if (targetHeight != null && _maxHeight != targetHeight) {
       setState(() => _maxHeight = targetHeight);
     }
@@ -57,26 +57,20 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
 
   BoxDecoration _cardDecoration(BuildContext context, {required bool isActive}) => BoxDecoration(
     color: context.x.colors.cardBackground2,
-    borderRadius: BorderRadius.circular(24),
+    borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: context.x.colors.divider),
     boxShadow: isActive
-        ? [
-            BoxShadow(
-              color: context.x.colors.black.withValues(alpha: .08),
-              offset: const Offset(0, 12),
-              blurRadius: 56,
-            ),
-            BoxShadow(color: context.x.colors.black.withValues(alpha: .05), offset: Offset.zero, blurRadius: 3),
-          ]
+        ? [BoxShadow(color: context.x.colors.black.withValues(alpha: .06), offset: const Offset(0, 4), blurRadius: 16)]
         : null,
   );
 
   Widget _buildCard(BuildContext context, DemoQuestion question, {required bool isActive, Key? key}) => Padding(
     key: key,
-    padding: const EdgeInsets.symmetric(horizontal: 16),
+    padding: const EdgeInsets.symmetric(horizontal: 4),
     child: DecoratedBox(
       decoration: _cardDecoration(context, isActive: isActive),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: QuestionCardWidget(question: question, languageCode: widget.languageCode),
       ),
     ),
@@ -113,19 +107,21 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.questions.isEmpty) return const SizedBox.shrink();
+
     WidgetsBinding.instance.addPostFrameCallback(_measureHeights);
     final showChevrons = !context.x.isMobile;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 28),
         Offstage(
           child: Row(
             children: [
               if (showChevrons) ...[const SizedBox(width: 8), const SizedBox(width: 40)],
               Expanded(
                 child: Column(
-                  crossAxisAlignment: .stretch,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     for (int i = 0; i < widget.questions.length; i++)
                       _buildCard(context, widget.questions[i], isActive: true, key: _measureKeys[i]),
@@ -139,7 +135,7 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
         if (_maxHeight != null) ...[
           if (showChevrons)
             Row(
-              mainAxisAlignment: .center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(width: 8),
                 ValueListenableBuilder<int>(
@@ -161,7 +157,7 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
                 Expanded(
                   child: ClipRect(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: SizedBox(
                         height: _maxHeight,
                         child: PageView.builder(
@@ -202,7 +198,7 @@ class _QuestionsCarouselState extends State<QuestionsCarousel> {
           else
             ClipRect(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 40),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: SizedBox(
                   height: _maxHeight,
                   child: PageView.builder(

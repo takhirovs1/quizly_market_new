@@ -8,7 +8,10 @@ import 'package:octopus/octopus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../bloc/file_upload_cubit.dart';
+import '../bloc/upload_pricing_cubit.dart';
 import '../screen/file_upload_screen.dart';
 
 abstract class FileUploadState extends State<FileUploadScreen> {
@@ -22,10 +25,18 @@ abstract class FileUploadState extends State<FileUploadScreen> {
   final descriptionFocus = FocusNode();
   final priceFocus = FocusNode();
 
-  String? uploadedFileName;
-  List<String> fileIssues = [];
   bool showAuthorship = true;
-  bool isUploading = false;
+
+  late final FileUploadCubit fileUploadCubit;
+  late final UploadPricingCubit pricingCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    final repo = context.x.dependencies.repository.uploadRepository;
+    fileUploadCubit = FileUploadCubit(uploadRepository: repo);
+    pricingCubit = UploadPricingCubit(uploadRepository: repo)..fetchPricing();
+  }
 
   @override
   void dispose() {
@@ -38,16 +49,24 @@ abstract class FileUploadState extends State<FileUploadScreen> {
     testNameFocus.dispose();
     descriptionFocus.dispose();
     priceFocus.dispose();
+
+    fileUploadCubit.close();
+    pricingCubit.close();
     super.dispose();
   }
 
   Future<void> onDownloadExampleFile() async {
     try {
-      final byteData = await rootBundle.load('packages/ui/lib/file/test_upload_example.xlsx');
-      final bytes = byteData.buffer.asUint8List();
+      List<int> bytes;
+      try {
+        bytes = await context.x.dependencies.repository.uploadRepository.downloadTemplate();
+      } on Object catch (_) {
+        final byteData = await rootBundle.load('packages/ui/lib/file/test_upload_example.xlsx');
+        bytes = byteData.buffer.asUint8List();
+      }
 
       final tempDir = await getTemporaryDirectory();
-      final filePath = '${tempDir.path}/test_upload_example.xlsx';
+      final filePath = '${tempDir.path}/quizly-test-shabloni.xlsx';
       final file = io.File(filePath);
       await file.writeAsBytes(bytes, flush: true);
 
@@ -56,9 +75,9 @@ abstract class FileUploadState extends State<FileUploadScreen> {
         XFile(
           filePath,
           mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          name: 'test_upload_example.xlsx',
+          name: 'quizly-test-shabloni.xlsx',
         ),
-      ], text: 'test_upload_example.xlsx');
+      ], text: 'quizly-test-shabloni.xlsx');
     } on Object catch (e) {
       debugPrint('onDownloadExampleFile error: $e');
     }
@@ -68,31 +87,39 @@ abstract class FileUploadState extends State<FileUploadScreen> {
     try {
       FilePickerResult? result;
       try {
-        result = await FilePicker.pickFiles(
-          type: .custom,
-          allowedExtensions: ['xlsx', 'xls', 'csv', 'pdf', 'docx', 'doc'],
-        );
+        result = await FilePicker.pickFiles(type: .custom, allowedExtensions: ['xlsx', 'xls'], withData: true);
       } on Object catch (_) {
-        result = await FilePicker.pickFiles(type: .any);
+        result = await FilePicker.pickFiles(type: .any, withData: true);
       }
 
       if (result != null && result.files.isNotEmpty) {
-        final file = result.files.first;
-        setState(() {
-          uploadedFileName = file.name;
-          fileIssues = ['25-savol: To\'g\'ri javob yo\'q.', '28-savol: Javoblar yozilmagan.'];
-        });
+        final pickedFile = result.files.first;
+        List<int>? bytes = pickedFile.bytes;
+        if (bytes == null && pickedFile.path != null) {
+          bytes = await io.File(pickedFile.path!).readAsBytes();
+        }
+
+        if (bytes != null) {
+          final rawPrice = priceController.text.replaceAll(RegExp(r'\D'), '');
+          final price = int.tryParse(rawPrice);
+
+          await fileUploadCubit.validateFile(
+            fileBytes: bytes,
+            fileName: pickedFile.name,
+            testName: testNameController.text.trim(),
+            description: descriptionController.text.trim(),
+            price: price,
+            isFree: price == null || price == 0,
+          );
+        }
       }
-    } on Object catch (_) {
-      // Handle file pick error
+    } on Object catch (e) {
+      debugPrint('onAttachFile error: $e');
     }
   }
 
   void onRemoveUploadedFile() {
-    setState(() {
-      uploadedFileName = null;
-      fileIssues = [];
-    });
+    fileUploadCubit.clearFile();
   }
 
   void onToggleAuthorship(bool value) {
@@ -104,15 +131,30 @@ abstract class FileUploadState extends State<FileUploadScreen> {
   }
 
   Future<void> onSubmitUpload() async {
-    context.octopus.push(
-      Routes.uploadConfirm,
-      arguments: {
-        'testName': testNameController.text.trim(),
-        'university': universityController.text.trim(),
-        'description': descriptionController.text.trim(),
-        'price': priceController.text.trim(),
-      },
+    final rawPrice = priceController.text.replaceAll(RegExp(r'\D'), '');
+    final price = int.tryParse(rawPrice);
+
+    await fileUploadCubit.submitImport(
+      testName: testNameController.text.trim(),
+      description: descriptionController.text.trim(),
+      price: price,
+      isFree: price == null || price == 0,
     );
+
+    final importResult = fileUploadCubit.state.importResult;
+    if (importResult != null && mounted) {
+      context.octopus.push(
+        Routes.uploadConfirm,
+        arguments: {
+          'testId': importResult.testId,
+          'testName': testNameController.text.trim(),
+          'university': universityController.text.trim(),
+          'description': descriptionController.text.trim(),
+          'price': priceController.text.trim(),
+          'questionCount': fileUploadCubit.state.questionCount.toString(),
+        },
+      );
+    }
   }
 }
 

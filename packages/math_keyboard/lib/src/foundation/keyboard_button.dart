@@ -4,10 +4,7 @@ import 'package:math_keyboard/src/foundation/node.dart';
 /// Class representing a button configuration.
 abstract class KeyboardButtonConfig {
   /// Constructs a [KeyboardButtonConfig].
-  const KeyboardButtonConfig({
-    this.flex,
-    this.keyboardCharacters = const [],
-  });
+  const KeyboardButtonConfig({this.flex, this.keyboardCharacters = const []});
 
   /// Optional flex.
   final int? flex;
@@ -35,10 +32,7 @@ class BasicKeyboardButtonConfig extends KeyboardButtonConfig {
     this.highlighted = false,
     List<String> keyboardCharacters = const [],
     int? flex,
-  }) : super(
-          flex: flex,
-          keyboardCharacters: keyboardCharacters,
-        );
+  }) : super(flex: flex, keyboardCharacters: keyboardCharacters);
 
   /// The label of the button.
   final String label;
@@ -90,12 +84,7 @@ class PageButtonConfig extends KeyboardButtonConfig {
 ///
 /// List access from 0 to 9 will return the appropriate digit button.
 final _digitButtons = [
-  for (var i = 0; i < 10; i++)
-    BasicKeyboardButtonConfig(
-      label: '$i',
-      value: '$i',
-      keyboardCharacters: ['$i'],
-    ),
+  for (var i = 0; i < 10; i++) BasicKeyboardButtonConfig(label: '$i', value: '$i', keyboardCharacters: ['$i']),
 ];
 
 const _decimalButton = BasicKeyboardButtonConfig(
@@ -105,12 +94,7 @@ const _decimalButton = BasicKeyboardButtonConfig(
   highlighted: true,
 );
 
-const _subtractButton = BasicKeyboardButtonConfig(
-  label: '−',
-  value: '-',
-  keyboardCharacters: ['-'],
-  highlighted: true,
-);
+const _subtractButton = BasicKeyboardButtonConfig(label: '−', value: '-', keyboardCharacters: ['-'], highlighted: true);
 
 /// Keyboard showing extended functionality.
 final functionKeyboard = [
@@ -121,12 +105,7 @@ final functionKeyboard = [
       args: [TeXArg.braces, TeXArg.braces],
       asTex: true,
     ),
-    const BasicKeyboardButtonConfig(
-      label: r'\Box^2',
-      value: '^2',
-      args: [TeXArg.braces],
-      asTex: true,
-    ),
+    const BasicKeyboardButtonConfig(label: r'\Box^2', value: '^2', args: [TeXArg.braces], asTex: true),
     const BasicKeyboardButtonConfig(
       label: r'\Box^{\Box}',
       value: '^',
@@ -140,17 +119,8 @@ final functionKeyboard = [
         'Dead',
       ],
     ),
-    const BasicKeyboardButtonConfig(
-      label: r'\sin',
-      value: r'\sin(',
-      asTex: true,
-      keyboardCharacters: ['s'],
-    ),
-    const BasicKeyboardButtonConfig(
-      label: r'\sin^{-1}',
-      value: r'\sin^{-1}(',
-      asTex: true,
-    ),
+    const BasicKeyboardButtonConfig(label: r'\sin', value: r'\sin(', asTex: true, keyboardCharacters: ['s']),
+    const BasicKeyboardButtonConfig(label: r'\sin^{-1}', value: r'\sin^{-1}(', asTex: true),
   ],
   [
     const BasicKeyboardButtonConfig(
@@ -166,17 +136,8 @@ final functionKeyboard = [
       args: [TeXArg.brackets, TeXArg.braces],
       asTex: true,
     ),
-    const BasicKeyboardButtonConfig(
-      label: r'\cos',
-      value: r'\cos(',
-      asTex: true,
-      keyboardCharacters: ['c'],
-    ),
-    const BasicKeyboardButtonConfig(
-      label: r'\cos^{-1}',
-      value: r'\cos^{-1}(',
-      asTex: true,
-    ),
+    const BasicKeyboardButtonConfig(label: r'\cos', value: r'\cos(', asTex: true, keyboardCharacters: ['c']),
+    const BasicKeyboardButtonConfig(label: r'\cos^{-1}', value: r'\cos^{-1}(', asTex: true),
   ],
   [
     const BasicKeyboardButtonConfig(
@@ -185,38 +146,14 @@ final functionKeyboard = [
       asTex: true,
       args: [TeXArg.braces, TeXArg.parentheses],
     ),
-    const BasicKeyboardButtonConfig(
-      label: r'\ln(\Box)',
-      value: r'\ln(',
-      asTex: true,
-      keyboardCharacters: ['l'],
-    ),
-    const BasicKeyboardButtonConfig(
-      label: r'\tan',
-      value: r'\tan(',
-      asTex: true,
-      keyboardCharacters: ['t'],
-    ),
-    const BasicKeyboardButtonConfig(
-      label: r'\tan^{-1}',
-      value: r'\tan^{-1}(',
-      asTex: true,
-    ),
+    const BasicKeyboardButtonConfig(label: r'\ln(\Box)', value: r'\ln(', asTex: true, keyboardCharacters: ['l']),
+    const BasicKeyboardButtonConfig(label: r'\tan', value: r'\tan(', asTex: true, keyboardCharacters: ['t']),
+    const BasicKeyboardButtonConfig(label: r'\tan^{-1}', value: r'\tan^{-1}(', asTex: true),
   ],
   [
     const PageButtonConfig(flex: 3),
-    const BasicKeyboardButtonConfig(
-      label: '(',
-      value: '(',
-      highlighted: true,
-      keyboardCharacters: ['('],
-    ),
-    const BasicKeyboardButtonConfig(
-      label: ')',
-      value: ')',
-      highlighted: true,
-      keyboardCharacters: [')'],
-    ),
+    const BasicKeyboardButtonConfig(label: '(', value: '(', highlighted: true, keyboardCharacters: ['(']),
+    const BasicKeyboardButtonConfig(label: ')', value: ')', highlighted: true, keyboardCharacters: [')']),
     PreviousButtonConfig(),
     NextButtonConfig(),
     DeleteButtonConfig(),
@@ -229,12 +166,7 @@ final standardKeyboard = [
     _digitButtons[7],
     _digitButtons[8],
     _digitButtons[9],
-    const BasicKeyboardButtonConfig(
-      label: '×',
-      value: r'\cdot',
-      keyboardCharacters: ['*'],
-      highlighted: true,
-    ),
+    const BasicKeyboardButtonConfig(label: '×', value: r'\cdot', keyboardCharacters: ['*'], highlighted: true),
     const BasicKeyboardButtonConfig(
       label: '÷',
       value: r'\frac',
@@ -247,54 +179,17 @@ final standardKeyboard = [
     _digitButtons[4],
     _digitButtons[5],
     _digitButtons[6],
-    const BasicKeyboardButtonConfig(
-      label: '+',
-      value: '+',
-      keyboardCharacters: ['+'],
-      highlighted: true,
-    ),
+    const BasicKeyboardButtonConfig(label: '+', value: '+', keyboardCharacters: ['+'], highlighted: true),
     _subtractButton,
   ],
-  [
-    _digitButtons[1],
-    _digitButtons[2],
-    _digitButtons[3],
-    _decimalButton,
-    DeleteButtonConfig(),
-  ],
-  [
-    const PageButtonConfig(),
-    _digitButtons[0],
-    PreviousButtonConfig(),
-    NextButtonConfig(),
-    SubmitButtonConfig(),
-  ],
+  [_digitButtons[1], _digitButtons[2], _digitButtons[3], _decimalButton, DeleteButtonConfig()],
+  [const PageButtonConfig(), _digitButtons[0], PreviousButtonConfig(), NextButtonConfig(), SubmitButtonConfig()],
 ];
 
 /// Keyboard getting shown for number input only.
 final numberKeyboard = [
-  [
-    _digitButtons[7],
-    _digitButtons[8],
-    _digitButtons[9],
-    _subtractButton,
-  ],
-  [
-    _digitButtons[4],
-    _digitButtons[5],
-    _digitButtons[6],
-    _decimalButton,
-  ],
-  [
-    _digitButtons[1],
-    _digitButtons[2],
-    _digitButtons[3],
-    DeleteButtonConfig(),
-  ],
-  [
-    PreviousButtonConfig(),
-    _digitButtons[0],
-    NextButtonConfig(),
-    SubmitButtonConfig(),
-  ],
+  [_digitButtons[7], _digitButtons[8], _digitButtons[9], _subtractButton],
+  [_digitButtons[4], _digitButtons[5], _digitButtons[6], _decimalButton],
+  [_digitButtons[1], _digitButtons[2], _digitButtons[3], DeleteButtonConfig()],
+  [PreviousButtonConfig(), _digitButtons[0], NextButtonConfig(), SubmitButtonConfig()],
 ];

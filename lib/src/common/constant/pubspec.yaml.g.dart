@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.3+264',
+    representation: r'1.0.3+265',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.3+264',
+    canonical: r'1.0.3+265',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'264'],
+    build: <String>[r'265'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
-    8,
-    28,
-    5,
-    33,
-    52,
-    565,
-    325,
+    9,
+    1,
+    4,
+    39,
+    29,
+    393,
+    69,
   );
 
   /// Name
@@ -419,6 +419,9 @@ sealed class Pubspec {
     'local_source': <String, Object>{
       'path': r'packages/local_source',
     },
+    'math_keyboard': <String, Object>{
+      'path': r'packages/math_keyboard',
+    },
     'intl': r'0.20.2',
     'meta': r'any',
     'collection': r'any',
@@ -536,6 +539,7 @@ sealed class Pubspec {
       r'packages/ui',
       r'packages/localization',
       r'packages/local_source',
+      r'packages/math_keyboard',
     ],
     'flutter': <String, Object>{
       'generate': true,

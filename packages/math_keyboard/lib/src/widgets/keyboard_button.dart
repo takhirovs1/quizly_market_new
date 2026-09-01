@@ -13,13 +13,7 @@ import 'package:holding_gesture/holding_gesture.dart';
 ///   of 4px.
 class KeyboardButton extends StatefulWidget {
   /// Constructs a [KeyboardButton] widget.
-  const KeyboardButton({
-    Key? key,
-    this.onTap,
-    this.onHold,
-    this.color,
-    required this.child,
-  }) : super(key: key);
+  const KeyboardButton({Key? key, this.onTap, this.onHold, this.color, required this.child}) : super(key: key);
 
   /// Called when the keyboard button is tapped.
   final VoidCallback? onTap;
@@ -37,8 +31,7 @@ class KeyboardButton extends StatefulWidget {
   _KeyboardButtonState createState() => _KeyboardButtonState();
 }
 
-class _KeyboardButtonState extends State<KeyboardButton>
-    with SingleTickerProviderStateMixin {
+class _KeyboardButtonState extends State<KeyboardButton> with SingleTickerProviderStateMixin {
   late final _animationController = AnimationController(
     duration: const Duration(milliseconds: 50),
     reverseDuration: const Duration(milliseconds: 200),
@@ -80,8 +73,7 @@ class _KeyboardButtonState extends State<KeyboardButton>
       child: RawGestureDetector(
         behavior: HitTestBehavior.opaque,
         gestures: <Type, GestureRecognizerFactory>{
-          _AlwaysWinningGestureRecognizer: GestureRecognizerFactoryWithHandlers<
-              _AlwaysWinningGestureRecognizer>(
+          _AlwaysWinningGestureRecognizer: GestureRecognizerFactoryWithHandlers<_AlwaysWinningGestureRecognizer>(
             () => _AlwaysWinningGestureRecognizer(),
             (_AlwaysWinningGestureRecognizer instance) {
               instance
@@ -95,25 +87,16 @@ class _KeyboardButtonState extends State<KeyboardButton>
         child: Padding(
           padding: const EdgeInsets.all(4),
           child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: widget.color,
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: widget.color),
             child: AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
                 return DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white.withValues(
-                      alpha: Curves.easeInOut
-                              .transform(_animationController.value) /
-                          3,
-                    ),
+                    color: Colors.white.withValues(alpha: Curves.easeInOut.transform(_animationController.value) / 3),
                   ),
-                  child: Center(
-                    child: child,
-                  ),
+                  child: Center(child: child),
                 );
               },
               child: widget.child,
@@ -132,10 +115,7 @@ class _KeyboardButtonState extends State<KeyboardButton>
       );
     }
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: result,
-    );
+    return MouseRegion(cursor: SystemMouseCursors.click, child: result);
   }
 }
 

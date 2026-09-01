@@ -18,10 +18,7 @@ TeXNode convertMathExpressionToTeXNode(Expression mathExpression) {
 List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
   if (mathExpression is UnaryOperator) {
     return [
-      if (mathExpression is UnaryMinus)
-        const TeXLeaf('-')
-      else
-        throw UnimplementedError(),
+      if (mathExpression is UnaryMinus) const TeXLeaf('-') else throw UnimplementedError(),
       ..._convertToTeX(mathExpression.exp, parent),
     ];
   }
@@ -33,10 +30,7 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
           r'\frac',
           parent,
           const [TeXArg.braces, TeXArg.braces],
-          [
-            convertMathExpressionToTeXNode(mathExpression.first),
-            convertMathExpressionToTeXNode(mathExpression.second),
-          ],
+          [convertMathExpressionToTeXNode(mathExpression.first), convertMathExpressionToTeXNode(mathExpression.second)],
         ),
       ];
     } else if (mathExpression is Plus) {
@@ -60,12 +54,7 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
     } else if (mathExpression is Power) {
       result = [
         ..._convertToTeX(mathExpression.first, parent),
-        TeXFunction(
-          '^',
-          parent,
-          const [TeXArg.braces],
-          [convertMathExpressionToTeXNode(mathExpression.second)],
-        ),
+        TeXFunction('^', parent, const [TeXArg.braces], [convertMathExpressionToTeXNode(mathExpression.second)]),
       ];
     }
     if (result == null) {
@@ -73,11 +62,7 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
       throw UnimplementedError();
     }
     // Wrap with parentheses to keep precedence.
-    return [
-      TeXLeaf('('),
-      ...result,
-      TeXLeaf(')'),
-    ];
+    return [TeXLeaf('('), ...result, TeXLeaf(')')];
   }
   if (mathExpression is Literal) {
     if (mathExpression is Number) {
@@ -89,20 +74,14 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
         return [TeXLeaf('{e}')];
       }
       final adjusted = number.toInt() == number ? number.toInt() : number;
-      return [
-        for (final symbol in adjusted.toString().split('')) TeXLeaf(symbol),
-      ];
+      return [for (final symbol in adjusted.toString().split('')) TeXLeaf(symbol)];
     }
     if (mathExpression is Variable) {
       if (mathExpression is BoundVariable) {
-        return [
-          ..._convertToTeX(mathExpression.value, parent),
-        ];
+        return [..._convertToTeX(mathExpression.value, parent)];
       }
 
-      return [
-        TeXLeaf('{${mathExpression.name}}'),
-      ];
+      return [TeXLeaf('{${mathExpression.name}}')];
     }
 
     throw UnimplementedError();
@@ -111,12 +90,7 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
     if (mathExpression is Exponential) {
       return [
         const TeXLeaf('{e}'),
-        TeXFunction(
-          '^',
-          parent,
-          const [TeXArg.braces],
-          [convertMathExpressionToTeXNode(mathExpression.exp)],
-        ),
+        TeXFunction('^', parent, const [TeXArg.braces], [convertMathExpressionToTeXNode(mathExpression.exp)]),
       ];
     }
     if (mathExpression is Log) {
@@ -125,29 +99,17 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
           r'\log_',
           parent,
           const [TeXArg.braces, TeXArg.parentheses],
-          [
-            convertMathExpressionToTeXNode(mathExpression.base),
-            convertMathExpressionToTeXNode(mathExpression.arg),
-          ],
+          [convertMathExpressionToTeXNode(mathExpression.base), convertMathExpressionToTeXNode(mathExpression.arg)],
         ),
       ];
     }
     if (mathExpression is Ln) {
-      return [
-        const TeXLeaf(r'\ln('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\ln('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Root) {
       if (mathExpression.n == 2) {
         return [
-          TeXFunction(
-            r'\sqrt',
-            parent,
-            const [TeXArg.braces],
-            [convertMathExpressionToTeXNode(mathExpression.arg)],
-          ),
+          TeXFunction(r'\sqrt', parent, const [TeXArg.braces], [convertMathExpressionToTeXNode(mathExpression.arg)]),
         ];
       }
       return [
@@ -163,53 +125,25 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
       ];
     }
     if (mathExpression is Abs) {
-      return [
-        const TeXLeaf(r'\abs('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\abs('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Sin) {
-      return [
-        const TeXLeaf(r'\sin('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\sin('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Cos) {
-      return [
-        const TeXLeaf(r'\cos('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\cos('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Tan) {
-      return [
-        const TeXLeaf(r'\tan('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\tan('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Asin) {
-      return [
-        const TeXLeaf(r'\sin^{-1}('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\sin^{-1}('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Acos) {
-      return [
-        const TeXLeaf(r'\cos^{-1}('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\cos^{-1}('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
     if (mathExpression is Atan) {
-      return [
-        const TeXLeaf(r'\tan^{-1}('),
-        ..._convertToTeX(mathExpression.arg, parent),
-        const TeXLeaf(')'),
-      ];
+      return [const TeXLeaf(r'\tan^{-1}('), ..._convertToTeX(mathExpression.arg, parent), const TeXLeaf(')')];
     }
 
     throw UnimplementedError();
