@@ -11,6 +11,7 @@ workspace:
   - packages/ui
   - packages/localization
   - packages/local_source
+  - packages/math_keyboard
 
 dependencies:
   flutter:
@@ -23,6 +24,8 @@ dependencies:
     path: packages/localization
   local_source:
     path: packages/local_source
+  math_keyboard:
+    path: packages/math_keyboard
 
   intl: 0.20.2
 

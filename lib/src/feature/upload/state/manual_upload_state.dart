@@ -17,9 +17,19 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
   bool showAuthorship = true;
   bool exitFullScreen = true;
 
+  // ── Submit guard ──────────────────────────────────────────────────────
+
+  bool get canProceed =>
+      universityController.text.trim().isNotEmpty && testNameController.text.trim().isNotEmpty;
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────
+
   @override
   void initState() {
     super.initState();
+    universityController.addListener(_onFieldChanged);
+    testNameController.addListener(_onFieldChanged);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (context.isTelegramSupported && exitFullScreen) {
@@ -28,10 +38,16 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
     });
   }
 
+  void _onFieldChanged() => setState(() {});
+
   @override
   void dispose() {
-    universityController.dispose();
-    testNameController.dispose();
+    universityController
+      ..removeListener(_onFieldChanged)
+      ..dispose();
+    testNameController
+      ..removeListener(_onFieldChanged)
+      ..dispose();
     descriptionController.dispose();
 
     universityFocus.dispose();
@@ -39,6 +55,8 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
     descriptionFocus.dispose();
     super.dispose();
   }
+
+  // ── Toggle handlers ───────────────────────────────────────────────────
 
   void onToggleAuthorship(bool value) {
     setState(() => showAuthorship = value);
@@ -53,7 +71,11 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
     }
   }
 
+  // ── Navigation ────────────────────────────────────────────────────────
+
   void onSubmitProceed() {
+    if (!canProceed) return;
+
     final university = universityController.text.trim();
     final testName = testNameController.text.trim();
     final description = descriptionController.text.trim();
@@ -69,8 +91,12 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
     }
 
     context.octopus.push(
-      Routes.uploadConfirm,
-      arguments: {'testName': testName, 'university': university, 'description': description},
+      Routes.createTestQuestions,
+      arguments: {
+        'testName': testName,
+        'university': university,
+        if (description.isNotEmpty) 'description': description,
+      },
     );
   }
 }

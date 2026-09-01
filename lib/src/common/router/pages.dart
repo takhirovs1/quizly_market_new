@@ -35,6 +35,7 @@ import '../../feature/tests/screens/test_mode_screen.dart';
 import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
+import '../../feature/upload/screen/create_test_questions_screen.dart';
 import '../../feature/upload/screen/file_upload_screen.dart';
 import '../../feature/upload/screen/manual_upload_screen.dart';
 import '../../feature/upload/screen/upload_confirm_screen.dart';
@@ -67,6 +68,7 @@ enum Routes with OctopusRoute {
   editProfile('editProfile', title: 'Edit Profile'),
   fileUpload('fileUpload', title: 'File Upload'),
   manualUpload('manualUpload', title: 'Manual Upload'),
+  createTestQuestions('createTestQuestions', title: 'Create Test Questions'),
   uploadConfirm('uploadConfirm', title: 'Upload Confirm');
 
   const Routes(this.name, {this.title});
@@ -211,11 +213,17 @@ enum Routes with OctopusRoute {
     ),
     .fileUpload => const FileUploadScreen(),
     .manualUpload => const ManualUploadScreen(),
+    .createTestQuestions => CreateTestQuestionsScreen(
+      testName: node.arguments['testName'] ?? '',
+      university: node.arguments['university'] ?? '',
+      description: node.arguments['description'],
+    ),
     .uploadConfirm => UploadConfirmScreen(
       testName: node.arguments['testName'],
       university: node.arguments['university'],
       description: node.arguments['description'],
       price: node.arguments['price'],
+      questionCount: int.tryParse(node.arguments['questionCount'] ?? '') ?? 100,
     ),
   };
 }

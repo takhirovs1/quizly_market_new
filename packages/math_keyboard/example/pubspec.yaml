@@ -1,0 +1,19 @@
+name: example
+description: Example app showing how to use the math_keyboard package.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.22.2'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  math_keyboard:
+    path: ../
+
+flutter:
+  uses-material-design: true

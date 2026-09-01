@@ -201,18 +201,25 @@ class _ManualUploadScreenState extends ManualUploadState {
     final textStyle = context.x.textStyle;
     final l10n = context.x.l10n;
 
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: FilledButton(
-        onPressed: onSubmitProceed,
-        style: FilledButton.styleFrom(
-          backgroundColor: colors.primary,
-          shape: RoundedRectangleBorder(borderRadius: .circular(12)),
-        ),
-        child: Text(
-          l10n.proceedToCreateTest,
-          style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: .w600),
+    final enabled = canProceed;
+
+    return AnimatedOpacity(
+      opacity: enabled ? 1.0 : 0.5,
+      duration: const Duration(milliseconds: 250),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: FilledButton(
+          onPressed: enabled ? onSubmitProceed : null,
+          style: FilledButton.styleFrom(
+            backgroundColor: colors.primary,
+            disabledBackgroundColor: colors.primary,
+            shape: RoundedRectangleBorder(borderRadius: .circular(12)),
+          ),
+          child: Text(
+            l10n.proceedToCreateTest,
+            style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: .w600),
+          ),
         ),
       ),
     );
