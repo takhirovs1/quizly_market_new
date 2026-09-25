@@ -28,33 +28,26 @@ class _ManualUploadScreenState extends ManualUploadState {
       ),
       body: SafeArea(
         child: isMobile
-            ? Column(
-                children: [
-                  Expanded(
-                    child: ListView(
-                      padding: const .symmetric(horizontal: 16, vertical: 12),
-                      children: _buildFormFields(context),
-                    ),
-                  ),
-                  Padding(padding: const .fromLTRB(16, 8, 16, 16), child: _buildSubmitButton()),
-                ],
+            ? ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                children: _buildFormFields(context),
               )
             : Center(
                 child: SingleChildScrollView(
-                  padding: const .symmetric(vertical: 24, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 600),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: isDark ? colors.cardBackground2 : colors.white,
-                        borderRadius: .circular(20),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: colors.divider),
                       ),
                       child: Padding(
-                        padding: const .all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Column(
-                          crossAxisAlignment: .stretch,
-                          mainAxisSize: .min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
                           children: [..._buildFormFields(context), const SizedBox(height: 12), _buildSubmitButton()],
                         ),
                       ),
@@ -63,6 +56,21 @@ class _ManualUploadScreenState extends ManualUploadState {
                 ),
               ),
       ),
+      bottomNavigationBar: (isMobile && MediaQuery.viewInsetsOf(context).bottom == 0)
+          ? SafeArea(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 8,
+                  bottom: context.telegramWebApp.isSupported
+                      ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 8
+                      : 16,
+                ),
+                child: _buildSubmitButton(),
+              ),
+            )
+          : null,
     );
   }
 

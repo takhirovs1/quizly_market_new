@@ -40,17 +40,7 @@ class _FileUploadScreenState extends FileUploadState {
         ),
         body: SafeArea(
           child: isMobile
-              ? Column(
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        padding: const .symmetric(horizontal: 16, vertical: 12),
-                        children: _buildFormFields(context),
-                      ),
-                    ),
-                    Padding(padding: const .fromLTRB(16, 8, 16, 16), child: _buildSubmitButton()),
-                  ],
-                )
+              ? ListView(padding: const .symmetric(horizontal: 16, vertical: 12), children: _buildFormFields(context))
               : Center(
                   child: SingleChildScrollView(
                     padding: const .symmetric(vertical: 24, horizontal: 16),
@@ -75,6 +65,21 @@ class _FileUploadScreenState extends FileUploadState {
                   ),
                 ),
         ),
+        bottomNavigationBar: (isMobile && MediaQuery.viewInsetsOf(context).bottom == 0)
+            ? SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 8,
+                    bottom: context.telegramWebApp.isSupported
+                        ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 8
+                        : 16,
+                  ),
+                  child: _buildSubmitButton(),
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -335,9 +340,7 @@ class _FileUploadScreenState extends FileUploadState {
                 ? SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator.adaptive(
-                      valueColor: AlwaysStoppedAnimation<Color>(colors.white),
-                    ),
+                    child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(colors.white)),
                   )
                 : Text(
                     l10n.upload,
@@ -445,9 +448,7 @@ class _FileUploadScreenState extends FileUploadState {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  state.questionCount > 0
-                      ? l10n.questionsFound(state.questionCount)
-                      : l10n.excelDocument,
+                  state.questionCount > 0 ? l10n.questionsFound(state.questionCount) : l10n.excelDocument,
                   style: textStyle.sfW400s14.copyWith(color: colors.bannerSecondaryText),
                 ),
               ],

@@ -26,6 +26,7 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     universityController.addListener(_onFieldChanged);
     testNameController.addListener(_onFieldChanged);
 
@@ -41,6 +42,7 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
 
   @override
   void dispose() {
+    context.teardownTelegramBackButton();
     universityController
       ..removeListener(_onFieldChanged)
       ..dispose();

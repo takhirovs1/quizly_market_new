@@ -38,46 +38,59 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
                   child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 680), child: _buildBody(context)),
                 ),
         ),
+        bottomNavigationBar: (MediaQuery.viewInsetsOf(context).bottom == 0)
+            ? SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 8,
+                    bottom: context.telegramWebApp.isSupported
+                        ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 8
+                        : 16,
+                  ),
+                  child: isMobile
+                      ? _buildBottomBar(context)
+                      : Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 680),
+                            child: _buildBottomBar(context),
+                          ),
+                        ),
+                ),
+              )
+            : null,
       ),
     );
   }
 
-  Widget _buildBody(BuildContext context) => Column(
-    children: [
-      Expanded(
-        child: CustomScrollView(
-          slivers: [
-            // ── Info header ───────────────────────────────────────────
-            SliverToBoxAdapter(child: _buildInfoHeader(context)),
+  Widget _buildBody(BuildContext context) => CustomScrollView(
+    slivers: [
+      // ── Info header ───────────────────────────────────────────
+      SliverToBoxAdapter(child: _buildInfoHeader(context)),
 
-            // ── Question cards ────────────────────────────────────────
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverList.builder(
-                itemCount: questions.length,
-                itemBuilder: (context, index) => QuestionCard(
-                  key: ValueKey(questions[index]),
-                  index: index,
-                  question: questions[index],
-                  onToggleExpand: () => onToggleExpand(index),
-                  onRemoveQuestion: () => removeQuestion(index),
-                  onAddAnswer: () => addAnswer(index),
-                  onRemoveAnswer: (ai) => removeAnswer(index, ai),
-                  onToggleCorrect: (ai) => toggleCorrect(index, ai),
-                  onTextChanged: onTextChanged,
-                ),
-              ),
-            ),
-
-            // ── Add question button ────────────────────────────────────
-            SliverToBoxAdapter(child: _buildAddQuestionButton(context)),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          ],
+      // ── Question cards ────────────────────────────────────────
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverList.builder(
+          itemCount: questions.length,
+          itemBuilder: (context, index) => QuestionCard(
+            key: ValueKey(questions[index]),
+            index: index,
+            question: questions[index],
+            onToggleExpand: () => onToggleExpand(index),
+            onRemoveQuestion: () => removeQuestion(index),
+            onAddAnswer: () => addAnswer(index),
+            onRemoveAnswer: (ai) => removeAnswer(index, ai),
+            onToggleCorrect: (ai) => toggleCorrect(index, ai),
+            onTextChanged: onTextChanged,
+          ),
         ),
       ),
 
-      // ── Bottom upload button ──────────────────────────────────────────
-      _buildBottomBar(context),
+      // ── Add question button ────────────────────────────────────
+      SliverToBoxAdapter(child: _buildAddQuestionButton(context)),
+      const SliverToBoxAdapter(child: SizedBox(height: 24)),
     ],
   );
 
@@ -206,34 +219,29 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
     final l10n = context.x.l10n;
     final isEnabled = canSubmit;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: AnimatedOpacity(
-        opacity: (isEnabled && !isCreating) ? 1.0 : 0.5,
-        duration: const Duration(milliseconds: 250),
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: FilledButton(
-            onPressed: (isEnabled && !isCreating) ? onUploadTest : null,
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.primary,
-              disabledBackgroundColor: colors.primary,
-              shape: RoundedRectangleBorder(borderRadius: .circular(12)),
-            ),
-            child: isCreating
-                ? SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator.adaptive(
-                      valueColor: AlwaysStoppedAnimation<Color>(colors.white),
-                    ),
-                  )
-                : Text(
-                    l10n.uploadTestButton,
-                    style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
-                  ),
+    return AnimatedOpacity(
+      opacity: (isEnabled && !isCreating) ? 1.0 : 0.5,
+      duration: const Duration(milliseconds: 250),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: FilledButton(
+          onPressed: (isEnabled && !isCreating) ? onUploadTest : null,
+          style: FilledButton.styleFrom(
+            backgroundColor: colors.primary,
+            disabledBackgroundColor: colors.primary,
+            shape: RoundedRectangleBorder(borderRadius: .circular(12)),
           ),
+          child: isCreating
+              ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(colors.white)),
+                )
+              : Text(
+                  l10n.uploadTestButton,
+                  style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
+                ),
         ),
       ),
     );

@@ -33,6 +33,7 @@ abstract class FileUploadState extends State<FileUploadScreen> {
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     final repo = context.x.dependencies.repository.uploadRepository;
     fileUploadCubit = FileUploadCubit(uploadRepository: repo);
     pricingCubit = UploadPricingCubit(uploadRepository: repo)..fetchPricing();
@@ -40,6 +41,7 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 
   @override
   void dispose() {
+    context.teardownTelegramBackButton();
     universityController.dispose();
     testNameController.dispose();
     descriptionController.dispose();

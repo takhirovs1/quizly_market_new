@@ -22,6 +22,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     questions = [QuestionModel()];
     expandedIndex = 0;
     createTestCubit = CreateTestCubit(uploadRepository: context.x.dependencies.repository.uploadRepository);
@@ -29,6 +30,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
 
   @override
   void dispose() {
+    context.teardownTelegramBackButton();
     for (final q in questions) {
       q.dispose();
     }

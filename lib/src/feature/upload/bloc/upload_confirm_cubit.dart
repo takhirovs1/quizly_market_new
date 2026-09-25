@@ -96,12 +96,7 @@ class UploadConfirmCubit extends Cubit<UploadConfirmCubitState> {
           onCompleted?.call();
         } else if (status.isFailed) {
           timer.cancel();
-          emit(
-            state.copyWith(
-              publishStatus: StateStatus.error,
-              isPaymentFailed: true,
-            ),
-          );
+          emit(state.copyWith(publishStatus: StateStatus.error, isPaymentFailed: true));
           onFailed?.call();
         }
       } on Object catch (_) {}

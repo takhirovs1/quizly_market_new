@@ -26,6 +26,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
   @override
   void initState() {
     super.initState();
+    context.setupTelegramBackButton();
     currentPage = ValueNotifier<int>(0);
 
     final repo = context.x.dependencies.repository.uploadRepository;
@@ -96,6 +97,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
 
   @override
   void dispose() {
+    context.teardownTelegramBackButton();
     currentPage.dispose();
     selectedPayment.dispose();
     confirmCubit.close();
@@ -231,10 +233,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
             },
             onFailed: () {
               if (mounted) {
-                context.x.showNotification(
-                  message: context.x.l10n.paymentCancelledOrFailed,
-                  isError: true,
-                );
+                context.x.showNotification(message: context.x.l10n.paymentCancelledOrFailed, isError: true);
               }
             },
           );

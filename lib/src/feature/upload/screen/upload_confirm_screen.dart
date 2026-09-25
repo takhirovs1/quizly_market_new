@@ -87,7 +87,9 @@ class _UploadConfirmScreenState extends UploadConfirmState {
             }
           },
         ),
-        bottomNavigationBar: context.x.isMobile ? _buildMobileBottomBar(context) : null,
+        bottomNavigationBar: (context.x.isMobile && MediaQuery.viewInsetsOf(context).bottom == 0)
+            ? _buildMobileBottomBar(context)
+            : null,
       ),
     );
   }
@@ -144,63 +146,63 @@ class _UploadConfirmScreenState extends UploadConfirmState {
       BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
         bloc: confirmCubit,
         builder: (context, confirmState) => BlocBuilder<UploadPricingCubit, UploadPricingState>(
-            bloc: pricingCubit,
-            builder: (context, pricingState) {
-              final perPrice = confirmState.quote?.perQuestionPrice ?? pricingState.pricing.perQuestionPrice;
-              final cashback = confirmState.quote?.cashbackPercent ?? pricingState.pricing.cashbackPercent;
+          bloc: pricingCubit,
+          builder: (context, pricingState) {
+            final perPrice = confirmState.quote?.perQuestionPrice ?? pricingState.pricing.perQuestionPrice;
+            final cashback = confirmState.quote?.cashbackPercent ?? pricingState.pricing.cashbackPercent;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBenefitRow(
-                    icon: Assets.lib.vectors.dollarIcon.svg(
-                      package: 'ui',
-                      width: 20,
-                      height: 20,
-                      colorFilter: ColorFilter.mode(colors.primary, .srcIn),
-                    ),
-                    content: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '${l10n.pricePerQuestion} ',
-                            style: textStyle.sfW500s14.copyWith(color: colors.text),
-                          ),
-                          TextSpan(
-                            text: "$perPrice so'm",
-                            style: textStyle.sfW500s14.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildBenefitRow(
+                  icon: Assets.lib.vectors.dollarIcon.svg(
+                    package: 'ui',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(colors.primary, .srcIn),
+                  ),
+                  content: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${l10n.pricePerQuestion} ',
+                          style: textStyle.sfW500s14.copyWith(color: colors.text),
+                        ),
+                        TextSpan(
+                          text: "$perPrice so'm",
+                          style: textStyle.sfW500s14.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  _buildBenefitRow(
-                    icon: Assets.lib.vectors.cashbackIcon.svg(
-                      package: 'ui',
-                      width: 20,
-                      height: 20,
-                      colorFilter: ColorFilter.mode(colors.primary, .srcIn),
-                    ),
-                    content: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '${l10n.cashbackFromEverySale} ',
-                            style: textStyle.sfW500s14.copyWith(color: colors.text),
-                          ),
-                          TextSpan(
-                            text: '$cashback%',
-                            style: textStyle.sfW500s14.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
+                ),
+                const SizedBox(height: 10),
+                _buildBenefitRow(
+                  icon: Assets.lib.vectors.cashbackIcon.svg(
+                    package: 'ui',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(colors.primary, .srcIn),
+                  ),
+                  content: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${l10n.cashbackFromEverySale} ',
+                          style: textStyle.sfW500s14.copyWith(color: colors.text),
+                        ),
+                        TextSpan(
+                          text: '$cashback%',
+                          style: textStyle.sfW500s14.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              );
-            },
-          ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
       const SizedBox(height: 10),
 
@@ -268,13 +270,7 @@ class _UploadConfirmScreenState extends UploadConfirmState {
         color: colors.cardBackground2,
         borderRadius: .circular(24),
         border: Border.all(color: colors.primary.withValues(alpha: 0.1), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: colors.black.withValues(alpha: 0.05),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: colors.black.withValues(alpha: 0.05), blurRadius: 24, offset: const Offset(0, 8))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,124 +484,35 @@ class _UploadConfirmScreenState extends UploadConfirmState {
               BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
                 bloc: confirmCubit,
                 builder: (context, confirmState) => BlocBuilder<UploadPricingCubit, UploadPricingState>(
-                    bloc: pricingCubit,
-                    builder: (context, pricingState) {
-                      final fee =
-                          confirmState.quote?.publishFee ??
-                          (pricingState.pricing.perQuestionPrice * widget.questionCount);
-                      final isLoading = confirmState.publishStatus.isLoading;
+                  bloc: pricingCubit,
+                  builder: (context, pricingState) {
+                    final fee =
+                        confirmState.quote?.publishFee ??
+                        (pricingState.pricing.perQuestionPrice * widget.questionCount);
+                    final isLoading = confirmState.publishStatus.isLoading;
 
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.totalPayment,
-                                  style: textStyle.sfW400s14.copyWith(color: colors.bannerSecondaryText),
-                                ),
-                                Text(
-                                  fee.formatUzs,
-                                  style: textStyle.sfW700s18.copyWith(
-                                    fontSize: 22,
-                                    color: colors.primary,
-                                    fontWeight: .w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: SizedBox(
-                              height: 48,
-                              child: FilledButton(
-                                onPressed: isLoading ? null : onConfirmUpload,
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: colors.primary,
-                                  shape: RoundedRectangleBorder(borderRadius: .circular(12)),
-                                ),
-                                child: isLoading
-                                    ? SizedBox(
-                                        width: 22,
-                                        height: 22,
-                                        child: CircularProgressIndicator.adaptive(
-                                          valueColor: AlwaysStoppedAnimation<Color>(colors.white),
-                                        ),
-                                      )
-                                    : Text(
-                                        l10n.uploadTestButton,
-                                        style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: .w600),
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBenefitRow({required Widget icon, required Widget content}) => Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        icon,
-        const SizedBox(width: 10),
-        Expanded(child: content),
-      ],
-    );
-
-  Widget _buildMobileBottomBar(BuildContext context) {
-    final colors = context.x.colors;
-    final textStyle = context.x.textStyle;
-    final l10n = context.x.l10n;
-
-    return BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
-      bloc: confirmCubit,
-      builder: (context, confirmState) => BlocBuilder<UploadPricingCubit, UploadPricingState>(
-          bloc: pricingCubit,
-          builder: (context, pricingState) {
-            final fee =
-                confirmState.quote?.publishFee ?? (pricingState.pricing.perQuestionPrice * widget.questionCount);
-            final isLoading = confirmState.publishStatus.isLoading;
-
-            return DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.cardBackground2,
-                borderRadius: const .only(topLeft: .circular(15), topRight: .circular(15)),
-                boxShadow: [
-                  BoxShadow(color: colors.black.withValues(alpha: .078), offset: const Offset(0, -3), blurRadius: 30),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: const .only(topLeft: .circular(15), topRight: .circular(15)),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: context.telegramWebApp.isSupported
-                        ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
-                        : 16,
-                    top: 16,
-                    left: 16,
-                    right: 16,
-                  ),
-                  child: SafeArea(
-                    child: Row(
+                    return Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            fee.formatUzs,
-                            style: textStyle.sfW700s18.copyWith(fontSize: 22, color: colors.primary, fontWeight: .w700),
-                            textAlign: .center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.totalPayment,
+                                style: textStyle.sfW400s14.copyWith(color: colors.bannerSecondaryText),
+                              ),
+                              Text(
+                                fee.formatUzs,
+                                style: textStyle.sfW700s18.copyWith(
+                                  fontSize: 22,
+                                  color: colors.primary,
+                                  fontWeight: .w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: SizedBox(
                             height: 48,
@@ -631,13 +538,101 @@ class _UploadConfirmScreenState extends UploadConfirmState {
                           ),
                         ),
                       ],
-                    ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBenefitRow({required Widget icon, required Widget content}) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      icon,
+      const SizedBox(width: 10),
+      Expanded(child: content),
+    ],
+  );
+
+  Widget _buildMobileBottomBar(BuildContext context) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+    final l10n = context.x.l10n;
+
+    return BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
+      bloc: confirmCubit,
+      builder: (context, confirmState) => BlocBuilder<UploadPricingCubit, UploadPricingState>(
+        bloc: pricingCubit,
+        builder: (context, pricingState) {
+          final fee = confirmState.quote?.publishFee ?? (pricingState.pricing.perQuestionPrice * widget.questionCount);
+          final isLoading = confirmState.publishStatus.isLoading;
+
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.cardBackground2,
+              borderRadius: const .only(topLeft: .circular(15), topRight: .circular(15)),
+              boxShadow: [
+                BoxShadow(color: colors.black.withValues(alpha: .078), offset: const Offset(0, -3), blurRadius: 30),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: const .only(topLeft: .circular(15), topRight: .circular(15)),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: context.telegramWebApp.isSupported
+                      ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
+                      : 16,
+                  top: 16,
+                  left: 16,
+                  right: 16,
+                ),
+                child: SafeArea(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          fee.formatUzs,
+                          style: textStyle.sfW700s18.copyWith(fontSize: 22, color: colors.primary, fontWeight: .w700),
+                          textAlign: .center,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: FilledButton(
+                            onPressed: isLoading ? null : onConfirmUpload,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: colors.primary,
+                              shape: RoundedRectangleBorder(borderRadius: .circular(12)),
+                            ),
+                            child: isLoading
+                                ? SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator.adaptive(
+                                      valueColor: AlwaysStoppedAnimation<Color>(colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    l10n.uploadTestButton,
+                                    style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: .w600),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
