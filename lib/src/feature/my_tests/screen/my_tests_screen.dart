@@ -126,7 +126,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                               else
                                 TestCardWidget(
                                   title: state.exampleTestDetail!.name ?? '',
-                                  companyName: 'QuizlyMarket',
+                                  universityName: state.exampleTestDetail?.universityName ?? 'QuizlyMarket',
                                   description: state.exampleTestDetail!.description ?? '',
                                   price: context.x.l10n.free,
                                   questionAmount: context.x.l10n.questionAmountText(
@@ -142,6 +142,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
                                     TestModel(
                                       id: 'a1d49775-0a29-435a-b145-93824979ab9f',
                                       name: state.exampleTestDetail!.name ?? '',
+                                      universityName: state.exampleTestDetail?.universityName ?? 'QuizlyMarket',
                                       categoryName: 'QuizlyMarket',
                                       description: state.exampleTestDetail!.description ?? '',
                                       price: 0,

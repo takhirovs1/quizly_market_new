@@ -31,7 +31,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
 
     return TestCardWidget(
       title: test.name ?? '',
-      companyName: test.categoryName ?? '',
+      universityName: (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
       description: test.description ?? '',
       price: isPurchased
           ? context.x.l10n.purchased
@@ -56,7 +56,7 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
 
     return MiniTestCardWidget(
       title: test.name ?? '',
-      companyName: test.categoryName ?? '',
+      universityName: (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
       description: test.description ?? '',
       price: isPurchased
           ? context.x.l10n.purchased

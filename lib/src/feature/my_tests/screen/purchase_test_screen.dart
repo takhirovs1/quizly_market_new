@@ -89,6 +89,8 @@ class _PurchaseTestScreenState extends PurchaseTestScreenState {
                 academicYear: detail.academicYear,
                 semester: detail.semester,
                 code: detail.code,
+                universityId: detail.universityId,
+                universityName: detail.universityName,
                 createdBy: detail.createdAt != null
                     ? '${context.x.l10n.uploadedAt}: ${DateFormat('dd.MM.yyyy').format(detail.createdAt!.toLocal())}'
                     : null,

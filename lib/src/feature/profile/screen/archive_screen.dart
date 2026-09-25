@@ -126,7 +126,7 @@ class _ArchiveTestCard extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    test.categoryName ?? '',
+                    (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
                     style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
                     maxLines: 2,
                     overflow: .ellipsis,

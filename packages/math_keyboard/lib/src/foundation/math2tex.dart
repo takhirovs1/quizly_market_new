@@ -78,7 +78,7 @@ List<TeX> _convertToTeX(Expression mathExpression, TeXNode parent) {
     }
     if (mathExpression is Variable) {
       if (mathExpression is BoundVariable) {
-        return [..._convertToTeX(mathExpression.value, parent)];
+        return [..._convertToTeX(mathExpression.value as Expression, parent)];
       }
 
       return [TeXLeaf('{${mathExpression.name}}')];

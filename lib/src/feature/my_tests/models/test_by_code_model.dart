@@ -37,6 +37,8 @@ class TestByCodeDetail {
     this.isPurchased,
     this.isLiked,
     this.categoryName,
+    this.universityId,
+    this.universityName,
     this.questionCount,
     this.questions,
     this.createdAt,
@@ -57,6 +59,8 @@ class TestByCodeDetail {
     isPurchased: json['is_purchased'] as bool?,
     isLiked: json['liked'] as bool?,
     categoryName: json['category_name'] as String?,
+    universityId: json['university_id'] as String?,
+    universityName: json['university_name'] as String?,
     questionCount: (json['question_count'] as num?)?.toInt(),
     questions: (json['questions'] as List<Object?>?)
         ?.map((e) => DemoQuestion.fromJson(e as Map<String, Object?>))
@@ -78,6 +82,8 @@ class TestByCodeDetail {
   final bool? isPurchased;
   final bool? isLiked;
   final String? categoryName;
+  final String? universityId;
+  final String? universityName;
   final int? questionCount;
   final List<DemoQuestion>? questions;
   final DateTime? createdAt;
@@ -97,6 +103,8 @@ class TestByCodeDetail {
     'is_purchased': isPurchased,
     'liked': isLiked,
     'category_name': categoryName,
+    'university_id': universityId,
+    'university_name': universityName,
     'question_count': questionCount,
     'questions': questions?.map((e) => e.toJson()).toList(),
     'created_at': createdAt?.toIso8601String(),

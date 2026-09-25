@@ -223,7 +223,7 @@ extension TelegramWebAppX on BuildContext {
 
   void shareTest(
     String title,
-    String companyName,
+    String universityName,
     String description,
     String price,
     String questionAmount, {

@@ -32,12 +32,16 @@ class UploadedTestModel {
       categoryName = categoryObj;
     }
 
+    final universityName = (json['university_name'] ?? json['university'])?.toString();
+
     final statusVal = (json['status'] ?? 'draft').toString();
 
     return UploadedTestModel(
       id: (json['id'] ?? '').toString(),
       title: (json['name'] ?? json['title'] ?? '').toString(),
-      category: categoryName.isNotEmpty ? categoryName : (json['university'] ?? '').toString(),
+      category: universityName != null && universityName.isNotEmpty
+          ? universityName
+          : (categoryName.isNotEmpty ? categoryName : ''),
       subtitle: (json['description'] ?? json['subtitle'] ?? '').toString(),
       questionCount: (json['question_count'] as num?)?.toInt() ?? 0,
       code: json['code']?.toString(),

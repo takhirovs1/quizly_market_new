@@ -55,7 +55,7 @@ class _MyUploadedTestsScreenState extends MyUploadedTestsState {
                     final test = state.tests[index];
                     return TestCardWidget(
                       title: test.title,
-                      companyName: test.category,
+                      universityName: test.category,
                       description: test.subtitle,
                       price: test.price != null ? test.price!.formatUzs : '',
                       questionAmount: l10n.questionAmountText(test.questionCount),

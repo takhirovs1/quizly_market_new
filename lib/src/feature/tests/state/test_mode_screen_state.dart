@@ -74,7 +74,7 @@ abstract class TestModeScreenState extends State<TestModeScreen> {
     if (detail == null) return;
     context.shareTest(
       detail.name ?? '',
-      'QuizlyMarket',
+      (detail.universityName?.isNotEmpty == true ? detail.universityName : 'QuizlyMarket') ?? 'QuizlyMarket',
       detail.description ?? '',
       detail.price?.toString() ?? '0',
       detail.questionCount?.toString() ?? '0',

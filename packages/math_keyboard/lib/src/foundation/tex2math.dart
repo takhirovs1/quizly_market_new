@@ -130,7 +130,9 @@ class TeXParser {
     final tex = inputString.replaceAll(' ', '');
     _stream = tokenize.parse(tex).value;
 
-    if (_stream[0][0] == '-' && _stream[1][1].contains(RegExp('[bfl]'))) {
+    if (_stream[0][0] == '-' &&
+        _stream[1][1] is String &&
+        (_stream[1][1] as String).contains(RegExp('[bfl]'))) {
       _stream.insert(0, [0, 'b']);
     }
     if (_stream[0][0] == '!') {
@@ -147,7 +149,8 @@ class TeXParser {
           i < _stream.length - 1 &&
           _stream[i - 1][1] == 'l' &&
           _stream[i][0] == '-' &&
-          _stream[i + 1][1].contains(RegExp('[bfl]'))) {
+          _stream[i + 1][1] is String &&
+          (_stream[i + 1][1] as String).contains(RegExp('[bfl]'))) {
         _stream.insert(i, [0, 'b']);
         i++;
         continue;
@@ -291,7 +294,7 @@ class TeXParser {
               continue;
             }
             if (_operatorStack.last[1] is List) {
-              if (_operatorStack.last[1][1] > _stream[i][1][1]) {
+              if ((_operatorStack.last[1][1] as num) > (_stream[i][1][1] as num)) {
                 _outputStack.add(_operatorStack.last[0]);
                 _operatorStack.removeLast();
                 continue;
@@ -406,7 +409,7 @@ class TeXParser {
         default:
           if (element is String) {
             result.add(Variable(element));
-          } else {
+          } else if (element is num) {
             result.add(Number(element));
           }
       }
@@ -421,8 +424,8 @@ class TeXParser {
 
   /// Checks whether factorial can be calculated.
   void addFactorial(List<Expression> result) {
-    final t = result.removeLast().evaluate(EvaluationType.REAL, ContextModel());
-    if (t.ceil() == t.floor() && t >= 0 && t < 20) {
+    final dynamic t = result.removeLast().evaluate(EvaluationType.REAL, ContextModel());
+    if (t is num && t.ceil() == t.floor() && t >= 0 && t < 20) {
       var a = t.toInt();
       var y = 1;
       while (a > 0) {

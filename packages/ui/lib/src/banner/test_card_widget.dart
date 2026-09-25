@@ -7,11 +7,12 @@ import '../gen/assets.gen.dart';
 class TestCardWidget extends StatelessWidget {
   const TestCardWidget({
     required this.title,
-    required this.companyName,
     required this.description,
     required this.price,
     required this.questionAmount,
     required this.buyButtonText,
+    this.universityName,
+    this.companyName,
     this.secondaryButtonText,
     this.onSecondaryButtonPressed,
     this.onBuyButtonPressed,
@@ -26,7 +27,8 @@ class TestCardWidget extends StatelessWidget {
   });
 
   final String title;
-  final String companyName;
+  final String? universityName;
+  final String? companyName;
   final String description;
   final String price;
   final String questionAmount;
@@ -82,7 +84,7 @@ class TestCardWidget extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          companyName,
+                          universityName ?? companyName ?? '',
                           style: context.x.textStyle.sfW500s16.copyWith(color: colors.bannerSecondaryText),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

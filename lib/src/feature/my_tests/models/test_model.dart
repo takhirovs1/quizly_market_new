@@ -24,6 +24,8 @@ class TestModel {
     this.questionCount,
     this.likeCount,
     this.categoryName,
+    this.universityId,
+    this.universityName,
     this.createdAt,
     this.code,
     this.academicYear,
@@ -45,6 +47,8 @@ class TestModel {
       questionCount: json['question_count'].toIntOrNull,
       likeCount: json['like_count'].toIntOrNull,
       categoryName: json['category_name'] as String?,
+      universityId: json['university_id']?.toString(),
+      universityName: json['university_name'] as String?,
       createdAt: json['created_at'].toDateTimeOrNull,
       code: json['code'] as String?,
       academicYear: json['academic_year'] as String?,
@@ -64,6 +68,8 @@ class TestModel {
   final int? questionCount;
   final int? likeCount;
   final String? categoryName;
+  final String? universityId;
+  final String? universityName;
   final DateTime? createdAt;
   final String? code;
   final String? academicYear;
@@ -82,6 +88,8 @@ class TestModel {
     int? questionCount,
     int? likeCount,
     String? categoryName,
+    String? universityId,
+    String? universityName,
     DateTime? createdAt,
     String? code,
     String? academicYear,
@@ -99,6 +107,8 @@ class TestModel {
     questionCount: questionCount ?? this.questionCount,
     likeCount: likeCount ?? this.likeCount,
     categoryName: categoryName ?? this.categoryName,
+    universityId: universityId ?? this.universityId,
+    universityName: universityName ?? this.universityName,
     createdAt: createdAt ?? this.createdAt,
     code: code ?? this.code,
     academicYear: academicYear ?? this.academicYear,

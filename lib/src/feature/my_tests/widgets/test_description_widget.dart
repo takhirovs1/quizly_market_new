@@ -62,6 +62,11 @@ class TestDescriptionWidget extends StatelessWidget {
         style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
       ),
       const SizedBox(height: 4),
+      if (test.universityName != null && test.universityName!.isNotEmpty)
+        Text(
+          test.universityName!,
+          style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+        ),
       if (test.createdBy != null && test.createdBy.toString().isNotEmpty)
         Text(
           test.createdBy.toString(),

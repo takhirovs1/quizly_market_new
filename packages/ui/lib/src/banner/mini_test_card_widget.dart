@@ -6,12 +6,13 @@ import '../gen/assets.gen.dart';
 class MiniTestCardWidget extends StatelessWidget {
   const MiniTestCardWidget({
     required this.title,
-    required this.companyName,
     required this.description,
     required this.price,
     required this.questionAmount,
     required this.buyButtonText,
     required this.onBuyButtonPressed,
+    this.universityName,
+    this.companyName,
     this.onShareButtonPressed,
     this.onLikeButtonPressed,
     this.isPurchased = false,
@@ -20,7 +21,8 @@ class MiniTestCardWidget extends StatelessWidget {
   });
 
   final String title;
-  final String companyName;
+  final String? universityName;
+  final String? companyName;
   final String description;
   final String price;
   final String questionAmount;
@@ -72,7 +74,7 @@ class MiniTestCardWidget extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            companyName,
+            universityName ?? companyName ?? '',
             style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

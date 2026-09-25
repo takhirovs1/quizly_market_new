@@ -37,6 +37,8 @@ class DemoTestDetail {
     this.createdAt,
     this.code,
     this.isArchived,
+    this.universityId,
+    this.universityName,
   });
 
   factory DemoTestDetail.fromJson(Map<String, Object?> json) {
@@ -59,6 +61,8 @@ class DemoTestDetail {
       createdAt: (json['created_at'] as String?)?.toDateTimeOrNull(),
       code: json['code'] as String?,
       isArchived: json['is_archived'] as bool?,
+      universityId: json['university_id'] as String?,
+      universityName: json['university_name'] as String?,
     );
   }
 
@@ -77,6 +81,8 @@ class DemoTestDetail {
   final DateTime? createdAt;
   final String? code;
   final bool? isArchived;
+  final String? universityId;
+  final String? universityName;
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -94,6 +100,8 @@ class DemoTestDetail {
     'created_at': createdAt?.toIso8601String(),
     'code': code,
     'is_archived': isArchived,
+    'university_id': universityId,
+    'university_name': universityName,
   };
 
   DemoTestDetail copyWith({
@@ -112,6 +120,8 @@ class DemoTestDetail {
     DateTime? createdAt,
     String? code,
     bool? isArchived,
+    String? universityId,
+    String? universityName,
   }) => DemoTestDetail(
     id: id ?? this.id,
     categoryId: categoryId ?? this.categoryId,
@@ -128,6 +138,8 @@ class DemoTestDetail {
     createdAt: createdAt ?? this.createdAt,
     code: code ?? this.code,
     isArchived: isArchived ?? this.isArchived,
+    universityId: universityId ?? this.universityId,
+    universityName: universityName ?? this.universityName,
   );
 }
 

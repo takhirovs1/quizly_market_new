@@ -198,7 +198,7 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     if (detail == null) return;
     context.shareTest(
       detail.name ?? '',
-      detail.categoryId ?? 'QuizlyMarket',
+      (detail.universityName?.isNotEmpty == true ? detail.universityName : detail.categoryId) ?? 'QuizlyMarket',
       detail.description ?? '',
       detail.price?.toString() ?? '0',
       detail.questionCount?.toString() ?? '0',

@@ -21,7 +21,7 @@ class MyTestCardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TestCardWidget(
     title: test.name ?? '',
-    companyName: test.categoryName ?? '',
+    universityName: (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
     description: test.description ?? '',
     price: test.isPurchased == true
         ? context.x.l10n.purchased

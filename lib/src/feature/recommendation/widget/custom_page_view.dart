@@ -107,7 +107,7 @@ class _CustomPageViewState extends State<CustomPageView> {
 
   Widget _buildTestCard(TestModel test) => TestCardWidget(
     title: test.name ?? '',
-    companyName: test.categoryName ?? '',
+    universityName: (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
     description: test.description ?? '',
     price: test.isPurchased == true
         ? context.x.l10n.purchased

@@ -183,7 +183,7 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     context.telegramWebApp.hapticImpact(.light);
     context.shareTest(
       test.name ?? '',
-      test.categoryName ?? '',
+      (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
       test.description ?? '',
       test.price?.toString() ?? '0',
       test.questionCount?.toString() ?? '0',
