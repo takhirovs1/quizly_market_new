@@ -28,8 +28,10 @@ mixin AppDebugConfigInitialization on State<App> {
           bottom: 8,
           left: 8,
           child: IconButton(
-            onPressed: () =>
-                context.x.dependencies.appDebugSettings.value = debugConfig.copyWith(debuggerEnabled: false),
+            onPressed: () => context.x.dependencies.appDebugSettings.value = debugConfig.copyWith(
+              debuggerEnabled: false,
+              thunderEnabled: false,
+            ),
             icon: const Icon(Icons.bug_report_rounded),
           ),
         ),

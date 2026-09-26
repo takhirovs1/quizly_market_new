@@ -107,12 +107,8 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
 
   void onTitlePointerDown(PointerDownEvent event) {
     _holdTimer?.cancel();
-    _holdTimer = Timer(const Duration(seconds: 10), () {
+    _holdTimer = Timer(const Duration(seconds: 5), () {
       if (!mounted) return;
-      if (!isSessionThunderEnabled) {
-        final appDebugSettings = context.x.dependencies.appDebugSettings;
-        appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: true);
-      }
       _showPasswordDialog();
     });
   }
@@ -120,18 +116,16 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   void onTitlePointerUp(PointerUpEvent event) {
     _holdTimer?.cancel();
     _holdTimer = null;
-    if (!isSessionThunderEnabled) {
-      final appDebugSettings = context.x.dependencies.appDebugSettings;
-      appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: false);
+    if (!context.x.dependencies.appDebugSettings.value.debuggerEnabled) {
+      isSessionThunderEnabled = false;
     }
   }
 
   void onTitlePointerCancel(PointerCancelEvent event) {
     _holdTimer?.cancel();
     _holdTimer = null;
-    if (!isSessionThunderEnabled) {
-      final appDebugSettings = context.x.dependencies.appDebugSettings;
-      appDebugSettings.value = appDebugSettings.value.copyWith(debuggerEnabled: false);
+    if (!context.x.dependencies.appDebugSettings.value.debuggerEnabled) {
+      isSessionThunderEnabled = false;
     }
   }
 
@@ -228,11 +222,13 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
       isSessionThunderEnabled = true;
       context.x.dependencies.appDebugSettings.value = context.x.dependencies.appDebugSettings.value.copyWith(
         debuggerEnabled: true,
+        thunderEnabled: true,
       );
     } else {
       isSessionThunderEnabled = false;
       context.x.dependencies.appDebugSettings.value = context.x.dependencies.appDebugSettings.value.copyWith(
         debuggerEnabled: false,
+        thunderEnabled: false,
       );
       ErrorUtil.showSnackBar(context, 'Xato parol!');
     }

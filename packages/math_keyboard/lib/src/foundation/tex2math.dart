@@ -130,9 +130,7 @@ class TeXParser {
     final tex = inputString.replaceAll(' ', '');
     _stream = tokenize.parse(tex).value;
 
-    if (_stream[0][0] == '-' &&
-        _stream[1][1] is String &&
-        (_stream[1][1] as String).contains(RegExp('[bfl]'))) {
+    if (_stream[0][0] == '-' && _stream[1][1] is String && (_stream[1][1] as String).contains(RegExp('[bfl]'))) {
       _stream.insert(0, [0, 'b']);
     }
     if (_stream[0][0] == '!') {
