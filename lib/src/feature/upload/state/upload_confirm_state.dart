@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/error_util.dart';
 import '../../my_tests/models/demo_test_model.dart';
 import '../../my_tests/models/payment_model.dart';
 import '../../my_tests/models/wallet_model.dart';
@@ -188,6 +189,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
   }
 
   Future<void> onConfirmUpload() async {
+    context.telegramWebApp.hapticImpact(.medium);
     final testId = widget.testId;
     if (testId == null || testId.isEmpty) {
       context.octopus.navigate(Routes.home.name);
@@ -204,11 +206,13 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
         context.octopus.navigate(Routes.home.name);
       } else if (state.isInsufficientBalance && mounted) {
         context.x.showNotification(
-          message: state.errorMessage ?? context.x.l10n.insufficientWalletBalance,
+          message: state.errorMessage == null
+              ? context.x.l10n.insufficientWalletBalance
+              : ErrorUtil.localizeError(context, state.errorMessage),
           isError: true,
         );
       } else if (state.errorMessage != null && mounted) {
-        context.x.showNotification(message: state.errorMessage!, isError: true);
+        context.x.showNotification(message: ErrorUtil.localizeError(context, state.errorMessage), isError: true);
       }
     } else {
       final isPayme = selectedPayment.value.id == 1;

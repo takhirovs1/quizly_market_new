@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:octopus/octopus.dart';
+import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/error_util.dart';
 import '../bloc/create_test_cubit.dart';
 import '../bloc/upload_pricing_cubit.dart';
 import '../data/upload_repository.dart';
@@ -80,6 +81,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
   // ── Accordion ─────────────────────────────────────────────────────────
 
   void onToggleExpand(int index) {
+    context.telegramWebApp.hapticImpact(.soft);
     setState(() {
       if (expandedIndex == index) {
         expandedIndex = null;
@@ -98,6 +100,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
 
   void addQuestion() {
     if (!canAddQuestion) return;
+    context.telegramWebApp.hapticImpact(.light);
     setState(() {
       if (expandedIndex != null) {
         questions[expandedIndex!].isExpanded = false;
@@ -111,6 +114,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
 
   void removeQuestion(int index) {
     if (questions.length <= 1) return;
+    context.telegramWebApp.hapticImpact(.medium);
     setState(() {
       questions[index].dispose();
       questions.removeAt(index);
@@ -128,12 +132,14 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
   // ── Answer actions ────────────────────────────────────────────────────
 
   void addAnswer(int questionIndex) {
+    context.telegramWebApp.hapticImpact(.light);
     setState(() => questions[questionIndex].answers.add(AnswerModel()));
   }
 
   void removeAnswer(int questionIndex, int answerIndex) {
     final q = questions[questionIndex];
     if (q.answers.length <= 2) return;
+    context.telegramWebApp.hapticImpact(.light);
     setState(() {
       q.answers[answerIndex].dispose();
       q.answers.removeAt(answerIndex);
@@ -141,6 +147,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
   }
 
   void toggleCorrect(int questionIndex, int answerIndex) {
+    context.telegramWebApp.hapticImpact(.soft);
     setState(() {
       final q = questions[questionIndex];
       for (var i = 0; i < q.answers.length; i++) {
@@ -160,6 +167,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
     final q = questions[questionIndex];
     final DualInputField target = answerIndex == null ? q : q.answers[answerIndex];
     if (target.imageUploading) return;
+    context.telegramWebApp.hapticImpact(.light);
 
     final XFile? file;
     try {
@@ -189,6 +197,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
   }
 
   void removeImage(int questionIndex, {int? answerIndex}) {
+    context.telegramWebApp.hapticImpact(.light);
     final q = questions[questionIndex];
     final DualInputField target = answerIndex == null ? q : q.answers[answerIndex];
     setState(() {
@@ -206,6 +215,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
 
   Future<void> onUploadTest() async {
     if (!canSubmit || isCreating) return;
+    context.telegramWebApp.hapticImpact(.medium);
 
     setState(() => isCreating = true);
 
@@ -240,6 +250,7 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
       final price = widget.price;
       final request = ManualTestCreateRequest(
         name: widget.testName,
+        locale: Localizations.localeOf(context).languageCode,
         description: widget.description,
         price: price,
         isFree: price == null || price == 0,
@@ -262,7 +273,10 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
           },
         );
       } else if (createTestCubit.state.errorMessage != null && mounted) {
-        context.x.showNotification(message: createTestCubit.state.errorMessage!, isError: true);
+        context.x.showNotification(
+          message: ErrorUtil.localizeError(context, createTestCubit.state.errorMessage),
+          isError: true,
+        );
       }
     } finally {
       if (mounted) {

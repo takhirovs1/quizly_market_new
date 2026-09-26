@@ -27,10 +27,14 @@ class CreateTestQuestionsScreen extends StatefulWidget {
 }
 
 class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
+  /// Desktop/tablet two-pane layout from 900px — same breakpoint as the
+  /// import mapping wizard.
+  bool get _isWide => MediaQuery.sizeOf(context).width >= 900;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.x.colors;
-    final isMobile = context.x.isMobile;
+    final isWide = _isWide;
 
     return MathKeyboardViewInsets(
       child: Scaffold(
@@ -40,17 +44,12 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
           telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
           showBackButton: true,
         ),
-        body: SafeArea(
-          child: isMobile
-              ? _buildBody(context)
-              : Center(
-                  child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 680), child: _buildBody(context)),
-                ),
-        ),
-        bottomNavigationBar: (MediaQuery.viewInsetsOf(context).bottom == 0)
+        body: SafeArea(child: isWide ? _buildWideBody(context) : _buildBody(context)),
+        // On desktop the upload button lives in the right-hand panel.
+        bottomNavigationBar: (!isWide && MediaQuery.viewInsetsOf(context).bottom == 0)
             ? SafeArea(
                 child: Padding(
-                  padding: EdgeInsets.only(
+                  padding: .only(
                     left: 16,
                     right: 16,
                     top: 8,
@@ -58,14 +57,7 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
                         ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 8
                         : 16,
                   ),
-                  child: isMobile
-                      ? _buildBottomBar(context)
-                      : Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 680),
-                            child: _buildBottomBar(context),
-                          ),
-                        ),
+                  child: _buildBottomBar(context),
                 ),
               )
             : null,
@@ -73,39 +65,114 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
     );
   }
 
+  // ── Mobile: single column ─────────────────────────────────────────────
+
   Widget _buildBody(BuildContext context) => CustomScrollView(
     slivers: [
-      // ── Info header ───────────────────────────────────────────
-      SliverToBoxAdapter(child: _buildInfoHeader(context)),
-
-      // ── Question cards ────────────────────────────────────────
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        sliver: SliverList.builder(
-          itemCount: questions.length,
-          itemBuilder: (context, index) => QuestionCard(
-            key: ValueKey(questions[index]),
-            index: index,
-            question: questions[index],
-            onToggleExpand: () => onToggleExpand(index),
-            onRemoveQuestion: () => removeQuestion(index),
-            onAddAnswer: () => addAnswer(index),
-            onRemoveAnswer: (ai) => removeAnswer(index, ai),
-            onToggleCorrect: (ai) => toggleCorrect(index, ai),
-            onTextChanged: onTextChanged,
-            onPickImage: ({int? answerIndex}) => pickImage(index, answerIndex: answerIndex),
-            onRemoveImage: ({int? answerIndex}) => removeImage(index, answerIndex: answerIndex),
-          ),
-        ),
+      SliverToBoxAdapter(
+        child: Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: _buildInfoContent(context)),
       ),
-
-      // ── Add question button ────────────────────────────────────
-      SliverToBoxAdapter(child: _buildAddQuestionButton(context)),
+      _buildQuestionsSliver(context, horizontalPadding: 16),
+      SliverToBoxAdapter(
+        child: Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 4), child: _buildAddQuestionButton(context)),
+      ),
       const SliverToBoxAdapter(child: SizedBox(height: 24)),
     ],
   );
 
-  Widget _buildInfoHeader(BuildContext context) {
+  // ── Desktop: questions left, summary panel right ──────────────────────
+
+  Widget _buildWideBody(BuildContext context) => Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 1240),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Left: the question cards + add button.
+            Expanded(
+              flex: 7,
+              child: CustomScrollView(
+                slivers: [
+                  _buildQuestionsSliver(context, horizontalPadding: 0),
+                  SliverToBoxAdapter(
+                    child: Padding(padding: const EdgeInsets.only(top: 8), child: _buildAddQuestionButton(context)),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 24),
+            // Right: summary card + upload button pinned to the bottom.
+            SizedBox(
+              width: 380,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildSummaryCard(context),
+                  const Spacer(),
+                  const SizedBox(height: 12),
+                  _buildBottomBar(context),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildSummaryCard(BuildContext context) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+    final validCount = questions.where((q) => q.isValid).length;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.x.isDarkMode ? colors.cardBackground2 : colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildInfoContent(context),
+          Text(
+            context.x.l10n.validQuestionsReady(validCount),
+            style: textStyle.sfW500s14.copyWith(
+              color: validCount == questions.length ? colors.primary : colors.bannerSecondaryText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Shared pieces ─────────────────────────────────────────────────────
+
+  SliverPadding _buildQuestionsSliver(BuildContext context, {required double horizontalPadding}) => SliverPadding(
+    padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+    sliver: SliverList.builder(
+      itemCount: questions.length,
+      itemBuilder: (context, index) => QuestionCard(
+        key: ValueKey(questions[index]),
+        index: index,
+        question: questions[index],
+        onToggleExpand: () => onToggleExpand(index),
+        onRemoveQuestion: () => removeQuestion(index),
+        onAddAnswer: () => addAnswer(index),
+        onRemoveAnswer: (ai) => removeAnswer(index, ai),
+        onToggleCorrect: (ai) => toggleCorrect(index, ai),
+        onTextChanged: onTextChanged,
+        onPickImage: ({int? answerIndex}) => pickImage(index, answerIndex: answerIndex),
+        onRemoveImage: ({int? answerIndex}) => removeImage(index, answerIndex: answerIndex),
+      ),
+    ),
+  );
+
+  Widget _buildInfoContent(BuildContext context) {
     final colors = context.x.colors;
     final textStyle = context.x.textStyle;
 
@@ -113,73 +180,69 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
     final reachedMin = reachedRecommendedMin;
     final progress = (count / minQuestions).clamp(0.0, 1.0);
 
-    // Build one-line breadcrumb: university → testName [→ description]
+    // One-line breadcrumb: university → testName [→ description]
     final titleParts = [
       widget.university,
       widget.testName,
       if (widget.description?.isNotEmpty == true) widget.description!,
     ];
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // One-line title: university → testName
-          Text(
-            titleParts.join(' → '),
-            style: textStyle.sfW600s16.copyWith(
-              color: colors.text,
-              fontWeight: FontWeight.w700,
-              fontSize: 20,
-              height: 1.25,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          titleParts.join(' → '),
+          style: textStyle.sfW600s16.copyWith(
+            color: colors.text,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            height: 1.25,
           ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
 
-          const SizedBox(height: 12),
+        const SizedBox(height: 12),
 
-          // Min-questions subtitle
-          Text(
-            reachedMin
-                ? context.x.l10n.minQuestionsCountReached(minQuestions)
-                : context.x.l10n.minQuestionsAdvisory(minQuestions),
-            style: textStyle.sfW400s14.copyWith(
-              color: reachedMin ? colors.primary : colors.bannerSecondaryText,
-              fontWeight: reachedMin ? FontWeight.w500 : FontWeight.w400,
-            ),
+        // Min-questions subtitle
+        Text(
+          reachedMin
+              ? context.x.l10n.minQuestionsCountReached(minQuestions)
+              : context.x.l10n.minQuestionsAdvisory(minQuestions),
+          style: textStyle.sfW400s14.copyWith(
+            color: reachedMin ? colors.primary : colors.bannerSecondaryText,
+            fontWeight: reachedMin ? FontWeight.w500 : FontWeight.w400,
           ),
-          const SizedBox(height: 6),
+        ),
+        const SizedBox(height: 6),
 
-          // Progress bar + count
-          Row(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: .circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 5,
-                    backgroundColor: colors.divider,
-                    valueColor: AlwaysStoppedAnimation(colors.primary),
-                  ),
+        // Progress bar + count
+        Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: .circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 5,
+                  backgroundColor: colors.divider,
+                  valueColor: AlwaysStoppedAnimation(colors.primary),
                 ),
               ),
-              const SizedBox(width: 10),
-              Text(
-                '$count/$minQuestions',
-                style: textStyle.sfW500s14.copyWith(
-                  color: reachedMin ? colors.primary : colors.text,
-                  fontWeight: FontWeight.w600,
-                ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              '$count/$minQuestions',
+              style: textStyle.sfW500s14.copyWith(
+                color: reachedMin ? colors.primary : colors.text,
+                fontWeight: FontWeight.w600,
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
 
-          const SizedBox(height: 16),
-        ],
-      ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
@@ -189,36 +252,33 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
     final l10n = context.x.l10n;
     final isEnabled = canAddQuestion;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: FilledButton.icon(
-          onPressed: () {
-            if (isEnabled) {
-              addQuestion();
-            } else {
-              context.x.showNotification(
-                message: context.x.l10n.fillPreviousQuestionFirst,
-                isError: true,
-                top: switch (context.telegramWebApp.isSupported) {
-                  true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
-                  false => MediaQuery.paddingOf(context).top + 56,
-                },
-              );
-            }
-          },
-          style: FilledButton.styleFrom(
-            backgroundColor: isEnabled ? colors.primary : colors.primary.withValues(alpha: 0.5),
-            shape: RoundedRectangleBorder(borderRadius: .circular(12)),
-            elevation: 0,
-          ),
-          icon: Icon(CupertinoIcons.plus, size: 18, color: colors.white),
-          label: Text(
-            l10n.addQuestion,
-            style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
-          ),
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: FilledButton.icon(
+        onPressed: () {
+          if (isEnabled) {
+            addQuestion();
+          } else {
+            context.x.showNotification(
+              message: context.x.l10n.fillPreviousQuestionFirst,
+              isError: true,
+              top: switch (context.telegramWebApp.isSupported) {
+                true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+                false => MediaQuery.paddingOf(context).top + 56,
+              },
+            );
+          }
+        },
+        style: FilledButton.styleFrom(
+          backgroundColor: isEnabled ? colors.primary : colors.primary.withValues(alpha: 0.5),
+          shape: RoundedRectangleBorder(borderRadius: .circular(12)),
+          elevation: 0,
+        ),
+        icon: Icon(CupertinoIcons.plus, size: 18, color: colors.white),
+        label: Text(
+          l10n.addQuestion,
+          style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
         ),
       ),
     );

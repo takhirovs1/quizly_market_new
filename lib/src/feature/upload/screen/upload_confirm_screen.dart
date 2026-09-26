@@ -3,6 +3,7 @@ import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/util/error_util.dart';
 import '../../my_tests/widgets/questions_carousel.dart';
 import '../bloc/upload_confirm_cubit.dart';
 import '../bloc/upload_pricing_cubit.dart';
@@ -42,7 +43,7 @@ class _UploadConfirmScreenState extends UploadConfirmState {
           bloc: confirmCubit,
           listener: (context, state) {
             if (state.errorMessage != null && state.errorMessage!.isNotEmpty && !state.isInsufficientBalance) {
-              context.x.showNotification(message: state.errorMessage!, isError: true);
+              context.x.showNotification(message: ErrorUtil.localizeError(context, state.errorMessage), isError: true);
             }
           },
         ),

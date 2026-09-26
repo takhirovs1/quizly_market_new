@@ -36,6 +36,34 @@ These are implemented in `lib/src/feature/upload/data/upload_repository.dart` an
 The purchase → publish path (§7 of the prompt) is fully covered by the publish/checkout/
 poll endpoints and needs nothing new.
 
+### 1.1 ⚠️ `POST /api/tests` text fields are `i18n.Text` objects (verified 2026-09-26)
+
+The backend now unmarshals `name`, `description`, `questions[].text` and
+`questions[].options[].text` into Go's `i18n.Text` — a **plain string is rejected with
+HTTP 400** (`json: cannot unmarshal string into Go struct field CreateTestRequest.name
+of type i18n.Text`). The accepted shape is a locale-keyed object; verified live with a
+probe that returned 201:
+
+```json
+{
+  "name":        { "uz": "Test nomi" },
+  "description": { "uz": "Tavsif" },
+  "questions": [
+    { "text": { "uz": "Savol…" }, "position": 1, "answer_format": "text",
+      "options": [ { "text": { "uz": "Javob" }, "position": 1, "is_correct": true, "answer_format": "text" } ] }
+  ]
+}
+```
+
+- GET endpoints (`/api/tests`, `/api/tests/top`, `/api/tests/my`) still return these
+  fields as **localized plain strings** resolved via `Content-Language` — read models
+  are unaffected. The `POST /api/tests` *response* echoes objects, but the client only
+  reads `id/code/status/price` from it.
+- Client side: `ManualTestCreateRequest`/`ManualQuestionDto`/`ManualOptionDto`
+  (`lib/src/feature/upload/model/manual_test_create_model.dart`) wrap every text as
+  `{ "<app locale>": value }` — the key is the language the uploader typed in
+  (`Localizations.localeOf`).
+
 ---
 
 ## 2. Architectural decision: file import becomes **client-side column mapping**

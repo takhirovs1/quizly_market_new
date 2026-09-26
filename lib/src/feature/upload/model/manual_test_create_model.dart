@@ -1,3 +1,9 @@
+/// Backend `i18n.Text` value: `POST /api/tests` requires every human-readable
+/// text as a `{"<locale>": "<value>"}` object, NOT a plain string (a string
+/// fails with `json: cannot unmarshal string into ... i18n.Text` → HTTP 400).
+/// GET endpoints keep returning localized plain strings via Content-Language.
+Map<String, String> i18nText(String value, String locale) => {locale: value};
+
 /// DTO for a single option in manual test creation.
 ///
 /// `answerFormat` ("text" | "latex") and `photo` are additive fields the
@@ -17,8 +23,8 @@ class ManualOptionDto {
   final String answerFormat;
   final String? photo;
 
-  Map<String, Object?> toJson() => {
-    'text': text,
+  Map<String, Object?> toJson(String locale) => {
+    'text': i18nText(text, locale),
     'position': position,
     'is_correct': isCorrect,
     'answer_format': answerFormat,
@@ -42,12 +48,12 @@ class ManualQuestionDto {
   final String answerFormat;
   final String? photo;
 
-  Map<String, Object?> toJson() => {
-    'text': text,
+  Map<String, Object?> toJson(String locale) => {
+    'text': i18nText(text, locale),
     'position': position,
     'answer_format': answerFormat,
     if (photo != null && photo!.isNotEmpty) 'photo': photo,
-    'options': options.map((e) => e.toJson()).toList(),
+    'options': options.map((e) => e.toJson(locale)).toList(),
   };
 }
 
@@ -55,6 +61,7 @@ class ManualQuestionDto {
 class ManualTestCreateRequest {
   const ManualTestCreateRequest({
     required this.name,
+    required this.locale,
     this.description,
     this.price,
     this.isFree,
@@ -63,6 +70,11 @@ class ManualTestCreateRequest {
   });
 
   final String name;
+
+  /// Language key the uploader typed the content in — becomes the i18n.Text
+  /// key for every text field (name, description, question/option texts).
+  final String locale;
+
   final String? description;
   final int? price;
   final bool? isFree;
@@ -70,12 +82,12 @@ class ManualTestCreateRequest {
   final List<ManualQuestionDto> questions;
 
   Map<String, Object?> toJson() => {
-    'name': name,
-    if (description != null && description!.isNotEmpty) 'description': description,
+    'name': i18nText(name, locale),
+    if (description != null && description!.isNotEmpty) 'description': i18nText(description!, locale),
     if (price != null) 'price': price,
     if (isFree != null) 'is_free': isFree,
     if (categoryId != null && categoryId!.isNotEmpty) 'category_id': categoryId,
-    'questions': questions.map((e) => e.toJson()).toList(),
+    'questions': questions.map((e) => e.toJson(locale)).toList(),
   };
 }
 

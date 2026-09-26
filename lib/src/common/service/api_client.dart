@@ -6,28 +6,59 @@ import 'package:http/http.dart' as http;
 import 'package:thunder/thunder.dart';
 
 /// Thrown when the HTTP request fails due to a network or transport error.
-final class ApiNetworkException implements Exception {
+///
+/// Extends thunder's [ApiClientException] so the in-app network monitor can
+/// render the failure instead of a bare `Status: -` entry.
+final class ApiNetworkException extends ApiClientException {
   const ApiNetworkException({required this.message, this.inner});
 
+  @override
   final String message;
   final Object? inner;
+
+  @override
+  int get statusCode => 0;
+
+  @override
+  String get code => 'network_error';
+
+  @override
+  Object? get error => inner;
+
+  @override
+  Object? get data => null;
 
   @override
   String toString() => 'ApiNetworkException: $message';
 }
 
 /// Thrown when the server responds with an error HTTP status (> 204).
-final class ApiResponseException implements Exception {
+///
+/// Extends thunder's [ApiClientException] so the in-app network monitor shows
+/// the real HTTP status and the parsed error body.
+final class ApiResponseException extends ApiClientException {
   const ApiResponseException({required this.statusCode, required this.message, this.body});
 
+  @override
   final int statusCode;
+
+  @override
   final String message;
 
   /// Parsed JSON body of the error response (Map, List, or null).
   final Object? body;
 
   @override
-  String toString() => 'ApiResponseException($statusCode): $message';
+  String get code => 'http_$statusCode';
+
+  @override
+  Object? get error => null;
+
+  @override
+  Object? get data => body;
+
+  @override
+  String toString() => 'ApiResponseException($statusCode): $message${body == null ? '' : ' | body: $body'}';
 }
 
 /// Central HTTP client based on package:http with Thunder middleware support.

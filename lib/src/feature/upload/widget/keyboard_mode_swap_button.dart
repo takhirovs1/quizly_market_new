@@ -32,6 +32,11 @@ class KeyboardModeSwapButton extends StatelessWidget {
   /// When true the unselected segment becomes a clear (✕) button.
   final bool showClear;
 
+  void _tap(BuildContext context, VoidCallback action) {
+    context.telegramWebApp.hapticImpact(.soft);
+    action();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.x.colors;
@@ -55,7 +60,7 @@ class KeyboardModeSwapButton extends StatelessWidget {
               icon: leftIsClear ? Icons.close_rounded : Icons.keyboard_outlined,
               selected: !isMath && !leftIsClear,
               enabled: enabled,
-              onTap: leftIsClear ? onClear : () => onChanged(false),
+              onTap: () => _tap(context, leftIsClear ? onClear : () => onChanged(false)),
               selectedColor: leftIsClear ? colors.error : colors.primary,
             ),
             const SizedBox(width: 2),
@@ -63,7 +68,7 @@ class KeyboardModeSwapButton extends StatelessWidget {
               icon: rightIsClear ? Icons.close_rounded : Icons.functions_rounded,
               selected: isMath && !rightIsClear,
               enabled: enabled,
-              onTap: rightIsClear ? onClear : () => onChanged(true),
+              onTap: () => _tap(context, rightIsClear ? onClear : () => onChanged(true)),
               selectedColor: rightIsClear ? colors.error : colors.primary,
             ),
           ],

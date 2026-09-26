@@ -104,6 +104,7 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 
   Future<void> onAttachFile() async {
     if (!isMetaValid) return;
+    context.telegramWebApp.hapticImpact(.light);
     try {
       FilePickerResult? result;
       try {
@@ -129,7 +130,10 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 
   // ─── Meta actions ──────────────────────────────────────────────────────────
 
-  void onToggleAuthorship(bool value) => setState(() => showAuthorship = value);
+  void onToggleAuthorship(bool value) {
+    context.telegramWebApp.hapticImpact(.soft);
+    setState(() => showAuthorship = value);
+  }
 
   void onReportError() => context.octopus.push(Routes.supportChat);
 
@@ -138,6 +142,7 @@ abstract class FileUploadState extends State<FileUploadScreen> {
   void onConfirmMapping() {
     final mappingState = mappingCubit.state;
     if (!mappingState.canConfirm || !isMetaValid) return;
+    context.telegramWebApp.hapticImpact(.medium);
 
     ImportHandoff.put([for (final draft in mappingState.drafts) draft.toQuestionModel()]);
 

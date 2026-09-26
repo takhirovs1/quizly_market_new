@@ -15,7 +15,9 @@
       "Bash(echo \"EXIT:$?\")",
       "Bash(awk '/Built build/,0' /tmp/it.out)",
       "Bash(python3 -)",
-      "Bash(pkill -f xcodebuild)"
+      "Bash(pkill -f xcodebuild)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -sS 'https://apiquizly.corelabs.uz/api/tests/my?limit=3&offset=0' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Content-Language: uz' -H 'Accept: application/json')"
     ]
   }
 }

@@ -9,6 +9,13 @@ sealed class ErrorUtil {
 
   static String toUserFriendlyMessage(Object error) {
     if (error is ApiNetworkException) return 'connectionError';
+    if (error is ApiResponseException) {
+      final body = error.body;
+      if (body is Map) {
+        final message = body['error'] ?? body['message'];
+        if (message is String && message.isNotEmpty) return message;
+      }
+    }
     return 'somethingWentWrong';
   }
 

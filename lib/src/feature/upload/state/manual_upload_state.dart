@@ -70,6 +70,7 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
   // ── Toggle handlers ───────────────────────────────────────────────────
 
   void onToggleAuthorship(bool value) {
+    context.telegramWebApp.hapticImpact(.soft);
     setState(() => showAuthorship = value);
   }
 
@@ -86,6 +87,7 @@ abstract class ManualUploadState extends State<ManualUploadScreen> {
 
   void onSubmitProceed() {
     if (!canProceed) return;
+    context.telegramWebApp.hapticImpact(.medium);
 
     final university = universityController.text.trim();
     final testName = testNameController.text.trim();
