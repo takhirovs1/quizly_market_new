@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
-import 'package:math_keyboard/math_keyboard.dart';
+import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../model/test_question_model.dart';
+import 'answer_input_field.dart';
 
-/// Accordion-style card for one question and its answers using MathField.
+/// Accordion-style card for one question and its answers. Both the question and
+/// every option use [AnswerInputField], so each can be typed with the native
+/// keyboard (plain text) or the in-app math keyboard (TeX).
 class QuestionCard extends StatelessWidget {
   const QuestionCard({
     required this.index,
@@ -16,6 +19,9 @@ class QuestionCard extends StatelessWidget {
     required this.onRemoveAnswer,
     required this.onToggleCorrect,
     required this.onTextChanged,
+    this.onPickImage,
+    this.onRemoveImage,
+    this.allowMultiCorrect = false,
     super.key,
   });
 
@@ -27,6 +33,15 @@ class QuestionCard extends StatelessWidget {
   final void Function(int answerIndex) onRemoveAnswer;
   final void Function(int answerIndex) onToggleCorrect;
   final void Function(String) onTextChanged;
+
+  /// Pick an image for the question (`answerIndex == null`) or an option.
+  final void Function({int? answerIndex})? onPickImage;
+
+  /// Remove the image from the question (`answerIndex == null`) or an option.
+  final void Function({int? answerIndex})? onRemoveImage;
+
+  /// When true the correct-answer toggles are checkboxes (multi), else radios.
+  final bool allowMultiCorrect;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +83,6 @@ class QuestionCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Validity indicator
                   if (!isExpanded)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
@@ -103,20 +117,47 @@ class QuestionCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Question MathField
-                        _MathQuestionField(
-                          controller: question.controller,
-                          focusNode: question.focusNode,
-                          hintText: l10n.questionLabel,
-                          onChanged: onTextChanged,
-                          onRemove: onRemoveQuestion,
-                          colors: colors,
-                          textStyle: textStyle,
-                          isDark: isDark,
+                        // Question field (native / math) + image + remove buttons
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: AnswerInputField(
+                                nativeController: question.nativeController,
+                                mathController: question.mathController,
+                                isMathMode: question.isMathMode,
+                                hintText: l10n.questionLabel,
+                                onChanged: onTextChanged,
+                              ),
+                            ),
+                            if (onPickImage != null) ...[
+                              const SizedBox(width: 6),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: _ImagePickButton(
+                                  hasImage: question.hasImage || question.imageUploading,
+                                  onTap: () => onPickImage!(),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(width: 6),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: GestureDetector(
+                                onTap: onRemoveQuestion,
+                                child: Icon(CupertinoIcons.xmark, color: colors.error, size: 20),
+                              ),
+                            ),
+                          ],
                         ),
+                        if (question.hasImage || question.imageUploading)
+                          _ImageThumb(
+                            url: question.imageUrl,
+                            uploading: question.imageUploading,
+                            onRemove: onRemoveImage == null ? null : () => onRemoveImage!(),
+                          ),
                         const SizedBox(height: 14),
 
-                        // Answers header
                         Row(
                           children: [Text(l10n.answersLabel, style: textStyle.sfW500s16.copyWith(color: colors.text))],
                         ),
@@ -126,20 +167,70 @@ class QuestionCard extends StatelessWidget {
                         ...question.answers.asMap().entries.map(
                           (entry) => Padding(
                             padding: const EdgeInsets.only(bottom: 10),
-                            child: _MathAnswerRow(
-                              controller: entry.value.controller,
-                              focusNode: entry.value.focusNode,
-                              isCorrect: entry.value.isCorrect,
-                              canRemove: question.answers.length > 2,
-                              onToggleCorrect: () => onToggleCorrect(entry.key),
-                              onRemove: () => onRemoveAnswer(entry.key),
-                              onChanged: onTextChanged,
-                              colors: colors,
-                              textStyle: textStyle,
-                              isDark: isDark,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: AnswerInputField(
+                                        nativeController: entry.value.nativeController,
+                                        mathController: entry.value.mathController,
+                                        isMathMode: entry.value.isMathMode,
+                                        hintText: '${l10n.answersLabel} ${entry.key + 1}',
+                                        showWrongFeedback: false,
+                                        onChanged: onTextChanged,
+                                        leading: _CorrectToggle(
+                                          isCorrect: entry.value.isCorrect,
+                                          multi: allowMultiCorrect,
+                                          onTap: () => onToggleCorrect(entry.key),
+                                        ),
+                                      ),
+                                    ),
+                                    if (onPickImage != null) ...[
+                                      const SizedBox(width: 6),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: _ImagePickButton(
+                                          hasImage: entry.value.hasImage || entry.value.imageUploading,
+                                          onTap: () => onPickImage!(answerIndex: entry.key),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                if (entry.value.hasImage || entry.value.imageUploading)
+                                  _ImageThumb(
+                                    url: entry.value.imageUrl,
+                                    uploading: entry.value.imageUploading,
+                                    onRemove: onRemoveImage == null
+                                        ? null
+                                        : () => onRemoveImage!(answerIndex: entry.key),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
+
+                        // Remove-answer row (shown only when > 2 answers)
+                        if (question.answers.length > 2)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              onPressed: () => onRemoveAnswer(question.answers.length - 1),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(CupertinoIcons.minus_circle, color: colors.error, size: 18),
+                                  const SizedBox(width: 4),
+                                  Text(l10n.removeLast, style: textStyle.sfW500s14.copyWith(color: colors.error)),
+                                ],
+                              ),
+                            ),
+                          ),
 
                         // Add answer button
                         CupertinoButton(
@@ -169,152 +260,124 @@ class QuestionCard extends StatelessWidget {
   }
 }
 
-// ── Math-aware input components ──────────────────────────────────────────
+/// Small photo button that opens the image picker for a field.
+class _ImagePickButton extends StatelessWidget {
+  const _ImagePickButton({required this.hasImage, required this.onTap});
 
-class _MathQuestionField extends StatelessWidget {
-  const _MathQuestionField({
-    required this.controller,
-    required this.focusNode,
-    required this.hintText,
-    required this.onChanged,
-    required this.onRemove,
-    required this.colors,
-    required this.textStyle,
-    required this.isDark,
-  });
-
-  final MathFieldEditingController controller;
-  final FocusNode focusNode;
-  final String hintText;
-  final void Function(String) onChanged;
-  final VoidCallback onRemove;
-  final ThemeColors colors;
-  final AppTypography textStyle;
-  final bool isDark;
+  final bool hasImage;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Expanded(
-        child: MathField(
-          controller: controller,
-          focusNode: focusNode,
-          variables: const ['x', 'y', 'z', 'a', 'b', 'c', 'n', 'k', 't'],
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: textStyle.sfW400s16.copyWith(color: colors.bannerSecondaryText),
-            filled: true,
-            fillColor: isDark ? colors.scaffoldBackground : colors.buttonFill,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colors.primary, width: 1.2),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colors.primary, width: 1.5),
-            ),
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    return Semantics(
+      button: true,
+      label: context.x.l10n.addImageLabel,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: SizedBox(
+          width: 32,
+          height: 32,
+          child: Icon(
+            hasImage ? CupertinoIcons.photo_fill : CupertinoIcons.photo,
+            color: hasImage ? colors.primary : colors.bannerSecondaryText,
+            size: 20,
           ),
         ),
       ),
-      const SizedBox(width: 8),
-      CupertinoButton(
-        padding: const EdgeInsets.only(top: 10),
-        minimumSize: Size.zero,
-        onPressed: onRemove,
-        child: Icon(CupertinoIcons.xmark, color: colors.error, size: 20),
-      ),
-    ],
-  );
+    );
+  }
 }
 
-class _MathAnswerRow extends StatelessWidget {
-  const _MathAnswerRow({
-    required this.controller,
-    required this.focusNode,
-    required this.isCorrect,
-    required this.canRemove,
-    required this.onToggleCorrect,
-    required this.onRemove,
-    required this.onChanged,
-    required this.colors,
-    required this.textStyle,
-    required this.isDark,
-  });
+/// Uploaded-image thumbnail with a remove badge; shimmer while uploading.
+class _ImageThumb extends StatelessWidget {
+  const _ImageThumb({required this.url, required this.uploading, this.onRemove});
 
-  final MathFieldEditingController controller;
-  final FocusNode focusNode;
-  final bool isCorrect;
-  final bool canRemove;
-  final VoidCallback onToggleCorrect;
-  final VoidCallback onRemove;
-  final void Function(String) onChanged;
-  final ThemeColors colors;
-  final AppTypography textStyle;
-  final bool isDark;
+  final String? url;
+  final bool uploading;
+  final VoidCallback? onRemove;
 
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Correct answer toggle
-      Padding(
-        padding: const EdgeInsets.only(top: 10),
-        child: GestureDetector(
-          onTap: onToggleCorrect,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: isCorrect
-                ? Icon(
-                    CupertinoIcons.checkmark_circle_fill,
-                    key: const ValueKey('checked'),
-                    color: colors.primary,
-                    size: 28,
-                  )
-                : Icon(CupertinoIcons.circle, key: const ValueKey('unchecked'), color: colors.divider, size: 28),
-          ),
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+
+    if (uploading) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Align(alignment: Alignment.centerLeft, child: ShimmerBox(width: 72, height: 72, radius: 12)),
+      );
+    }
+    if (url == null || url!.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                url!,
+                width: 72,
+                height: 72,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Container(
+                  width: 72,
+                  height: 72,
+                  color: colors.divider,
+                  child: Icon(CupertinoIcons.photo, color: colors.bannerSecondaryText),
+                ),
+              ),
+            ),
+            if (onRemove != null)
+              Positioned(
+                top: -6,
+                right: -6,
+                child: GestureDetector(
+                  onTap: onRemove,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(color: colors.error, shape: BoxShape.circle),
+                    child: Icon(CupertinoIcons.xmark, size: 12, color: colors.white),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
-      const SizedBox(width: 10),
+    );
+  }
+}
 
-      // Answer MathField
-      Expanded(
-        child: MathField(
-          controller: controller,
-          focusNode: focusNode,
-          variables: const ['x', 'y', 'z', 'a', 'b', 'c', 'n', 'k', 't'],
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: isDark ? colors.scaffoldBackground : colors.buttonFill,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: isCorrect ? colors.primary : colors.divider, width: isCorrect ? 1.5 : 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colors.primary, width: 1.5),
-            ),
-          ),
+/// Correct-answer toggle: a radio (single) or a checkbox (multi).
+class _CorrectToggle extends StatelessWidget {
+  const _CorrectToggle({required this.isCorrect, required this.multi, required this.onTap});
+
+  final bool isCorrect;
+  final bool multi;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final icon = isCorrect
+        ? (multi ? CupertinoIcons.checkmark_square_fill : CupertinoIcons.checkmark_circle_fill)
+        : (multi ? CupertinoIcons.square : CupertinoIcons.circle);
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: Icon(
+          icon,
+          key: ValueKey('${multi}_$isCorrect'),
+          color: isCorrect ? colors.primary : colors.divider,
+          size: 26,
         ),
       ),
-
-      // Remove answer (only if > 2 answers)
-      if (canRemove) ...[
-        const SizedBox(width: 6),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: CupertinoButton(
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            onPressed: onRemove,
-            child: Icon(CupertinoIcons.minus_circle, color: colors.error, size: 22),
-          ),
-        ),
-      ],
-    ],
-  );
+    );
+  }
 }

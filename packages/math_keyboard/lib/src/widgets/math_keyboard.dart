@@ -6,6 +6,7 @@ import 'package:math_keyboard/src/foundation/keyboard_button.dart';
 import 'package:math_keyboard/src/widgets/decimal_separator.dart';
 import 'package:math_keyboard/src/widgets/keyboard_button.dart';
 import 'package:math_keyboard/src/widgets/math_field.dart';
+import 'package:math_keyboard/src/widgets/math_keyboard_theme.dart';
 import 'package:math_keyboard/src/widgets/view_insets.dart';
 
 /// Enumeration for the types of keyboard that a math keyboard can adopt.
@@ -34,6 +35,8 @@ class MathKeyboard extends StatelessWidget {
     this.onSubmit,
     this.insetsState,
     this.slideAnimation,
+    this.style,
+    this.semantics,
     this.padding = const EdgeInsets.only(bottom: 4, left: 4, right: 4),
   }) : super(key: key);
 
@@ -58,6 +61,12 @@ class MathKeyboard extends StatelessWidget {
   /// The Type of the Keyboard.
   final MathKeyboardType type;
 
+  /// Visual style. Falls back to [MathKeyboardStyle.dark] when null.
+  final MathKeyboardStyle? style;
+
+  /// Localized labels + a11y. Falls back to [MathKeyboardSemantics.fallback].
+  final MathKeyboardSemantics? semantics;
+
   /// Function that is called when the enter / submit button is tapped.
   ///
   /// Can be `null`.
@@ -70,6 +79,9 @@ class MathKeyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = this.style ?? MathKeyboardStyle.dark();
+    final semantics = this.semantics ?? MathKeyboardSemantics.fallback;
+
     final curvedSlideAnimation = CurvedAnimation(
       parent: slideAnimation ?? AlwaysStoppedAnimation(1),
       curve: Curves.ease,
@@ -85,8 +97,11 @@ class MathKeyboard extends StatelessWidget {
             right: 0,
             child: Material(
               type: MaterialType.transparency,
-              child: ColoredBox(
-                color: Colors.black,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: style.backgroundColor,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(style.topBorderRadius)),
+                ),
                 child: SafeArea(
                   top: false,
                   child: _KeyboardBody(
@@ -100,7 +115,7 @@ class MathKeyboard extends StatelessWidget {
                           child: Column(
                             children: [
                               if (type != MathKeyboardType.numberOnly)
-                                _Variables(controller: controller, variables: variables),
+                                _Variables(controller: controller, variables: variables, style: style),
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: _Buttons(
@@ -108,6 +123,8 @@ class MathKeyboard extends StatelessWidget {
                                   page1: type == MathKeyboardType.numberOnly ? numberKeyboard : standardKeyboard,
                                   page2: type == MathKeyboardType.numberOnly ? null : functionKeyboard,
                                   onSubmit: onSubmit,
+                                  style: style,
+                                  semantics: semantics,
                                 ),
                               ),
                             ],
@@ -206,7 +223,8 @@ class _KeyboardBodyState extends State<_KeyboardBody> {
 /// Widget showing the variables a user can use.
 class _Variables extends StatelessWidget {
   /// Constructs a [_Variables] Widget.
-  const _Variables({Key? key, required this.controller, required this.variables}) : super(key: key);
+  const _Variables({Key? key, required this.controller, required this.variables, required this.style})
+    : super(key: key);
 
   /// The editing controller for the math field that the variables are connected
   /// to.
@@ -215,11 +233,13 @@ class _Variables extends StatelessWidget {
   /// The variables to show.
   final List<String> variables;
 
+  final MathKeyboardStyle style;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 54,
-      color: Colors.grey[900],
+      color: style.variableRowColor,
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) {
@@ -227,13 +247,14 @@ class _Variables extends StatelessWidget {
             itemCount: variables.length,
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) {
-              return Center(child: Container(height: 24, width: 1, color: Colors.white));
+              return Center(child: Container(height: 24, width: 1, color: style.keyTextColor.withValues(alpha: 0.3)));
             },
             itemBuilder: (context, index) {
               return SizedBox(
                 width: 56,
                 child: _VariableButton(
                   name: variables[index],
+                  style: style,
                   onTap: () => controller.addLeaf('{${variables[index]}}'),
                 ),
               );
@@ -246,9 +267,17 @@ class _Variables extends StatelessWidget {
 }
 
 /// Widget displaying the buttons.
-class _Buttons extends StatelessWidget {
+class _Buttons extends StatefulWidget {
   /// Constructs a [_Buttons] Widget.
-  const _Buttons({Key? key, required this.controller, this.page1, this.page2, this.onSubmit}) : super(key: key);
+  const _Buttons({
+    Key? key,
+    required this.controller,
+    required this.style,
+    required this.semantics,
+    this.page1,
+    this.page2,
+    this.onSubmit,
+  }) : super(key: key);
 
   /// The editing controller for the math field that the variables are connected
   /// to.
@@ -265,72 +294,290 @@ class _Buttons extends StatelessWidget {
   /// Can be `null`.
   final VoidCallback? onSubmit;
 
+  final MathKeyboardStyle style;
+  final MathKeyboardSemantics semantics;
+
+  @override
+  State<_Buttons> createState() => _ButtonsState();
+}
+
+class _ButtonsState extends State<_Buttons> {
+  bool _showSymbols = false;
+
+  /// Symbols are only available on the full expression keyboard.
+  bool get _symbolsAvailable => widget.page2 != null;
+
+  void _toggleSymbols() => setState(() => _showSymbols = !_showSymbols);
+
+  @override
+  Widget build(BuildContext context) {
+    final style = widget.style;
+    final semantics = widget.semantics;
+
+    return SizedBox(
+      height: 268,
+      child: Column(
+        children: [
+          if (_symbolsAvailable)
+            _SymbolsToggle(
+              active: _showSymbols,
+              style: style,
+              label: semantics.showSymbolsKeyboardLabel,
+              onTap: _toggleSymbols,
+            ),
+          Expanded(
+            child: AnimatedBuilder(
+              animation: widget.controller,
+              builder: (context, child) {
+                if (_showSymbols && _symbolsAvailable) {
+                  return _SymbolsPage(
+                    controller: widget.controller,
+                    style: style,
+                    semantics: semantics,
+                    onSubmit: widget.onSubmit,
+                  );
+                }
+                final layout = widget.controller.secondPage ? widget.page2! : widget.page1 ?? numberKeyboard;
+                return Column(
+                  children: [
+                    for (final row in layout)
+                      Expanded(
+                        child: Row(
+                          children: [
+                            for (final config in row)
+                              if (config is BasicKeyboardButtonConfig)
+                                _BasicButton(
+                                  flex: config.flex,
+                                  label: config.label,
+                                  onTap: config.args != null
+                                      ? () => widget.controller.addFunction(config.value, config.args!)
+                                      : () => widget.controller.addLeaf(config.value),
+                                  asTex: config.asTex,
+                                  highlightLevel: config.highlighted ? 1 : 0,
+                                  style: style,
+                                )
+                              else if (config is DeleteButtonConfig)
+                                _NavigationButton(
+                                  flex: config.flex,
+                                  icon: Icons.backspace,
+                                  iconSize: 22,
+                                  semanticLabel: semantics.deleteLabel,
+                                  color: style.utilityKeyColor,
+                                  iconColor: style.keyTextColor,
+                                  onTap: () => widget.controller.goBack(deleteMode: true),
+                                )
+                              else if (config is PageButtonConfig)
+                                _BasicButton(
+                                  flex: config.flex,
+                                  icon: widget.controller.secondPage ? null : CustomKeyIcons.key_symbols,
+                                  label: widget.controller.secondPage ? '123' : null,
+                                  onTap: widget.controller.togglePage,
+                                  highlightLevel: 3,
+                                  style: style,
+                                )
+                              else if (config is PreviousButtonConfig)
+                                _NavigationButton(
+                                  flex: config.flex,
+                                  icon: Icons.chevron_left_rounded,
+                                  semanticLabel: semantics.previousLabel,
+                                  color: style.neutralKeyColor,
+                                  iconColor: style.keyTextColor,
+                                  onTap: widget.controller.goBack,
+                                )
+                              else if (config is NextButtonConfig)
+                                _NavigationButton(
+                                  flex: config.flex,
+                                  icon: Icons.chevron_right_rounded,
+                                  semanticLabel: semantics.nextLabel,
+                                  color: style.neutralKeyColor,
+                                  iconColor: style.keyTextColor,
+                                  onTap: widget.controller.goNext,
+                                )
+                              else if (config is SubmitButtonConfig)
+                                _BasicButton(
+                                  flex: config.flex,
+                                  icon: Icons.keyboard_return,
+                                  onTap: widget.onSubmit,
+                                  highlightLevel: 2,
+                                  style: style,
+                                ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small header toggle that reveals the scrollable symbols page.
+class _SymbolsToggle extends StatelessWidget {
+  const _SymbolsToggle({required this.active, required this.style, required this.label, required this.onTap});
+
+  final bool active;
+  final MathKeyboardStyle style;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Semantics(
+            button: true,
+            selected: active,
+            label: label,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: active ? style.primaryKeyColor : style.neutralKeyColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    active ? Icons.close_rounded : Icons.functions_rounded,
+                    size: 16,
+                    color: active ? style.primaryKeyTextColor : style.keyTextColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    label,
+                    style: TextStyle(fontSize: 13, color: active ? style.primaryKeyTextColor : style.keyTextColor),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Vertical, scrollable 14-category symbols page with a fixed control row.
+class _SymbolsPage extends StatelessWidget {
+  const _SymbolsPage({required this.controller, required this.style, required this.semantics, this.onSubmit});
+
+  final MathFieldEditingController controller;
+  final MathKeyboardStyle style;
+  final MathKeyboardSemantics semantics;
+  final VoidCallback? onSubmit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: symbolCategories.length,
+            itemBuilder: (context, index) {
+              final category = symbolCategories[index];
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
+                    child: Text(
+                      semantics.categoryLabel(category.id, category.titleFallback),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: style.keyTextColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final config in category.buttons)
+                        _SymbolButton(
+                          config: config,
+                          style: style,
+                          onTap: config.args != null
+                              ? () => controller.addFunction(config.value, config.args!)
+                              : () => controller.addLeaf(config.value),
+                        ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        // Fixed control row: ◄ ► ⌫ ✓
+        SizedBox(
+          height: 52,
+          child: Row(
+            children: [
+              _NavigationButton(
+                flex: 2,
+                icon: Icons.chevron_left_rounded,
+                semanticLabel: semantics.previousLabel,
+                color: style.neutralKeyColor,
+                iconColor: style.keyTextColor,
+                onTap: controller.goBack,
+              ),
+              _NavigationButton(
+                flex: 2,
+                icon: Icons.chevron_right_rounded,
+                semanticLabel: semantics.nextLabel,
+                color: style.neutralKeyColor,
+                iconColor: style.keyTextColor,
+                onTap: controller.goNext,
+              ),
+              _NavigationButton(
+                flex: 2,
+                icon: Icons.backspace,
+                iconSize: 22,
+                semanticLabel: semantics.deleteLabel,
+                color: style.utilityKeyColor,
+                iconColor: style.keyTextColor,
+                onTap: () => controller.goBack(deleteMode: true),
+              ),
+              _BasicButton(flex: 2, icon: Icons.keyboard_return, onTap: onSubmit, highlightLevel: 2, style: style),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// A single tappable symbol on the symbols page.
+class _SymbolButton extends StatelessWidget {
+  const _SymbolButton({required this.config, required this.style, required this.onTap});
+
+  final BasicKeyboardButtonConfig config;
+  final MathKeyboardStyle style;
+  final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 230,
-      child: AnimatedBuilder(
-        animation: controller,
-        builder: (context, child) {
-          final layout = controller.secondPage ? page2! : page1 ?? numberKeyboard;
-          return Column(
-            children: [
-              for (final row in layout)
-                SizedBox(
-                  height: 56,
-                  child: Row(
-                    children: [
-                      for (final config in row)
-                        if (config is BasicKeyboardButtonConfig)
-                          _BasicButton(
-                            flex: config.flex,
-                            label: config.label,
-                            onTap: config.args != null
-                                ? () => controller.addFunction(config.value, config.args!)
-                                : () => controller.addLeaf(config.value),
-                            asTex: config.asTex,
-                            highlightLevel: config.highlighted ? 1 : 0,
-                          )
-                        else if (config is DeleteButtonConfig)
-                          _NavigationButton(
-                            flex: config.flex,
-                            icon: Icons.backspace,
-                            iconSize: 22,
-                            onTap: () => controller.goBack(deleteMode: true),
-                          )
-                        else if (config is PageButtonConfig)
-                          _BasicButton(
-                            flex: config.flex,
-                            icon: controller.secondPage ? null : CustomKeyIcons.key_symbols,
-                            label: controller.secondPage ? '123' : null,
-                            onTap: controller.togglePage,
-                            highlightLevel: 1,
-                          )
-                        else if (config is PreviousButtonConfig)
-                          _NavigationButton(
-                            flex: config.flex,
-                            icon: Icons.chevron_left_rounded,
-                            onTap: controller.goBack,
-                          )
-                        else if (config is NextButtonConfig)
-                          _NavigationButton(
-                            flex: config.flex,
-                            icon: Icons.chevron_right_rounded,
-                            onTap: controller.goNext,
-                          )
-                        else if (config is SubmitButtonConfig)
-                          _BasicButton(
-                            flex: config.flex,
-                            icon: Icons.keyboard_return,
-                            onTap: onSubmit,
-                            highlightLevel: 2,
-                          ),
-                    ],
-                  ),
-                ),
-            ],
-          );
-        },
+      width: 52,
+      height: 44,
+      child: KeyboardButton(
+        onTap: onTap,
+        color: style.functionKeyColor,
+        pressedOverlayColor: style.pressedOverlayColor,
+        child: config.asTex
+            ? Math.tex(config.label, options: MathOptions(fontSize: 18, color: style.keyTextColor))
+            : Text(config.label, style: TextStyle(fontSize: 18, color: style.keyTextColor)),
       ),
     );
   }
@@ -342,6 +589,7 @@ class _BasicButton extends StatelessWidget {
   const _BasicButton({
     Key? key,
     required this.flex,
+    required this.style,
     this.label,
     this.icon,
     this.onTap,
@@ -365,16 +613,31 @@ class _BasicButton extends StatelessWidget {
   /// Show label as tex.
   final bool asTex;
 
-  /// Whether this button should be highlighted.
+  /// 0 = function key, 1 = neutral (operators), 2 = primary (submit),
+  /// 3 = utility (page toggle).
   final int highlightLevel;
+
+  final MathKeyboardStyle style;
 
   @override
   Widget build(BuildContext context) {
+    final isPrimary = highlightLevel == 2;
+    final textColor = isPrimary ? style.primaryKeyTextColor : style.keyTextColor;
+    final Color keyColor = switch (highlightLevel) {
+      2 => style.primaryKeyColor,
+      1 => style.neutralKeyColor,
+      3 => style.utilityKeyColor,
+      _ => style.functionKeyColor,
+    };
+
     Widget result;
     if (label == null) {
-      result = Icon(icon, color: Colors.white);
+      result = Icon(icon, color: textColor);
     } else if (asTex) {
-      result = Math.tex(label!, options: MathOptions(fontSize: 22, color: Colors.white));
+      result = Math.tex(
+        label!,
+        options: MathOptions(fontSize: style.baseFontSize + 2, color: textColor),
+      );
     } else {
       var symbol = label;
       if (label == '.') {
@@ -383,16 +646,16 @@ class _BasicButton extends StatelessWidget {
         symbol = decimalSeparator(context);
       }
 
-      result = Text(symbol!, style: const TextStyle(fontSize: 22, color: Colors.white));
+      result = Text(
+        symbol!,
+        style: TextStyle(fontSize: style.baseFontSize + 2, color: textColor),
+      );
     }
 
     result = KeyboardButton(
       onTap: onTap,
-      color: highlightLevel > 1
-          ? Theme.of(context).colorScheme.secondary
-          : highlightLevel == 1
-          ? Colors.grey[900]
-          : null,
+      color: keyColor,
+      pressedOverlayColor: style.pressedOverlayColor,
       child: result,
     );
 
@@ -403,7 +666,16 @@ class _BasicButton extends StatelessWidget {
 /// Keyboard button for navigation actions.
 class _NavigationButton extends StatelessWidget {
   /// Constructs a [_NavigationButton].
-  const _NavigationButton({Key? key, required this.flex, this.icon, this.iconSize = 36, this.onTap}) : super(key: key);
+  const _NavigationButton({
+    Key? key,
+    required this.flex,
+    required this.color,
+    required this.iconColor,
+    this.icon,
+    this.iconSize = 36,
+    this.semanticLabel,
+    this.onTap,
+  }) : super(key: key);
 
   /// The flexible flex value.
   final int? flex;
@@ -413,6 +685,10 @@ class _NavigationButton extends StatelessWidget {
 
   /// The size for the icon.
   final double iconSize;
+
+  final Color color;
+  final Color iconColor;
+  final String? semanticLabel;
 
   /// Function used when user holds the button down.
   final VoidCallback? onTap;
@@ -424,8 +700,8 @@ class _NavigationButton extends StatelessWidget {
       child: KeyboardButton(
         onTap: onTap,
         onHold: onTap,
-        color: Colors.grey[900],
-        child: Icon(icon, color: Colors.white, size: iconSize),
+        color: color,
+        child: Icon(icon, color: iconColor, size: iconSize, semanticLabel: semanticLabel),
       ),
     );
   }
@@ -434,10 +710,12 @@ class _NavigationButton extends StatelessWidget {
 /// Widget for variable keyboard buttons.
 class _VariableButton extends StatelessWidget {
   /// Constructs a [_VariableButton] widget.
-  const _VariableButton({Key? key, required this.name, this.onTap}) : super(key: key);
+  const _VariableButton({Key? key, required this.name, required this.style, this.onTap}) : super(key: key);
 
   /// The variable name.
   final String name;
+
+  final MathKeyboardStyle style;
 
   /// Called when the button is tapped.
   final VoidCallback? onTap;
@@ -446,7 +724,11 @@ class _VariableButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return KeyboardButton(
       onTap: onTap,
-      child: Math.tex(name, options: MathOptions(fontSize: 22, color: Colors.white)),
+      pressedOverlayColor: style.pressedOverlayColor,
+      child: Math.tex(
+        name,
+        options: MathOptions(fontSize: style.baseFontSize + 2, color: style.keyTextColor),
+      ),
     );
   }
 }

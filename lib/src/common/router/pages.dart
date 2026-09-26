@@ -217,6 +217,7 @@ enum Routes with OctopusRoute {
       testName: node.arguments['testName'] ?? '',
       university: node.arguments['university'] ?? '',
       description: node.arguments['description'],
+      price: int.tryParse(node.arguments['price'] ?? ''),
     ),
     .uploadConfirm => UploadConfirmScreen(
       testId: node.arguments['testId'],

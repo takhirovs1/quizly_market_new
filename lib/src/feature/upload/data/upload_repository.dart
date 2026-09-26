@@ -1,3 +1,4 @@
+import '../../../common/constant/config.dart';
 import '../../../common/service/api_client.dart';
 import '../../../common/util/logger.dart';
 import '../../my_tests/models/demo_test_model.dart';
@@ -56,6 +57,12 @@ abstract interface class IUploadRepository {
 
   /// Downloads the Excel template workbook (`GET /api/tests/import/template`).
   Future<List<int>> downloadTemplate();
+
+  /// Uploads a question/option image (`POST /api/files`).
+  ///
+  /// Returns the stored `path` (sent to the backend as `photo`) and an
+  /// absolute `url` for rendering thumbnails.
+  Future<({String path, String url})> uploadImage({required List<int> bytes, required String fileName});
 }
 
 final class UploadRepositoryImpl implements IUploadRepository {
@@ -253,6 +260,24 @@ final class UploadRepositoryImpl implements IUploadRepository {
       return await apiClient.getBytes('/api/tests/import/template');
     } catch (e, s) {
       info('DOWNLOAD TEMPLATE API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<({String path, String url})> uploadImage({required List<int> bytes, required String fileName}) async {
+    try {
+      final response = await apiClient.multipartPost('/api/files', field: 'file', bytes: bytes, filename: fileName);
+      final data = response['data'] as Map<String, Object?>? ?? {};
+      final path = (data['path'] ?? '').toString();
+      var url = (data['url'] ?? path).toString();
+      // Derive the host from config for relative `/uploads/*` paths.
+      if (url.isNotEmpty && !url.startsWith('http')) {
+        url = '${Config.apiBaseUrl}${url.startsWith('/') ? '' : '/'}$url';
+      }
+      return (path: path, url: url);
+    } catch (e, s) {
+      info('UPLOAD IMAGE API ERROR: $e $s');
       rethrow;
     }
   }

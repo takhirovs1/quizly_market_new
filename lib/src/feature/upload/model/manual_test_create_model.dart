@@ -1,25 +1,52 @@
 /// DTO for a single option in manual test creation.
+///
+/// `answerFormat` ("text" | "latex") and `photo` are additive fields the
+/// backend must accept — see docs/upload_backend_integration.md §3.
 class ManualOptionDto {
-  const ManualOptionDto({required this.text, required this.position, required this.isCorrect});
+  const ManualOptionDto({
+    required this.text,
+    required this.position,
+    required this.isCorrect,
+    this.answerFormat = 'text',
+    this.photo,
+  });
 
   final String text;
   final int position;
   final bool isCorrect;
-
-  Map<String, Object?> toJson() => {'text': text, 'position': position, 'is_correct': isCorrect};
-}
-
-/// DTO for a single question in manual test creation.
-class ManualQuestionDto {
-  const ManualQuestionDto({required this.text, required this.position, required this.options});
-
-  final String text;
-  final int position;
-  final List<ManualOptionDto> options;
+  final String answerFormat;
+  final String? photo;
 
   Map<String, Object?> toJson() => {
     'text': text,
     'position': position,
+    'is_correct': isCorrect,
+    'answer_format': answerFormat,
+    if (photo != null && photo!.isNotEmpty) 'photo': photo,
+  };
+}
+
+/// DTO for a single question in manual test creation.
+class ManualQuestionDto {
+  const ManualQuestionDto({
+    required this.text,
+    required this.position,
+    required this.options,
+    this.answerFormat = 'text',
+    this.photo,
+  });
+
+  final String text;
+  final int position;
+  final List<ManualOptionDto> options;
+  final String answerFormat;
+  final String? photo;
+
+  Map<String, Object?> toJson() => {
+    'text': text,
+    'position': position,
+    'answer_format': answerFormat,
+    if (photo != null && photo!.isNotEmpty) 'photo': photo,
     'options': options.map((e) => e.toJson()).toList(),
   };
 }

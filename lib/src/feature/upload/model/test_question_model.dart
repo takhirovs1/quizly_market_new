@@ -1,48 +1,107 @@
 import 'package:flutter/material.dart';
 import 'package:math_keyboard/math_keyboard.dart';
 
-/// Represents a single answer option for a question using MathField.
-class AnswerModel {
-  AnswerModel({this.isCorrect = false}) : controller = MathFieldEditingController(), focusNode = FocusNode();
+/// Backend value format tags (see docs/upload_backend_integration.md §3.1).
+const String kAnswerFormatText = 'text';
+const String kAnswerFormatLatex = 'latex';
 
-  final MathFieldEditingController controller;
-  final FocusNode focusNode;
-  bool isCorrect;
+/// A field that can be edited either with the native keyboard (plain text)
+/// or the in-app math keyboard (TeX). Both controllers are kept alive so the
+/// user can swap between modes; the active mode decides the value + format.
+///
+/// See docs/math_native_keyboard_flow.md §4 for the state model.
+mixin DualInputField {
+  /// Native (plain text) controller.
+  TextEditingController get nativeController;
 
-  String get text => controller.currentEditingValue(placeholderWhenEmpty: false).trim();
+  /// Math (TeX) controller.
+  MathFieldEditingController get mathController;
+
+  /// Which mode is active: `false` = text, `true` = formula.
+  ValueNotifier<bool> get isMathMode;
+
+  /// Uploaded image URL for display (from `POST /api/files` → `url`), if any.
+  String? imageUrl;
+
+  /// Uploaded image path to send on create (from `POST /api/files` → `path`).
+  String? imagePath;
+
+  /// Transient UI flag: an image upload for this field is in flight.
+  bool imageUploading = false;
+
+  /// The current value: plain text in text mode, TeX in formula mode.
+  String get text => isMathMode.value
+      ? mathController.currentEditingValue(placeholderWhenEmpty: false).trim()
+      : nativeController.text.trim();
+
+  /// Backend format tag for the current value.
+  String get answerFormat => isMathMode.value ? kAnswerFormatLatex : kAnswerFormatText;
+
   bool get hasText => text.isNotEmpty;
+  bool get hasImage => (imageUrl != null && imageUrl!.isNotEmpty) || (imagePath != null && imagePath!.isNotEmpty);
 
-  void dispose() {
-    controller.dispose();
-    focusNode.dispose();
+  /// A field is "filled" if it has text or an image.
+  bool get hasContent => hasText || hasImage;
+
+  void _disposeDual() {
+    nativeController.dispose();
+    mathController.dispose();
+    isMathMode.dispose();
+  }
+
+  /// Resets both controllers back to empty text mode.
+  void resetDual() {
+    nativeController.clear();
+    mathController.clear();
+    isMathMode.value = false;
   }
 }
 
-/// Represents a single question with its answer options using MathField.
-class QuestionModel {
-  QuestionModel()
-    : controller = MathFieldEditingController(),
-      focusNode = FocusNode(),
-      answers = [AnswerModel(), AnswerModel()],
-      isExpanded = true;
+/// A single answer option for a question.
+class AnswerModel with DualInputField {
+  AnswerModel({this.isCorrect = false})
+    : nativeController = TextEditingController(),
+      mathController = MathFieldEditingController(),
+      isMathMode = ValueNotifier<bool>(false);
 
-  final MathFieldEditingController controller;
-  final FocusNode focusNode;
+  @override
+  final TextEditingController nativeController;
+  @override
+  final MathFieldEditingController mathController;
+  @override
+  final ValueNotifier<bool> isMathMode;
+
+  bool isCorrect;
+
+  void dispose() => _disposeDual();
+}
+
+/// A single question with its answer options.
+class QuestionModel with DualInputField {
+  QuestionModel({List<AnswerModel>? answers, this.isExpanded = true})
+    : nativeController = TextEditingController(),
+      mathController = MathFieldEditingController(),
+      isMathMode = ValueNotifier<bool>(false),
+      answers = answers ?? [AnswerModel(), AnswerModel()];
+
+  @override
+  final TextEditingController nativeController;
+  @override
+  final MathFieldEditingController mathController;
+  @override
+  final ValueNotifier<bool> isMathMode;
+
   List<AnswerModel> answers;
   bool isExpanded;
 
-  String get text => controller.currentEditingValue(placeholderWhenEmpty: false).trim();
-  bool get hasText => text.isNotEmpty;
-
   bool get hasCorrectAnswer => answers.any((a) => a.isCorrect);
-  bool get allAnswersHaveText => answers.every((a) => a.hasText);
+  bool get allAnswersHaveContent => answers.every((a) => a.hasContent);
 
-  /// Full validity: question text + ≥2 answers with text + 1 correct
-  bool get isValid => hasText && answers.length >= 2 && allAnswersHaveText && hasCorrectAnswer;
+  /// Full validity: question filled + ≥2 filled answers + ≥1 correct.
+  bool get isValid => hasContent && answers.length >= 2 && allAnswersHaveContent && hasCorrectAnswer;
 
   void dispose() {
-    controller.dispose();
-    focusNode.dispose();
+    _disposeDual();
     for (final a in answers) {
       a.dispose();
     }

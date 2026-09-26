@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.3+267',
+    representation: r'1.0.3+268',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.3+267',
+    canonical: r'1.0.3+268',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,7 +117,7 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'267'],
+    build: <String>[r'268'],
   );
 
   /// Build date and time (UTC)
@@ -125,11 +125,11 @@ sealed class Pubspec {
     2026,
     9,
     26,
-    6,
-    58,
-    47,
-    426,
-    767,
+    14,
+    37,
+    38,
+    510,
+    161,
   );
 
   /// Name
@@ -426,6 +426,9 @@ sealed class Pubspec {
     'meta': r'any',
     'collection': r'any',
     'async': r'any',
+    'archive': r'^4.0.0',
+    'xml': r'^6.5.0',
+    'csv': r'^6.0.0',
     'path': r'^1.9.1',
     'path_provider': r'^2.1.5',
     'permission_handler': r'^12.0.1',
@@ -474,6 +477,9 @@ sealed class Pubspec {
   /// Developer dependencies
   static const Map<String, Object> devDependencies = <String, Object>{
     'flutter_test': <String, Object>{
+      'sdk': r'flutter',
+    },
+    'integration_test': <String, Object>{
       'sdk': r'flutter',
     },
     'flutter_lints': r'^6.0.0',

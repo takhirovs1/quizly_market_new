@@ -13,7 +13,14 @@ import 'package:holding_gesture/holding_gesture.dart';
 ///   of 4px.
 class KeyboardButton extends StatefulWidget {
   /// Constructs a [KeyboardButton] widget.
-  const KeyboardButton({Key? key, this.onTap, this.onHold, this.color, required this.child}) : super(key: key);
+  const KeyboardButton({
+    Key? key,
+    this.onTap,
+    this.onHold,
+    this.color,
+    this.pressedOverlayColor = Colors.white,
+    required this.child,
+  }) : super(key: key);
 
   /// Called when the keyboard button is tapped.
   final VoidCallback? onTap;
@@ -23,6 +30,9 @@ class KeyboardButton extends StatefulWidget {
 
   /// The button base color.
   final Color? color;
+
+  /// Overlay color blended over the button while pressed/hovered.
+  final Color pressedOverlayColor;
 
   /// The child widget that the keyboard button interaction is wrapped about.
   final Widget child;
@@ -94,7 +104,9 @@ class _KeyboardButtonState extends State<KeyboardButton> with SingleTickerProvid
                 return DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white.withValues(alpha: Curves.easeInOut.transform(_animationController.value) / 3),
+                    color: widget.pressedOverlayColor.withValues(
+                      alpha: Curves.easeInOut.transform(_animationController.value) / 3,
+                    ),
                   ),
                   child: Center(child: child),
                 );

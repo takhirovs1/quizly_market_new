@@ -7,11 +7,20 @@ import '../state/create_test_questions_state.dart';
 import '../widget/question_card.dart';
 
 class CreateTestQuestionsScreen extends StatefulWidget {
-  const CreateTestQuestionsScreen({required this.testName, required this.university, this.description, super.key});
+  const CreateTestQuestionsScreen({
+    required this.testName,
+    required this.university,
+    this.description,
+    this.price,
+    super.key,
+  });
 
   final String testName;
   final String university;
   final String? description;
+
+  /// Sale price in so'm ("Narxi" from the meta form); null/0 → free.
+  final int? price;
 
   @override
   State<CreateTestQuestionsScreen> createState() => _CreateTestQuestionsScreenState();
@@ -84,6 +93,8 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
             onRemoveAnswer: (ai) => removeAnswer(index, ai),
             onToggleCorrect: (ai) => toggleCorrect(index, ai),
             onTextChanged: onTextChanged,
+            onPickImage: ({int? answerIndex}) => pickImage(index, answerIndex: answerIndex),
+            onRemoveImage: ({int? answerIndex}) => removeImage(index, answerIndex: answerIndex),
           ),
         ),
       ),
@@ -99,8 +110,8 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
     final textStyle = context.x.textStyle;
 
     final count = questions.length;
-    final reachedMin = count >= CreateTestQuestionsState.minQuestionCount;
-    final progress = (count / CreateTestQuestionsState.minQuestionCount).clamp(0.0, 1.0);
+    final reachedMin = reachedRecommendedMin;
+    final progress = (count / minQuestions).clamp(0.0, 1.0);
 
     // Build one-line breadcrumb: university → testName [→ description]
     final titleParts = [
@@ -132,8 +143,8 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
           // Min-questions subtitle
           Text(
             reachedMin
-                ? context.x.l10n.minQuestionsCountReached(CreateTestQuestionsState.minQuestionCount)
-                : context.x.l10n.minQuestionsRequired(CreateTestQuestionsState.minQuestionCount),
+                ? context.x.l10n.minQuestionsCountReached(minQuestions)
+                : context.x.l10n.minQuestionsAdvisory(minQuestions),
             style: textStyle.sfW400s14.copyWith(
               color: reachedMin ? colors.primary : colors.bannerSecondaryText,
               fontWeight: reachedMin ? FontWeight.w500 : FontWeight.w400,
@@ -157,7 +168,7 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
               ),
               const SizedBox(width: 10),
               Text(
-                '$count/${CreateTestQuestionsState.minQuestionCount}',
+                '$count/$minQuestions',
                 style: textStyle.sfW500s14.copyWith(
                   color: reachedMin ? colors.primary : colors.text,
                   fontWeight: FontWeight.w600,

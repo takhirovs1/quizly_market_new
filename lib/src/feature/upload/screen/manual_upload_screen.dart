@@ -1,7 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
+import '../bloc/upload_pricing_cubit.dart';
+import '../state/file_upload_state.dart' show UZSFormatter;
 import '../state/manual_upload_state.dart';
 
 class ManualUploadScreen extends StatefulWidget {
@@ -86,7 +91,39 @@ class _ManualUploadScreenState extends ManualUploadState {
         l10n.fillInformationToCreateTest,
         style: textStyle.sfW700s18.copyWith(color: colors.text, fontWeight: .w700),
       ),
-      const SizedBox(height: 18),
+      const SizedBox(height: 14),
+
+      // Live pricing banner: "Har bir savol: X UZS • Cashback: Y%".
+      BlocBuilder<UploadPricingCubit, UploadPricingState>(
+        bloc: pricingCubit,
+        builder: (context, pricingState) {
+          if (pricingState.status.isLoading) {
+            return const Padding(padding: .only(bottom: 12), child: ShimmerBox(height: 44, radius: 12));
+          }
+          final pricing = pricingState.pricing;
+          return Container(
+            padding: const .all(12),
+            margin: const .only(bottom: 12),
+            decoration: BoxDecoration(
+              color: isDark ? colors.cardBackground2 : colors.buttonFill,
+              borderRadius: .circular(12),
+              border: Border.all(color: colors.divider),
+            ),
+            child: Row(
+              children: [
+                Icon(CupertinoIcons.info_circle, size: 18, color: colors.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.pricingPerQuestionInfo(pricing.perQuestionPrice.formatUzs, pricing.cashbackPercent),
+                    style: textStyle.sfW500s14.copyWith(color: colors.text, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
 
       // Field 1: University / O'quv markaz nomi
       _buildFieldLabel(l10n.universityOrCenterName, isRequired: true),
@@ -144,7 +181,27 @@ class _ManualUploadScreenState extends ManualUploadState {
       ),
       const SizedBox(height: 14),
 
-      // Field 4: Mualiflikni korsatish Switch Tile
+      // Field 4: Narxi (so'm) — 0/bo'sh → bepul
+      _buildFieldLabel(l10n.priceLabel),
+      const SizedBox(height: 6),
+      CustomTextFiled(
+        controller: priceController,
+        focusNode: priceFocus,
+        hintText: l10n.priceHint,
+        hintStyle: textStyle.sfW400s16.copyWith(color: colors.bannerSecondaryText),
+        style: textStyle.sfW500s16.copyWith(color: colors.text),
+        keyboardType: .number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9), UZSFormatter()],
+        fillColor: isDark ? colors.cardBackground2 : colors.buttonFill,
+        enabledBorderColor: colors.transparent,
+        borderColor: colors.primary,
+        borderWidth: 1.2,
+        borderRadius: .circular(12),
+        contentPadding: const .symmetric(horizontal: 16, vertical: 14),
+      ),
+      const SizedBox(height: 14),
+
+      // Field 5: Mualiflikni korsatish Switch Tile
       Container(
         padding: const .symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(

@@ -8,6 +8,7 @@ import 'package:math_keyboard/src/foundation/math2tex.dart';
 import 'package:math_keyboard/src/foundation/node.dart';
 import 'package:math_keyboard/src/widgets/decimal_separator.dart';
 import 'package:math_keyboard/src/widgets/math_keyboard.dart';
+import 'package:math_keyboard/src/widgets/math_keyboard_theme.dart';
 import 'package:math_keyboard/src/widgets/view_insets.dart';
 
 /// Widget that is like a [TextField] for math expressions.
@@ -300,6 +301,12 @@ class _MathFieldState extends State<MathField> with TickerProviderStateMixin {
   void _openKeyboard(BuildContext context) {
     if (!widget.opensKeyboard) return;
 
+    // Capture the theme from the field's context (the keyboard overlay lives in
+    // the root Overlay, outside any MathKeyboardTheme placed above the field).
+    final themeWidget = MathKeyboardTheme.maybeOf(this.context);
+    final style = themeWidget?.style;
+    final semantics = themeWidget?.semantics;
+
     _overlayEntry?.remove();
     _overlayEntry = OverlayEntry(
       builder: (context) {
@@ -313,6 +320,8 @@ class _MathFieldState extends State<MathField> with TickerProviderStateMixin {
             type: widget.keyboardType,
             variables: _variables,
             onSubmit: _submit,
+            style: style,
+            semantics: semantics,
             // Note that we need to pass the insets state like this because the
             // overlay context does not have the ancestor state.
             insetsState: MathKeyboardViewInsetsState.of(this.context),

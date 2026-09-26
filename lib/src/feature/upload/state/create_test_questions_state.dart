@@ -1,21 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:octopus/octopus.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../bloc/create_test_cubit.dart';
+import '../bloc/upload_pricing_cubit.dart';
+import '../data/upload_repository.dart';
+import '../model/import_mapping_models.dart';
 import '../model/manual_test_create_model.dart';
 import '../model/test_question_model.dart';
 import '../screen/create_test_questions_screen.dart';
 
+/// Review/edit surface shared by BOTH modes: the manual builder starts empty,
+/// the file-import wizard hands its mapped questions over via [ImportHandoff].
 abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen> {
-  static const int minQuestionCount = 10;
-
   late final List<QuestionModel> questions;
   int? expandedIndex;
   bool isCreating = false;
 
   late final CreateTestCubit createTestCubit;
+  late final UploadPricingCubit pricingCubit;
+  late final IUploadRepository uploadRepository;
+  StreamSubscription<UploadPricingState>? _pricingSub;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────
 
@@ -23,25 +32,44 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
   void initState() {
     super.initState();
     context.setupTelegramBackButton();
-    questions = [QuestionModel()];
-    expandedIndex = 0;
-    createTestCubit = CreateTestCubit(uploadRepository: context.x.dependencies.repository.uploadRepository);
+
+    // Imported questions (file mode) or a single blank one (manual mode).
+    final imported = ImportHandoff.take();
+    questions = imported ?? [QuestionModel()];
+    expandedIndex = imported == null ? 0 : null;
+    if (expandedIndex != null) questions.first.isExpanded = true;
+
+    uploadRepository = context.x.dependencies.repository.uploadRepository;
+    createTestCubit = CreateTestCubit(uploadRepository: uploadRepository);
+    pricingCubit = UploadPricingCubit(uploadRepository: uploadRepository)..fetchPricing();
+    _pricingSub = pricingCubit.stream.listen((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
   void dispose() {
     context.teardownTelegramBackButton();
+    _pricingSub?.cancel();
     for (final q in questions) {
       q.dispose();
     }
     createTestCubit.close();
+    pricingCubit.close();
     super.dispose();
   }
 
   // ── Guards ────────────────────────────────────────────────────────────
 
-  /// All questions valid AND total count ≥ 10.
-  bool get canSubmit => questions.length >= minQuestionCount && questions.every((q) => q.isValid);
+  /// Recommended minimum from pricing settings — advisory, never a hard block
+  /// (backend contract: `min_questions` "advisory only").
+  int get minQuestions => pricingCubit.state.pricing.minQuestions;
+
+  /// Hard rule: ≥1 question and every question valid (text/image + ≥2 options
+  /// + ≥1 correct). The pricing minimum only produces a warning.
+  bool get canSubmit => questions.isNotEmpty && questions.every((q) => q.isValid);
+
+  bool get reachedRecommendedMin => questions.length >= minQuestions;
 
   /// Can only add a new question when the last one is fully complete.
   bool get canAddQuestion {
@@ -121,6 +149,55 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
     });
   }
 
+  // ── Images (spec §6: question and each option can carry one image) ────
+
+  final ImagePicker _imagePicker = ImagePicker();
+
+  /// Picks an image for a question ([answerIndex] == null) or one of its
+  /// options, uploads it via `POST /api/files`, and stores path + URL on the
+  /// field. Never fakes success — a failed upload leaves the field unchanged.
+  Future<void> pickImage(int questionIndex, {int? answerIndex}) async {
+    final q = questions[questionIndex];
+    final DualInputField target = answerIndex == null ? q : q.answers[answerIndex];
+    if (target.imageUploading) return;
+
+    final XFile? file;
+    try {
+      file = await _imagePicker.pickImage(source: .gallery, maxWidth: 1600, imageQuality: 85);
+    } on Object catch (e) {
+      debugPrint('pickImage error: $e');
+      return;
+    }
+    if (file == null || !mounted) return;
+
+    setState(() => target.imageUploading = true);
+    try {
+      final bytes = await file.readAsBytes();
+      final uploaded = await uploadRepository.uploadImage(bytes: bytes, fileName: file.name);
+      if (!mounted) return;
+      setState(() {
+        target
+          ..imagePath = uploaded.path
+          ..imageUrl = uploaded.url;
+      });
+    } on Object catch (e) {
+      debugPrint('uploadImage error: $e');
+      if (mounted) context.x.showNotification(message: context.x.l10n.imageUploadFailed, isError: true);
+    } finally {
+      if (mounted) setState(() => target.imageUploading = false);
+    }
+  }
+
+  void removeImage(int questionIndex, {int? answerIndex}) {
+    final q = questions[questionIndex];
+    final DualInputField target = answerIndex == null ? q : q.answers[answerIndex];
+    setState(() {
+      target
+        ..imagePath = null
+        ..imageUrl = null;
+    });
+  }
+
   // ── Rebuild trigger ───────────────────────────────────────────────────
 
   void onTextChanged(String _) => setState(() {});
@@ -139,14 +216,33 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
         final optionDtos = <ManualOptionDto>[];
         for (var j = 0; j < q.answers.length; j++) {
           final a = q.answers[j];
-          optionDtos.add(ManualOptionDto(text: a.text, position: j + 1, isCorrect: a.isCorrect));
+          optionDtos.add(
+            ManualOptionDto(
+              text: a.text,
+              position: j + 1,
+              isCorrect: a.isCorrect,
+              answerFormat: a.answerFormat,
+              photo: a.imagePath,
+            ),
+          );
         }
-        questionDtos.add(ManualQuestionDto(text: q.text, position: i + 1, options: optionDtos));
+        questionDtos.add(
+          ManualQuestionDto(
+            text: q.text,
+            position: i + 1,
+            options: optionDtos,
+            answerFormat: q.answerFormat,
+            photo: q.imagePath,
+          ),
+        );
       }
 
+      final price = widget.price;
       final request = ManualTestCreateRequest(
         name: widget.testName,
         description: widget.description,
+        price: price,
+        isFree: price == null || price == 0,
         questions: questionDtos,
       );
 

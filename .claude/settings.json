@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"=== exit: $? ===\")",
+      "Bash(../../.fvm/flutter_sdk/bin/flutter test *)",
+      "Bash(curl -s https://pub.dev/api/packages/spreadsheet_decoder)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d['latest']['version']\\); print\\([v['version'] for v in d['versions'][-6:]]\\)\")",
+      "Bash(../../.fvm/flutter_sdk/bin/flutter gen-l10n *)",
+      "Read(//Users/samandar/Documents/**)",
+      "Bash(.fvm/flutter_sdk/bin/flutter test *)",
+      "Bash(ls -la ~/Library/Containers/uz.corelabs.quizly/Data/tmp/ 2>&1 | head -15; echo \"---perms---\"; ls -ld ~/Library/Containers/uz.corelabs.quizly/Data/tmp; echo \"---running app---\"; pgrep -fl QuizlyMarket | head -5)",
+      "Read(//Users/samandar/Library/Containers/uz.corelabs.quizly/Data/tmp//**)",
+      "Read(//Users/samandar/Library/Containers/uz.corelabs.quizly/Data/tmp/**)",
+      "Bash(kill 44686)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(awk '/Built build/,0' /tmp/it.out)",
+      "Bash(python3 -)",
+      "Bash(pkill -f xcodebuild)"
+    ]
+  }
+}

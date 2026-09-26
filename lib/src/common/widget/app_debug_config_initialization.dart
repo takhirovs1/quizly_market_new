@@ -7,9 +7,16 @@ mixin AppDebugConfigInitialization on State<App> {
   OverlayEntry? _themeToggleOverlay;
   OverlayEntry? _debugButtonOverlay;
 
+  /// Whether the debug overlays are currently inserted — re-inserting an
+  /// already-present [OverlayEntry] (or removing a never-inserted one) throws.
+  bool _debugOverlaysInserted = false;
+
   late LogbookConfig _logbookConfig;
 
-  DebugConfig get debugConfig => context.x.dependencies.appDebugSettings.value;
+  /// Captured in [initState] so [dispose] never looks up an ancestor scope.
+  late final ValueNotifier<DebugConfig> _appDebugSettings;
+
+  DebugConfig get debugConfig => _appDebugSettings.value;
 
   void _setThemeMode(bool isDarkMode) => SettingsScope.of(context).add(
     .updateSettings(
@@ -37,11 +44,17 @@ mixin AppDebugConfigInitialization on State<App> {
         ),
       );
 
-      _overlayKey.currentState?.insert(_themeToggleOverlay!);
-      _overlayKey.currentState?.insert(_debugButtonOverlay!);
-    } else {
+      final overlay = _overlayKey.currentState;
+      if (!_debugOverlaysInserted && overlay != null) {
+        overlay
+          ..insert(_themeToggleOverlay!)
+          ..insert(_debugButtonOverlay!);
+        _debugOverlaysInserted = true;
+      }
+    } else if (_debugOverlaysInserted) {
       _themeToggleOverlay?.remove();
       _debugButtonOverlay?.remove();
+      _debugOverlaysInserted = false;
     }
 
     _logbookConfig = LogbookConfig(
@@ -61,7 +74,8 @@ mixin AppDebugConfigInitialization on State<App> {
   void initState() {
     super.initState();
 
-    context.x.dependencies.appDebugSettings.addListener(_appSettingsListener);
+    _appDebugSettings = context.x.dependencies.appDebugSettings;
+    _appDebugSettings.addListener(_appSettingsListener);
     _appSettingsListener();
 
     _logbookConfig = LogbookConfig(
@@ -74,10 +88,13 @@ mixin AppDebugConfigInitialization on State<App> {
 
   @override
   void dispose() {
-    _themeToggleOverlay?.remove();
-    _debugButtonOverlay?.remove();
+    if (_debugOverlaysInserted) {
+      _themeToggleOverlay?.remove();
+      _debugButtonOverlay?.remove();
+      _debugOverlaysInserted = false;
+    }
 
-    context.x.dependencies.appDebugSettings.removeListener(_appSettingsListener);
+    _appDebugSettings.removeListener(_appSettingsListener);
 
     super.dispose();
   }
