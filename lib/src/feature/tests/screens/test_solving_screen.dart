@@ -319,7 +319,7 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
                                   ),
                                   if (question.image != null && question.image!.isNotEmpty) ...[
                                     const SizedBox(height: 16),
-                                    QuestionImageWidget(imageUrl: question.image!, width: double.infinity, height: 200),
+                                    QuestionImageWidget(imageUrl: question.image!, maxHeight: 240),
                                   ],
                                   const SizedBox(height: 16),
                                   LatexTextWidget(
@@ -498,7 +498,7 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
               ),
             ],
           ),
-          child: QuestionImageWidget(imageUrl: question.image!, width: double.infinity, height: 320, borderRadius: 16),
+          child: QuestionImageWidget(imageUrl: question.image!, maxHeight: 360, borderRadius: 16),
         ),
       ],
       LatexTextWidget(

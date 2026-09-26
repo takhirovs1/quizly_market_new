@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
@@ -5,6 +7,7 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../../common/service/update_service.dart';
+import '../../../common/util/error_util.dart';
 import '../../../common/widget/update_bottom_sheet.dart';
 import '../../settings/screen/settings_scope.dart';
 import '../cubit/auth_cubit.dart';
@@ -17,6 +20,9 @@ abstract class LoginScreenState extends State<LoginScreen> {
 
   SocialLoginType? loadingType;
   final isLanguageSheetOpen = ValueNotifier<bool>(false);
+
+  /// Fires after holding the title for 5s to open the dev-mode password prompt.
+  Timer? _holdTimer;
 
   Locale get currentLocale {
     final saved = SettingsScope.settingsOf(context, listen: true).localization;
@@ -180,8 +186,133 @@ abstract class LoginScreenState extends State<LoginScreen> {
     },
   );
 
+  // ── Hidden dev-mode unlock (hold the title 5s → password) ──────────────
+  // Mirrors the app bar title gesture on the "Mening testlarim" screen.
+
+  void onTitlePointerDown(PointerDownEvent event) {
+    _holdTimer?.cancel();
+    _holdTimer = Timer(const Duration(seconds: 5), () {
+      if (!mounted) return;
+      _showPasswordDialog();
+    });
+  }
+
+  void onTitlePointerUp(PointerUpEvent event) {
+    _holdTimer?.cancel();
+    _holdTimer = null;
+  }
+
+  void onTitlePointerCancel(PointerCancelEvent event) {
+    _holdTimer?.cancel();
+    _holdTimer = null;
+  }
+
+  void _showPasswordDialog() {
+    final passwordController = TextEditingController();
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: context.x.colors.dialogBackground,
+        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(16))),
+        child: Padding(
+          padding: const .all(20),
+          child: Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
+            children: [
+              Text(
+                'Password',
+                textAlign: .center,
+                style: context.x.textStyle.sfW700s28.copyWith(fontSize: 20, color: context.x.colors.dialogText),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                autofocus: true,
+                keyboardType: .number,
+                cursorColor: context.x.colors.primary,
+                style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.dialogText),
+                decoration: InputDecoration(
+                  hintText: 'Enter password',
+                  hintStyle: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                  filled: true,
+                  fillColor: context.x.colors.textFieldBackground,
+                  contentPadding: const .symmetric(horizontal: 16, vertical: 14),
+                  border: const OutlineInputBorder(borderRadius: .all(.circular(12)), borderSide: .none),
+                  enabledBorder: const OutlineInputBorder(borderRadius: .all(.circular(12)), borderSide: .none),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: const .all(.circular(12)),
+                    borderSide: BorderSide(color: context.x.colors.primary, width: 1.5),
+                  ),
+                ),
+                onSubmitted: (_) => _submitPassword(dialogContext, passwordController.text),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                spacing: 12,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: context.x.colors.transparent,
+                        surfaceTintColor: context.x.colors.transparent,
+                        backgroundColor: context.x.colors.dialogCancelButton,
+                        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(10))),
+                        padding: const .symmetric(vertical: 14),
+                      ),
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: Text(
+                        context.x.l10n.cancel,
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.bannerPriceText),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: context.x.colors.transparent,
+                        surfaceTintColor: context.x.colors.transparent,
+                        backgroundColor: context.x.colors.primary,
+                        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(10))),
+                        padding: const .symmetric(vertical: 14),
+                      ),
+                      onPressed: () => _submitPassword(dialogContext, passwordController.text),
+                      child: Text('OK', style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _submitPassword(BuildContext dialogContext, String rawPassword) {
+    final password = rawPassword.trim();
+    Navigator.of(dialogContext).pop();
+    if (password == '0510') {
+      context.x.dependencies.appDebugSettings.value = context.x.dependencies.appDebugSettings.value.copyWith(
+        debuggerEnabled: true,
+        thunderEnabled: true,
+      );
+    } else {
+      context.x.dependencies.appDebugSettings.value = context.x.dependencies.appDebugSettings.value.copyWith(
+        debuggerEnabled: false,
+        thunderEnabled: false,
+      );
+      ErrorUtil.showSnackBar(context, 'Xato parol!');
+    }
+  }
+
   @override
   void dispose() {
+    _holdTimer?.cancel();
     isLanguageSheetOpen.dispose();
     pinController.dispose();
     pinFocusNode.dispose();

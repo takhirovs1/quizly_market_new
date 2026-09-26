@@ -87,7 +87,7 @@ class SolvingOptionItemWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (hasImage) ...[
-                        QuestionImageWidget(imageUrl: option.image!, height: 120, borderRadius: 8, fit: BoxFit.contain),
+                        QuestionImageWidget(imageUrl: option.image!, maxHeight: 160, borderRadius: 8),
                         if (hasText) const SizedBox(height: 8),
                       ],
                       if (hasText)

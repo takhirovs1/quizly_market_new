@@ -17,7 +17,14 @@
       "Bash(python3 -)",
       "Bash(pkill -f xcodebuild)",
       "Bash(python3 -c ' *)",
-      "Bash(curl -sS 'https://apiquizly.corelabs.uz/api/tests/my?limit=3&offset=0' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Content-Language: uz' -H 'Accept: application/json')"
+      "Bash(curl -sS 'https://apiquizly.corelabs.uz/api/tests/my?limit=3&offset=0' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Content-Language: uz' -H 'Accept: application/json')",
+      "Bash(curl -s \"https://pub.dev/api/packages/logbook\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('latest:', d['latest']['version']\\); print\\('versions:', [v['version'] for v in d['versions']][-8:]\\)\")",
+      "Bash(awk '/^  logbook:/{f=1} f&&/version:/{print; exit}' pubspec.lock)",
+      "Bash(grep -vE \"outdated|available\\\\\\)|discontinued|Resolving|Downloading|Got dependencies|newer versions|^$\")",
+      "Bash(gh pr *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code} %{content_type}  option-graph /uploads/\\\\n' https://apiquizly.corelabs.uz/uploads/4cd9ecf1d71c4409ea4649d7936a5c0a.png)",
+      "Bash(grep -vE \"outdated|available\\\\\\)|discontinued|Resolving|Downloading|Got dependencies|newer versions|^Analyzing|^$\")"
     ]
   }
 }

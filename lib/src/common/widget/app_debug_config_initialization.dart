@@ -65,6 +65,11 @@ mixin AppDebugConfigInitialization on State<App> {
       enabled: debugConfig.debuggerEnabled,
     );
 
+    // logbook >=0.6 reads the live config from the static [Logbook.config];
+    // the widget's `config:` prop is only applied once at mount, so runtime
+    // enable/disable must be pushed through the static or nothing happens.
+    Logbook.config = _logbookConfig;
+
     // For enabling/disabling [Thunder, Logbook]
     setState(() {});
   });

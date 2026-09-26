@@ -1,5 +1,12 @@
 import '../../../common/extension/string_extension.dart';
 
+/// Returns the string value only if it is non-null and non-empty, else null.
+/// The backend sends `""` for "no image", which must not count as an image.
+String? _nonEmptyString(Object? value) {
+  if (value is String && value.trim().isNotEmpty) return value;
+  return null;
+}
+
 class DemoTestRequest {
   const DemoTestRequest({required this.testId});
 
@@ -163,7 +170,7 @@ class DemoQuestion {
     score: (json['score'] as num?)?.toInt(),
     options: (json['options'] as List<Object?>?)?.map((e) => DemoOption.fromJson(e as Map<String, Object?>)).toList(),
     createdAt: (json['created_at'] as String?)?.toDateTimeOrNull(),
-    image: json['image'] as String? ?? json['image_url'] as String?,
+    image: _nonEmptyString(json['photo_url']) ?? _nonEmptyString(json['image']) ?? _nonEmptyString(json['image_url']),
   );
 
   final String? id;
@@ -197,7 +204,7 @@ class DemoOption {
     isCorrect: json['is_correct'] as bool?,
     position: (json['position'] as num?)?.toInt(),
     createdAt: (json['created_at'] as String?)?.toDateTimeOrNull(),
-    image: json['image'] as String? ?? json['image_url'] as String?,
+    image: _nonEmptyString(json['photo_url']) ?? _nonEmptyString(json['image']) ?? _nonEmptyString(json['image_url']),
   );
 
   final String? id;

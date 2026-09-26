@@ -50,7 +50,13 @@ class _LoginScreenState extends LoginScreenState {
                   Column(
                     children: [
                       const SizedBox(height: 48),
-                      HeaderWidget(title: context.x.l10n.quizlyMarket, subtitle: context.x.l10n.loginTitle),
+                      HeaderWidget(
+                        title: context.x.l10n.quizlyMarket,
+                        subtitle: context.x.l10n.loginTitle,
+                        onTitlePointerDown: onTitlePointerDown,
+                        onTitlePointerUp: onTitlePointerUp,
+                        onTitlePointerCancel: onTitlePointerCancel,
+                      ),
                       const SizedBox(height: 24),
                       Expanded(
                         flex: 2,

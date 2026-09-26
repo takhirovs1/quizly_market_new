@@ -18,20 +18,23 @@ class LatexTextWidget extends StatelessWidget {
   final TextOverflow? overflow;
 
   /// Matches strings that are entirely `\text{...}` with nothing else.
-  static final _pureTextPattern = RegExp(r'^\\text\{(.+)\}$', dotAll: true);
+  static final _pureTextPattern = RegExp(r'^\\text\{([^{}]*)\}$', dotAll: true);
 
-  /// Checks if the text contains real LaTeX math commands.
+  /// Checks if the text contains LaTeX markup that must be rendered with the
+  /// math engine rather than shown as raw text.
+  ///
+  /// Any TeX command (`\text`, `\frac`, `\sin`, `\circ`, …) or a super/sub
+  /// script (`x^2`, `a_1`, `180^\circ`, `b^{n}`) means the string is LaTeX.
+  /// The previous heuristic stripped `\text{...}` first and then found no math
+  /// in the remainder, so mixed strings like
+  /// `\text{Agar } f(x)=2x+1 \text{ bo'lsa, } f(3)=?` leaked through as raw
+  /// text — this now treats them as math.
   static bool _hasMathContent(String s) {
-    // Remove all \text{...} blocks first
-    final stripped = s.replaceAll(RegExp(r'\\text\{[^}]*\}'), ' ');
-    // Check for real math commands, operators, etc.
-    return RegExp(
-          r'\\(?:frac|sqrt|sin|cos|tan|log|int|sum|pi|approx|pm|cdot|dots|times|div|leq|geq|neq|infty|alpha|beta|gamma|delta|theta|lambda|sigma|omega|left|right)\b',
-        ).hasMatch(stripped) ||
-        // Superscript/subscript with actual math meaning (e.g., x^2, H_2O)
-        RegExp(r'[a-zA-Z0-9]\^|[a-zA-Z0-9]_[a-zA-Z0-9{]').hasMatch(stripped) ||
-        // Fractions and other structural commands
-        RegExp(r'\\[a-zA-Z]+\{').hasMatch(stripped);
+    // A backslash followed by a letter is a TeX command.
+    if (RegExp(r'\\[a-zA-Z]').hasMatch(s)) return true;
+    // Superscript/subscript used for exponents or indices.
+    if (RegExp(r'[A-Za-z0-9)}\]]\s*[\^_]').hasMatch(s)) return true;
+    return false;
   }
 
   /// Extracts plain text from `\text{...}` wrapper.
