@@ -83,6 +83,7 @@ class ApiClient {
     this.onRefreshToken,
     this.onSignOut,
     this.onSessionExpired,
+    this.onAccountBlocked,
     List<ApiClientMiddleware> middlewares = const [],
     http.Client? httpClient,
   }) {
@@ -151,8 +152,14 @@ class ApiClient {
   /// Called when authentication fails unrecoverably (sign out the user).
   final Future<void> Function()? onSignOut;
 
-  /// Called when a "session expired or signed in on another device" error arrives.
+  /// Called when a session is gone (`session_revoked`): logged out, revoked from
+  /// another device, expired, or the user was deleted. The user must re-login.
   final void Function()? onSessionExpired;
+
+  /// Called when the account is blocked by an admin (`account_blocked`, 403).
+  /// The client must not refresh or retry; show a "blocked" screen.
+  /// Falls back to [onSignOut] when not provided.
+  final void Function()? onAccountBlocked;
 
   late final ApiClientHandler _handler;
   Future<void>? _refreshFuture;
@@ -245,21 +252,92 @@ class ApiClient {
     try {
       return await fn(false);
     } on ApiResponseException catch (e) {
-      if (e.statusCode == 401 || e.statusCode == 403) {
-        await _handle401(e);
-        try {
-          return await fn(true); // retry; any second failure propagates to caller
-        } on ApiResponseException catch (retryErr) {
-          if (retryErr.statusCode == 401 || retryErr.statusCode == 403 || retryErr.statusCode >= 500) {
-            await _safeSignOut();
+      // Branch on the auth `code` (docs/session-auth.md §5), never on the HTTP
+      // status alone or the message text.
+      switch (_authAction(e)) {
+        case .refresh:
+          // token_expired: rotate the pair once, then retry the request once.
+          await _refreshTokens(e);
+          try {
+            return await fn(true);
+          } on ApiResponseException catch (retryErr) {
+            // A repeat auth failure after a successful refresh means the session
+            // is truly gone → sign out. A 5xx is transient → leave the user in.
+            if (_isAuthFailure(retryErr)) await _safeSignOut();
+            rethrow;
           }
+        case .sessionExpired:
+          // session_revoked: refresh would fail too — re-login.
+          await _safeSignOut();
+          onSessionExpired?.call();
           rethrow;
-        }
-      } else if (e.statusCode >= 500) {
-        await _safeSignOut();
+        case .blocked:
+          // account_blocked: do not refresh or retry; show the blocked screen.
+          (onAccountBlocked ?? () => unawaited(_safeSignOut())).call();
+          rethrow;
+        case .signOut:
+          // missing_token / refresh_invalid, or a bare 401 with no token to use.
+          await _safeSignOut();
+          rethrow;
+        case .none:
+          // server_error (5xx) and non-auth 403s are transient / caller-handled.
+          rethrow;
       }
-      rethrow;
     }
+  }
+
+  /// Reads the auth error `code` from an error body (`{"error", "code"}`).
+  String? _authCode(ApiResponseException e) {
+    final body = e.body;
+    if (body is Map) {
+      final code = body['code'];
+      if (code is String && code.isNotEmpty) return code;
+    }
+    return null;
+  }
+
+  /// Decides how to react to a 4xx/5xx, per docs/session-auth.md §5.
+  _AuthAction _authAction(ApiResponseException e) {
+    final code = _authCode(e);
+    switch (code) {
+      case 'token_expired':
+        return _AuthAction.refresh;
+      case 'session_revoked':
+        return _AuthAction.sessionExpired;
+      case 'account_blocked':
+        return _AuthAction.blocked;
+      case 'missing_token':
+      case 'refresh_invalid':
+        return _AuthAction.signOut;
+      case 'server_error':
+        return _AuthAction.none;
+    }
+
+    // No `code`: older backend, or a non-middleware error. Fall back to status.
+    if (e.statusCode == 401) {
+      // Legacy "signed in on another device" wording → treat as session expiry.
+      final err = (e.body is Map) ? (e.body! as Map)['error'] : null;
+      if (err is String && err.contains('session expired or signed in on another device')) {
+        return _AuthAction.sessionExpired;
+      }
+      // Otherwise assume the access token lapsed and try a single refresh+retry.
+      return _AuthAction.refresh;
+    }
+    // Bare 403 (authorization, not auth) and 5xx: don't touch the session.
+    return _AuthAction.none;
+  }
+
+  /// Whether an error means the caller's credentials are no longer valid
+  /// (so a post-refresh retry that still hits this should sign out).
+  bool _isAuthFailure(ApiResponseException e) {
+    final code = _authCode(e);
+    if (code != null) {
+      return code == 'token_expired' ||
+          code == 'session_revoked' ||
+          code == 'missing_token' ||
+          code == 'refresh_invalid';
+    }
+    return e.statusCode == 401;
   }
 
   Future<Map<String, Object?>> _send(
@@ -362,22 +440,12 @@ class ApiClient {
     return uri.replace(queryParameters: qp);
   }
 
-  Future<void> _handle401(ApiResponseException e) async {
-    // Check for "session expired or signed in on another device" in the body
-    final body = e.body;
-    if (body is Map) {
-      String? errMsg;
-      final err = body['error'];
-      if (err is String) errMsg = err;
-      if (errMsg != null && errMsg.contains('session expired or signed in on another device')) {
-        await _safeSignOut();
-        onSessionExpired?.call();
-        throw e;
-      }
-    }
-
+  /// Rotates the token pair via [onRefreshToken], sharing a single in-flight
+  /// refresh across concurrent callers (docs/session-auth.md §4). Signs out and
+  /// rethrows if there is no refresh token or the refresh itself fails.
+  Future<void> _refreshTokens(ApiResponseException e) async {
     final refreshToken = getRefreshToken?.call() ?? '';
-    if (refreshToken.isEmpty) {
+    if (refreshToken.isEmpty || onRefreshToken == null) {
       await _safeSignOut();
       throw e;
     }
@@ -390,4 +458,23 @@ class ApiClient {
       rethrow;
     }
   }
+}
+
+/// How [ApiClient] reacts to an auth error, decided from its `code` (§5).
+enum _AuthAction {
+  /// `token_expired` — refresh the pair and retry the request once.
+  refresh,
+
+  /// `session_revoked` — sign out and prompt re-login (refresh would fail too).
+  sessionExpired,
+
+  /// `account_blocked` — surface the blocked screen; never refresh or retry.
+  blocked,
+
+  /// `missing_token` / `refresh_invalid` — sign out and go to login.
+  signOut,
+
+  /// `server_error` (5xx) or a non-auth 403 — transient / caller-handled; the
+  /// session is left untouched.
+  none,
 }
