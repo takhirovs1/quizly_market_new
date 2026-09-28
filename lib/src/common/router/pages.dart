@@ -214,6 +214,7 @@ enum Routes with OctopusRoute {
     .fileUpload => const FileUploadScreen(),
     .manualUpload => const ManualUploadScreen(),
     .createTestQuestions => CreateTestQuestionsScreen(
+      testId: node.arguments['testId'],
       testName: node.arguments['testName'] ?? '',
       university: node.arguments['university'] ?? '',
       description: node.arguments['description'],

@@ -52,8 +52,35 @@ abstract interface class IUploadRepository {
   /// Fetches customer tests with optional status filter (`GET /api/tests/my?status=...`).
   Future<List<UploadedTestModel>> getMyUploadedTests({String? status, int limit = 50, int offset = 0});
 
+  /// Soft-deletes a test the user owns (`DELETE /api/tests/:id`).
+  Future<void> deleteTest(String testId);
+
   /// Fetches test questions for preview (`GET /api/tests/:id/questions`).
   Future<List<DemoQuestion>> getTestQuestions(String testId);
+
+  /// Fetches a draft's full questions for editing (`GET /api/tests/:id/questions`).
+  ///
+  /// Unlike [getTestQuestions] this rethrows on failure so the edit screen can
+  /// surface the error instead of silently showing an empty form.
+  Future<List<DemoQuestion>> getTestQuestionsForEdit(String testId);
+
+  /// Adds a question (with its options) to a draft (`POST /api/tests/:id/questions`).
+  Future<void> createQuestion(String testId, Map<String, Object?> body);
+
+  /// Updates a question's text/image/score/position (`PUT /api/tests/:id/questions/:qid`).
+  Future<void> updateQuestion(String testId, String questionId, Map<String, Object?> body);
+
+  /// Removes a question from a draft (`DELETE /api/tests/:id/questions/:qid`).
+  Future<void> deleteQuestion(String testId, String questionId);
+
+  /// Adds an option to a question (`POST /api/tests/:id/questions/:qid/options`).
+  Future<void> createOption(String testId, String questionId, Map<String, Object?> body);
+
+  /// Updates an option (`PUT /api/tests/:id/questions/:qid/options/:oid`).
+  Future<void> updateOption(String testId, String questionId, String optionId, Map<String, Object?> body);
+
+  /// Removes an option (`DELETE /api/tests/:id/questions/:qid/options/:oid`).
+  Future<void> deleteOption(String testId, String questionId, String optionId);
 
   /// Downloads the Excel template workbook (`GET /api/tests/import/template`).
   Future<List<int>> downloadTemplate();
@@ -251,6 +278,89 @@ final class UploadRepositoryImpl implements IUploadRepository {
     } on Object catch (e, s) {
       info('GET TEST QUESTIONS ERROR: $e $s');
       return const [];
+    }
+  }
+
+  @override
+  Future<void> deleteTest(String testId) async {
+    try {
+      await apiClient.delete('/api/tests/$testId');
+    } catch (e, s) {
+      info('DELETE TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<DemoQuestion>> getTestQuestionsForEdit(String testId) async {
+    try {
+      final response = await apiClient.get('/api/tests/$testId/questions');
+      final dataMap = response['data'] as Map<String, Object?>?;
+      final list = dataMap?['questions'] as List<Object?>? ?? [];
+      return list.whereType<Map<String, Object?>>().map(DemoQuestion.fromJson).toList();
+    } catch (e, s) {
+      info('GET TEST QUESTIONS FOR EDIT ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> createQuestion(String testId, Map<String, Object?> body) async {
+    try {
+      await apiClient.post('/api/tests/$testId/questions', body: body);
+    } catch (e, s) {
+      info('CREATE QUESTION API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateQuestion(String testId, String questionId, Map<String, Object?> body) async {
+    try {
+      await apiClient.put('/api/tests/$testId/questions/$questionId', body: body);
+    } catch (e, s) {
+      info('UPDATE QUESTION API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteQuestion(String testId, String questionId) async {
+    try {
+      await apiClient.delete('/api/tests/$testId/questions/$questionId');
+    } catch (e, s) {
+      info('DELETE QUESTION API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> createOption(String testId, String questionId, Map<String, Object?> body) async {
+    try {
+      await apiClient.post('/api/tests/$testId/questions/$questionId/options', body: body);
+    } catch (e, s) {
+      info('CREATE OPTION API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateOption(String testId, String questionId, String optionId, Map<String, Object?> body) async {
+    try {
+      await apiClient.put('/api/tests/$testId/questions/$questionId/options/$optionId', body: body);
+    } catch (e, s) {
+      info('UPDATE OPTION API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteOption(String testId, String questionId, String optionId) async {
+    try {
+      await apiClient.delete('/api/tests/$testId/questions/$questionId/options/$optionId');
+    } catch (e, s) {
+      info('DELETE OPTION API ERROR: $e $s');
+      rethrow;
     }
   }
 

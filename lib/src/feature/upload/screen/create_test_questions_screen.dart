@@ -10,10 +10,16 @@ class CreateTestQuestionsScreen extends StatefulWidget {
   const CreateTestQuestionsScreen({
     required this.testName,
     required this.university,
+    this.testId,
     this.description,
     this.price,
     super.key,
   });
+
+  /// When non-null the screen edits an existing draft: it loads the draft's
+  /// questions on open and persists changes back to that test instead of
+  /// creating a new one.
+  final String? testId;
 
   final String testName;
   final String university;
@@ -44,9 +50,17 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
           telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
           showBackButton: true,
         ),
-        body: SafeArea(child: isWide ? _buildWideBody(context) : _buildBody(context)),
+        body: SafeArea(
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator.adaptive())
+              : loadFailed
+              ? _buildLoadError(context)
+              : isWide
+              ? _buildWideBody(context)
+              : _buildBody(context),
+        ),
         // On desktop the upload button lives in the right-hand panel.
-        bottomNavigationBar: (!isWide && MediaQuery.viewInsetsOf(context).bottom == 0)
+        bottomNavigationBar: (!isLoading && !loadFailed && !isWide && MediaQuery.viewInsetsOf(context).bottom == 0)
             ? SafeArea(
                 child: Padding(
                   padding: .only(
@@ -297,7 +311,7 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
         width: double.infinity,
         height: 50,
         child: FilledButton(
-          onPressed: (isEnabled && !isCreating) ? onUploadTest : null,
+          onPressed: (isEnabled && !isCreating) ? (isEditMode ? onSaveEdits : onUploadTest) : null,
           style: FilledButton.styleFrom(
             backgroundColor: colors.primary,
             disabledBackgroundColor: colors.primary,
@@ -310,11 +324,27 @@ class _CreateTestQuestionsScreenState extends CreateTestQuestionsState {
                   child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(colors.white)),
                 )
               : Text(
-                  l10n.uploadTestButton,
+                  isEditMode ? l10n.save : l10n.uploadTestButton,
                   style: textStyle.sfW600s16.copyWith(color: colors.white, fontWeight: FontWeight.w600),
                 ),
         ),
       ),
     );
   }
+
+  // ── Draft load error (edit flow) ──────────────────────────────────────
+
+  Widget _buildLoadError(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          EmptyTestWidget(title: context.x.l10n.somethingWentWrong, description: context.x.l10n.pleaseTryAgainLater),
+          const SizedBox(height: 16),
+          FilledButton(onPressed: retryLoad, child: Text(context.x.l10n.retry)),
+        ],
+      ),
+    ),
+  );
 }

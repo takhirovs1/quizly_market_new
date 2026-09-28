@@ -59,10 +59,31 @@ mixin DualInputField {
 
 /// A single answer option for a question.
 class AnswerModel with DualInputField {
-  AnswerModel({this.isCorrect = false})
+  AnswerModel({this.isCorrect = false, this.serverId})
     : nativeController = TextEditingController(),
       mathController = MathFieldEditingController(),
       isMathMode = ValueNotifier<bool>(false);
+
+  /// Rehydrates an option loaded from the backend (draft edit flow), keeping its
+  /// server id + a snapshot of the persisted values for change detection.
+  factory AnswerModel.existing({
+    required String? serverId,
+    required String text,
+    required bool isCorrect,
+    int? position,
+    String? photoPath,
+    String? photoUrl,
+  }) {
+    final model = AnswerModel(isCorrect: isCorrect, serverId: serverId)
+      ..imagePath = photoPath
+      ..imageUrl = photoUrl
+      ..originalText = text
+      ..originalPhoto = photoPath
+      ..originalCorrect = isCorrect
+      ..originalPosition = position;
+    model.nativeController.text = text;
+    return model;
+  }
 
   @override
   final TextEditingController nativeController;
@@ -71,18 +92,54 @@ class AnswerModel with DualInputField {
   @override
   final ValueNotifier<bool> isMathMode;
 
+  /// Backend option id. `null` for options added in this session.
+  final String? serverId;
+
   bool isCorrect;
+
+  // ── Server snapshot (edit flow) — null/defaults for freshly added options.
+  String? originalText;
+  String? originalPhoto;
+  bool originalCorrect = false;
+  int? originalPosition;
+
+  /// Never persisted yet.
+  bool get isNew => serverId == null;
+
+  /// True when text, image or correctness differs from the loaded value.
+  bool get isDirty =>
+      text != (originalText ?? '') || (imagePath ?? '') != (originalPhoto ?? '') || isCorrect != originalCorrect;
 
   void dispose() => _disposeDual();
 }
 
 /// A single question with its answer options.
 class QuestionModel with DualInputField {
-  QuestionModel({List<AnswerModel>? answers, this.isExpanded = true})
+  QuestionModel({List<AnswerModel>? answers, this.isExpanded = true, this.serverId})
     : nativeController = TextEditingController(),
       mathController = MathFieldEditingController(),
       isMathMode = ValueNotifier<bool>(false),
       answers = answers ?? [AnswerModel(), AnswerModel()];
+
+  /// Rehydrates a question loaded from the backend (draft edit flow).
+  factory QuestionModel.existing({
+    required String? serverId,
+    required String text,
+    required List<AnswerModel> answers,
+    int? position,
+    String? photoPath,
+    String? photoUrl,
+    bool isExpanded = false,
+  }) {
+    final model = QuestionModel(answers: answers, isExpanded: isExpanded, serverId: serverId)
+      ..imagePath = photoPath
+      ..imageUrl = photoUrl
+      ..originalText = text
+      ..originalPhoto = photoPath
+      ..originalPosition = position;
+    model.nativeController.text = text;
+    return model;
+  }
 
   @override
   final TextEditingController nativeController;
@@ -91,8 +148,21 @@ class QuestionModel with DualInputField {
   @override
   final ValueNotifier<bool> isMathMode;
 
+  /// Backend question id. `null` for questions added in this session.
+  final String? serverId;
+
   List<AnswerModel> answers;
   bool isExpanded;
+
+  // ── Server snapshot (edit flow) — null for freshly added questions.
+  String? originalText;
+  String? originalPhoto;
+  int? originalPosition;
+
+  bool get isNew => serverId == null;
+
+  /// True when the question text or image differs from the loaded value.
+  bool get isDirty => text != (originalText ?? '') || (imagePath ?? '') != (originalPhoto ?? '');
 
   bool get hasCorrectAnswer => answers.any((a) => a.isCorrect);
   bool get allAnswersHaveContent => answers.every((a) => a.hasContent);

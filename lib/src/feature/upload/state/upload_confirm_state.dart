@@ -24,6 +24,10 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
 
   List<DemoQuestion> questions = const [];
 
+  /// True while the preview questions are being fetched, so the carousel shows
+  /// a shimmer placeholder instead of popping in once loaded.
+  bool isLoadingQuestions = false;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +40,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
 
     if (widget.testId != null && widget.testId!.isNotEmpty) {
       confirmCubit.fetchQuote(widget.testId!);
+      isLoadingQuestions = true;
     }
 
     _loadQuestions();
@@ -47,12 +52,14 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
     if (testId == null || testId.isEmpty) return;
     try {
       final loaded = await context.x.dependencies.repository.uploadRepository.getTestQuestions(testId);
-      if (mounted && loaded.isNotEmpty) {
-        setState(() {
-          questions = loaded;
-        });
-      }
-    } on Object catch (_) {}
+      if (!mounted) return;
+      setState(() {
+        questions = loaded;
+        isLoadingQuestions = false;
+      });
+    } on Object catch (_) {
+      if (mounted) setState(() => isLoadingQuestions = false);
+    }
   }
 
   Future<void> _loadWalletBalance() async {
@@ -202,17 +209,34 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
       await confirmCubit.publishFromWallet(testId);
       final state = confirmCubit.state;
       if (state.publishStatus.isSuccess && mounted) {
-        context.x.showNotification(message: context.x.l10n.testSuccessfullyPublished);
+        context.x.showNotification(
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+          message: context.x.l10n.testSuccessfullyPublished,
+        );
         context.octopus.navigate(Routes.home.name);
       } else if (state.isInsufficientBalance && mounted) {
         context.x.showNotification(
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
           message: state.errorMessage == null
               ? context.x.l10n.insufficientWalletBalance
               : ErrorUtil.localizeError(context, state.errorMessage),
           isError: true,
         );
       } else if (state.errorMessage != null && mounted) {
-        context.x.showNotification(message: ErrorUtil.localizeError(context, state.errorMessage), isError: true);
+        context.x.showNotification(
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+          message: ErrorUtil.localizeError(context, state.errorMessage),
+          isError: true,
+        );
       }
     } else {
       final isPayme = selectedPayment.value.id == 1;
@@ -231,13 +255,26 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
             paymentId,
             onCompleted: () {
               if (mounted) {
-                context.x.showNotification(message: context.x.l10n.testSuccessfullyPublished);
+                context.x.showNotification(
+                  top: switch (context.telegramWebApp.isSupported) {
+                    true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+                    false => MediaQuery.paddingOf(context).top + 56,
+                  },
+                  message: context.x.l10n.testSuccessfullyPublished,
+                );
                 context.octopus.navigate(Routes.home.name);
               }
             },
             onFailed: () {
               if (mounted) {
-                context.x.showNotification(message: context.x.l10n.paymentCancelledOrFailed, isError: true);
+                context.x.showNotification(
+                  top: switch (context.telegramWebApp.isSupported) {
+                    true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+                    false => MediaQuery.paddingOf(context).top + 56,
+                  },
+                  message: context.x.l10n.paymentCancelledOrFailed,
+                  isError: true,
+                );
               }
             },
           );

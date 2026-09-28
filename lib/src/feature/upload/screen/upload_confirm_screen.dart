@@ -134,7 +134,10 @@ class _UploadConfirmScreenState extends UploadConfirmState {
       const SizedBox(height: 14),
 
       // 5. Questions Carousel Header & Carousel
-      if (questions.isNotEmpty) ...[
+      if (isLoadingQuestions) ...[
+        const QuestionsCarouselShimmer(),
+        const SizedBox(height: 16),
+      ] else if (questions.isNotEmpty) ...[
         QuestionsCarousel(
           questions: questions,
           languageCode: context.x.dependencies.settingsBloc.state.settings.localization?.languageCode ?? 'uz',
@@ -443,7 +446,10 @@ class _UploadConfirmScreenState extends UploadConfirmState {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Questions carousel
-        if (questions.isNotEmpty) ...[
+        if (isLoadingQuestions) ...[
+          const QuestionsCarouselShimmer(),
+          const SizedBox(height: 20),
+        ] else if (questions.isNotEmpty) ...[
           QuestionsCarousel(
             questions: questions,
             languageCode: context.x.dependencies.settingsBloc.state.settings.localization?.languageCode ?? 'uz',
@@ -583,7 +589,7 @@ class _UploadConfirmScreenState extends UploadConfirmState {
             child: ClipRRect(
               borderRadius: const .only(topLeft: .circular(15), topRight: .circular(15)),
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: .only(
                   bottom: context.telegramWebApp.isSupported
                       ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
                       : 16,

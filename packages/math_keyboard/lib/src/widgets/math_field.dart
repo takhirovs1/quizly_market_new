@@ -28,6 +28,7 @@ class MathField extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.opensKeyboard = true,
+    this.keyboardBottomInset = 0,
   });
 
   /// The controller for the math field.
@@ -116,6 +117,15 @@ class MathField extends StatefulWidget {
   ///
   /// Defaults to `true`.
   final bool opensKeyboard;
+
+  /// Extra padding added below the on-screen math keyboard.
+  ///
+  /// Useful for platforms whose safe-area inset is not reported through
+  /// [MediaQuery] (e.g. the Telegram web app), so the bottom row of keys is not
+  /// clipped by the host chrome.
+  ///
+  /// Defaults to `0`.
+  final double keyboardBottomInset;
 
   @override
   _MathFieldState createState() => _MathFieldState();
@@ -322,6 +332,7 @@ class _MathFieldState extends State<MathField> with TickerProviderStateMixin {
             onSubmit: _submit,
             style: style,
             semantics: semantics,
+            padding: .only(bottom: 4 + widget.keyboardBottomInset, left: 4, right: 4),
             // Note that we need to pass the insets state like this because the
             // overlay context does not have the ancestor state.
             insetsState: MathKeyboardViewInsetsState.of(this.context),

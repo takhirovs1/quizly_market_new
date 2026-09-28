@@ -20,6 +20,7 @@ class UploadScreen extends StatelessWidget {
         backgroundColor: colors.scaffoldBackground,
         appBar: QuizAppBar(
           title: l10n.upload,
+          showBackButton: false,
           telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
         ),
         body: SafeArea(

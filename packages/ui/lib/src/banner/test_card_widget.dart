@@ -18,6 +18,7 @@ class TestCardWidget extends StatelessWidget {
     this.onBuyButtonPressed,
     this.onShareButtonPressed,
     this.onLikeButtonPressed,
+    this.onDeleteButtonPressed,
     this.isFree = false,
     this.isPurchased = false,
     this.isLiked = false,
@@ -38,6 +39,10 @@ class TestCardWidget extends StatelessWidget {
   final VoidCallback? onBuyButtonPressed;
   final VoidCallback? onShareButtonPressed;
   final VoidCallback? onLikeButtonPressed;
+
+  /// When non-null a trash icon is shown at the start of the action row
+  /// (used for draft tests the owner can delete).
+  final VoidCallback? onDeleteButtonPressed;
   final bool isFree;
   final bool isPurchased;
   final bool isLiked;
@@ -138,6 +143,16 @@ class TestCardWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (onDeleteButtonPressed != null) ...[
+                            IconButton(
+                              onPressed: onDeleteButtonPressed,
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                              icon: Icon(CupertinoIcons.delete, size: 20, color: colors.error),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
                           if (secondaryButtonText != null) ...[
                             CupertinoButton(
                               onPressed: onSecondaryButtonPressed ?? () {},

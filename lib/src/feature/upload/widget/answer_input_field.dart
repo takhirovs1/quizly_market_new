@@ -233,6 +233,11 @@ class _AnswerInputFieldState extends State<AnswerInputField> {
         keyboardType: widget.isNumeric ? MathKeyboardType.numberOnly : MathKeyboardType.expression,
         variables: _mathVariables,
         opensKeyboard: widget.interactionEnabled,
+        // Keep the bottom key row clear of the Telegram web app safe-area inset,
+        // which is not reported through MediaQuery.
+        keyboardBottomInset: context.telegramWebApp.isSupported
+            ? context.telegramWebApp.safeAreaInset.bottom.toDouble()
+            : 0,
         onChanged: (_) => widget.onChanged(_mathValue),
         onSubmitted: (_) => widget.onChanged(_mathValue),
         decoration: InputDecoration(

@@ -43,6 +43,19 @@ class MyUploadedTestsCubit extends Cubit<MyUploadedTestsCubitState> {
     }
   }
 
+  /// Deletes a test and removes it from the current list on success.
+  /// Rethrows so the caller can surface the error.
+  Future<void> deleteTest(String testId) async {
+    try {
+      await uploadRepository.deleteTest(testId);
+      final updated = state.tests.where((t) => t.id != testId).toList();
+      emit(state.copyWith(tests: updated, offset: updated.length));
+    } on Object catch (e, s) {
+      info('DELETE TEST CUBIT ERROR: $e $s');
+      rethrow;
+    }
+  }
+
   Future<void> filterByStatus(String? status) async {
     if (state.selectedStatus == status && state.status.isSuccess) return;
     await fetchTests(status: status, refresh: true);

@@ -24,7 +24,10 @@
       "Bash(grep -vE \"outdated|available\\\\\\)|discontinued|Resolving|Downloading|Got dependencies|newer versions|^$\")",
       "Bash(gh pr *)",
       "Bash(curl -s -o /dev/null -w '%{http_code} %{content_type}  option-graph /uploads/\\\\n' https://apiquizly.corelabs.uz/uploads/4cd9ecf1d71c4409ea4649d7936a5c0a.png)",
-      "Bash(grep -vE \"outdated|available\\\\\\)|discontinued|Resolving|Downloading|Got dependencies|newer versions|^Analyzing|^$\")"
+      "Bash(grep -vE \"outdated|available\\\\\\)|discontinued|Resolving|Downloading|Got dependencies|newer versions|^Analyzing|^$\")",
+      "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name\" -> haptic at \"NR}' lib/src/feature/upload/state/upload_confirm_state.dart)",
+      "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name}' lib/src/feature/upload/state/file_upload_state.dart)",
+      "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name}' lib/src/feature/upload/state/manual_upload_state.dart)"
     ]
   }
 }

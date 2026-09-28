@@ -8,6 +8,7 @@ export 'src/appbar/quiz_app_bar.dart';
 export 'src/auth/policy_text.dart';
 export 'src/auth/social_login_button.dart';
 export 'src/banner/mini_test_card_widget.dart';
+export 'src/banner/questions_carousel_shimmer.dart';
 export 'src/banner/test_card_shimmer.dart';
 export 'src/banner/test_card_widget.dart';
 export 'src/border/smooth_rectangle_border.dart';

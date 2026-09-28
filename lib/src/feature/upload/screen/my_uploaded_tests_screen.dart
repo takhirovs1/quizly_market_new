@@ -64,6 +64,8 @@ class _MyUploadedTestsScreenState extends MyUploadedTestsState {
                       onSecondaryButtonPressed: () => test.isPublished ? onShare(test) : onEdit(test),
                       buyButtonText: test.isPublished ? l10n.enterTest : l10n.publish,
                       onBuyButtonPressed: () => test.isPublished ? onEnterTest(test) : onPublish(test),
+                      // Drafts can be deleted; published tests keep the share/enter actions only.
+                      onDeleteButtonPressed: test.isDraft ? () => onDelete(test) : null,
                     );
                   },
                 ),

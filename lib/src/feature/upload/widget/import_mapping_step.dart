@@ -1052,7 +1052,14 @@ class _BottomBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(horizontalPadding, 10, horizontalPadding, 12),
+          padding: .only(
+            bottom: context.telegramWebApp.isSupported
+                ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 16
+                : 16,
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
           child: Row(
             children: [
               Expanded(
