@@ -71,3 +71,6 @@ packages/quizlymarket_landing/
 *.apks
 *.aab
 *.apk
+macos/build/
+macos/build/
+macos/build/
