@@ -37,6 +37,19 @@ abstract interface class IUploadRepository {
   /// Creates a draft test manually with questions and options (`POST /api/tests`).
   Future<ManualTestCreateResponse> createManualTest(ManualTestCreateRequest request);
 
+  /// Updates the test's sale price (`PUT /api/tests/:id`, metadata full replace).
+  ///
+  /// The PUT body is the create body **without** questions, so [name] must be
+  /// sent back every time. Allowed in any status; the backend rejects a [price]
+  /// below `min_test_price`. See `docs/test-upload-payment-client.md` §2.2.
+  Future<void> updateTestPrice({
+    required String testId,
+    required String name,
+    required int price,
+    required String locale,
+    String? description,
+  });
+
   /// Gets the publish quote for a draft test (`GET /api/tests/:id/publish-quote`).
   Future<PublishQuoteModel> getPublishQuote(String testId);
 
@@ -184,6 +197,28 @@ final class UploadRepositoryImpl implements IUploadRepository {
       return ManualTestCreateResponse.fromJson(response);
     } catch (e, s) {
       info('CREATE MANUAL TEST API ERROR: $e $s');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateTestPrice({
+    required String testId,
+    required String name,
+    required int price,
+    required String locale,
+    String? description,
+  }) async {
+    try {
+      final body = <String, Object?>{
+        'name': i18nText(name, locale),
+        if (description != null && description.isNotEmpty) 'description': i18nText(description, locale),
+        'price': price,
+        'is_free': false,
+      };
+      await apiClient.put('/api/tests/$testId', body: body);
+    } catch (e, s) {
+      info('UPDATE TEST PRICE API ERROR: $e $s');
       rethrow;
     }
   }

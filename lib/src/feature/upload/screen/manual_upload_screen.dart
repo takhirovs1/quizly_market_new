@@ -181,7 +181,7 @@ class _ManualUploadScreenState extends ManualUploadState {
       ),
       const SizedBox(height: 14),
 
-      // Field 4: Narxi (so'm) — 0/bo'sh → bepul
+      // Field 4: Narxi (so'm) — sale price buyers pay, must clear min_test_price.
       _buildFieldLabel(l10n.priceLabel),
       const SizedBox(height: 6),
       CustomTextFiled(
@@ -198,6 +198,17 @@ class _ManualUploadScreenState extends ManualUploadState {
         borderWidth: 1.2,
         borderRadius: .circular(12),
         contentPadding: const .symmetric(horizontal: 16, vertical: 14),
+      ),
+      const SizedBox(height: 6),
+      BlocBuilder<UploadPricingCubit, UploadPricingState>(
+        bloc: pricingCubit,
+        builder: (context, pricingState) => Text(
+          priceError ?? l10n.minTestPriceInfo(pricingState.pricing.minTestPrice.formatUzs),
+          style: textStyle.sfW400s14.copyWith(
+            color: priceError != null ? colors.error : colors.bannerSecondaryText,
+            fontSize: 13,
+          ),
+        ),
       ),
       const SizedBox(height: 14),
 

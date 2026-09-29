@@ -364,13 +364,19 @@ abstract class CreateTestQuestionsState extends State<CreateTestQuestionsScreen>
         );
       }
 
-      final price = widget.price;
+      // Customer tests can't be free (docs/test-upload-payment-client.md §1).
+      // Honour the owner's price when it clears the floor, otherwise fall back
+      // to the suggested price for the final question count.
+      final pricing = pricingCubit.state.pricing;
+      final resolvedPrice = (widget.price != null && widget.price! >= pricing.minTestPrice)
+          ? widget.price!
+          : pricing.suggestedPrice(questions.length);
       final request = ManualTestCreateRequest(
         name: widget.testName,
         locale: Localizations.localeOf(context).languageCode,
         description: widget.description,
-        price: price,
-        isFree: price == null || price == 0,
+        price: resolvedPrice,
+        isFree: false,
         questions: questionDtos,
       );
 

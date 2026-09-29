@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,6 +14,7 @@ import '../../my_tests/models/wallet_model.dart';
 import '../bloc/upload_confirm_cubit.dart';
 import '../bloc/upload_pricing_cubit.dart';
 import '../screen/upload_confirm_screen.dart';
+import 'file_upload_state.dart' show UZSFormatter;
 
 abstract class UploadConfirmState extends State<UploadConfirmScreen> {
   late final ValueNotifier<int> currentPage;
@@ -35,7 +38,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
     currentPage = ValueNotifier<int>(0);
 
     final repo = context.x.dependencies.repository.uploadRepository;
-    confirmCubit = UploadConfirmCubit(uploadRepository: repo);
+    confirmCubit = UploadConfirmCubit(uploadRepository: repo)..setSalePrice(_parsePrice(widget.price));
     pricingCubit = UploadPricingCubit(uploadRepository: repo)..fetchPricing();
 
     if (widget.testId != null && widget.testId!.isNotEmpty) {
@@ -111,6 +114,181 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
     confirmCubit.close();
     pricingCubit.close();
     super.dispose();
+  }
+
+  // ── Sale price ("Test narxi") ─────────────────────────────────────────
+
+  /// Digits-only parse of a possibly formatted price string ("20 000 so'm").
+  int? _parsePrice(String? raw) {
+    final digits = (raw ?? '').replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty) return null;
+    return int.tryParse(digits);
+  }
+
+  /// Sale price currently in effect (cubit state → route arg fallback).
+  int? get currentSalePrice => confirmCubit.state.salePrice ?? _parsePrice(widget.price);
+
+  /// Question count used for suggested-price math (quote → route arg fallback).
+  int get _questionCount {
+    final fromQuote = confirmCubit.state.quote?.questionCount ?? 0;
+    return fromQuote > 0 ? fromQuote : widget.questionCount;
+  }
+
+  /// Hard floor for the sale price (quote → pricing settings fallback).
+  int get minTestPrice => confirmCubit.state.quote?.minTestPrice ?? pricingCubit.state.pricing.minTestPrice;
+
+  /// Recommended sale price (quote's value → computed from pricing settings).
+  int get suggestedSalePrice {
+    final fromQuote = confirmCubit.state.quote?.suggestedPrice ?? 0;
+    return fromQuote > 0 ? fromQuote : pricingCubit.state.pricing.suggestedPrice(_questionCount);
+  }
+
+  /// Opens the sheet to change the sale price and persists it via `PUT /api/tests/:id`.
+  Future<void> onEditPrice() async {
+    final testId = widget.testId;
+    if (testId == null || testId.isEmpty) return;
+    context.telegramWebApp.hapticImpact(.light);
+
+    final min = minTestPrice;
+    final suggested = suggestedSalePrice;
+    final controller = TextEditingController(
+      text: currentSalePrice != null ? "${currentSalePrice!.splitPerThree} so'm" : '',
+    );
+    final errorText = ValueNotifier<String?>(null);
+
+    Future<void> submit() async {
+      final value = _parsePrice(controller.text);
+      if (value == null || value < min) {
+        errorText.value = context.x.l10n.priceBelowMinError(min.formatUzs);
+        return;
+      }
+      final navigator = Navigator.of(context);
+      final ok = await confirmCubit.updateSalePrice(
+        testId: testId,
+        name: widget.testName ?? '',
+        description: widget.description,
+        price: value,
+        locale: Localizations.localeOf(context).languageCode,
+      );
+      if (!mounted) return;
+      if (ok) {
+        navigator.pop();
+        context.x.showNotification(
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+          message: context.x.l10n.priceUpdated,
+        );
+      } else {
+        errorText.value = ErrorUtil.localizeError(context, confirmCubit.state.errorMessage);
+      }
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => Padding(
+        padding: .only(bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: BottomSheetView(
+          isCenterTitle: false,
+          onClose: () => Navigator.pop(sheetContext),
+          title: sheetContext.x.l10n.editSalePriceTitle,
+          child: Padding(
+            padding: const .fromLTRB(16, 16, 16, 20),
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
+              children: [
+                CustomTextFiled(
+                  controller: controller,
+                  hintText: "${suggested.splitPerThree} so'm",
+                  keyboardType: .number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(9),
+                    UZSFormatter(),
+                  ],
+                  style: sheetContext.x.textStyle.sfW500s16.copyWith(color: sheetContext.x.colors.text),
+                  fillColor: sheetContext.x.colors.buttonFill,
+                  enabledBorderColor: sheetContext.x.colors.transparent,
+                  borderColor: sheetContext.x.colors.primary,
+                  borderWidth: 1.2,
+                  borderRadius: .circular(12),
+                  contentPadding: const .symmetric(horizontal: 16, vertical: 14),
+                  onChanged: (_) => errorText.value = null,
+                ),
+                const SizedBox(height: 8),
+                ValueListenableBuilder<String?>(
+                  valueListenable: errorText,
+                  builder: (context, error, _) => Text(
+                    error ?? sheetContext.x.l10n.minTestPriceInfo(min.formatUzs),
+                    style: sheetContext.x.textStyle.sfW400s14.copyWith(
+                      color: error != null ? sheetContext.x.colors.error : sheetContext.x.colors.bannerSecondaryText,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () {
+                    controller
+                      ..text = "${suggested.splitPerThree} so'm"
+                      ..selection = .collapsed(offset: controller.text.length - 5);
+                    errorText.value = null;
+                  },
+                  behavior: .opaque,
+                  child: Row(
+                    mainAxisSize: .min,
+                    children: [
+                      Icon(Icons.refresh_rounded, size: 18, color: sheetContext.x.colors.primary),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${sheetContext.x.l10n.recommendedPrice}: ${suggested.formatUzs}',
+                        style: sheetContext.x.textStyle.sfW500s14.copyWith(color: sheetContext.x.colors.primary),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: .infinity,
+                  height: 48,
+                  child: BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
+                    bloc: confirmCubit,
+                    builder: (context, state) => FilledButton(
+                      onPressed: state.priceUpdateStatus.isLoading ? null : submit,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: sheetContext.x.colors.primary,
+                        shape: RoundedRectangleBorder(borderRadius: .circular(12)),
+                      ),
+                      child: state.priceUpdateStatus.isLoading
+                          ? SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator.adaptive(
+                                valueColor: AlwaysStoppedAnimation<Color>(sheetContext.x.colors.white),
+                              ),
+                            )
+                          : Text(
+                              sheetContext.x.l10n.save,
+                              style: sheetContext.x.textStyle.sfW600s16.copyWith(
+                                color: sheetContext.x.colors.white,
+                                fontWeight: .w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    controller.dispose();
+    errorText.dispose();
+    if (mounted) setState(() {});
   }
 
   void onReportError() {

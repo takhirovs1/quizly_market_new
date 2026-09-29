@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:octopus/octopus.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
 import '../bloc/import_mapping_cubit.dart';
 import '../bloc/upload_pricing_cubit.dart';
@@ -30,6 +31,9 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 
   bool showAuthorship = true;
 
+  /// Validation error for the sale-price field ("kamida N so'm"), or null.
+  String? priceError;
+
   /// 0 = meta form + file pick, 1 = column mapping wizard.
   int step = 0;
 
@@ -46,6 +50,7 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 
     universityController.addListener(_onMetaChanged);
     testNameController.addListener(_onMetaChanged);
+    priceController.addListener(_onPriceChanged);
   }
 
   @override
@@ -54,7 +59,9 @@ abstract class FileUploadState extends State<FileUploadScreen> {
     universityController.dispose();
     testNameController.dispose();
     descriptionController.dispose();
-    priceController.dispose();
+    priceController
+      ..removeListener(_onPriceChanged)
+      ..dispose();
 
     universityFocus.dispose();
     testNameFocus.dispose();
@@ -68,6 +75,10 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 
   void _onMetaChanged() => setState(() {});
 
+  void _onPriceChanged() {
+    if (priceError != null) setState(() => priceError = null);
+  }
+
   // ─── Guards ────────────────────────────────────────────────────────────────
 
   bool get isMetaValid => universityController.text.trim().isNotEmpty && testNameController.text.trim().isNotEmpty;
@@ -76,6 +87,9 @@ abstract class FileUploadState extends State<FileUploadScreen> {
     final raw = priceController.text.replaceAll(RegExp(r'\D'), '');
     return int.tryParse(raw);
   }
+
+  /// Hard floor for the sale price, from pricing settings ("Minimal narx").
+  int get minTestPrice => pricingCubit.state.pricing.minTestPrice;
 
   // ─── Navigation ────────────────────────────────────────────────────────────
 
@@ -142,11 +156,21 @@ abstract class FileUploadState extends State<FileUploadScreen> {
   void onConfirmMapping() {
     final mappingState = mappingCubit.state;
     if (!mappingState.canConfirm || !isMetaValid) return;
+
+    final price = priceSum;
+    // A typed price must clear the floor; blank falls back to suggested later.
+    if (price != null && price > 0 && price < minTestPrice) {
+      setState(() {
+        priceError = context.x.l10n.priceBelowMinError(minTestPrice.formatUzs);
+        step = 0;
+      });
+      priceFocus.requestFocus();
+      return;
+    }
+
     context.telegramWebApp.hapticImpact(.medium);
 
     ImportHandoff.put([for (final draft in mappingState.drafts) draft.toQuestionModel()]);
-
-    final price = priceSum;
     context.octopus.push(
       Routes.createTestQuestions,
       arguments: {

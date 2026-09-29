@@ -209,6 +209,17 @@ class _MetaStep extends StatelessWidget {
         keyboardType: .number,
         formatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9), UZSFormatter()],
       ),
+      const SizedBox(height: 6),
+      BlocBuilder<UploadPricingCubit, UploadPricingState>(
+        bloc: state.pricingCubit,
+        builder: (context, pricingState) => Text(
+          state.priceError ?? l10n.minTestPriceInfo(pricingState.pricing.minTestPrice.formatUzs),
+          style: textStyle.sfW400s14.copyWith(
+            color: state.priceError != null ? colors.error : colors.bannerSecondaryText,
+            fontSize: 13,
+          ),
+        ),
+      ),
       const SizedBox(height: 14),
 
       // Mualliflikni ko'rsatish

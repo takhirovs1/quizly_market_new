@@ -8,6 +8,9 @@ class PublishQuoteModel {
     required this.perQuestionPrice,
     required this.publishFee,
     required this.cashbackPercent,
+    required this.suggestedQuestionPrice,
+    required this.suggestedPrice,
+    required this.minTestPrice,
     this.publishedAt,
   });
 
@@ -26,6 +29,9 @@ class PublishQuoteModel {
       perQuestionPrice: (data['per_question_price'] as num?)?.toInt() ?? 100,
       publishFee: (data['publish_fee'] as num?)?.toInt() ?? 0,
       cashbackPercent: (data['cashback_percent'] as num?)?.toInt() ?? 20,
+      suggestedQuestionPrice: (data['suggested_question_price'] as num?)?.toInt() ?? 200,
+      suggestedPrice: (data['suggested_price'] as num?)?.toInt() ?? 0,
+      minTestPrice: (data['min_test_price'] as num?)?.toInt() ?? 5000,
       publishedAt: publishedAt,
     );
   }
@@ -37,6 +43,15 @@ class PublishQuoteModel {
   final int perQuestionPrice;
   final int publishFee;
   final int cashbackPercent;
+
+  /// Per-question hint used to seed the sale price ("1 ta savol narxi").
+  final int suggestedQuestionPrice;
+
+  /// Suggested sale price for the test's current question count.
+  final int suggestedPrice;
+
+  /// Hard floor for the sale price ("Minimal narx").
+  final int minTestPrice;
   final DateTime? publishedAt;
 
   Map<String, Object?> toJson() => {
@@ -47,6 +62,9 @@ class PublishQuoteModel {
     'per_question_price': perQuestionPrice,
     'publish_fee': publishFee,
     'cashback_percent': cashbackPercent,
+    'suggested_question_price': suggestedQuestionPrice,
+    'suggested_price': suggestedPrice,
+    'min_test_price': minTestPrice,
     'published_at': publishedAt?.toIso8601String(),
   };
 }

@@ -27,7 +27,11 @@
       "Bash(grep -vE \"outdated|available\\\\\\)|discontinued|Resolving|Downloading|Got dependencies|newer versions|^Analyzing|^$\")",
       "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name\" -> haptic at \"NR}' lib/src/feature/upload/state/upload_confirm_state.dart)",
       "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name}' lib/src/feature/upload/state/file_upload_state.dart)",
-      "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name}' lib/src/feature/upload/state/manual_upload_state.dart)"
+      "Bash(awk '/Future<void> on|void on/{name=$0; ln=NR} /hapticImpact/{print ln\": \"name}' lib/src/feature/upload/state/manual_upload_state.dart)",
+      "Bash(which fvm *)",
+      "Bash(cat .fvmrc)",
+      "Bash(ls .fvm/)",
+      "Bash(tee /private/tmp/claude-501/-Users-samandar-Documents-Private-quizly-market-new/212b4a90-a842-4805-94bb-41550373a5ec/scratchpad/flutter_run.log)"
     ]
   }
 }

@@ -143,8 +143,12 @@ class _UploadConfirmScreenState extends UploadConfirmState {
           languageCode: context.x.dependencies.settingsBloc.state.settings.localization?.languageCode ?? 'uz',
           currentPage: currentPage,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
       ],
+
+      // 5b. Editable sale price ("Test narxi"), sat right under the preview.
+      _buildSalePriceCard(context),
+      const SizedBox(height: 16),
 
       // 6. Benefits List with dynamic pricing from Cubit
       BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
@@ -455,8 +459,12 @@ class _UploadConfirmScreenState extends UploadConfirmState {
             languageCode: context.x.dependencies.settingsBloc.state.settings.localization?.languageCode ?? 'uz',
             currentPage: currentPage,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
         ],
+
+        // Editable sale price ("Test narxi"), sat right under the preview.
+        _buildSalePriceCard(context),
+        const SizedBox(height: 20),
 
         // Payment section card
         Container(
@@ -553,6 +561,65 @@ class _UploadConfirmScreenState extends UploadConfirmState {
           ),
         ),
       ],
+    );
+  }
+
+  /// Sale-price ("Test narxi") card shown next to the questions preview. The
+  /// owner can retune the buyers' price here; it persists via `PUT /api/tests/:id`.
+  Widget _buildSalePriceCard(BuildContext context) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+    final l10n = context.x.l10n;
+
+    return BlocBuilder<UploadConfirmCubit, UploadConfirmCubitState>(
+      bloc: confirmCubit,
+      builder: (context, _) {
+        final price = currentSalePrice;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: colors.cardBackground2,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
+          ),
+          child: Row(
+            children: [
+              Assets.lib.vectors.dollarIcon.svg(
+                package: 'ui',
+                width: 22,
+                height: 22,
+                colorFilter: ColorFilter.mode(colors.primary, .srcIn),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.salePriceLabel, style: textStyle.sfW400s14.copyWith(color: colors.bannerSecondaryText)),
+                    const SizedBox(height: 2),
+                    Text(
+                      price != null ? price.formatUzs : '—',
+                      style: textStyle.sfW700s18.copyWith(color: colors.text, fontWeight: .w700),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton.icon(
+                onPressed: onEditPrice,
+                icon: Icon(Icons.edit_outlined, size: 18, color: colors.primary),
+                label: Text(
+                  l10n.edit,
+                  style: textStyle.sfW600s16.copyWith(color: colors.primary, fontSize: 14, fontWeight: .w600),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: .circular(10)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

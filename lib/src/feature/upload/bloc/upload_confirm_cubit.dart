@@ -25,6 +25,38 @@ class UploadConfirmCubit extends Cubit<UploadConfirmCubitState> {
     return super.close();
   }
 
+  /// Seeds the current sale price shown on the screen (from the created test).
+  void setSalePrice(int? price) => emit(state.copyWith(salePrice: price));
+
+  /// Edits the test's sale price (`PUT /api/tests/:id`).
+  ///
+  /// [name] is required by the backend (the metadata PUT is a full replace).
+  /// Returns `true` on success so the caller can close the editor.
+  Future<bool> updateSalePrice({
+    required String testId,
+    required String name,
+    required int price,
+    required String locale,
+    String? description,
+  }) async {
+    emit(state.copyWith(priceUpdateStatus: StateStatus.loading));
+    try {
+      await uploadRepository.updateTestPrice(
+        testId: testId,
+        name: name,
+        price: price,
+        locale: locale,
+        description: description,
+      );
+      emit(state.copyWith(priceUpdateStatus: StateStatus.success, salePrice: price));
+      return true;
+    } on Object catch (e, s) {
+      info('UPDATE SALE PRICE ERROR: $e $s');
+      emit(state.copyWith(priceUpdateStatus: StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(e)));
+      return false;
+    }
+  }
+
   /// Fetches publish quote for the draft test (`GET /api/tests/:id/publish-quote`).
   Future<void> fetchQuote(String testId) async {
     emit(state.copyWith(quoteStatus: StateStatus.loading));
