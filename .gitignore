@@ -33,6 +33,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/macos/Flutter/ephemeral/flutter_export_environment.sh
+/macos/Flutter/ephemeral/Flutter-Generated.xcconfig
 
 # Symbolication related
 app.*.symbols
@@ -59,3 +61,16 @@ requests/
 
 # Pana reports
 .pana_reports/
+
+# Generated web landing directory
+/web/landing/
+packages/quizlymarket_landing/
+
+
+# Android build outputs
+*.apks
+*.aab
+*.apk
+macos/build/
+build/
+**/local.properties

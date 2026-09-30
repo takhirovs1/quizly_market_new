@@ -16,7 +16,7 @@ ifndef u
 	$(error ❌ Error: Branch name (u) is required. Usage: make push m="your commit message" u=branch_name)
 endif
 	@echo "🔧 Formatting Dart files before push..."
-	@fvm dart format --fix -l 120 lib/ test/ packages/
+	@$(DART) format --fix -l 120 lib/ test/ packages/
 	@echo "📦 Adding changes..."
 	@git add .
 	@echo "📝 Committing with message: $(m)"

@@ -1,5 +1,19 @@
 import 'package:logbook/logbook.dart';
 
+extension ParseStringToDateTime on String {
+  DateTime? toDateTimeOrNull() => DateTime.tryParse(this);
+}
+
+/// JSON map values (`String` ISO-8601) → [DateTime?].
+extension ObjectJsonDateTime on Object? {
+  DateTime? get toDateTimeOrNull {
+    final v = this;
+    if (v == null) return null;
+    if (v is String) return v.toDateTimeOrNull();
+    return null;
+  }
+}
+
 extension ParseToInt on String {
   /// Parse the string to an integer.
   int? toIntOrNull() => int.tryParse(this);
@@ -17,6 +31,11 @@ extension StringX on String {
 
   String ellipsis([int len = 10, bool showDot = true]) =>
       length > len ? '${substring(0, len)}${showDot ? '...' : ''} ' : this;
+
+  String toUZSString() {
+    final s = int.tryParse(this) ?? 0;
+    return '${s.abs().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]} ')} so\'m';
+  }
 }
 
 extension StringNullX on String? {

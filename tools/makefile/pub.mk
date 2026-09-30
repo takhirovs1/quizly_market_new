@@ -19,7 +19,7 @@ version: ## Check Flutter version
 	##       ##       ##     ##    ##       ##    ##       ##   ##
 	##       ##       ##     ##    ##       ##    ##       ##    ##
 	##       ########  #######     ##       ##    ######## ##     ##
-	@fvm flutter --version
+	@$(FLUTTER) --version
 
 # ──────────────────────────────────
 # 🧹 CLEANING COMMANDS
@@ -27,16 +27,27 @@ version: ## Check Flutter version
 .PHONY: clean_all
 clean_all: ## Clean the project and remove all generated files
 	@echo "🗑️ Cleaning the project..."
-	@fvm flutter clean
+	@$(FLUTTER) clean
 	@rm -f coverage.*
 	@rm -rf dist bin out build
 	@rm -rf coverage .dart_tool .packages pubspec.lock
 	@echo "✅ Project successfully cleaned"
 
+.PHONY: clean_all-win
+clean_all-win: ## Clean the project and remove all generated files (Windows-safe)
+	@echo "🗑️ Cleaning the project..."
+	@$(FLUTTER) clean
+	@rm -f coverage.* || true
+	@rm -rf dist bin out build || true
+	@rm -rf coverage .packages pubspec.lock || true
+	@rm -rf .dart_tool || true
+	@echo "✅ Project successfully cleaned"
+
+
 .PHONY: fcg
 fcg: ## Flutter clean, get dependencies, and format
-	@fvm flutter clean
-	@fvm flutter pub get
+	@$(FLUTTER) clean
+	@$(FLUTTER) pub get
 
 .PHONY: c_get
 c_get: clean_all get ## Clean all and get dependencies
@@ -46,74 +57,65 @@ c_get: clean_all get ## Clean all and get dependencies
 # ──────────────────────────────────
 .PHONY: upgrade
 upgrade: ## Upgrade all dependencies
-	@fvm flutter pub upgrade
+	@$(FLUTTER) pub upgrade
 
 .PHONY: upgrade-major
 upgrade-major: get ## Upgrade to major versions
-	@fvm flutter pub upgrade --major-versions
+	@$(FLUTTER) pub upgrade --major-versions
 
 .PHONY: outdated
 outdated: get ## Check for outdated dependencies
-	@fvm flutter pub outdated
+	@$(FLUTTER) pub outdated
 
 .PHONY: dependencies
 dependencies: get ## Check all types of outdated dependencies
-	@fvm flutter pub outdated --dependency-overrides \
+	@$(FLUTTER) pub outdated --dependency-overrides \
 		--dev-dependencies --prereleases --show-all --transitive
 
 .PHONY: get
 get: ## Get dependencies
-	@fvm flutter pub get
+	@$(FLUTTER) pub get
 
 # ──────────────────────────────────
 # 🎨 CODE STYLE & FORMATTING
 # ──────────────────────────────────
 .PHONY: format
 format: ## Format Dart code to line length 120
-	@fvm dart format -l 120 lib/ test/ packages/ data/
+	@$(DART) format -l 120 lib/ test/ packages/
 
 # ──────────────────────────────────
 # ⚡ CODE GENERATION
 # ──────────────────────────────────
 .PHONY: fluttergen
 fluttergen: ## Generate assets with flutter_gen
-	@fvm dart pub global activate flutter_gen
+	@$(DART) pub global activate flutter_gen
 	@fluttergen -c packages/ui/pubspec.yaml
 
 .PHONY: l10n
 l10n: ## Generate localization files
-	@dart pub global activate sheety_localization
-	@dart pub global run sheety_localization:generate \
-		--credentials=packages/localization/credentials.json \
-		--sheet=1_tACbV1NUU-7-AmZNYWXkHbZHM9PN2WjjSfNYr0tZhQ \
-		--lib=./packages/localization/lib/ \
-		--arb=src/l10n \
-		--gen=src/generated \
-		--prefix=intl \
-	  --format
+	@cd packages/localization && flutter gen-l10n
 
 .PHONY: l10n-untranslated
 l10n-untranslated: ## Generate untranslated localization files
-	@fvm dart pub global activate intl_utils
-	@(fvm dart pub global run intl_utils:generate --untranslated)
-	@(fvm flutter gen-l10n --arb-dir lib/src/common/localization --output-dir lib/src/common/localization/generated --template-arb-file intl_en.arb --untranslated-messages-file=untranslated.json)
+	@$(DART) pub global activate intl_utils
+	@($(DART) pub global run intl_utils:generate --untranslated)
+	@($(FLUTTER) gen-l10n --arb-dir lib/src/common/localization --output-dir lib/src/common/localization/generated --template-arb-file intl_en.arb --untranslated-messages-file=untranslated.json)
 
 .PHONY: untranslated
 untranslated: l10n-untranslated
 
 .PHONY: build_runner
 build_runner: ## Run build_runner to generate code
-	@fvm dart run build_runner build --delete-conflicting-outputs --release #// --build-filter=lib/src/common/constant/pubspec.yaml.g.dart
+	@$(DART) run build_runner build --delete-conflicting-outputs --release #// --build-filter=lib/src/common/constant/pubspec.yaml.g.dart
 
 .PHONY: codegen
 codegen: ## Run all code generation tasks
 	@echo "🔄 Generating code..."
-	@fvm flutter pub get
+	@$(FLUTTER) pub get
 	@make build_runner
 	@make fluttergen
 	@make l10n
 	@make format
-	@clear
 	@echo "✅ Code generated successfully"
 
 .PHONY: gen
@@ -124,7 +126,7 @@ gen: codegen fcg ## Alias for code generation
 # ──────────────────────────────────
 .PHONY: build_vec
 build_vec: ## Build vector graphics from SVG files
-	@fvm dart run tools/dart/vector_generator.dart $(r)
+	@$(DART) run tools/dart/vector_generator.dart $(r)
 
 vec: r ?= false
 vec: build_vec fluttergen fcg ## Build vectors and regenerate assets
@@ -134,11 +136,13 @@ vec: build_vec fluttergen fcg ## Build vectors and regenerate assets
 # ──────────────────────────────────
 .PHONY: generate-icons
 generate-icons: ## Generate app icons (flutter_launcher_icons)
-	@fvm dart run flutter_launcher_icons -f flutter_launcher_icons.yaml
+	@$(DART) pub global activate flutter_launcher_icons
+	@$(DART) pub global run flutter_launcher_icons -f flutter_launcher_icons.yaml
 
 .PHONY: generate-splash
 generate-splash: ## Generate splash screen (flutter_native_splash)
-	@fvm dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+	@$(FLUTTER) pub get
+	@$(FLUTTER) pub run flutter_native_splash:create --path=flutter_native_splash.yaml
 
 # ──────────────────────────────────
 # 🍎 CocoaPods

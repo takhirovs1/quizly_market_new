@@ -1,13 +1,20 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:localization/localization.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
+import 'package:share_plus/share_plus.dart';
 
-import '../../feature/settings/bloc/settings_bloc.dart';
+import '../../../core/telegram/telegram_service.dart';
+import '../constant/constant.dart';
 import '../dependency/model/dependencies.dart';
 import '../dependency/widget/dependencies_scope.dart';
 import '../util/screen_util.dart';
+
+export '../../../core/telegram/telegram_service.dart';
 
 extension BuildContextX on BuildContext {
   /// [Build] extension
@@ -25,19 +32,17 @@ extension type Build(BuildContext context) {
   AppTypography get textStyle => theme.appTextStyles;
 
   /// [isDarkMode] extension
-  bool get isDarkMode => theme.brightness == Brightness.dark;
+  bool get isDarkMode => theme.brightness == .dark;
 
   /// [Dependencies] extension
   Dependencies get dependencies => DependenciesScope.of(context);
 
   /// [Localization] extension
-  AppLocalization get l10n => AppLocalization.of(context);
+  AppLocalization get l10n => .of(context);
 
   /// [setLocalization] extension
   void setLocalization(Locale localization) => dependencies.settingsBloc.add(
-    SettingsEvent.updateSettings(
-      settings: dependencies.settingsBloc.state.settings.copyWith(localization: localization),
-    ),
+    .updateSettings(settings: dependencies.settingsBloc.state.settings.copyWith(localization: localization)),
   );
 
   /// [kSize] extension
@@ -60,6 +65,8 @@ extension type Build(BuildContext context) {
 
   /// [double] extension.
   double get bottomViewInsets => MediaQuery.viewInsetsOf(context).bottom + MediaQuery.paddingOf(context).bottom;
+
+  dynamic get appMetadata => null;
 
   /// [showCustomDialog] extension from [showGeneralDialog]
   Future<void> showCustomDialog({required Widget dialog, bool barrierDismissible = true}) => showGeneralDialog(
@@ -87,7 +94,7 @@ extension type Build(BuildContext context) {
           dimension: 32,
           child: RepaintBoundary(
             key: ValueKey('loading_dialog'),
-            child: CircularProgressIndicator(strokeCap: StrokeCap.round),
+            child: CircularProgressIndicator(strokeCap: .round),
           ),
         ),
       ),
@@ -101,18 +108,19 @@ extension type Build(BuildContext context) {
   /// [showNotification] extension from [CustomNotification]
   void showNotification({
     required String message,
-    Color? backgroundColor,
+    Color? iconBackgroundColor,
     Color? textColor,
-    bool isSuccess = false,
+    bool isError = false,
     TextStyle? textStyle,
     String? errorStatusCode,
+    double? top,
   }) => CustomNotification.show(
     context: context,
     message: message,
-    backgroundColor: backgroundColor,
-    isSuccess: isSuccess,
+    iconBackgroundColor: iconBackgroundColor,
+    isError: isError,
     textStyle: textStyle,
-    errorStatusCode: errorStatusCode,
+    top: top,
   );
 
   /// Obtain the nearest widget of the given type T,
@@ -150,4 +158,127 @@ extension type Build(BuildContext context) {
             'a $T of the exact type',
         'out_of_scope',
       ));
+}
+
+/// Octopus navigation shortcuts.
+extension OctopusNavigationX on Octopus {
+  /// Shorthand for [pop]. So you can call `context.octopus.p()`.
+  Future<OctopusNode?> p() => pop();
+
+  /// Replacement-style navigation for Octopus (replaces the last route).
+  Future<OctopusNode> pushReplacement(OctopusRoute route, {Map<String, String>? arguments}) =>
+      upsertLast(route, arguments: arguments);
+
+  /// Replacement-style navigation for Octopus (replaces the last route).
+  Future<OctopusNode> pushReplacementNamed(String name, {Map<String, String>? arguments}) =>
+      upsertLastNamed(name, arguments: arguments);
+}
+
+extension BottomSheetPopX on BuildContext {
+  /// Pop a modal (bottom sheet / dialog) using Flutter's [Navigator].
+  void bottomSheetPop<T extends Object?>([T? result]) => Navigator.of(this).pop<T>(result);
+}
+
+extension TelegramWebAppX on BuildContext {
+  TelegramService get telegramWebApp => TelegramService.instance;
+
+  void close() => telegramWebApp.close();
+  void ready() => telegramWebApp.ready();
+  void expand() => telegramWebApp.expand();
+  void requestFullscreen() => telegramWebApp.requestFullscreen();
+  void exitFullscreen() => telegramWebApp.exitFullscreen();
+  bool get isFullscreen => telegramWebApp.isFullscreen;
+  bool get isTelegramSupported => telegramWebApp.isSupported;
+  void disableVerticalSwipes() => telegramWebApp.disableVerticalSwipes();
+  void disableClosingConfirmation() => telegramWebApp.disableClosingConfirmation();
+  void enableClosingConfirmation() => telegramWebApp.enableClosingConfirmation();
+
+  void setupTelegramBackButton([void Function()? onPressed]) {
+    if (!kIsWeb) return;
+    try {
+      if (!telegramWebApp.isSupported) return;
+      final callback = onPressed ?? _handleTelegramBackButtonPressed;
+      TelegramBackButtonManager.pushCallback(callback);
+    } on Object catch (_) {
+      log('Failed to show Telegram back button');
+    }
+  }
+
+  void teardownTelegramBackButton([void Function()? onPressed]) {
+    if (!kIsWeb) return;
+    try {
+      if (!telegramWebApp.isSupported) return;
+      final callback = onPressed ?? _handleTelegramBackButtonPressed;
+      TelegramBackButtonManager.popCallback(callback);
+    } on Object catch (_) {
+      log('Failed to hide Telegram back button');
+    }
+  }
+
+  void _handleTelegramBackButtonPressed() {
+    telegramWebApp.hapticImpact(.light);
+    if (!mounted) return;
+    octopus.pop();
+  }
+
+  void shareTest(
+    String title,
+    String universityName,
+    String description,
+    String price,
+    String questionAmount, {
+    String? code,
+  }) {
+    final link = code != null && code.isNotEmpty
+        ? '${Constant.miniAppUrl}?startapp=$code'
+        : '${Constant.miniAppUrl}?startapp=1234567';
+    final message = x.l10n.shareTestCopy(title, description, questionAmount, link);
+    if (telegramWebApp.isSupported) {
+      final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
+      telegramWebApp.openTelegramLink(shareLink);
+    } else {
+      SharePlus.instance.share(ShareParams(text: message));
+    }
+  }
+}
+
+/// A stack-based manager for the global Telegram Web App back button.
+///
+/// Ensures that only the topmost registered callback is active at any time,
+/// avoiding duplicate triggers when multiple screens register back handlers.
+class TelegramBackButtonManager {
+  TelegramBackButtonManager._();
+
+  static final List<void Function()> _callbacks = [];
+
+  static void pushCallback(void Function() callback) {
+    if (_callbacks.contains(callback)) return; // Prevent duplicate additions of the same callback
+    if (_callbacks.isNotEmpty) {
+      // Remove the previous active callback from the click handler
+      TelegramService.instance.removeBackButtonListener(_callbacks.last);
+    }
+    _callbacks.add(callback);
+    TelegramService.instance.showBackButton(callback);
+  }
+
+  static void popCallback(void Function() callback) {
+    final index = _callbacks.indexOf(callback);
+    if (index == -1) return;
+
+    final wasTop = index == _callbacks.length - 1;
+    if (wasTop) {
+      TelegramService.instance.removeBackButtonListener(callback);
+    } else {
+      TelegramService.instance.removeBackButtonListener(callback);
+    }
+    _callbacks.removeAt(index);
+
+    if (wasTop) {
+      if (_callbacks.isNotEmpty) {
+        TelegramService.instance.showBackButton(_callbacks.last);
+      } else {
+        TelegramService.instance.hideBackButton(callback);
+      }
+    }
+  }
 }

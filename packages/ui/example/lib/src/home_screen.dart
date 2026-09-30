@@ -71,21 +71,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'ActionListTile',
                 children: [
                   ActionListTile(
-                    icon: Icons.logout,
+                    icon: const Icon(Icons.logout),
                     leading: 'Log out',
                     onPressed: () {},
                     iconColor: Theme.of(context).appColors.error,
                     textColor: Theme.of(context).appColors.error,
+                    comingSoonText: '',
+                    connectedText: '',
                   ),
 
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
                     child: ActionListTile(
-                      icon: Icons.attach_money_rounded,
+                      icon: const Icon(Icons.attach_money_rounded),
                       leading: 'Add money',
                       onPressed: () {},
                       iconColor: Theme.of(context).appColors.onPrimary,
                       textColor: Theme.of(context).appColors.onPrimary,
+                      comingSoonText: '',
+                      connectedText: '',
                     ),
                   ),
                 ],
@@ -123,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'BannerWidget',
                 children: [
                   Center(
-                    child: BannerWidget(
+                    child: TestCardWidget(
                       title: 'Test nomi',
                       companyName: 'Tashkilot nomi',
                       description: 'Test description Test description Test description Test description',
@@ -132,12 +136,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       buyButtonText: 'Sotib olish',
                       onBuyButtonPressed: () {},
                       onShareButtonPressed: () {},
+                      isLiked: false,
+                      onLikeButtonPressed: () {},
+                      textBought: 'Sotib olindi',
                     ),
                   ),
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
                     child: Center(
-                      child: BannerWidget(
+                      child: TestCardWidget(
                         title: 'Test nomi',
                         companyName: 'Tashkilot nomi',
                         description: 'Test description Test description Test description Test description',
@@ -146,6 +153,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         buyButtonText: 'Sotib olish',
                         onBuyButtonPressed: () {},
                         onShareButtonPressed: () {},
+                        isLiked: true,
+                        onLikeButtonPressed: () {},
+                        textBought: 'Sotib olindi',
                       ),
                     ),
                   ),
@@ -153,23 +163,25 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               SectionWidget(
-                title: 'ErrorDialog',
+                title: 'SuccessDialog (Error)',
                 children: [
-                  ErrorDialog(
+                  SuccessDialog(
                     title: 'Test sotib olinmadi!',
                     description: 'Test description Test description Test description Test description',
                     cancelButtonText: 'Chiqish',
                     successButtonText: 'Qayta urinish',
+                    isError: true,
                     onCancelButtonPressed: () {},
                     onSuccessButtonPressed: () {},
                   ),
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
-                    child: ErrorDialog(
+                    child: SuccessDialog(
                       title: 'Test sotib olinmadi!',
                       description: 'Test description Test description Test description Test description',
                       cancelButtonText: 'Chiqish',
                       successButtonText: 'Qayta urinish',
+                      isError: true,
                       onCancelButtonPressed: () {},
                       onSuccessButtonPressed: () {},
                     ),
@@ -208,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 12,
                     spacing: 12,
                     children: [
-                      MiniBannerWidget(
+                      MiniTestCardWidget(
                         title: 'Test nomi',
                         companyName: 'Tashkilot nomi',
                         description: 'Test description Test description Test description Test description ',
@@ -217,10 +229,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         buyButtonText: 'Sotib olish',
                         onBuyButtonPressed: () {},
                         onShareButtonPressed: () {},
+                        onLikeButtonPressed: () {},
+                        isLiked: false,
                       ),
                       Theme(
                         data: Theme.of(context).copyWith(brightness: Brightness.dark),
-                        child: MiniBannerWidget(
+                        child: MiniTestCardWidget(
                           title: 'Test nomi',
                           companyName: 'Tashkilot nomi',
                           description: 'Test description Test description Test description Test description ',
@@ -229,6 +243,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           buyButtonText: 'Sotib olish',
                           onBuyButtonPressed: () {},
                           onShareButtonPressed: () {},
+                          onLikeButtonPressed: () {},
+                          isLiked: true,
                         ),
                       ),
                     ],
@@ -255,10 +271,18 @@ class _HomeScreenState extends State<HomeScreen> {
               SectionWidget(
                 title: 'QuizNavigationBar',
                 children: [
-                  QuizNavigationBar(currentIndex: 0, onTap: (index) {}),
+                  QuizNavigationBar(
+                    labels: const ['Home', 'Market', 'Downloads', 'Profile'],
+                    currentIndex: 0,
+                    onTap: (index) {},
+                  ),
                   Theme(
                     data: Theme.of(context).copyWith(brightness: Brightness.dark),
-                    child: QuizNavigationBar(currentIndex: 1, onTap: (index) {}),
+                    child: QuizNavigationBar(
+                      labels: const ['Home', 'Market', 'Downloads', 'Profile'],
+                      currentIndex: 1,
+                      onTap: (index) {},
+                    ),
                   ),
                 ],
               ),

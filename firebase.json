@@ -4,24 +4,33 @@
       "android": {
         "default": {
           "projectId": "test-9cf8b",
-          "appId": "1:568369386495:android:dcf3206f6a31f9431e4dca",
+          "appId": "1:568369386495:android:d6db9921a4db4cd81e4dca",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "ios": {
         "default": {
           "projectId": "test-9cf8b",
-          "appId": "1:568369386495:ios:9b83ac266c2e015e1e4dca",
+          "appId": "1:568369386495:ios:39d9d30ea71c3f821e4dca",
           "uploadDebugSymbols": true,
           "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "test-9cf8b",
+          "appId": "1:568369386495:ios:39d9d30ea71c3f821e4dca",
+          "uploadDebugSymbols": true,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
         }
       },
       "dart": {
         "lib/firebase_options.dart": {
           "projectId": "test-9cf8b",
           "configurations": {
-            "android": "1:568369386495:android:dcf3206f6a31f9431e4dca",
-            "ios": "1:568369386495:ios:9b83ac266c2e015e1e4dca",
+            "android": "1:568369386495:android:d6db9921a4db4cd81e4dca",
+            "ios": "1:568369386495:ios:39d9d30ea71c3f821e4dca",
+            "macos": "1:568369386495:ios:39d9d30ea71c3f821e4dca",
             "web": "1:568369386495:web:a9943580beaebbfa1e4dca"
           }
         }
@@ -29,7 +38,7 @@
     }
   },
   "hosting": {
-    "public": "public",
+    "public": "build/web",
     "ignore": [
       "firebase.json",
       "**/.*",

@@ -7,12 +7,19 @@ mixin AppDebugConfigInitialization on State<App> {
   OverlayEntry? _themeToggleOverlay;
   OverlayEntry? _debugButtonOverlay;
 
+  /// Whether the debug overlays are currently inserted — re-inserting an
+  /// already-present [OverlayEntry] (or removing a never-inserted one) throws.
+  bool _debugOverlaysInserted = false;
+
   late LogbookConfig _logbookConfig;
 
-  DebugConfig get debugConfig => context.x.dependencies.appDebugSettings.value;
+  /// Captured in [initState] so [dispose] never looks up an ancestor scope.
+  late final ValueNotifier<DebugConfig> _appDebugSettings;
+
+  DebugConfig get debugConfig => _appDebugSettings.value;
 
   void _setThemeMode(bool isDarkMode) => SettingsScope.of(context).add(
-    SettingsEvent.updateSettings(
+    .updateSettings(
       settings: SettingsScope.settingsOf(context).copyWith(themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light),
     ),
   );
@@ -28,18 +35,26 @@ mixin AppDebugConfigInitialization on State<App> {
           bottom: 8,
           left: 8,
           child: IconButton(
-            onPressed: () =>
-                context.x.dependencies.appDebugSettings.value = debugConfig.copyWith(debuggerEnabled: false),
+            onPressed: () => context.x.dependencies.appDebugSettings.value = debugConfig.copyWith(
+              debuggerEnabled: false,
+              thunderEnabled: false,
+            ),
             icon: const Icon(Icons.bug_report_rounded),
           ),
         ),
       );
 
-      _overlayKey.currentState?.insert(_themeToggleOverlay!);
-      _overlayKey.currentState?.insert(_debugButtonOverlay!);
-    } else {
+      final overlay = _overlayKey.currentState;
+      if (!_debugOverlaysInserted && overlay != null) {
+        overlay
+          ..insert(_themeToggleOverlay!)
+          ..insert(_debugButtonOverlay!);
+        _debugOverlaysInserted = true;
+      }
+    } else if (_debugOverlaysInserted) {
       _themeToggleOverlay?.remove();
       _debugButtonOverlay?.remove();
+      _debugOverlaysInserted = false;
     }
 
     _logbookConfig = LogbookConfig(
@@ -50,6 +65,11 @@ mixin AppDebugConfigInitialization on State<App> {
       enabled: debugConfig.debuggerEnabled,
     );
 
+    // logbook >=0.6 reads the live config from the static [Logbook.config];
+    // the widget's `config:` prop is only applied once at mount, so runtime
+    // enable/disable must be pushed through the static or nothing happens.
+    Logbook.config = _logbookConfig;
+
     // For enabling/disabling [Thunder, Logbook]
     setState(() {});
   });
@@ -59,22 +79,27 @@ mixin AppDebugConfigInitialization on State<App> {
   void initState() {
     super.initState();
 
-    context.x.dependencies.appDebugSettings.addListener(_appSettingsListener);
+    _appDebugSettings = context.x.dependencies.appDebugSettings;
+    _appDebugSettings.addListener(_appSettingsListener);
+    _appSettingsListener();
 
     _logbookConfig = LogbookConfig(
       enabled: debugConfig.debuggerEnabled,
       debugFileName: '${context.x.dependencies.authenticationController.state.user.id ?? 'unauthenticated'}.csv',
       multipartFileFields: {'chat_id': debugConfig.telegramChatId ?? '', 'caption': '#quizly_market'},
-      uri: Uri.parse('${Config.telegramApiBaseUrl}/bot${debugConfig.telegramBotToken ?? ''}/sendDocument'),
+      uri: .parse('${Config.telegramApiBaseUrl}/bot${debugConfig.telegramBotToken ?? ''}/sendDocument'),
     );
   }
 
   @override
   void dispose() {
-    _themeToggleOverlay?.remove();
-    _debugButtonOverlay?.remove();
+    if (_debugOverlaysInserted) {
+      _themeToggleOverlay?.remove();
+      _debugButtonOverlay?.remove();
+      _debugOverlaysInserted = false;
+    }
 
-    context.x.dependencies.appDebugSettings.removeListener(_appSettingsListener);
+    _appDebugSettings.removeListener(_appSettingsListener);
 
     super.dispose();
   }

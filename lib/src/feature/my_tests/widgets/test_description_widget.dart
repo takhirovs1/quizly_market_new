@@ -1,0 +1,81 @@
+import 'package:ui/ui.dart';
+
+import '../../../common/extension/context_extension.dart';
+import '../models/test_model.dart';
+
+class TestDescriptionWidget extends StatelessWidget {
+  const TestDescriptionWidget({
+    required this.test,
+    required this.onPressShare,
+    required this.onPressLike,
+    this.onPressArchive,
+    super.key,
+  });
+  final TestModel test;
+  final VoidCallback onPressShare;
+  final VoidCallback onPressLike;
+  final VoidCallback? onPressArchive;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: .start,
+    spacing: 1,
+    children: [
+      Row(
+        crossAxisAlignment: .start,
+        children: [
+          Expanded(
+            child: Text(
+              test.name ?? '',
+              style: context.x.textStyle.sfW700s16.copyWith(fontSize: 20),
+              maxLines: 2,
+              overflow: .ellipsis,
+            ),
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            onPressed: onPressShare,
+            icon: Assets.lib.vectors.share.svg(
+              package: 'ui',
+              colorFilter: .mode(ThemeColors.of(context).text, .srcATop),
+            ),
+          ),
+          IconButton(
+            onPressed: onPressLike,
+            icon: Icon(
+              test.isLiked == true ? Icons.favorite : Icons.favorite_border,
+              color: test.isLiked == true ? context.x.colors.error : context.x.colors.text,
+            ),
+          ),
+          if (onPressArchive != null)
+            IconButton(
+              onPressed: onPressArchive,
+              icon: Icon(
+                test.isArchived == true ? Icons.unarchive_outlined : Icons.archive_outlined,
+                color: context.x.colors.text,
+              ),
+            ),
+        ],
+      ),
+      Text(
+        test.description ?? '',
+        style: context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.bannerSecondaryText),
+      ),
+      const SizedBox(height: 4),
+      if (test.universityName != null && test.universityName!.isNotEmpty)
+        Text(
+          test.universityName!,
+          style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+        ),
+      if (test.createdBy != null && test.createdBy.toString().isNotEmpty)
+        Text(
+          test.createdBy.toString(),
+          style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+        ),
+      Text(
+        '${context.x.l10n.questionsCount}: ${context.x.l10n.countTaText(test.questionCount ?? 0)}',
+        style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.bannerSecondaryText),
+      ),
+    ],
+  );
+}

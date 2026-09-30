@@ -68,21 +68,27 @@ class AppText extends StatelessWidget {
 
   /// {@macro text}
   ///
-  /// titleBold (18px w700)
+  /// titleBold18 (18px w700)
   AppText.w700s18(this.text, {this.overflow, this.maxLines, this.textAlign, this.softWrap, this.color, super.key})
-    : style = AppTextStyle.titleBold.style.copyWith(fontSize: 18);
+    : style = AppTextStyle.titleBold18.style;
 
   /// {@macro text}
   ///
-  /// titleBold (18px w400)
+  /// bodyLarge18 (18px w400)
   AppText.w400s18(this.text, {this.overflow, this.maxLines, this.textAlign, this.softWrap, this.color, super.key})
-    : style = AppTextStyle.bodyLarge.style.copyWith(fontSize: 18);
+    : style = AppTextStyle.bodyLarge18.style;
 
   /// {@macro text}
   ///
   /// titleBold (16px w700)
   AppText.w700s16(this.text, {this.overflow, this.maxLines, this.textAlign, this.softWrap, this.color, super.key})
     : style = AppTextStyle.titleBold.style;
+
+  /// {@macro text}
+  ///
+  /// titleSemiBold16 (16px w600)
+  AppText.w600s16(this.text, {this.overflow, this.maxLines, this.textAlign, this.softWrap, this.color, super.key})
+    : style = AppTextStyle.titleSemiBold16.style;
 
   /// {@macro text}
   ///

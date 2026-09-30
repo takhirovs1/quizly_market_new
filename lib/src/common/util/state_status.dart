@@ -25,12 +25,12 @@ enum StateStatus implements Comparable<StateStatus> {
   /// Value of the enum
   final String value;
 
-  bool get isIdle => this == StateStatus.idle;
-  bool get isLoading => this == StateStatus.loading;
-  bool get isLoadingMore => this == StateStatus.loadingMore;
-  bool get isSuccess => this == StateStatus.success;
-  bool get isNoInternetConnection => this == StateStatus.noInternetConnection;
-  bool get isError => this == StateStatus.error;
+  bool get isIdle => this == .idle;
+  bool get isLoading => this == .loading;
+  bool get isLoadingMore => this == .loadingMore;
+  bool get isSuccess => this == .success;
+  bool get isNoInternetConnection => this == .noInternetConnection;
+  bool get isError => this == .error;
 
   FutureOr<T> map<T>({
     required FutureOr<T> Function() idle,
@@ -40,12 +40,12 @@ enum StateStatus implements Comparable<StateStatus> {
     required FutureOr<T> Function() noInternetConnection,
     required FutureOr<T> Function() error,
   }) => switch (this) {
-    StateStatus.idle => idle(),
-    StateStatus.loading => loading(),
-    StateStatus.loadingMore => loadingMore(),
-    StateStatus.success => success(),
-    StateStatus.noInternetConnection => noInternetConnection(),
-    StateStatus.error => error(),
+    .idle => idle(),
+    .loading => loading(),
+    .loadingMore => loadingMore(),
+    .success => success(),
+    .noInternetConnection => noInternetConnection(),
+    .error => error(),
   };
 
   FutureOr<T> maybeMap<T>({

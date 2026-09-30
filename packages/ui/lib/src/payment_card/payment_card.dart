@@ -16,6 +16,8 @@ class PaymentCard extends StatelessWidget {
     this.backgroundColor,
     this.action,
     this.hasShadow = false,
+    this.imagePadding = const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 8.5),
+    this.titleWidget,
     super.key,
   });
 
@@ -28,25 +30,31 @@ class PaymentCard extends StatelessWidget {
   final Color? backgroundColor;
   final Widget? action;
   final bool hasShadow;
+  final EdgeInsetsGeometry imagePadding;
+  final Widget? titleWidget;
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: backgroundColor ?? ThemeColors.of(context).cardBackground,
+        color: backgroundColor ?? context.x.colors.cardBackground2,
         borderRadius: BorderRadius.circular(16),
         boxShadow: hasShadow
             ? [
                 BoxShadow(
-                  color: context.x.colors.black.withValues(alpha: .1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withValues(alpha: .08),
+                  offset: const Offset(0, 12),
+                  blurRadius: 56,
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .05),
+                  offset: Offset.zero,
+                  blurRadius: 3,
+                  spreadRadius: 0,
                 ),
               ]
             : null,
-        // boxShadow: [
-        //   BoxShadow(color: context.x.colors.black.withValues(alpha: .1), blurRadius: 10, offset: const Offset(0, 4)),
-        // ],
       ),
       child: Padding(
         padding: const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 12),
@@ -58,14 +66,18 @@ class PaymentCard extends StatelessWidget {
                 color: context.x.colors.dialogCancelButton,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Padding(padding: const EdgeInsetsGeometry.symmetric(horizontal: 6, vertical: 8), child: image),
+              child: Padding(padding: imagePadding, child: image),
             ),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText.w700s18(title),
-                if (subtitle != null) AppText.w400s14(subtitle!, color: ThemeColors.of(context).gray),
+                titleWidget ?? Text(title, style: context.x.textStyle.sfW700s18),
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
+                  ),
               ],
             ),
             const Spacer(),

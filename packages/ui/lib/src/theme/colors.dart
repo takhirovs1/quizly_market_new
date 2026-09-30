@@ -30,6 +30,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     required this.transparent,
     required this.white,
     required this.green,
+    required this.appleGreen,
+    required this.orange,
 
     // Widget-specific colors
     required this.buttonBorder,
@@ -76,12 +78,28 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     required this.bottomSheetBackground,
+    required this.bottomSheetSurface,
+
+    // selection pill button
+    required this.selectionPillUnselectedBackground,
 
     // card background
     required this.cardBackground,
 
     // indicator background
     required this.indicatorBackground,
+
+    // cardBackground2
+    required this.cardBackground2,
+
+    // text field background
+    required this.textFieldBackground,
+
+    // bottom navigation bar selected icon color
+    required this.bottomNavigationBarSelectedColor,
+
+    // profile icon color
+    required this.profileIcon,
   });
 
   factory ThemeColors.of(BuildContext context) {
@@ -154,6 +172,12 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// Green color light[0xFF099250] dark[0xFF099250]
   final Color green;
 
+  /// Apple Green color light[0xFF34C759] dark[0xFF34C759]
+  final Color appleGreen;
+
+  /// Orange color light[0xFFF97316] dark[0xFFF97316]
+  final Color orange;
+
   /// Button border color light[0xFFE1EBF0] dark[0xFF41484C]
   final Color buttonBorder;
 
@@ -222,6 +246,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// bottom navigation bar unselected icon color light[0xFFBBBFD0] dark[0xFFBBBFD0]
   final Color bottomNavigationBarUnselectedColor;
 
+  /// bottom navigation bar selected icon color light[0xFF007AFF] dark[0xFF007AFF]
+  final Color bottomNavigationBarSelectedColor;
+
   /// Scaffold background color light[0xFFFFFFFF] dark[0xFF0F172A]
   final Color scaffoldBackground;
 
@@ -234,17 +261,32 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
   /// Bottom sheet background color light[0xFFECEDF0] dark[0xFF1E293B]
   final Color bottomSheetBackground;
 
+  /// Bottom sheet surface color light[0xFFF4F4F4] dark[0xFF0F172A]
+  final Color bottomSheetSurface;
+
+  /// Selection pill button unselected background light[0xFFE6E6E6] dark[0xFF1E293B]
+  final Color selectionPillUnselectedBackground;
+
   /// Card background color light[0xff0F172A] dark[0xffFFFFFF]
   final Color cardBackground;
 
   /// Indicator background color light[0x40000000] dark[0x40FFFFFF]
   final Color indicatorBackground;
 
+  /// cardBackground2 light[0xffFFFFFF] dark[0xff1E293B]
+  final Color cardBackground2;
+
+  /// text field background color light[0xffF3F4F6] dark[0xff1E293B]
+  final Color textFieldBackground;
+
+  /// profile icon color light[0xFF007AFF] dark[0xFF007AFF]
+  final Color profileIcon;
+
   /// The default light theme colors.
   static const light = ThemeColors(
     error: Color(0xFFFF2F22),
     onError: Color(0xFFF8F9FA),
-    primary: Color(0xFF1C60E8),
+    primary: Color(0xFF007AFF),
     onPrimary: Color(0xFFF2F7F7),
     secondary: Color(0xFFF8F9FA),
     onSecondary: Color(0xFF1A1F22),
@@ -263,6 +305,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     transparent: Color(0x00000000),
     white: Color(0xFFF8F9FA),
     green: Color(0xFF099250),
+    appleGreen: Color(0xFF34C759),
+    orange: Color(0xFFF97316),
 
     // Widget-specific colors
     buttonBorder: Color(0xFFE1EBF0),
@@ -300,7 +344,9 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     appBarBackground: Color(0xFF007AFF),
 
     // bottom navigation bar colors
-    bottomNavigationBarUnselectedColor: Color(0xFFBBBFD0),
+    bottomNavigationBarUnselectedColor: Color(0xFF64748B),
+
+    bottomNavigationBarSelectedColor: Color(0xFF0E7FF1),
 
     // scaffold colors
     scaffoldBackground: Color(0xFFFFFFFF),
@@ -311,91 +357,120 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     bottomSheetBackground: Color(0xFFECEDF0),
+    bottomSheetSurface: Color(0xFFF4F4F4),
+
+    // selection pill button
+    selectionPillUnselectedBackground: Color(0xFFE6E6E6),
 
     // card background
     cardBackground: Color(0xffFBFCF6),
 
     // indicator background
     indicatorBackground: Color(0x40000000),
+
+    // cardBackground2
+    cardBackground2: Color(0xffFFFFFF),
+
+    // text field background
+    textFieldBackground: Color(0xffF3F4F6),
+
+    // profile icon color
+    profileIcon: Color(0xFF000000),
   );
 
-  /// The default dark theme colors.
   static const dark = ThemeColors(
-    error: Color(0xFFFF2F22),
-    onError: Color(0xFFF8F9FA),
-    primary: Color(0xFF1C60E8),
-    onPrimary: Color(0xFF1A1F22),
-    secondary: Color.fromARGB(255, 44, 51, 56),
-    onSecondary: Color(0xFFF8F9FA),
-    success: Color(0xFF0CD678),
-    onSuccess: Color(0xFFF8F9FA),
-    surface: Color(0xFF1A1F22),
-    onSurface: Color(0xFF202732),
+    error: Color(0xFFEF4444),
+    onError: Color(0xFFFFFFFF),
+    primary: Color(0xFF3B82F6),
+    onPrimary: Color(0xFFFFFFFF),
+    secondary: Color(0xFF1E2A3A),
+    onSecondary: Color(0xFFFFFFFF),
+    success: Color(0xFF22C55E),
+    onSuccess: Color(0xFFFFFFFF),
+    surface: Color(0xFF161B27),
+    onSurface: Color(0xFFFFFFFF),
     tealBlue: Color(0xFF026492),
-    tertiary: Color(0xFF0CD678),
-    tertiaryBold: Color.fromARGB(255, 9, 172, 96),
-    onTertiary: Color(0xFFF8F9FA),
+    tertiary: Color(0xFF22C55E),
+    tertiaryBold: Color(0xFF16A34A),
+    onTertiary: Color(0xFFFFFFFF),
 
     // Base colors
     black: Color(0xFF000000),
-    gray: Color(0xFFA0A9BA),
+    gray: Color(0xFF8A9BB0),
     transparent: Color(0x00000000),
-    white: Color(0xFFF8F9FA),
-    green: Color(0xFF099250),
+    white: Color(0xFFFFFFFF),
+    green: Color(0xFF22C55E),
+    appleGreen: Color(0xFF34C759),
+    orange: Color(0xFFF97316),
 
     // Widget-specific colors
-    buttonBorder: Color(0xFF41484C),
-    buttonFill: Color(0xFF020617),
-    divider: Color(0xFF41484C),
-    primaryButtonFill: Color(0xFF344054),
-    primaryButtonBorder: Color(0xFF1594CA),
+    buttonBorder: Color(0x333B82F6),
+    buttonFill: Color(0xFF121626),
+    divider: Color(0xFF2A3347),
+    primaryButtonFill: Color(0xFF3B82F6),
+    primaryButtonBorder: Color(0xFF3B82F6),
 
     // text color
-    text: Color(0xFFF8F9FA),
+    text: Color(0xFFFFFFFF),
 
     // duty status circles colors
     breakC: Color(0xFFF79009),
     driveC: Color(0xFF12B76A),
-    shiftC: Color(0xFF1594CA),
-    cycleC: Color(0xFFFF2F22),
+    shiftC: Color(0xFF3B82F6),
+    cycleC: Color(0xFFEF4444),
 
     // theme toggle color
-    themeToggle: Color(0xFFF8F9FA),
+    themeToggle: Color(0xFFFFFFFF),
 
     // banner colors
-    bannerBackground: Color(0xFF1E293B),
-    bannerText: Color(0xFFF8FAFC),
-    bannerSecondaryText: Color(0xFFCBD5E1),
+    bannerBackground: Color(0xFF121626),
+    bannerText: Color(0xFFFFFFFF),
+    bannerSecondaryText: Color(0xFF8A9BB0),
     bannerPriceText: Color(0xFF3B82F6),
-    bannerButton: Color(0xFF1E40AF),
+    bannerButton: Color(0xFF3B82F6),
     bannerIcon: Color(0xFFFFFFFF),
 
     // dialog colors
-    dialogBackground: Color(0xFF020617),
+    dialogBackground: Color(0xFF121626),
     dialogText: Color(0xFFFFFFFF),
-    dialogCancelButton: Color(0xFF1E293B),
+    dialogCancelButton: Color(0xFF1E2A3A),
 
     // app bar colors
-    appBarBackground: Color(0xFF020617),
+    appBarBackground: Color(0xFF121626),
 
     // bottom navigation bar colors
-    bottomNavigationBarUnselectedColor: Color(0xFFBBBFD0),
+    bottomNavigationBarUnselectedColor: Color(0xFF4A5568),
+
+    bottomNavigationBarSelectedColor: Color(0xFF3B82F6),
 
     // scaffold colors
-    scaffoldBackground: Color(0xFF0F172A),
+    scaffoldBackground: Color(0xFF0D1117),
 
     // custom button
-    customButtonBackground: Color(0xff1E40AF),
-    customButtonText: Color(0xffF8FAFC),
+    customButtonBackground: Color(0xFF3B82F6),
+    customButtonText: Color(0xFFFFFFFF),
 
     // bottom sheet colors
-    bottomSheetBackground: Color(0xFF1E293B),
+    bottomSheetBackground: Color(0xFF161B27),
+    bottomSheetSurface: Color(0xFF0D1117),
+
+    // selection pill button
+    selectionPillUnselectedBackground: Color(0xFF1E2A3A),
 
     // card background
-    cardBackground: Color(0xff0F172A),
+    cardBackground: Color(0xFF161B27),
 
     // indicator background
     indicatorBackground: Color(0x40FFFFFF),
+
+    // cardBackground2
+    cardBackground2: Color(0xFF1E2535),
+
+    // text field background
+    textFieldBackground: Color(0xFF161B27),
+
+    // profile icon color
+    profileIcon: Color(0xFF3B82F6),
   );
 
   @override
@@ -421,6 +496,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     Color? transparent,
     Color? white,
     Color? green,
+    Color? appleGreen,
+    Color? orange,
 
     // Widget-specific colors
     Color? buttonBorder,
@@ -458,6 +535,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     // bottom navigation bar colors
     Color? bottomNavigationBarUnselectedColor,
 
+    Color? bottomNavigationBarSelectedColor,
+
     // scaffold colors
     Color? scaffoldBackground,
 
@@ -467,12 +546,25 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     Color? bottomSheetBackground,
+    Color? bottomSheetSurface,
+
+    // selection pill button
+    Color? selectionPillUnselectedBackground,
 
     // card background
     Color? cardBackground,
 
     // indicator background
     Color? indicatorBackground,
+
+    // cardBackground2
+    Color? cardBackground2,
+
+    // text field background
+    Color? textFieldBackground,
+
+    // profile icon color
+    Color? profileIcon,
   }) => ThemeColors(
     error: error ?? this.error,
     onError: onError ?? this.onError,
@@ -495,6 +587,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     transparent: transparent ?? this.transparent,
     white: white ?? this.white,
     green: green ?? this.green,
+    appleGreen: appleGreen ?? this.appleGreen,
+    orange: orange ?? this.orange,
 
     // Widget-specific colors
     buttonBorder: buttonBorder ?? this.buttonBorder,
@@ -532,6 +626,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
     // bottom navigation bar colors
     bottomNavigationBarUnselectedColor: bottomNavigationBarUnselectedColor ?? this.bottomNavigationBarUnselectedColor,
 
+    bottomNavigationBarSelectedColor: bottomNavigationBarSelectedColor ?? this.bottomNavigationBarSelectedColor,
+
     // scaffold colors
     scaffoldBackground: scaffoldBackground ?? this.scaffoldBackground,
 
@@ -541,12 +637,23 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
     // bottom sheet colors
     bottomSheetBackground: bottomSheetBackground ?? this.bottomSheetBackground,
+    bottomSheetSurface: bottomSheetSurface ?? this.bottomSheetSurface,
+    selectionPillUnselectedBackground: selectionPillUnselectedBackground ?? this.selectionPillUnselectedBackground,
 
     // card background
     cardBackground: cardBackground ?? this.cardBackground,
 
     // indicator background
     indicatorBackground: indicatorBackground ?? this.indicatorBackground,
+
+    // cardBackground2
+    cardBackground2: cardBackground2 ?? this.cardBackground2,
+
+    // text field background
+    textFieldBackground: textFieldBackground ?? this.textFieldBackground,
+
+    // profile icon color
+    profileIcon: profileIcon ?? this.profileIcon,
   );
 
   @override
@@ -574,6 +681,8 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
           transparent: Color.lerp(transparent, other.transparent, t)!,
           white: Color.lerp(white, other.white, t)!,
           green: Color.lerp(green, other.green, t)!,
+          appleGreen: Color.lerp(appleGreen, other.appleGreen, t)!,
+          orange: Color.lerp(orange, other.orange, t)!,
 
           // Widget-specific colors
           buttonBorder: Color.lerp(buttonBorder, other.buttonBorder, t)!,
@@ -615,6 +724,13 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
             t,
           )!,
 
+          // bottom navigation bar selected icon color
+          bottomNavigationBarSelectedColor: Color.lerp(
+            bottomNavigationBarSelectedColor,
+            other.bottomNavigationBarSelectedColor,
+            t,
+          )!,
+
           // scaffold colors
           scaffoldBackground: Color.lerp(scaffoldBackground, other.scaffoldBackground, t)!,
 
@@ -624,12 +740,27 @@ final class ThemeColors extends ThemeExtension<ThemeColors> {
 
           // bottom sheet colors
           bottomSheetBackground: Color.lerp(bottomSheetBackground, other.bottomSheetBackground, t)!,
+          bottomSheetSurface: Color.lerp(bottomSheetSurface, other.bottomSheetSurface, t)!,
+          selectionPillUnselectedBackground: Color.lerp(
+            selectionPillUnselectedBackground,
+            other.selectionPillUnselectedBackground,
+            t,
+          )!,
 
           // card background
           cardBackground: Color.lerp(cardBackground, other.cardBackground, t)!,
 
           // indicator background
           indicatorBackground: Color.lerp(indicatorBackground, other.indicatorBackground, t)!,
+
+          // cardBackground2
+          cardBackground2: Color.lerp(cardBackground2, other.cardBackground2, t)!,
+
+          // text field background
+          textFieldBackground: Color.lerp(textFieldBackground, other.textFieldBackground, t)!,
+
+          // profile icon color
+          profileIcon: Color.lerp(profileIcon, other.profileIcon, t)!,
         );
 
   @override

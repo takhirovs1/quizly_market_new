@@ -17,6 +17,15 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $LibGen {
   const $LibGen();
 
+  /// Directory path: lib/audio
+  $LibAudioGen get audio => const $LibAudioGen();
+
+  /// Directory path: lib/file
+  $LibFileGen get file => const $LibFileGen();
+
+  /// Directory path: lib/icon
+  $LibIconGen get icon => const $LibIconGen();
+
   /// Directory path: lib/images
   $LibImagesGen get images => const $LibImagesGen();
 
@@ -27,14 +36,314 @@ class $LibGen {
   $LibVectorsGen get vectors => const $LibVectorsGen();
 }
 
+class $LibAudioGen {
+  const $LibAudioGen();
+
+  /// File path: lib/audio/correct.mp3
+  String get correct => 'lib/audio/correct.mp3';
+
+  /// File path: lib/audio/wrong.mp3
+  String get wrong => 'lib/audio/wrong.mp3';
+
+  /// File path: lib/audio/wrong_v3.mp3
+  String get wrongV3 => 'lib/audio/wrong_v3.mp3';
+
+  /// List of all assets
+  List<String> get values => [correct, wrong, wrongV3];
+}
+
+class $LibFileGen {
+  const $LibFileGen();
+
+  /// File path: lib/file/test_upload_example.xlsx
+  String get testUploadExample => 'lib/file/test_upload_example.xlsx';
+
+  /// List of all assets
+  List<String> get values => [testUploadExample];
+}
+
+class $LibIconGen {
+  const $LibIconGen();
+
+  /// File path: lib/icon/AI_icon.svg
+  SvgGenImage get aIIcon => const SvgGenImage('lib/icon/AI_icon.svg');
+
+  /// File path: lib/icon/add_home.svg
+  SvgGenImage get addHome => const SvgGenImage('lib/icon/add_home.svg');
+
+  /// File path: lib/icon/add_user.svg
+  SvgGenImage get addUser => const SvgGenImage('lib/icon/add_user.svg');
+
+  /// File path: lib/icon/apple.svg
+  SvgGenImage get apple => const SvgGenImage('lib/icon/apple.svg');
+
+  /// File path: lib/icon/arrow_back.svg
+  SvgGenImage get arrowBack => const SvgGenImage('lib/icon/arrow_back.svg');
+
+  /// File path: lib/icon/attach_file.svg
+  SvgGenImage get attachFile => const SvgGenImage('lib/icon/attach_file.svg');
+
+  /// File path: lib/icon/big_chevron_right.svg
+  SvgGenImage get bigChevronRight => const SvgGenImage('lib/icon/big_chevron_right.svg');
+
+  /// File path: lib/icon/cart.svg
+  SvgGenImage get cart => const SvgGenImage('lib/icon/cart.svg');
+
+  /// File path: lib/icon/cashback_icon.svg
+  SvgGenImage get cashbackIcon => const SvgGenImage('lib/icon/cashback_icon.svg');
+
+  /// File path: lib/icon/check.svg
+  SvgGenImage get check => const SvgGenImage('lib/icon/check.svg');
+
+  /// File path: lib/icon/check_circle.svg
+  SvgGenImage get checkCircle => const SvgGenImage('lib/icon/check_circle.svg');
+
+  /// File path: lib/icon/check_tick_icon.svg
+  SvgGenImage get checkTickIcon => const SvgGenImage('lib/icon/check_tick_icon.svg');
+
+  /// File path: lib/icon/chevron_right.svg
+  SvgGenImage get chevronRight => const SvgGenImage('lib/icon/chevron_right.svg');
+
+  /// File path: lib/icon/close.svg
+  SvgGenImage get close => const SvgGenImage('lib/icon/close.svg');
+
+  /// File path: lib/icon/copy_id.svg
+  SvgGenImage get copyId => const SvgGenImage('lib/icon/copy_id.svg');
+
+  /// File path: lib/icon/correct.svg
+  SvgGenImage get correct => const SvgGenImage('lib/icon/correct.svg');
+
+  /// File path: lib/icon/desktop.svg
+  SvgGenImage get desktop => const SvgGenImage('lib/icon/desktop.svg');
+
+  /// File path: lib/icon/documents.svg
+  SvgGenImage get documents => const SvgGenImage('lib/icon/documents.svg');
+
+  /// File path: lib/icon/dollar_icon.svg
+  SvgGenImage get dollarIcon => const SvgGenImage('lib/icon/dollar_icon.svg');
+
+  /// File path: lib/icon/empty_inbox.svg
+  SvgGenImage get emptyInbox => const SvgGenImage('lib/icon/empty_inbox.svg');
+
+  /// File path: lib/icon/empty_test_dark.svg
+  SvgGenImage get emptyTestDark => const SvgGenImage('lib/icon/empty_test_dark.svg');
+
+  /// File path: lib/icon/empty_test_light.svg
+  SvgGenImage get emptyTestLight => const SvgGenImage('lib/icon/empty_test_light.svg');
+
+  /// File path: lib/icon/error_dialog.svg
+  SvgGenImage get errorDialog => const SvgGenImage('lib/icon/error_dialog.svg');
+
+  /// File path: lib/icon/feedback.svg
+  SvgGenImage get feedback => const SvgGenImage('lib/icon/feedback.svg');
+
+  /// File path: lib/icon/file_icon.svg
+  SvgGenImage get fileIcon => const SvgGenImage('lib/icon/file_icon.svg');
+
+  /// File path: lib/icon/filter.svg
+  SvgGenImage get filter => const SvgGenImage('lib/icon/filter.svg');
+
+  /// File path: lib/icon/flashcards.svg
+  SvgGenImage get flashcards => const SvgGenImage('lib/icon/flashcards.svg');
+
+  /// File path: lib/icon/google.svg
+  SvgGenImage get google => const SvgGenImage('lib/icon/google.svg');
+
+  /// File path: lib/icon/group.svg
+  SvgGenImage get group => const SvgGenImage('lib/icon/group.svg');
+
+  /// File path: lib/icon/hide.svg
+  SvgGenImage get hide => const SvgGenImage('lib/icon/hide.svg');
+
+  /// File path: lib/icon/history_transaction.svg
+  SvgGenImage get historyTransaction => const SvgGenImage('lib/icon/history_transaction.svg');
+
+  /// File path: lib/icon/home.svg
+  SvgGenImage get home => const SvgGenImage('lib/icon/home.svg');
+
+  /// File path: lib/icon/home2.svg
+  SvgGenImage get home2 => const SvgGenImage('lib/icon/home2.svg');
+
+  /// File path: lib/icon/ic-external-link.svg
+  SvgGenImage get icExternalLink => const SvgGenImage('lib/icon/ic-external-link.svg');
+
+  /// File path: lib/icon/icon_map.svg
+  SvgGenImage get iconMap => const SvgGenImage('lib/icon/icon_map.svg');
+
+  /// File path: lib/icon/icon_slider.svg
+  SvgGenImage get iconSlider => const SvgGenImage('lib/icon/icon_slider.svg');
+
+  /// File path: lib/icon/image_icon.svg
+  SvgGenImage get imageIcon => const SvgGenImage('lib/icon/image_icon.svg');
+
+  /// File path: lib/icon/information_app.svg
+  SvgGenImage get informationApp => const SvgGenImage('lib/icon/information_app.svg');
+
+  /// File path: lib/icon/instagram.svg
+  SvgGenImage get instagram => const SvgGenImage('lib/icon/instagram.svg');
+
+  /// File path: lib/icon/language.svg
+  SvgGenImage get language => const SvgGenImage('lib/icon/language.svg');
+
+  /// File path: lib/icon/like.svg
+  SvgGenImage get like => const SvgGenImage('lib/icon/like.svg');
+
+  /// File path: lib/icon/logout.svg
+  SvgGenImage get logout => const SvgGenImage('lib/icon/logout.svg');
+
+  /// File path: lib/icon/market.svg
+  SvgGenImage get market => const SvgGenImage('lib/icon/market.svg');
+
+  /// File path: lib/icon/party.svg
+  SvgGenImage get party => const SvgGenImage('lib/icon/party.svg');
+
+  /// File path: lib/icon/person.svg
+  SvgGenImage get person => const SvgGenImage('lib/icon/person.svg');
+
+  /// File path: lib/icon/person_selected.svg
+  SvgGenImage get personSelected => const SvgGenImage('lib/icon/person_selected.svg');
+
+  /// File path: lib/icon/profile.svg
+  SvgGenImage get profile => const SvgGenImage('lib/icon/profile.svg');
+
+  /// File path: lib/icon/question_mark.svg
+  SvgGenImage get questionMark => const SvgGenImage('lib/icon/question_mark.svg');
+
+  /// File path: lib/icon/referral.svg
+  SvgGenImage get referral => const SvgGenImage('lib/icon/referral.svg');
+
+  /// File path: lib/icon/revoke.svg
+  SvgGenImage get revoke => const SvgGenImage('lib/icon/revoke.svg');
+
+  /// File path: lib/icon/search.svg
+  SvgGenImage get search => const SvgGenImage('lib/icon/search.svg');
+
+  /// File path: lib/icon/set_home.svg
+  SvgGenImage get setHome => const SvgGenImage('lib/icon/set_home.svg');
+
+  /// File path: lib/icon/share.svg
+  SvgGenImage get share => const SvgGenImage('lib/icon/share.svg');
+
+  /// File path: lib/icon/sort.svg
+  SvgGenImage get sort => const SvgGenImage('lib/icon/sort.svg');
+
+  /// File path: lib/icon/strong.svg
+  SvgGenImage get strong => const SvgGenImage('lib/icon/strong.svg');
+
+  /// File path: lib/icon/success_dialog.svg
+  SvgGenImage get successDialog => const SvgGenImage('lib/icon/success_dialog.svg');
+
+  /// File path: lib/icon/support.svg
+  SvgGenImage get support => const SvgGenImage('lib/icon/support.svg');
+
+  /// File path: lib/icon/teacher_swap.svg
+  SvgGenImage get teacherSwap => const SvgGenImage('lib/icon/teacher_swap.svg');
+
+  /// File path: lib/icon/theme_icon.svg
+  SvgGenImage get themeIcon => const SvgGenImage('lib/icon/theme_icon.svg');
+
+  /// File path: lib/icon/timer.svg
+  SvgGenImage get timer => const SvgGenImage('lib/icon/timer.svg');
+
+  /// File path: lib/icon/timer2.svg
+  SvgGenImage get timer2 => const SvgGenImage('lib/icon/timer2.svg');
+
+  /// File path: lib/icon/top_up_balance.svg
+  SvgGenImage get topUpBalance => const SvgGenImage('lib/icon/top_up_balance.svg');
+
+  /// File path: lib/icon/unfold_more.svg
+  SvgGenImage get unfoldMore => const SvgGenImage('lib/icon/unfold_more.svg');
+
+  /// File path: lib/icon/university.svg
+  SvgGenImage get university => const SvgGenImage('lib/icon/university.svg');
+
+  /// File path: lib/icon/upload.svg
+  SvgGenImage get upload => const SvgGenImage('lib/icon/upload.svg');
+
+  /// File path: lib/icon/upload2.svg
+  SvgGenImage get upload2 => const SvgGenImage('lib/icon/upload2.svg');
+
+  /// File path: lib/icon/write_icon.svg
+  SvgGenImage get writeIcon => const SvgGenImage('lib/icon/write_icon.svg');
+
+  /// File path: lib/icon/wrong.svg
+  SvgGenImage get wrong => const SvgGenImage('lib/icon/wrong.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [
+    aIIcon,
+    addHome,
+    addUser,
+    apple,
+    arrowBack,
+    attachFile,
+    bigChevronRight,
+    cart,
+    cashbackIcon,
+    check,
+    checkCircle,
+    checkTickIcon,
+    chevronRight,
+    close,
+    copyId,
+    correct,
+    desktop,
+    documents,
+    dollarIcon,
+    emptyInbox,
+    emptyTestDark,
+    emptyTestLight,
+    errorDialog,
+    feedback,
+    fileIcon,
+    filter,
+    flashcards,
+    google,
+    group,
+    hide,
+    historyTransaction,
+    home,
+    home2,
+    icExternalLink,
+    iconMap,
+    iconSlider,
+    imageIcon,
+    informationApp,
+    instagram,
+    language,
+    like,
+    logout,
+    market,
+    party,
+    person,
+    personSelected,
+    profile,
+    questionMark,
+    referral,
+    revoke,
+    search,
+    setHome,
+    share,
+    sort,
+    strong,
+    successDialog,
+    support,
+    teacherSwap,
+    themeIcon,
+    timer,
+    timer2,
+    topUpBalance,
+    unfoldMore,
+    university,
+    upload,
+    upload2,
+    writeIcon,
+    wrong,
+  ];
+}
+
 class $LibImagesGen {
   const $LibImagesGen();
-
-  /// File path: lib/images/ads_first.png
-  AssetGenImage get adsFirst => const AssetGenImage('lib/images/ads_first.png');
-
-  /// File path: lib/images/ads_second.png
-  AssetGenImage get adsSecond => const AssetGenImage('lib/images/ads_second.png');
 
   /// File path: lib/images/click.jpeg
   AssetGenImage get click => const AssetGenImage('lib/images/click.jpeg');
@@ -45,8 +354,17 @@ class $LibImagesGen {
   /// File path: lib/images/click_logo.png
   AssetGenImage get clickLogo => const AssetGenImage('lib/images/click_logo.png');
 
-  /// File path: lib/images/default_banner.png
-  AssetGenImage get defaultBanner => const AssetGenImage('lib/images/default_banner.png');
+  /// File path: lib/images/correct_icon.png
+  AssetGenImage get correctIcon => const AssetGenImage('lib/images/correct_icon.png');
+
+  /// File path: lib/images/cup.png
+  AssetGenImage get cup => const AssetGenImage('lib/images/cup.png');
+
+  /// File path: lib/images/cup_result.png
+  AssetGenImage get cupResult => const AssetGenImage('lib/images/cup_result.png');
+
+  /// File path: lib/images/flexed_biceps.png
+  AssetGenImage get flexedBiceps => const AssetGenImage('lib/images/flexed_biceps.png');
 
   /// File path: lib/images/logo.png
   AssetGenImage get logo => const AssetGenImage('lib/images/logo.png');
@@ -54,20 +372,35 @@ class $LibImagesGen {
   /// File path: lib/images/logo_png.png
   AssetGenImage get logoPng => const AssetGenImage('lib/images/logo_png.png');
 
+  /// File path: lib/images/logo_splash.png
+  AssetGenImage get logoSplash => const AssetGenImage('lib/images/logo_splash.png');
+
+  /// File path: lib/images/logo_splash_native.png
+  AssetGenImage get logoSplashNative => const AssetGenImage('lib/images/logo_splash_native.png');
+
+  /// File path: lib/images/logout_quizbot.png
+  AssetGenImage get logoutQuizbot => const AssetGenImage('lib/images/logout_quizbot.png');
+
   /// File path: lib/images/memo.png
   AssetGenImage get memo => const AssetGenImage('lib/images/memo.png');
 
-  /// File path: lib/images/mustaqil.png
-  AssetGenImage get mustaqil => const AssetGenImage('lib/images/mustaqil.png');
+  /// File path: lib/images/money.png
+  AssetGenImage get money => const AssetGenImage('lib/images/money.png');
 
   /// File path: lib/images/party.png
   AssetGenImage get party => const AssetGenImage('lib/images/party.png');
+
+  /// File path: lib/images/party_popper.png
+  AssetGenImage get partyPopper => const AssetGenImage('lib/images/party_popper.png');
 
   /// File path: lib/images/payme.jpeg
   AssetGenImage get payme => const AssetGenImage('lib/images/payme.jpeg');
 
   /// File path: lib/images/payme2.png
   AssetGenImage get payme2 => const AssetGenImage('lib/images/payme2.png');
+
+  /// File path: lib/images/payme_bg.png
+  AssetGenImage get paymeBg => const AssetGenImage('lib/images/payme_bg.png');
 
   /// File path: lib/images/payme_logo.png
   AssetGenImage get paymeLogo => const AssetGenImage('lib/images/payme_logo.png');
@@ -78,48 +411,82 @@ class $LibImagesGen {
   /// File path: lib/images/placeholder.jpg
   AssetGenImage get placeholder => const AssetGenImage('lib/images/placeholder.jpg');
 
-  /// File path: lib/images/referat.png
-  AssetGenImage get referat => const AssetGenImage('lib/images/referat.png');
-
   /// File path: lib/images/robot.png
   AssetGenImage get robot => const AssetGenImage('lib/images/robot.png');
 
   /// File path: lib/images/robot_result.png
   AssetGenImage get robotResult => const AssetGenImage('lib/images/robot_result.png');
 
+  /// File path: lib/images/samandar.png
+  AssetGenImage get samandar => const AssetGenImage('lib/images/samandar.png');
+
   /// File path: lib/images/strong.png
   AssetGenImage get strong => const AssetGenImage('lib/images/strong.png');
+
+  /// File path: lib/images/successDialog.png
+  AssetGenImage get successDialog => const AssetGenImage('lib/images/successDialog.png');
+
+  /// File path: lib/images/telegram_logo.png
+  AssetGenImage get telegramLogo => const AssetGenImage('lib/images/telegram_logo.png');
+
+  /// File path: lib/images/timer2_icon.png
+  AssetGenImage get timer2Icon => const AssetGenImage('lib/images/timer2_icon.png');
+
+  /// File path: lib/images/timer_icon.png
+  AssetGenImage get timerIcon => const AssetGenImage('lib/images/timer_icon.png');
 
   /// File path: lib/images/uzum.jpeg
   AssetGenImage get uzum => const AssetGenImage('lib/images/uzum.jpeg');
 
+  /// File path: lib/images/wallhaven-7pzqz3.png
+  AssetGenImage get wallhaven7pzqz3 => const AssetGenImage('lib/images/wallhaven-7pzqz3.png');
+
+  /// File path: lib/images/wrong_icon.png
+  AssetGenImage get wrongIcon => const AssetGenImage('lib/images/wrong_icon.png');
+
   /// File path: lib/images/xazna.jpg
   AssetGenImage get xazna => const AssetGenImage('lib/images/xazna.jpg');
 
+  /// File path: lib/images/zoom_robot.png
+  AssetGenImage get zoomRobot => const AssetGenImage('lib/images/zoom_robot.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
-    adsFirst,
-    adsSecond,
     click,
     click2,
     clickLogo,
-    defaultBanner,
+    correctIcon,
+    cup,
+    cupResult,
+    flexedBiceps,
     logo,
     logoPng,
+    logoSplash,
+    logoSplashNative,
+    logoutQuizbot,
     memo,
-    mustaqil,
+    money,
     party,
+    partyPopper,
     payme,
     payme2,
+    paymeBg,
     paymeLogo,
     paynet,
     placeholder,
-    referat,
     robot,
     robotResult,
+    samandar,
     strong,
+    successDialog,
+    telegramLogo,
+    timer2Icon,
+    timerIcon,
     uzum,
+    wallhaven7pzqz3,
+    wrongIcon,
     xazna,
+    zoomRobot,
   ];
 }
 
@@ -152,6 +519,9 @@ class $LibLottieGen {
 
   /// File path: lib/lottie/filter.json
   String get filter => 'lib/lottie/filter.json';
+
+  /// File path: lib/lottie/fire_emoji.json
+  String get fireEmoji => 'lib/lottie/fire_emoji.json';
 
   /// File path: lib/lottie/hourglass.json
   String get hourglass => 'lib/lottie/hourglass.json';
@@ -200,6 +570,7 @@ class $LibLottieGen {
     error,
     error2,
     filter,
+    fireEmoji,
     hourglass,
     incorrect,
     laptop,
@@ -218,11 +589,17 @@ class $LibLottieGen {
 class $LibVectorsGen {
   const $LibVectorsGen();
 
+  /// File path: lib/vectors/AI_icon.vec
+  SvgGenImage get aIIcon => const SvgGenImage.vec('lib/vectors/AI_icon.vec');
+
   /// File path: lib/vectors/add_home.vec
   SvgGenImage get addHome => const SvgGenImage.vec('lib/vectors/add_home.vec');
 
   /// File path: lib/vectors/add_user.vec
   SvgGenImage get addUser => const SvgGenImage.vec('lib/vectors/add_user.vec');
+
+  /// File path: lib/vectors/apple.vec
+  SvgGenImage get apple => const SvgGenImage.vec('lib/vectors/apple.vec');
 
   /// File path: lib/vectors/arrow_back.vec
   SvgGenImage get arrowBack => const SvgGenImage.vec('lib/vectors/arrow_back.vec');
@@ -236,17 +613,38 @@ class $LibVectorsGen {
   /// File path: lib/vectors/cart.vec
   SvgGenImage get cart => const SvgGenImage.vec('lib/vectors/cart.vec');
 
+  /// File path: lib/vectors/cashback_icon.vec
+  SvgGenImage get cashbackIcon => const SvgGenImage.vec('lib/vectors/cashback_icon.vec');
+
   /// File path: lib/vectors/check.vec
   SvgGenImage get check => const SvgGenImage.vec('lib/vectors/check.vec');
 
   /// File path: lib/vectors/check_circle.vec
   SvgGenImage get checkCircle => const SvgGenImage.vec('lib/vectors/check_circle.vec');
 
+  /// File path: lib/vectors/check_tick_icon.vec
+  SvgGenImage get checkTickIcon => const SvgGenImage.vec('lib/vectors/check_tick_icon.vec');
+
   /// File path: lib/vectors/chevron_right.vec
   SvgGenImage get chevronRight => const SvgGenImage.vec('lib/vectors/chevron_right.vec');
 
   /// File path: lib/vectors/close.vec
   SvgGenImage get close => const SvgGenImage.vec('lib/vectors/close.vec');
+
+  /// File path: lib/vectors/copy_id.vec
+  SvgGenImage get copyId => const SvgGenImage.vec('lib/vectors/copy_id.vec');
+
+  /// File path: lib/vectors/correct.vec
+  SvgGenImage get correct => const SvgGenImage.vec('lib/vectors/correct.vec');
+
+  /// File path: lib/vectors/desktop.vec
+  SvgGenImage get desktop => const SvgGenImage.vec('lib/vectors/desktop.vec');
+
+  /// File path: lib/vectors/documents.vec
+  SvgGenImage get documents => const SvgGenImage.vec('lib/vectors/documents.vec');
+
+  /// File path: lib/vectors/dollar_icon.vec
+  SvgGenImage get dollarIcon => const SvgGenImage.vec('lib/vectors/dollar_icon.vec');
 
   /// File path: lib/vectors/empty_inbox.vec
   SvgGenImage get emptyInbox => const SvgGenImage.vec('lib/vectors/empty_inbox.vec');
@@ -269,14 +667,65 @@ class $LibVectorsGen {
   /// File path: lib/vectors/filter.vec
   SvgGenImage get filter => const SvgGenImage.vec('lib/vectors/filter.vec');
 
+  /// File path: lib/vectors/flashcards.vec
+  SvgGenImage get flashcards => const SvgGenImage.vec('lib/vectors/flashcards.vec');
+
+  /// File path: lib/vectors/google.vec
+  SvgGenImage get google => const SvgGenImage.vec('lib/vectors/google.vec');
+
+  /// File path: lib/vectors/group.vec
+  SvgGenImage get group => const SvgGenImage.vec('lib/vectors/group.vec');
+
+  /// File path: lib/vectors/hide.vec
+  SvgGenImage get hide => const SvgGenImage.vec('lib/vectors/hide.vec');
+
+  /// File path: lib/vectors/history_transaction.vec
+  SvgGenImage get historyTransaction => const SvgGenImage.vec('lib/vectors/history_transaction.vec');
+
   /// File path: lib/vectors/home.vec
   SvgGenImage get home => const SvgGenImage.vec('lib/vectors/home.vec');
+
+  /// File path: lib/vectors/home2.vec
+  SvgGenImage get home2 => const SvgGenImage.vec('lib/vectors/home2.vec');
 
   /// File path: lib/vectors/ic-external-link.vec
   SvgGenImage get icExternalLink => const SvgGenImage.vec('lib/vectors/ic-external-link.vec');
 
+  /// File path: lib/vectors/icon_map.vec
+  SvgGenImage get iconMap => const SvgGenImage.vec('lib/vectors/icon_map.vec');
+
+  /// File path: lib/vectors/icon_slider.vec
+  SvgGenImage get iconSlider => const SvgGenImage.vec('lib/vectors/icon_slider.vec');
+
+  /// File path: lib/vectors/image_icon.vec
+  SvgGenImage get imageIcon => const SvgGenImage.vec('lib/vectors/image_icon.vec');
+
+  /// File path: lib/vectors/information_app.vec
+  SvgGenImage get informationApp => const SvgGenImage.vec('lib/vectors/information_app.vec');
+
+  /// File path: lib/vectors/instagram.vec
+  SvgGenImage get instagram => const SvgGenImage.vec('lib/vectors/instagram.vec');
+
+  /// File path: lib/vectors/language.vec
+  SvgGenImage get language => const SvgGenImage.vec('lib/vectors/language.vec');
+
+  /// File path: lib/vectors/like.vec
+  SvgGenImage get like => const SvgGenImage.vec('lib/vectors/like.vec');
+
+  /// File path: lib/vectors/logout.vec
+  SvgGenImage get logout => const SvgGenImage.vec('lib/vectors/logout.vec');
+
+  /// File path: lib/vectors/market.vec
+  SvgGenImage get market => const SvgGenImage.vec('lib/vectors/market.vec');
+
   /// File path: lib/vectors/party.vec
   SvgGenImage get party => const SvgGenImage.vec('lib/vectors/party.vec');
+
+  /// File path: lib/vectors/person.vec
+  SvgGenImage get person => const SvgGenImage.vec('lib/vectors/person.vec');
+
+  /// File path: lib/vectors/person_selected.vec
+  SvgGenImage get personSelected => const SvgGenImage.vec('lib/vectors/person_selected.vec');
 
   /// File path: lib/vectors/profile.vec
   SvgGenImage get profile => const SvgGenImage.vec('lib/vectors/profile.vec');
@@ -284,8 +733,17 @@ class $LibVectorsGen {
   /// File path: lib/vectors/question_mark.vec
   SvgGenImage get questionMark => const SvgGenImage.vec('lib/vectors/question_mark.vec');
 
+  /// File path: lib/vectors/referral.vec
+  SvgGenImage get referral => const SvgGenImage.vec('lib/vectors/referral.vec');
+
+  /// File path: lib/vectors/revoke.vec
+  SvgGenImage get revoke => const SvgGenImage.vec('lib/vectors/revoke.vec');
+
   /// File path: lib/vectors/search.vec
   SvgGenImage get search => const SvgGenImage.vec('lib/vectors/search.vec');
+
+  /// File path: lib/vectors/set_home.vec
+  SvgGenImage get setHome => const SvgGenImage.vec('lib/vectors/set_home.vec');
 
   /// File path: lib/vectors/share.vec
   SvgGenImage get share => const SvgGenImage.vec('lib/vectors/share.vec');
@@ -299,21 +757,63 @@ class $LibVectorsGen {
   /// File path: lib/vectors/success_dialog.vec
   SvgGenImage get successDialog => const SvgGenImage.vec('lib/vectors/success_dialog.vec');
 
+  /// File path: lib/vectors/support.vec
+  SvgGenImage get support => const SvgGenImage.vec('lib/vectors/support.vec');
+
+  /// File path: lib/vectors/teacher_swap.vec
+  SvgGenImage get teacherSwap => const SvgGenImage.vec('lib/vectors/teacher_swap.vec');
+
+  /// File path: lib/vectors/theme_icon.vec
+  SvgGenImage get themeIcon => const SvgGenImage.vec('lib/vectors/theme_icon.vec');
+
+  /// File path: lib/vectors/timer.vec
+  SvgGenImage get timer => const SvgGenImage.vec('lib/vectors/timer.vec');
+
+  /// File path: lib/vectors/timer2.vec
+  SvgGenImage get timer2 => const SvgGenImage.vec('lib/vectors/timer2.vec');
+
+  /// File path: lib/vectors/top_up_balance.vec
+  SvgGenImage get topUpBalance => const SvgGenImage.vec('lib/vectors/top_up_balance.vec');
+
+  /// File path: lib/vectors/unfold_more.vec
+  SvgGenImage get unfoldMore => const SvgGenImage.vec('lib/vectors/unfold_more.vec');
+
+  /// File path: lib/vectors/university.vec
+  SvgGenImage get university => const SvgGenImage.vec('lib/vectors/university.vec');
+
   /// File path: lib/vectors/upload.vec
   SvgGenImage get upload => const SvgGenImage.vec('lib/vectors/upload.vec');
 
+  /// File path: lib/vectors/upload2.vec
+  SvgGenImage get upload2 => const SvgGenImage.vec('lib/vectors/upload2.vec');
+
+  /// File path: lib/vectors/write_icon.vec
+  SvgGenImage get writeIcon => const SvgGenImage.vec('lib/vectors/write_icon.vec');
+
+  /// File path: lib/vectors/wrong.vec
+  SvgGenImage get wrong => const SvgGenImage.vec('lib/vectors/wrong.vec');
+
   /// List of all assets
   List<SvgGenImage> get values => [
+    aIIcon,
     addHome,
     addUser,
+    apple,
     arrowBack,
     attachFile,
     bigChevronRight,
     cart,
+    cashbackIcon,
     check,
     checkCircle,
+    checkTickIcon,
     chevronRight,
     close,
+    copyId,
+    correct,
+    desktop,
+    documents,
+    dollarIcon,
     emptyInbox,
     emptyTestDark,
     emptyTestLight,
@@ -321,23 +821,52 @@ class $LibVectorsGen {
     feedback,
     fileIcon,
     filter,
+    flashcards,
+    google,
+    group,
+    hide,
+    historyTransaction,
     home,
+    home2,
     icExternalLink,
+    iconMap,
+    iconSlider,
+    imageIcon,
+    informationApp,
+    instagram,
+    language,
+    like,
+    logout,
+    market,
     party,
+    person,
+    personSelected,
     profile,
     questionMark,
+    referral,
+    revoke,
     search,
+    setHome,
     share,
     sort,
     strong,
     successDialog,
+    support,
+    teacherSwap,
+    themeIcon,
+    timer,
+    timer2,
+    topUpBalance,
+    unfoldMore,
+    university,
     upload,
+    upload2,
+    writeIcon,
+    wrong,
   ];
 }
 
-class Assets {
-  const Assets._();
-
+abstract final class Assets {
   static const $LibGen lib = $LibGen();
 }
 

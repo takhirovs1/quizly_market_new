@@ -27,7 +27,7 @@ class BottomSheetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-    color: backgroundColor ?? Theme.of(context).appColors.onPrimary,
+    color: backgroundColor ?? Theme.of(context).appColors.scaffoldBackground,
     shape: const SmoothRectangleBorders(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -40,7 +40,7 @@ class BottomSheetView extends StatelessWidget {
             crossAxisAlignment: headerCrossAxisAlignment,
             children: [
               if (isCenterTitle) Expanded(child: leading ?? const SizedBox.shrink()),
-              Text(title, style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+              Text(title, style: context.x.textStyle.sfW500s16.copyWith(fontSize: 18)),
               Expanded(
                 child: onClose == null
                     ? const SizedBox.shrink()
@@ -63,7 +63,7 @@ class BottomSheetView extends StatelessWidget {
           ),
         ),
         Divider(color: ThemeColors.of(context).buttonBorder),
-        child,
+        Flexible(child: child),
       ],
     ),
   );

@@ -1,147 +1,139 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/extension/context_extension.dart';
+import '../../../common/constant/constant.dart';
 import '../../../common/extension/number_extension.dart';
+import '../../../common/router/pages.dart';
+import '../../../common/util/app_enum.dart';
+import '../../../common/util/state_status.dart';
+import '../bloc/my_test_cubit.dart';
 import '../models/payment_model.dart';
-import '../models/test_mode.dart';
 import '../screen/purchase_test_screen.dart';
 
 abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
+  late final MyTestCubit myTestCubit;
   late final ValueNotifier<PaymentModel> selectedPayment;
-  late final PageController pageController;
-  ValueNotifier<int> currentTest = ValueNotifier(0);
-  final List<PaymentModel> paymentModel = [
-    PaymentModel(
-      id: 0,
-      title: 340000.formatUzs,
-      type: PaymentType.card,
-      icon: Assets.lib.images.logoPng.path,
-      subtitle: 'QuizlyMarket Card',
-    ),
-    PaymentModel(id: 1, title: 'Payme', type: PaymentType.provider, icon: Assets.lib.images.payme2.path),
-    PaymentModel(id: 2, title: 'ClickSuperApp', type: PaymentType.provider, icon: Assets.lib.images.click2.path),
-  ];
-  final List<QuestionModel> tests = [
-    QuestionModel(
-      id: 1,
-      question: 'O’zbekiston qachon davlat mustaqilligini e’lon qilgan?',
-      answers: [
-        AnswerModel(id: 1, text: '1990-yil 20-iyun', isCorrect: false),
-        AnswerModel(id: 2, text: '1991-yil 31-avgust', isCorrect: true),
-        AnswerModel(id: 3, text: '1992-yil 8-dekabr', isCorrect: false),
-        AnswerModel(id: 4, text: '1993-yil 1-yanvar', isCorrect: false),
-      ],
-    ),
-
-    QuestionModel(
-      id: 2,
-      question: 'O’zbekiston Respublikasi Konstitutsiyasi qachon qabul qilingan?',
-      answers: [
-        AnswerModel(id: 1, text: '1992-yil 8-dekabr', isCorrect: true),
-        AnswerModel(id: 2, text: '1991-yil 31-avgust', isCorrect: false),
-        AnswerModel(id: 3, text: '1993-yil 1-yanvar', isCorrect: false),
-        AnswerModel(id: 4, text: '1995-yil 9-may', isCorrect: false),
-      ],
-    ),
-
-    QuestionModel(
-      id: 3,
-      question: 'O’zbekiston poytaxti qaysi shahar?',
-      answers: [
-        AnswerModel(id: 1, text: 'Samarqand', isCorrect: false),
-        AnswerModel(id: 2, text: 'Buxoro', isCorrect: false),
-        AnswerModel(id: 3, text: 'Toshkent', isCorrect: true),
-        AnswerModel(id: 4, text: 'Andijon', isCorrect: false),
-      ],
-    ),
-
-    QuestionModel(
-      id: 4,
-      question: 'O’zbekiston bayrog‘i qachon tasdiqlangan?',
-      answers: [
-        AnswerModel(id: 1, text: '1991-yil 18-noyabr', isCorrect: true),
-        AnswerModel(id: 2, text: '1992-yil 8-dekabr', isCorrect: false),
-        AnswerModel(id: 3, text: '1993-yil 1-yanvar', isCorrect: false),
-        AnswerModel(id: 4, text: '1990-yil 20-iyun', isCorrect: false),
-      ],
-    ),
-
-    QuestionModel(
-      id: 5,
-      question: 'O’zbekiston davlat gerbi qachon qabul qilingan?',
-      answers: [
-        AnswerModel(id: 1, text: '1992-yil 2-iyul', isCorrect: true),
-        AnswerModel(id: 2, text: '1991-yil 31-avgust', isCorrect: false),
-        AnswerModel(id: 3, text: '1993-yil 1-yanvar', isCorrect: false),
-        AnswerModel(id: 4, text: '1995-yil 9-may', isCorrect: false),
-      ],
-    ),
-  ];
+  late final ScrollController scrollController;
+  late final ValueNotifier<int> currentTest;
+  late final List<PaymentModel> paymentModel;
+  bool _isInitialized = false;
+  StateStatus _lastPurchaseStatus = .idle;
 
   @override
   void initState() {
     super.initState();
-    pageController = PageController();
-    selectedPayment = ValueNotifier(
-      PaymentModel(
-        id: 0,
-        title: 340000.formatUzs,
-        type: PaymentType.card,
-        icon: Assets.lib.images.logoPng.path,
-        subtitle: 'QuizlyMarket Card',
-      ),
-    );
+    context.setupTelegramBackButton();
+    scrollController = ScrollController()..addListener(onScroll);
+    currentTest = ValueNotifier(0);
+    myTestCubit = context.read<MyTestCubit>();
+    myTestCubit
+      ..getDemoTest(widget.testId)
+      ..getWallet();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      paymentModel = [
+        PaymentModel(
+          id: 0,
+          title: 0.formatUzs,
+          type: .card,
+          icon: Assets.lib.images.logoPng.path,
+          subtitle: context.x.l10n.quizlyMarketCard,
+        ),
+        PaymentModel(id: 1, title: context.x.l10n.payme, type: .provider, icon: Assets.lib.images.payme2.path),
+        PaymentModel(id: 2, title: context.x.l10n.clickSuperApp, type: .provider, icon: Assets.lib.images.click2.path),
+      ];
+      selectedPayment = ValueNotifier(paymentModel[0]);
+      _isInitialized = true;
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    pageController.dispose();
+    scrollController.dispose();
     selectedPayment.dispose();
+    context.teardownTelegramBackButton();
+  }
+
+  void onScroll() {
+    if (!scrollController.hasClients) return;
+    final pos = scrollController.position;
+    final width = pos.viewportDimension;
+    if (width <= 0) return;
+    final page = (pos.pixels / width).round();
+    if (currentTest.value != page) {
+      currentTest.value = page;
+    }
   }
 
   Future<void> onSwitchPaymentPressed() async {
+    context.telegramWebApp.hapticImpact(.light);
     final result = await showModalBottomSheet<PaymentModel>(
       context: context,
-      builder: (ctx) => BottomSheetView(
-        isCenterTitle: false,
-        onClose: () => Navigator.pop(ctx),
-        title: 'To‘lov turini tanlang',
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          child: ValueListenableBuilder<PaymentModel?>(
-            valueListenable: selectedPayment,
-            builder: (context, isSelected, child) => SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Hozirgi to‘lov turi', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
-                  const SizedBox(height: 8),
-                  PaymentCard(
-                    title: paymentModel.first.title,
-                    subtitle: paymentModel.first.subtitle,
-                    image: Image.asset(paymentModel.first.icon ?? '', package: 'ui', width: 32),
-                    isActive: isSelected == paymentModel.first,
-                    onTap: () => Navigator.pop<PaymentModel>(ctx, paymentModel.first),
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Hoziroq sinab ko’ring', style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
-                  for (var i = 1; i < paymentModel.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: PaymentCard(
-                        title: paymentModel[i].title,
-                        image: Image.asset(paymentModel[i].icon ?? '', package: 'ui', width: 54),
-                        onTap: () {
-                          selectedPayment.value = paymentModel[i];
-                          Navigator.pop<PaymentModel>(ctx, paymentModel[i]);
-                        },
-                        isActive: isSelected == paymentModel[i],
-                      ),
+      isScrollControlled: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: .55,
+        builder: (context, scrollController) => BottomSheetView(
+          isCenterTitle: false,
+          onClose: () => Navigator.pop(ctx),
+          title: context.x.l10n.selectPaymentType,
+          child: Padding(
+            padding: const .symmetric(horizontal: 14, vertical: 16),
+            child: ValueListenableBuilder<PaymentModel?>(
+              valueListenable: selectedPayment,
+              builder: (context, isSelected, child) => SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(context.x.l10n.currentPaymentType, style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+                    const SizedBox(height: 8),
+                    PaymentCard(
+                      hasShadow: true,
+                      imagePadding: isSelected?.id != 0
+                          ? const EdgeInsets.symmetric(horizontal: 5, vertical: 16.5)
+                          : const EdgeInsets.symmetric(horizontal: 16, vertical: 8.5),
+                      title: isSelected!.title,
+                      subtitle: isSelected.subtitle,
+                      image: Image.asset(isSelected.icon, package: 'ui', width: isSelected.type == .card ? 32 : 54),
+                      isActive: true,
                     ),
+                    const SizedBox(height: 16),
+                    Text(context.x.l10n.paymentViaProvider, style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+                    for (final payment in paymentModel.where((e) => e != isSelected && e.id != 0))
+                      Padding(
+                        padding: const .only(bottom: 8),
+                        child: PaymentCard(
+                          hasShadow: true,
+                          imagePadding: const .symmetric(horizontal: 5, vertical: 16.5),
+                          title: payment.title,
+                          image: Image.asset(payment.icon, package: 'ui', width: 54),
+                          onTap: () => Navigator.pop<PaymentModel>(ctx, payment),
+                        ),
+                      ),
 
-                  const SizedBox(height: 20),
-                ],
+                    if (isSelected.id != 0) ...[
+                      const SizedBox(height: 16),
+                      Text(context.x.l10n.wallet, style: context.x.textStyle.w500s16.copyWith(fontSize: 18)),
+                      PaymentCard(
+                        hasShadow: true,
+                        title: paymentModel.first.title,
+                        subtitle: paymentModel.first.subtitle,
+                        image: Image.asset(paymentModel.first.icon, package: 'ui', width: 34),
+                        onTap: () => Navigator.pop<PaymentModel>(ctx, paymentModel.first),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
@@ -153,20 +145,120 @@ abstract class PurchaseTestScreenState extends State<PurchaseTestScreen> {
     }
   }
 
-  void onBuyPressed() => showDialog<void>(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: context.x.colors.transparent,
-      child: Center(
-        child: SuccessDialog(
-          title: 'Test sotib olingan!',
-          description: 'Test description Test description Test description Test description',
-          cancelButtonText: 'Chiqish',
-          successButtonText: 'Qayta urinish',
-          onCancelButtonPressed: () => Navigator.pop(context),
-          onSuccessButtonPressed: () => Navigator.pop(context),
-        ),
-      ),
-    ),
-  );
+  Future<void> onBuyPressed({bool withPop = false}) async {
+    if (withPop) {
+      Navigator.pop(context);
+    }
+    context.telegramWebApp.hapticImpact(.light);
+
+    final selected = selectedPayment.value;
+    if (selected.type == .provider) {
+      final provider = selected.id == 1 ? PaymentProvider.payme : PaymentProvider.click;
+      final detail = myTestCubit.state.demoTestDetail;
+      final code = (detail?.code != null && detail!.code!.isNotEmpty) ? detail.code! : widget.testId;
+      final redirectUrl = '${Constant.miniAppUrl}?startapp=$code';
+
+      final response = await myTestCubit.checkoutTest(
+        testId: widget.testId,
+        provider: provider,
+        redirectUrl: redirectUrl,
+      );
+      if (!mounted) return;
+
+      final payUrl = response?.url;
+      if (payUrl != null && payUrl.isNotEmpty) {
+        if (context.telegramWebApp.isSupported) {
+          context.telegramWebApp.openLink(payUrl, tryInstantView: false);
+        } else {
+          await launchUrl(.parse(payUrl), mode: .externalApplication);
+        }
+      } else {
+        context.x.showNotification(
+          message: context.x.l10n.somethingWentWrong,
+          isError: true,
+          top: switch (context.telegramWebApp.isSupported) {
+            true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+            false => MediaQuery.paddingOf(context).top + 56,
+          },
+        );
+      }
+    } else {
+      myTestCubit.purchaseTest(widget.testId);
+    }
+  }
+
+  void onPressLike() {
+    context.telegramWebApp.hapticImpact(.light);
+    myTestCubit.toggleLike(widget.testId);
+  }
+
+  void onPressShare() {
+    context.telegramWebApp.hapticImpact(.light);
+    final detail = myTestCubit.state.demoTestDetail;
+    if (detail == null) return;
+    context.shareTest(
+      detail.name ?? '',
+      (detail.universityName?.isNotEmpty == true ? detail.universityName : detail.categoryId) ?? 'QuizlyMarket',
+      detail.description ?? '',
+      detail.price?.toString() ?? '0',
+      detail.questionCount?.toString() ?? '0',
+      code: detail.code,
+    );
+  }
+
+  void onDemoTestStateChanged(BuildContext context, MyTestState state) {
+    if (state.walletStatus.isSuccess && state.walletData != null) {
+      final balance = state.walletData!.balance ?? 0;
+      paymentModel[0] = PaymentModel(
+        id: 0,
+        title: balance.formatUzs,
+        type: .card,
+        icon: Assets.lib.images.logoPng.path,
+        subtitle: context.x.l10n.quizlyMarketCard,
+      );
+
+      if (selectedPayment.value.id == 0) {
+        selectedPayment.value = paymentModel[0];
+      }
+    }
+
+    if (_lastPurchaseStatus != state.purchaseStatus) {
+      _lastPurchaseStatus = state.purchaseStatus;
+      if (state.purchaseStatus.isSuccess || state.purchaseStatus.isError) {
+        final isError = state.purchaseStatus.isError;
+        showDialog<void>(
+          context: context,
+          builder: (context) => Dialog(
+            backgroundColor: context.x.colors.transparent,
+            child: Center(
+              child: SuccessDialog(
+                title: isError ? context.x.l10n.testNotPurchasedTitle : context.x.l10n.testPurchasedTitle,
+                description: isError
+                    ? context.x.l10n.testNotPurchasedDescription
+                    : context.x.l10n.testPurchasedDescription,
+                cancelButtonText: context.x.l10n.exit,
+                successButtonText: isError ? context.x.l10n.retry : context.x.l10n.enter,
+                onCancelButtonPressed: () {
+                  context.octopus.navigate(Routes.home.name);
+                },
+                isError: isError,
+                onSuccessButtonPressed: () => isError
+                    ? onBuyPressed(withPop: true)
+                    : {
+                        context.octopus.push(Routes.testMode, arguments: {'id': widget.testId}),
+                        Navigator.pop(context),
+                      },
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void onRetryPressed() {
+    myTestCubit
+      ..getDemoTest(widget.testId)
+      ..getWallet();
+  }
 }

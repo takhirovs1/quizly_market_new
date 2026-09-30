@@ -1,4 +1,5 @@
 {
   "ENVIRONMENT": "production",
-  "TELEGRAM_API_BASE_URL": "https://api.telegram.org"
+  "BASE_URL": "https://apiquizly.corelabs.uz",
+  "TELEGRAM_API_BASE_URL": "https://apiquizly.corelabs.uz"
 }

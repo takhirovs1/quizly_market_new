@@ -1,6 +1,15 @@
 import 'dart:async';
 
-import '../../../common/service/api_service.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:local_source/local_source.dart';
+
+import '../../../common/constant/urls.dart';
+import '../../../common/service/api_client.dart';
+import '../../../common/service/auth_service.dart';
+import '../model/auth_service_response.dart';
+import '../model/auth_token_response.dart';
+import '../model/session_model.dart';
+import '../model/telegram_verify_request.dart';
 import '../model/user.dart';
 
 abstract interface class IAuthenticationRepository {
@@ -17,15 +26,30 @@ abstract interface class IAuthenticationRepository {
   Future<User> login();
 
   Future<void> signOut();
+
+  Future<AuthServiceResponse?> signInWithGoogle();
+
+  Future<AuthServiceResponse?> signInWithApple();
+
+  Future<void> signInWithTelegramOtp({required String deviceId, required String code});
+
+  Future<void> updateTokens({required String accessToken, required String refreshToken});
+
+  Future<List<SessionModel>> getSessions();
+
+  Future<void> revokeSession(String sessionId);
+
+  Future<void> refreshSessionToken();
 }
 
 class AuthenticationRepositoryImpl implements IAuthenticationRepository {
-  AuthenticationRepositoryImpl({required this.apiService});
+  AuthenticationRepositoryImpl({required this.apiClient, required this.localSource});
 
-  final ApiService apiService;
+  final ApiClient apiClient;
+  final LocalSource localSource;
 
   final StreamController<User> _userController = StreamController<User>.broadcast();
-  User _user = const User.unauthenticated();
+  User _user = const .unauthenticated();
 
   @override
   Stream<User> userChanges() => _userController.stream;
@@ -34,20 +58,137 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
   FutureOr<User> getUser() => _user;
 
   @override
-  Future<void> signOut() => Future<void>.sync(() {
-    const user = User.unauthenticated();
-
-    _userController.add(_user = user);
-  });
+  Future<void> restore() async {
+    if (localSource.isUserAuthenticated) {
+      _userController.add(
+        _user = .authenticated(
+          id: localSource.id,
+          token: localSource.accessToken,
+          refreshToken: localSource.refreshToken,
+        ),
+      );
+    } else {
+      _userController.add(_user = const .unauthenticated());
+    }
+  }
 
   @override
-  Future<void> restore() async {}
+  Future<void> signOut() async {
+    _userController.add(_user = const .unauthenticated());
+    try {
+      await fb.FirebaseAuth.instance.signOut();
+    } on Object {
+      /* ignore */
+    }
+  }
 
   @override
-  Future<User> login() async => const User.authenticated(id: '', token: '', refreshToken: '');
+  Future<User> login() async => _user;
 
   @override
   Future<User> fetchUser({required final String token}) {
-    throw const FormatException('AuthenticationRepositoryImpl > fetchUser > Invalid response body');
+    throw const FormatException('AuthenticationRepositoryImpl > fetchUser > not implemented');
+  }
+
+  @override
+  Future<AuthServiceResponse?> signInWithGoogle() => _signIn(
+    provider: AuthService.signInWithGoogle,
+    endpoint: '/api/auth/google',
+    dataBuilder: (token) => {'id_token': token, 'referral_code': localSource.referralCode},
+  );
+
+  @override
+  Future<AuthServiceResponse?> signInWithApple() => _signIn(
+    provider: AuthService.signInWithApple,
+    endpoint: '/api/auth/apple',
+    dataBuilder: (token) => {'identity_token': token, 'referral_code': localSource.referralCode},
+  );
+
+  @override
+  Future<void> signInWithTelegramOtp({required String deviceId, required String code}) async {
+    final json = await apiClient.post(
+      Urls.mobileVerify,
+      body: TelegramVerifyRequest(deviceId: deviceId, code: code, referralCode: localSource.referralCode).toJson(),
+    );
+    final tokenResponse = AuthTokenResponse.fromJson(json);
+
+    await Future.wait([
+      localSource.setAccessToken(tokenResponse.accessToken),
+      localSource.setRefreshToken(tokenResponse.refreshToken),
+      localSource.setId(tokenResponse.userId),
+    ]);
+
+    _userController.add(
+      _user = .authenticated(
+        id: tokenResponse.userId,
+        token: tokenResponse.accessToken,
+        refreshToken: tokenResponse.refreshToken,
+      ),
+    );
+  }
+
+  @override
+  Future<void> updateTokens({required String accessToken, required String refreshToken}) async {
+    await Future.wait([localSource.setAccessToken(accessToken), localSource.setRefreshToken(refreshToken)]);
+
+    final currentUser = _user;
+    if (currentUser is AuthenticatedUser) {
+      _userController.add(_user = currentUser.copyWith(token: () => accessToken, refreshToken: () => refreshToken));
+    } else {
+      final userId = localSource.id;
+      if (userId.isNotEmpty) {
+        _userController.add(_user = User.authenticated(id: userId, token: accessToken, refreshToken: refreshToken));
+      }
+    }
+  }
+
+  Future<AuthServiceResponse?> _signIn({
+    required Future<AuthServiceResponse?> Function() provider,
+    required String endpoint,
+    required Map<String, Object?> Function(String token) dataBuilder,
+  }) async {
+    final serviceResponse = await provider();
+    if (serviceResponse == null) return null;
+
+    final json = await apiClient.post(endpoint, body: dataBuilder(serviceResponse.idToken));
+    final tokenResponse = AuthTokenResponse.fromJson(json);
+
+    await Future.wait([
+      localSource.setAccessToken(tokenResponse.accessToken),
+      localSource.setRefreshToken(tokenResponse.refreshToken),
+      localSource.setId(tokenResponse.userId),
+    ]);
+
+    _userController.add(
+      _user = .authenticated(
+        id: tokenResponse.userId,
+        token: tokenResponse.accessToken,
+        refreshToken: tokenResponse.refreshToken,
+      ),
+    );
+
+    return serviceResponse;
+  }
+
+  @override
+  Future<List<SessionModel>> getSessions() async {
+    final json = await apiClient.get('/api/auth/sessions');
+    return SessionResponse.fromJson(json).sessions;
+  }
+
+  @override
+  Future<void> revokeSession(String sessionId) async {
+    await apiClient.delete('/api/auth/sessions/$sessionId');
+  }
+
+  @override
+  Future<void> refreshSessionToken() async {
+    final rToken = localSource.refreshToken;
+    if (rToken.isEmpty) {
+      throw Exception('Refresh token is empty');
+    }
+    final json = await apiClient.post('/api/auth/refresh', body: <String, Object?>{'refresh_token': rToken});
+    final tokenResponse = AuthTokenResponse.fromJson(json);
+    await updateTokens(accessToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken);
   }
 }

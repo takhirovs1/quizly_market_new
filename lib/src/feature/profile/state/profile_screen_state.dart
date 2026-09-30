@@ -1,0 +1,620 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
+import 'package:ui/ui.dart';
+import '../../../common/constant/constant.dart';
+import '../../../common/extension/context_extension.dart';
+import '../../../common/router/pages.dart';
+import '../../../common/util/locale_codec.dart';
+import '../../settings/screen/settings_scope.dart';
+import '../bloc/profile_cubit.dart';
+import '../model/profile_model.dart';
+import '../screen/profile_screen.dart';
+
+abstract class ProfileScreenState extends State<ProfileScreen> {
+  late final ProfileCubit profileCubit;
+  String formatProfileName(String? apiName) {
+    final raw = (apiName ?? '').trim();
+    if (raw.isEmpty) return '';
+
+    final parts = raw.split(RegExp(r'\s+')).where((e) => e.trim().isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+
+    final firstTwo = parts.take(2).map(_titleCaseWord).toList();
+    return firstTwo.join(' ');
+  }
+
+  String _titleCaseWord(String word) {
+    final w = word.trim();
+    if (w.isEmpty) return '';
+    final lower = w.toLowerCase();
+    return '${lower[0].toUpperCase()}${lower.substring(1)}';
+  }
+
+  Future<void> onRefresh() async {
+    context.telegramWebApp.hapticImpact(.heavy);
+    await profileCubit.loadProfile();
+  }
+
+  /// Saved preference, or the locale [MaterialApp] actually resolved when none is saved (system / supported match).
+  Locale get currentLocale {
+    final saved = SettingsScope.settingsOf(context, listen: true).localization;
+    if (saved != null) return saved;
+    return Localizations.localeOf(context);
+  }
+
+  void selectLanguage(Locale locale) {
+    if (_isCurrentLocale(locale)) return;
+    context.x.setLocalization(locale);
+    profileCubit.updateLanguage(AppLocaleCodec.encode(locale));
+  }
+
+  /// Whether [locale] matches the active one, comparing the script too so that
+  /// Uzbek Latin and Uzbek Cyrillic are treated as distinct selections.
+  bool _isCurrentLocale(Locale locale) =>
+      currentLocale.languageCode == locale.languageCode && currentLocale.scriptCode == locale.scriptCode;
+
+  String themeLabel(ThemeMode mode) => switch (mode) {
+    .system => 'System',
+    .dark => 'Dark',
+    .light => 'Light',
+  };
+
+  ThemeMode get currentThemeMode => SettingsScope.settingsOf(context, listen: true).themeMode;
+
+  void onCopyCardNumber(String cardNumber) {
+    Clipboard.setData(ClipboardData(text: cardNumber));
+    context.telegramWebApp.hapticImpact(.light);
+    context.x.showNotification(
+      message: context.x.l10n.copyCardID,
+      top: switch (context.telegramWebApp.isSupported) {
+        true => context.telegramWebApp.safeAreaInset.top.toDouble() + 56,
+        false => MediaQuery.paddingOf(context).top + 56,
+      },
+    );
+  }
+
+  void selectThemeMode(ThemeMode mode) {
+    final current = currentThemeMode;
+    if (mode == current) return;
+
+    final settingsValue = SettingsScope.settingsOf(context, listen: false);
+    SettingsScope.of(context, listen: false).add(.updateSettings(settings: settingsValue.copyWith(themeMode: mode)));
+  }
+
+  void onWalletCardPressed() {}
+
+  void onAppInfoPressed() => context.octopus.push(Routes.appInfo);
+
+  void onSubscriptionCardPressed() {}
+
+  void onMyInformationPressed() {}
+
+  void onMyCardsPressed() {}
+
+  void onPaymentHistoryPressed() => context.octopus.push(Routes.paymentHistory);
+
+  void onPromoCodesPressed() {}
+
+  void onTransferHistoryPressed() {}
+
+  static const _uzbekLatin = Locale('uz');
+  static const _uzbekCyrillic = Locale.fromSubtags(languageCode: 'uz', scriptCode: 'Cyrl');
+  static const _kazakh = Locale('kk');
+  static const _karakalpak = Locale('kaa');
+  static const _kyrgyz = Locale('ky');
+  static const _tajik = Locale('tg');
+  static const _russian = Locale('ru');
+  static const _english = Locale('en');
+
+  Future<void> onLanguagePressed() async {
+    final textColor = context.x.colors.text;
+
+    final options = <({String label, Locale locale})>[
+      (label: context.x.l10n.uzbekLatin, locale: _uzbekLatin),
+      (label: context.x.l10n.uzbekKril, locale: _uzbekCyrillic),
+      (label: context.x.l10n.kazakh, locale: _kazakh),
+      (label: context.x.l10n.karakalpak, locale: _karakalpak),
+      (label: context.x.l10n.kyrgyz, locale: _kyrgyz),
+      (label: context.x.l10n.tajik, locale: _tajik),
+      (label: context.x.l10n.russian, locale: _russian),
+      (label: context.x.l10n.english, locale: _english),
+    ];
+
+    await showModalBottomSheet<void>(
+      backgroundColor: context.x.colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => CustomBottomSheet(
+        maxHeightFactor: .75,
+        isScrollable: true,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(context.x.l10n.appLanguage, style: context.x.textStyle.sfW700s18.copyWith(color: textColor)),
+            ),
+            IconButton(
+              onPressed: () => context.bottomSheetPop(),
+              icon: Icon(Icons.close_rounded, color: textColor),
+            ),
+          ],
+        ),
+        children: [
+          for (final option in options) ...[
+            SelectionPillButton(
+              label: option.label,
+              isSelected: _isCurrentLocale(option.locale),
+              onTap: () => _onLanguageSelected(option.locale),
+            ),
+            const SizedBox(height: 8),
+          ],
+          const SizedBox(height: 4),
+        ],
+      ),
+    );
+  }
+
+  Future<void> onThemePressed() async {
+    final selected = currentThemeMode;
+    final textColor = context.x.colors.text;
+
+    await showModalBottomSheet<void>(
+      backgroundColor: context.x.colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => CustomBottomSheet(
+        maxHeightFactor: .3,
+        isScrollable: true,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(context.x.l10n.appTheme, style: context.x.textStyle.sfW700s18.copyWith(color: textColor)),
+            ),
+            IconButton(
+              onPressed: () => context.bottomSheetPop(),
+              icon: Icon(Icons.close_rounded, color: textColor),
+            ),
+          ],
+        ),
+        children: [
+          SelectionPillButton(
+            label: context.x.l10n.dark,
+            isSelected: selected == .dark,
+            onTap: () => onThemeModePressed(.dark),
+          ),
+          const SizedBox(height: 8),
+          SelectionPillButton(
+            label: context.x.l10n.light,
+            isSelected: selected == .light,
+            onTap: () => onThemeModePressed(.light),
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
+
+  void onThemeModePressed(ThemeMode mode) {
+    context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
+    selectThemeMode(mode);
+    context.bottomSheetPop();
+  }
+
+  void _onLanguageSelected(Locale locale) {
+    context.telegramWebApp.hapticImpact(.light);
+    selectLanguage(locale);
+    context.bottomSheetPop();
+  }
+
+  void onHelpPressed() => context.octopus.push(Routes.supportChat);
+
+  void onFrequentlyAskedQuestionsPressed() {}
+
+  void onAboutTheAppPressed() {}
+
+  void onTopUpBalancePressed() => context.octopus.push(Routes.payment);
+
+  void onReferralPressed() => context.octopus.push(Routes.referral);
+
+  void onArchivedTestsPressed() => context.octopus.push(Routes.archive);
+  void onTeacherPressed() {}
+  int _linkedProvidersCount(ProfileModelResponse? user) {
+    if (user == null) return 0;
+    return (user.isGoogleLinked ? 1 : 0) + (user.isAppleLinked ? 1 : 0) + (user.isTelegramLinked ? 1 : 0);
+  }
+
+  void onGoogleConnectPressed() {
+    final user = profileCubit.state.user;
+    if (user != null && user.isGoogleLinked) {
+      if (_linkedProvidersCount(user) >= 2) {
+        _showUnlinkConfirmation('google', 'Google');
+      }
+    } else {
+      profileCubit.linkGoogle();
+    }
+  }
+
+  void onAppleConnectPressed() {
+    final user = profileCubit.state.user;
+    if (user != null && user.isAppleLinked) {
+      if (_linkedProvidersCount(user) >= 2) {
+        _showUnlinkConfirmation('apple', 'Apple');
+      }
+    } else {
+      profileCubit.linkApple();
+    }
+  }
+
+  void onTelegramConnectPressed() {
+    // Telegram cannot be unlinked
+  }
+
+  void _showUnlinkConfirmation(String providerKey, String providerName) {
+    context.telegramWebApp.hapticImpact(.light);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: dialogContext.x.colors.transparent,
+        child: Center(
+          child: LogoutDialog(
+            title: dialogContext.x.l10n.unlinkTitle(providerName),
+            description: dialogContext.x.l10n.unlinkDescription(providerName),
+            cancelButtonText: dialogContext.x.l10n.cancel,
+            successButtonText: dialogContext.x.l10n.unlink,
+            onCancelButtonPressed: () => dialogContext.bottomSheetPop(),
+            onSuccessButtonPressed: () async {
+              dialogContext.bottomSheetPop();
+              await profileCubit.unlinkProvider(providerKey);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void onSetHomePressed() {
+    context.telegramWebApp.hapticImpact(.light);
+    context.telegramWebApp.addToHomeScreen();
+  }
+
+  void onTermsPressed() => context.octopus.push(Routes.appDocuments);
+
+  void onUpdateProfilePressed() {
+    context.octopus.push(Routes.editProfile);
+  }
+
+  List<ProfileListRow> menuRowsFor(ProfileModelResponse? user) {
+    final linkedCount = _linkedProvidersCount(user);
+    final canUnlinkSocial = linkedCount >= 2;
+    final isPremium = user?.premium == true;
+
+    return [
+      ProfileListRow.header((c) => context.x.l10n.profileMain),
+      ProfileListRow.item(
+        (c) => context.x.l10n.updateProfile,
+        onUpdateProfilePressed,
+        Icon(CupertinoIcons.pencil_circle, color: context.x.colors.profileIcon),
+      ),
+      if (!isPremium) ...[
+        ProfileListRow.item(
+          (c) => context.x.l10n.topUpBalance,
+          onTopUpBalancePressed,
+          Assets.lib.vectors.topUpBalance.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
+        ),
+        ProfileListRow.item(
+          (c) => context.x.l10n.referral,
+          onReferralPressed,
+          Assets.lib.vectors.referral.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
+        ),
+        ProfileListRow.item(
+          (c) => context.x.l10n.paymentHistory,
+          onPaymentHistoryPressed,
+          Assets.lib.vectors.historyTransaction.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
+        ),
+      ],
+      ProfileListRow.item(
+        (c) => context.x.l10n.archivedTests,
+        onArchivedTestsPressed,
+        Assets.lib.vectors.documents.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      // ProfileListRow.item(
+      //   (c) => context.x.l10n.teacher,
+      //   onTeacherPressed,
+      //   Assets.lib.vectors.teacherSwap.svg(
+      //     package: Constant.packageUi,
+      //     colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+      //   ),
+      // ),
+      ProfileListRow.spacer(16),
+      ProfileListRow.header((c) => context.x.l10n.integrations),
+      ProfileListRow.item(
+        (c) => context.x.l10n.googleConnect,
+        onGoogleConnectPressed,
+        Assets.lib.vectors.google.svg(package: Constant.packageUi),
+        isConnected: user?.isGoogleLinked ?? false,
+        isComingSoon: user != null && !user.isGoogleLinked,
+        canTapWhenConnected: canUnlinkSocial,
+        connectedText: (c) => c.x.l10n.accountLinked,
+        comingSoonText: (c) => c.x.l10n.connectAccount,
+      ),
+      if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)
+        ProfileListRow.item(
+          (c) => context.x.l10n.appleIdConnect,
+          onAppleConnectPressed,
+          Assets.lib.vectors.apple.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, BlendMode.srcIn),
+          ),
+          isConnected: user?.isAppleLinked ?? false,
+          isComingSoon: user != null && !user.isAppleLinked,
+          canTapWhenConnected: canUnlinkSocial,
+          connectedText: (c) => c.x.l10n.accountLinked,
+          comingSoonText: (c) => c.x.l10n.connectAccount,
+        ),
+      if (user == null || user.isTelegramLinked || !(user.isGoogleLinked || user.isAppleLinked))
+        ProfileListRow.item(
+          (c) => context.x.l10n.telegramConnect,
+          onTelegramConnectPressed,
+          Assets.lib.images.telegramLogo.image(package: Constant.packageUi, width: 20, height: 20),
+          isConnected: user?.isTelegramLinked ?? false,
+          isComingSoon: user != null && !user.isTelegramLinked,
+          canTapWhenConnected: false,
+          connectedText: (c) => c.x.l10n.accountLinked,
+          comingSoonText: (c) => c.x.l10n.connectAccount,
+        ),
+      ProfileListRow.spacer(16),
+      ProfileListRow.header((c) => context.x.l10n.appearance),
+      ProfileListRow.item(
+        (c) => context.x.l10n.language,
+        onLanguagePressed,
+        Assets.lib.vectors.language.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.theme,
+        onThemePressed,
+        Assets.lib.vectors.themeIcon.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      if (context.telegramWebApp.isSupported && context.x.isMobile)
+        ProfileListRow.item(
+          (c) => context.x.l10n.installOnHomeScreen,
+          onSetHomePressed,
+          Assets.lib.vectors.setHome.svg(
+            package: Constant.packageUi,
+            colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+          ),
+        ),
+      ProfileListRow.spacer(16),
+      ProfileListRow.header((c) => context.x.l10n.other),
+      ProfileListRow.item(
+        (c) => context.x.l10n.help,
+        onHelpPressed,
+        Assets.lib.vectors.support.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.documents,
+        onTermsPressed,
+        Assets.lib.vectors.documents.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.app_info,
+        onAppInfoPressed,
+        Assets.lib.vectors.informationApp.svg(
+          package: Constant.packageUi,
+          colorFilter: .mode(context.x.colors.profileIcon, .srcIn),
+        ),
+      ),
+      ProfileListRow.item(
+        (c) => context.x.l10n.logout,
+        onLogoutPressed,
+        Assets.lib.vectors.logout.svg(package: Constant.packageUi),
+        isLogout: true,
+      ),
+    ];
+  }
+
+  // Actions
+
+  Future<void> onLogoutPressed() async {
+    context.telegramWebApp.hapticImpact(.light);
+    final screenContext = context;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: dialogContext.x.colors.transparent,
+        child: Center(
+          child: LogoutDialog(
+            title: dialogContext.x.l10n.logoutText,
+            description: dialogContext.x.l10n.logoutDescription,
+            cancelButtonText: dialogContext.x.l10n.cancel,
+            successButtonText: dialogContext.x.l10n.logout,
+            onCancelButtonPressed: () => context.bottomSheetPop(),
+            onSuccessButtonPressed: () async {
+              context.bottomSheetPop();
+              await screenContext.x.dependencies.authenticationController.signOut();
+              if (!screenContext.mounted) return;
+              if (screenContext.telegramWebApp.isSupported) {
+                screenContext.telegramWebApp.close();
+              } else {
+                screenContext.octopus.navigate(Routes.login.name);
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> onLogoutAccountPressed() async {}
+
+  // Header sizing
+  double expandedHeaderHeight(BuildContext context) {
+    var height = (MediaQuery.sizeOf(context).height * 0.26).clamp(150.0, 200.0);
+    if (context.telegramWebApp.isSupported) {
+      height += context.telegramWebApp.safeAreaInset.top;
+    }
+    return height;
+  }
+
+  double collapsedHeaderHeight(BuildContext context) {
+    if (context.telegramWebApp.isSupported) {
+      return context.telegramWebApp.safeAreaInset.top + kToolbarHeight;
+    }
+    return MediaQuery.paddingOf(context).top + kToolbarHeight;
+  }
+
+  // 0 -> expanded, 1 -> collapsed
+  double collapseT(BuildContext context, BoxConstraints constraints) {
+    final expandedHeight = expandedHeaderHeight(context);
+    final collapsedHeight = collapsedHeaderHeight(context);
+    final currentHeight = constraints.maxHeight;
+    return 1.0 - ((currentHeight - collapsedHeight) / (expandedHeight - collapsedHeight)).clamp(0.0, 1.0);
+  }
+
+  // Opacity curves (Telegram-like)
+  double headerOpacity(double t) => (1.0 - Curves.easeOut.transform((t * 1.2).clamp(0.0, 1.0))).clamp(0.0, 1.0);
+
+  double titleOpacity(double t) => Curves.easeIn.transform(((t - 0.6) / 0.4).clamp(0.0, 1.0));
+
+  // Responsive sizing
+  double avatarMax(double width) => (width * 0.24).clamp(72.0, 110.0);
+  double avatarMin(double width) => (width * 0.12).clamp(44.0, 64.0);
+  double avatarSize(double width, double t) {
+    final max = avatarMax(width);
+    final min = avatarMin(width);
+    return (max - (max - min) * t).clamp(min, max);
+  }
+
+  double nameSizeExpanded(double width) => (width * 0.07).clamp(20.0, 28.0);
+  double nameSizeCollapsed(double width) => (width * 0.048).clamp(16.0, 20.0);
+  double phoneSize(double width) => (width * 0.038).clamp(12.0, 15.0);
+
+  double nameHorizontalPadding(double width) => (width * 0.08).clamp(16.0, 28.0);
+  double phoneHorizontalPadding(double width) => (width * 0.10).clamp(16.0, 32.0);
+  double collapsedTitleHorizontalPadding(double width) => (width * 0.12).clamp(20.0, 40.0);
+
+  double headerNameSpacing(double expandedHeight) => (expandedHeight * 0.045).clamp(6.0, 12.0);
+
+  ({double t, double headerAlpha, double titleAlpha, double width, double expandedHeight, double avatar}) headerLayout(
+    BuildContext context,
+    BoxConstraints constraints,
+  ) {
+    final t = collapseT(context, constraints);
+    final headerAlpha = headerOpacity(t);
+    final titleAlpha = titleOpacity(t);
+    final width = MediaQuery.sizeOf(context).width;
+    final expandedHeight = expandedHeaderHeight(context);
+    final avatar = avatarSize(width, t);
+    return (
+      t: t,
+      headerAlpha: headerAlpha,
+      titleAlpha: titleAlpha,
+      width: width,
+      expandedHeight: expandedHeight,
+      avatar: avatar,
+    );
+  }
+
+  EdgeInsets menuSliverPadding(BuildContext context) {
+    // Keep the last button visible above bottom navigation bar / home indicator.
+    final bottom = MediaQuery.paddingOf(context).bottom;
+    // NOTE: We don't have direct access to the app's bottom-nav height here,
+    // so we use a conservative extra padding that still keeps the logout visible.
+    return EdgeInsets.fromLTRB(16, 0, 16, bottom);
+  }
+
+  @override
+  void initState() {
+    profileCubit = context.read<ProfileCubit>()..loadProfile();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+}
+
+typedef ProfileTitleBuilder = String Function(BuildContext context);
+
+class ProfileListRow {
+  factory ProfileListRow.item(
+    ProfileTitleBuilder titleBuilder,
+    VoidCallback onTap,
+    Widget? leading, {
+    bool isLogout = false,
+    bool isComingSoon = false,
+    bool isConnected = false,
+    bool canTapWhenConnected = false,
+    ProfileTitleBuilder? comingSoonText,
+    ProfileTitleBuilder? connectedText,
+  }) => ProfileListRow._(
+    ProfileListRowType.item,
+    titleBuilder: titleBuilder,
+    onTap: onTap,
+    leading: leading,
+    isLogout: isLogout,
+    isComingSoon: isComingSoon,
+    isConnected: isConnected,
+    canTapWhenConnected: canTapWhenConnected,
+    comingSoonText: comingSoonText,
+    connectedText: connectedText,
+  );
+
+  factory ProfileListRow.spacer(double height) => ProfileListRow._(ProfileListRowType.spacer, spacerHeight: height);
+
+  factory ProfileListRow.header(ProfileTitleBuilder titleBuilder) =>
+      ProfileListRow._(ProfileListRowType.header, titleBuilder: titleBuilder);
+  const ProfileListRow._(
+    this.type, {
+    this.titleBuilder,
+    this.spacerHeight,
+    this.onTap,
+    this.leading,
+    this.isLogout = false,
+    this.isComingSoon = false,
+    this.isConnected = false,
+    this.canTapWhenConnected = false,
+    this.comingSoonText,
+    this.connectedText,
+  });
+
+  final ProfileListRowType type;
+  final ProfileTitleBuilder? titleBuilder;
+  final double? spacerHeight;
+  final VoidCallback? onTap;
+  final Widget? leading;
+  final bool isLogout;
+  final bool isComingSoon;
+  final bool isConnected;
+  final bool canTapWhenConnected;
+  final ProfileTitleBuilder? comingSoonText;
+  final ProfileTitleBuilder? connectedText;
+}
+
+enum ProfileListRowType { header, item, spacer }

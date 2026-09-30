@@ -14,6 +14,7 @@ dependencies:
   intl: any
   meta: any
   collection: any
+  web: any
 
   cupertino_icons: ^1.0.8
 
@@ -21,8 +22,7 @@ dependencies:
   flutter_svg: ^2.2.3
   vector_graphics: ^1.1.19
   lottie: ^3.0.0
-
-  telegram_web_app: ^0.3.3
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -41,8 +41,58 @@ flutter:
     - lib/images/
     - lib/vectors/
     - lib/lottie/
+    - lib/audio/
+    - lib/icon/
+    - lib/file/
 
   fonts:
+    - family: SF Pro Display
+      fonts:
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Black.otf
+          weight: 900
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-BlackItalic.otf
+          weight: 900
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Bold.otf
+          weight: 700
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-BoldItalic.otf
+          weight: 700
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Heavy.otf
+          weight: 800
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-HeavyItalic.otf
+          weight: 800
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Light.otf
+          weight: 300
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-LightItalic.otf
+          weight: 300
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Medium.otf
+          weight: 500
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-MediumItalic.otf
+          weight: 500
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Regular.otf
+          weight: 400
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-RegularItalic.otf
+          weight: 400
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Semibold.otf
+          weight: 600
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-SemiboldItalic.otf
+          weight: 600
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Thin.otf
+          weight: 100
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-ThinItalic.otf
+          weight: 100
+          style: italic
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-Ultralight.otf
+          weight: 200
+        - asset: lib/font/sf_pro_display/SF-Pro-Display-UltralightItalic.otf
+          weight: 200
+          style: italic
     - family: Nunito
       fonts:
         - asset: lib/font/work_sans/Nunito-Black.ttf

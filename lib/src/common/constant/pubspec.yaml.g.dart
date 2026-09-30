@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.0+6',
+    representation: r'1.0.4+304',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.0+6',
+    canonical: r'1.0.4+304',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -111,25 +111,25 @@ sealed class Pubspec {
 
     /// PATCH version when you make backward compatible bug fixes.
     /// The patch version number: 3 in "1.2.3".
-    patch: 0,
+    patch: 4,
 
     /// The pre-release identifier: "foo" in "1.2.3-foo".
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'6'],
+    build: <String>[r'304'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
-    3,
-    13,
-    7,
     9,
-    34,
-    425,
-    220,
+    30,
+    3,
+    58,
+    49,
+    161,
+    214,
   );
 
   /// Name
@@ -419,34 +419,59 @@ sealed class Pubspec {
     'local_source': <String, Object>{
       'path': r'packages/local_source',
     },
+    'math_keyboard': <String, Object>{
+      'path': r'packages/math_keyboard',
+    },
     'intl': r'0.20.2',
     'meta': r'any',
     'collection': r'any',
     'async': r'any',
+    'archive': r'^4.0.0',
+    'xml': r'^6.5.0',
+    'csv': r'^6.0.0',
     'path': r'^1.9.1',
     'path_provider': r'^2.1.5',
     'permission_handler': r'^12.0.1',
     'keyboard_dismisser': r'^3.0.0',
+    'cached_network_image': r'^3.4.1',
     'platform_info': r'^5.0.0',
     'device_info_plus': r'^12.3.0',
     'throttling': r'^2.0.1',
     'wakelock_plus': r'^1.4.0',
     'battery_plus': r'^7.0.0',
     'url_launcher': r'^6.3.2',
-    'logbook': r'^0.4.0',
+    'logbook': r'^0.6.1',
     'share_plus': r'^12.0.1',
     'in_app_review': r'^2.0.11',
     'flutter_bloc': r'^9.1.1',
-    'thunder': r'^0.2.5',
-    'dio': r'^5.9.1',
+    'thunder': r'^1.1.0-dev.4',
+    'http': r'^1.6.0',
+    'dio': r'^5.7.0',
+    'get_it': r'^8.0.0',
+    'universal_html': r'^2.2.4',
     'connectivity_plus': r'^7.0.0',
-    'firebase_core': r'^4.4.0',
-    'firebase_messaging': r'^16.1.1',
-    'firebase_remote_config': r'^6.1.4',
-    'firebase_crashlytics': r'^5.0.7',
+    'firebase_core': r'^4.15.0',
+    'firebase_messaging': r'^16.7.0',
+    'firebase_remote_config': r'^6.7.0',
+    'firebase_crashlytics': r'^5.4.0',
+    'sign_in_with_apple': r'^7.0.1',
+    'google_sign_in': r'^7.2.0',
+    'firebase_auth': r'^6.7.0',
+    'shelf': r'^1.4.2',
+    'crypto': r'^3.0.5',
     'flutter_local_notifications': r'^20.1.0',
     'cupertino_icons': r'^1.0.8',
     'octopus': r'^0.0.9',
+    'telegram_web_app': r'^0.3.3',
+    'expandable_page_view': r'^1.2.1',
+    'shimmer': r'^3.0.0',
+    'equatable': r'^2.0.8',
+    'lottie': r'^3.3.2',
+    'flutter_markdown': r'^0.7.7+1',
+    'image_picker': r'^1.2.2',
+    'file_picker': r'^11.0.2',
+    'flutter_math_fork': r'^0.7.4',
+    'grouped_list': r'^6.0.0',
   };
 
   /// Developer dependencies
@@ -454,9 +479,14 @@ sealed class Pubspec {
     'flutter_test': <String, Object>{
       'sdk': r'flutter',
     },
+    'integration_test': <String, Object>{
+      'sdk': r'flutter',
+    },
     'flutter_lints': r'^6.0.0',
     'build_runner': r'^2.11.0',
     'pubspec_generator': r'^5.0.1',
+    'flutter_native_splash': r'^2.4.7',
+    'flutter_launcher_icons': r'^0.14.4',
   };
 
   /// Dependency overrides
@@ -515,10 +545,14 @@ sealed class Pubspec {
       r'packages/ui',
       r'packages/localization',
       r'packages/local_source',
+      r'packages/math_keyboard',
     ],
     'flutter': <String, Object>{
       'generate': true,
       'uses-material-design': true,
+      'assets': <Object>[
+        r'config/',
+      ],
       'fonts': <Object>[
         r'{family: Monospace, fonts: [{asset: packages/ui/lib/font/logbook/Monospace.ttf}]}',
       ],

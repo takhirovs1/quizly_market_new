@@ -8,21 +8,34 @@ import '../../constant/config.dart';
 @immutable
 final class DebugConfig {
   /// {@macro debug_config}
-  const DebugConfig({required this.debuggerEnabled, this.telegramChatId, this.telegramBotToken});
+  const DebugConfig({
+    required this.debuggerEnabled,
+    this.thunderEnabled = false,
+    this.telegramChatId,
+    this.telegramBotToken,
+  });
 
   factory DebugConfig.fromJson(Map<String, Object?> json) => DebugConfig(
     debuggerEnabled: !Config.environment.isProduction,
+    thunderEnabled: !Config.environment.isProduction,
     telegramChatId: json['TELEGRAM_CHAT_ID']?.toString(),
     telegramBotToken: json['TELEGRAM_BOT_TOKEN']?.toString(),
   );
 
   final bool debuggerEnabled;
+  final bool thunderEnabled;
   final String? telegramChatId;
   final String? telegramBotToken;
 
   /// Copy the [DebugConfig] with new values.
-  DebugConfig copyWith({bool? debuggerEnabled, String? telegramChatId, String? telegramBotToken}) => DebugConfig(
+  DebugConfig copyWith({
+    bool? debuggerEnabled,
+    bool? thunderEnabled,
+    String? telegramChatId,
+    String? telegramBotToken,
+  }) => DebugConfig(
     debuggerEnabled: debuggerEnabled ?? this.debuggerEnabled,
+    thunderEnabled: thunderEnabled ?? this.thunderEnabled,
     telegramChatId: telegramChatId ?? this.telegramChatId,
     telegramBotToken: telegramBotToken ?? this.telegramBotToken,
   );
@@ -33,17 +46,20 @@ final class DebugConfig {
 
     return other is DebugConfig &&
         other.debuggerEnabled == debuggerEnabled &&
+        other.thunderEnabled == thunderEnabled &&
         other.telegramChatId == telegramChatId &&
         other.telegramBotToken == telegramBotToken;
   }
 
   @override
-  int get hashCode => debuggerEnabled.hashCode ^ telegramChatId.hashCode ^ telegramBotToken.hashCode;
+  int get hashCode =>
+      debuggerEnabled.hashCode ^ thunderEnabled.hashCode ^ telegramChatId.hashCode ^ telegramBotToken.hashCode;
 
   @override
   String toString() =>
       'DebugConfig('
       'debuggerEnabled: $debuggerEnabled, '
+      'thunderEnabled: $thunderEnabled, '
       'telegramChatId: $telegramChatId, '
       'telegramBotToken: $telegramBotToken'
       ')';

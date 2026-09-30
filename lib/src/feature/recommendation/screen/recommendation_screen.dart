@@ -1,10 +1,17 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../../common/util/error_util.dart';
+import '../../my_tests/widgets/animated_referral_banner.dart';
+import '../../my_tests/widgets/responsive_recommendations_list.dart';
+import '../../my_tests/widgets/section_header_widget.dart';
+import '../bloc/recommendation_cubit.dart';
 import '../state/recommendation_screen_state.dart';
 import '../widget/custom_page_view.dart';
+import 'more_recommendation_screen.dart';
 
 class RecommendationScreen extends StatefulWidget {
   const RecommendationScreen({super.key});
@@ -17,10 +24,12 @@ class _RecommendationScreenState extends RecommendationScreenState {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.x.colors.scaffoldBackground,
-    appBar: const QuizAppBar(title: 'QuizlyMarket'),
+    appBar: QuizAppBar(
+      title: context.x.l10n.quizlyMarket,
+      telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+    ),
     body: Column(
       children: [
-        const SizedBox(height: 8),
         Padding(
           padding: const .symmetric(horizontal: 16, vertical: 8),
           child: Row(
@@ -29,68 +38,216 @@ class _RecommendationScreenState extends RecommendationScreenState {
               Expanded(
                 child: AppTextField(
                   controller: searchController,
-                  title: 'Search',
-                  prefixWidget: Assets.lib.vectors.search.svg(
-                    package: 'ui',
-                    width: 24,
-                    height: 24,
-                    colorFilter: .mode(context.x.colors.bannerSecondaryText, .srcATop),
+                  title: context.x.l10n.search,
+                  prefixWidget: Padding(
+                    padding: const .all(4),
+                    child: Assets.lib.vectors.search.svg(
+                      package: 'ui',
+                      width: 24,
+                      height: 24,
+                      colorFilter: .mode(context.x.colors.bannerSecondaryText, .srcATop),
+                    ),
                   ),
                 ),
               ),
-              Assets.lib.vectors.filter.svg(
-                package: 'ui',
-                width: 24,
-                height: 24,
-                colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+              GestureDetector(
+                onTap: () => context.telegramWebApp.hapticImpact(.medium),
+                child: Assets.lib.vectors.filter.svg(
+                  package: 'ui',
+                  width: 24,
+                  height: 24,
+                  colorFilter: .mode(context.x.colors.primary, .srcATop),
+                ),
               ),
             ],
           ),
         ),
         Expanded(
-          child: ListView(
-            children: [
-              CustomPageView(
-                items: const ['Test 1', 'Test 2', 'Test 3'],
-                title: 'Tavsiya',
-                onShowMore: () => context.octopus.pushNamed(Routes.moreRecommendation.name),
-              ),
-              const CustomPageView(items: ['Test 1', 'Test 2'], title: 'Mashxurlar'),
-              Padding(
-                padding: const .symmetric(horizontal: 16),
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        Text(
-                          'Barcha Testlar',
-                          style: context.x.textStyle.w700s28.copyWith(fontSize: 22, color: context.x.colors.bannerText),
+          child: RefreshIndicator.adaptive(
+            onRefresh: onRefresh,
+            child: BlocConsumer<RecommendationCubit, RecommendationState>(
+              listener: (context, state) {
+                final hasData = state.allTests.isNotEmpty || state.recommendations.isNotEmpty || state.liked.isNotEmpty;
+                if (state.status.isError && hasData) {
+                  ErrorUtil.showSnackBar(context, state.errorMessage ?? context.x.l10n.somethingWentWrong);
+                }
+              },
+              builder: (context, state) {
+                final hasData = state.allTests.isNotEmpty || state.recommendations.isNotEmpty || state.liked.isNotEmpty;
+
+                if (state.status.isLoading && !hasData) {
+                  return ListView(
+                    padding: const .only(left: 16, right: 16, top: 16, bottom: 16),
+                    children: [
+                      for (var i = 0; i < 6; i++) ...[const TestCardShimmer(), const SizedBox(height: 10)],
+                    ],
+                  );
+                }
+
+                if (state.status.isError && !hasData) {
+                  return ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: .only(left: 16, right: 16, top: 16, bottom: context.x.isMobile ? 16 : 80),
+                    children: [
+                      SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+                      Center(
+                        child: EmptyTestWidget(
+                          title: context.x.l10n.somethingWentWrong,
+                          description: ErrorUtil.localizeError(context, state.errorMessage ?? 'pleaseTryAgainLater'),
                         ),
-                        Assets.lib.vectors.chevronRight.svg(
-                          package: 'ui',
-                          width: 24,
-                          height: 24,
-                          colorFilter: .mode(context.x.colors.bannerText, .srcATop),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: FilledButton(onPressed: onRefresh, child: Text(context.x.l10n.retry)),
+                      ),
+                    ],
+                  );
+                }
+
+                // Search mode: search results from /api/tests
+                if (state.search.isNotEmpty) {
+                  if (state.allTests.isEmpty) {
+                    return ListView(
+                      controller: scrollController,
+                      padding: const .only(top: 16, bottom: 16),
+                      children: [
+                        Padding(
+                          padding: const .symmetric(horizontal: 16),
+                          child: EmptyTestWidget(
+                            title: context.x.l10n.noTestsFound,
+                            description: context.x.l10n.trySearchingWithOtherKeywords,
+                          ),
                         ),
                       ],
-                    ),
-                    for (var i = 0; i < 10; i++)
-                      BannerWidget(
-                        title: 'Test $i',
-                        companyName: 'Company $i',
-                        description: 'Description $i',
-                        price: '100000',
-                        questionAmount: '10',
-                        buyButtonText: 'Buy',
-                        onBuyButtonPressed: () {},
-                        onShareButtonPressed: () {},
+                    );
+                  }
+
+                  return ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.only(top: 16, bottom: 16),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SectionHeaderWidget(
+                          title: context.x.l10n.allTests,
+                          onTap: () => context.octopus.push(
+                            Routes.moreRecommendation,
+                            arguments: <String, String>{'type': TestCategoryType.allTests.name},
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final availableWidth = constraints.maxWidth + 32;
+                            const maxCardWidth = 360.0;
+                            final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
+
+                            return ResponsiveRecommendationsList(
+                              tests: state.allTests,
+                              crossAxisCount: crossAxisCount,
+                              onBuyButtonPressed: onBuyTestPressed,
+                              onShareButtonPressed: onShareTestPressed,
+                              onLikeButtonPressed: onLikeTestPressed,
+                            );
+                          },
+                        ),
+                      ),
+                      if (state.isAllTestsLoadingMore)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(child: CircularProgressIndicator.adaptive()),
+                        ),
+                    ],
+                  );
+                }
+
+                // Default mode: Recommendations, Banner, Liked Tests, All Tests
+                return ListView(
+                  controller: scrollController,
+                  padding: .only(bottom: context.x.isMobile ? 16 : 120),
+                  children: [
+                    // Recommendations section (first 5 top tests)
+                    if (state.recommendations.isNotEmpty)
+                      CustomPageView(
+                        tests: state.recommendations.take(5).toList(),
+                        title: context.x.l10n.recommendation,
+                        onShowMore: () {
+                          context.octopus.push(
+                            Routes.moreRecommendation,
+                            arguments: <String, String>{'type': TestCategoryType.recommendation.name},
+                          );
+                          context.telegramWebApp.hapticImpact(.medium);
+                        },
+                        onBuyButtonPressed: onBuyTestPressed,
+                        onShareButtonPressed: onShareTestPressed,
+                        onLikeButtonPressed: onLikeTestPressed,
+                      ),
+                    const SizedBox(height: 16),
+
+                    // Referral banner
+                    const Padding(padding: .symmetric(horizontal: 16), child: AnimatedReferralBanner()),
+
+                    // Liked section (first 5 liked tests)
+                    if (state.liked.isNotEmpty)
+                      CustomPageView(
+                        tests: state.liked.take(5).toList(),
+                        title: context.x.l10n.likedTestsHeader,
+                        onShowMore: () {
+                          context.octopus.push(
+                            Routes.moreRecommendation,
+                            arguments: <String, String>{'type': TestCategoryType.liked.name},
+                          );
+                          context.telegramWebApp.hapticImpact(.medium);
+                        },
+                        onBuyButtonPressed: onBuyTestPressed,
+                        onShareButtonPressed: onShareTestPressed,
+                        onLikeButtonPressed: onLikeTestPressed,
+                      ),
+
+                    // All tests section
+                    if (state.allTests.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SectionHeaderWidget(
+                          title: context.x.l10n.allTests,
+                          onTap: () => context.octopus.push(
+                            Routes.moreRecommendation,
+                            arguments: <String, String>{'type': TestCategoryType.allTests.name},
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final availableWidth = constraints.maxWidth + 32;
+                            const maxCardWidth = 360.0;
+                            final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
+                            return ResponsiveRecommendationsList(
+                              tests: state.allTests,
+                              crossAxisCount: crossAxisCount,
+                              onBuyButtonPressed: onBuyTestPressed,
+                              onShareButtonPressed: onShareTestPressed,
+                              onLikeButtonPressed: onLikeTestPressed,
+                            );
+                          },
+                        ),
+                      ),
+                      if (state.isAllTestsLoadingMore)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(child: CircularProgressIndicator.adaptive()),
+                        ),
+                    ],
                   ],
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
         ),
       ],
