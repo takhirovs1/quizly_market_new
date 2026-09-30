@@ -27,7 +27,7 @@ dependencies:
   math_keyboard:
     path: packages/math_keyboard
 
-  intl: 0.20.2
+  intl: ^0.20.3
 
   # annotation
   meta: any

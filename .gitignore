@@ -72,7 +72,5 @@ packages/quizlymarket_landing/
 *.aab
 *.apk
 macos/build/
-macos/build/
-macos/build/
-macos/build/
 build/
+**/local.properties
