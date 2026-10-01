@@ -81,6 +81,9 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # storage
+  shared_preferences: ^2.5.3
+
   # navigation
   octopus: ^0.0.9
   telegram_web_app: ^0.3.3

@@ -107,7 +107,7 @@ class _TestModeScreenState extends TestModeScreenState {
                           const SizedBox(height: 20),
                           ...List.generate(testModes.length, (index) {
                             final mode = testModes[index];
-                            final isComingSoon = mode.type == .group || mode.type == .flashcard;
+                            final isComingSoon = mode.type == .group;
                             return Padding(
                               padding: .only(bottom: index < testModes.length - 1 ? 14 : 0),
                               child: _WebModeCard(
@@ -186,7 +186,7 @@ class _TestModeScreenState extends TestModeScreenState {
       title: mode.title,
       description: mode.description,
       image: mode.image.svg(package: 'ui', width: 64, height: 64, colorFilter: .mode(context.x.colors.white, .srcATop)),
-      isComingSoon: mode.type == .group || mode.type == .flashcard,
+      isComingSoon: mode.type == .group,
       onPressed: () => onPressTestMode(mode),
     );
   }

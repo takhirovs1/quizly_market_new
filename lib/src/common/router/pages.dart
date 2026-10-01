@@ -29,6 +29,11 @@ import '../../feature/tests/data/test_view_repository.dart';
 import '../../feature/tests/model/test_request_response_models.dart';
 import '../../feature/tests/model/test_route_arguments.dart';
 import '../../feature/tests/screens/test_custom_mode_screen.dart';
+import '../../feature/flashcard/bloc/flashcard_cubit.dart';
+import '../../feature/flashcard/data/flashcard_repository.dart';
+import '../../feature/flashcard/model/flashcard_config.dart';
+import '../../feature/flashcard/screens/flashcard_result_screen.dart';
+import '../../feature/flashcard/screens/flashcard_screen.dart';
 import '../../feature/tests/screens/test_flashcard_mode.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
@@ -60,6 +65,8 @@ enum Routes with OctopusRoute {
   testUniversityMode('testUniversityMode', title: 'Test University Mode'),
   testGroupMode('testGroupMode', title: 'Test Group Mode'),
   testFlashcardMode('testFlashcardMode', title: 'Test Flashcard Mode'),
+  flashcardSession('flashcardSession', title: 'Flashcard Session'),
+  flashcardResult('flashcardResult', title: 'Flashcard Result'),
   testResult('testResult', title: 'Test Result'),
   supportChat('supportChat', title: 'Support Chat'),
   testSolving('testSolving', title: 'Test Solving'),
@@ -168,7 +175,7 @@ enum Routes with OctopusRoute {
       child: const TestUniversityModeScreen(),
     ),
     .testGroupMode => const TestGroupModeScreen(),
-    .testFlashcardMode => const TestFlashcardMode(),
+    .testFlashcardMode => TestFlashcardMode(testId: node.arguments['id'] ?? node.arguments['testId'] ?? ''),
     .testResult => BlocProvider(
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient)),
@@ -227,6 +234,23 @@ enum Routes with OctopusRoute {
       description: node.arguments['description'],
       price: node.arguments['price'],
       questionCount: int.tryParse(node.arguments['questionCount'] ?? '') ?? 100,
+    ),
+    .flashcardSession => BlocProvider(
+      create: (context) {
+        final config = FlashcardConfig.fromArguments(node.arguments);
+        return FlashcardCubit(
+          repository: FlashcardRepositoryImpl(apiClient: context.x.dependencies.apiClient),
+        )..loadCards(node.arguments['testId'] ?? '', config);
+      },
+      child: const FlashcardScreen(),
+    ),
+    .flashcardResult => FlashcardResultScreen(
+      testId: node.arguments['testId'] ?? '',
+      knownCount: int.tryParse(node.arguments['knownCount'] ?? '') ?? 0,
+      unknownCount: int.tryParse(node.arguments['unknownCount'] ?? '') ?? 0,
+      total: int.tryParse(node.arguments['total'] ?? '') ?? 0,
+      durationSec: int.tryParse(node.arguments['durationSec'] ?? '') ?? 0,
+      mode: node.arguments['mode'] ?? FlashcardMode.study.name,
     ),
   };
 }
