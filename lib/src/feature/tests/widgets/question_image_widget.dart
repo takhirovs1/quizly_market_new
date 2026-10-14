@@ -153,7 +153,7 @@ class _ImagePreviewPage extends StatelessWidget {
               // Also clear Telegram's top inset (header/controls): the OS
               // SafeArea is 0 inside the Telegram web app, so the button would
               // otherwise sit under Telegram's chrome — matches QuizAppBar.
-              padding: EdgeInsets.only(
+              padding: .only(
                 top: 8 + context.telegramWebApp.safeAreaInset.top.toDouble(),
                 right: 8,
                 left: 8,
