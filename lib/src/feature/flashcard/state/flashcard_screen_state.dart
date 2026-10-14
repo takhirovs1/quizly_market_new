@@ -89,15 +89,18 @@ abstract class FlashcardScreenState extends State<FlashcardScreen> {
     // Submit result to backend via POST /api/flashcards/{testId}/result (fire and forget)
     cubit.submitResult();
 
+    // Reuse the shared test result screen (cup + stars). Flashcards have no
+    // "skipped": every card is marked known/unknown, so known + unknown == total.
     context.octopus.pushReplacement(
-      Routes.flashcardResult,
+      Routes.testResult,
       arguments: <String, String>{
-        'testId': state.testId,
-        'knownCount': state.knownIds.length.toString(),
-        'unknownCount': state.unknownIds.length.toString(),
+        'id': state.testId,
+        'correct': state.knownIds.length.toString(),
+        'wrong': state.unknownIds.length.toString(),
         'total': total.toString(),
-        'durationSec': durationSec.toString(),
-        'mode': state.config.mode.name,
+        'time': durationSec.toString(),
+        if (state.testTitle.isNotEmpty) 'name': state.testTitle,
+        'questionCount': total.toString(),
       },
     );
   }

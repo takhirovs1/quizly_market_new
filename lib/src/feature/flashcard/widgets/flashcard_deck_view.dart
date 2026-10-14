@@ -6,7 +6,6 @@ import 'package:flutter/physics.dart';
 import '../../../common/extension/context_extension.dart';
 import '../model/flashcard_response_model.dart';
 import 'flashcard_card_widget.dart';
-import 'flashcard_edge_glow.dart';
 import 'flashcard_ghost_card.dart';
 import 'flashcard_swipe_stamp.dart';
 
@@ -170,8 +169,9 @@ class FlashcardDeckViewState extends State<FlashcardDeckView> with TickerProvide
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
-                // Full-bleed edge glow — spans the full width (ignores the card inset).
-                if (stampOpacity > 0.01) FlashcardEdgeGlow(known: known, opacity: stampOpacity * 0.9),
+                // Note: the colored swipe glow is rendered full-bleed at the
+                // screen level (flashcard_screen.dart) so it spans the whole
+                // screen width, not just this width-capped deck.
 
                 // Ghost cards behind: narrower and lower so they peek at the bottom (02b).
                 if (widget.hasNext) FlashcardGhostCard(width: cardW - 44, height: cardH, translateY: 22),

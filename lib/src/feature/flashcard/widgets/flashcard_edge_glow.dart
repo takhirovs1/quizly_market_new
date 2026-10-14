@@ -4,6 +4,10 @@ import '../../../common/extension/context_extension.dart';
 
 /// Full-bleed colored glow that bleeds in from the swipe side (green = right/
 /// known, red = left/unknown) as the card is dragged.
+///
+/// Fills its parent, so it is rendered edge-to-edge behind the (width-capped)
+/// card column — see `flashcard_screen.dart`. Wrap it in a `Positioned.fill`
+/// (and `IgnorePointer`) at the call site.
 class FlashcardEdgeGlow extends StatelessWidget {
   const FlashcardEdgeGlow({required this.known, required this.opacity, super.key});
 
@@ -14,20 +18,16 @@ class FlashcardEdgeGlow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.x.colors;
     final color = known ? colors.success : colors.error;
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: known ? Alignment.centerRight : Alignment.centerLeft,
-              end: known ? Alignment.centerLeft : Alignment.centerRight,
-              colors: [
-                color.withValues(alpha: 0.28 * opacity),
-                color.withValues(alpha: 0),
-              ],
-              stops: const [0, 0.4],
-            ),
-          ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: known ? Alignment.centerRight : Alignment.centerLeft,
+          end: known ? Alignment.centerLeft : Alignment.centerRight,
+          colors: [
+            color.withValues(alpha: 0.28 * opacity),
+            color.withValues(alpha: 0),
+          ],
+          stops: const [0, 0.4],
         ),
       ),
     );

@@ -5,6 +5,7 @@ import '../../../common/extension/context_extension.dart';
 import '../bloc/flashcard_cubit.dart';
 import '../state/flashcard_screen_state.dart';
 import '../widgets/flashcard_deck_view.dart';
+import '../widgets/flashcard_edge_glow.dart';
 import '../widgets/flashcard_footer.dart';
 import '../widgets/flashcard_progress_bar.dart';
 import '../widgets/flashcard_test_card.dart';
@@ -91,14 +92,32 @@ class _FlashcardScreenState extends FlashcardScreenState {
           ),
           body: SafeArea(
             top: false,
-            // Keep the study column phone-width and centered on tablet/desktop
-            // (matches the setup screen's 560 cap). On a phone 560 > width, so
-            // it fills the screen as before.
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 560),
-                child: Column(
+            child: Stack(
+              children: [
+                // Full-bleed swipe glow — spans the whole screen width, behind
+                // the width-capped card column. Driven by the shared swipe
+                // progress; stays 0 (hidden) in test mode.
+                if (!isTestMode)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: ValueListenableBuilder<double>(
+                        valueListenable: swipeProgress,
+                        builder: (context, progress, _) {
+                          final opacity = progress.abs().clamp(0.0, 1.0);
+                          if (opacity <= 0.01) return const SizedBox.shrink();
+                          return FlashcardEdgeGlow(known: progress >= 0, opacity: opacity * 0.9);
+                        },
+                      ),
+                    ),
+                  ),
+                // Keep the study column phone-width and centered on tablet/desktop
+                // (matches the setup screen's 560 cap). On a phone 560 > width, so
+                // it fills the screen as before.
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 560),
+                    child: Column(
                   children: [
                     FlashcardProgressBar(
                       current: state.currentIndex + 1,
@@ -136,9 +155,11 @@ class _FlashcardScreenState extends FlashcardScreenState {
                         onUnknown: onPressUnknownButton,
                         swipeProgress: swipeProgress,
                       ),
-                  ],
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
