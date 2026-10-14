@@ -26,6 +26,16 @@ abstract class FlashcardResultScreenState extends State<FlashcardResultScreen> {
     context.octopus.pop();
   }
 
+  /// Share of cards marked "known" (0..1).
+  double get accuracy => widget.total > 0 ? widget.knownCount / widget.total : 0.0;
+
+  /// Session length formatted as `MM:SS`.
+  String get durationFormatted {
+    final minutes = widget.durationSec ~/ 60;
+    final seconds = widget.durationSec % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   void onFinish() {
     HapticFeedback.selectionClick();
     context.octopus.pop();
@@ -34,16 +44,14 @@ abstract class FlashcardResultScreenState extends State<FlashcardResultScreen> {
   void onRetryUnknown() {
     HapticFeedback.selectionClick();
     final config = FlashcardConfig(
-      cardCount: widget.unknownCount,
+      rangeStart: 0,
+      rangeEnd: widget.unknownCount,
       shuffle: true,
       direction: FlashcardDirection.questionFirst,
       mode: FlashcardMode.values.byName(widget.mode),
     );
     context.octopus
       ..pop()
-      ..push(
-        Routes.flashcardSession,
-        arguments: config.toArguments()..['testId'] = widget.testId,
-      );
+      ..push(Routes.flashcardSession, arguments: config.toArguments()..['testId'] = widget.testId);
   }
 }

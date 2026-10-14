@@ -35,8 +35,7 @@ class FlashcardState extends Equatable {
 
   StateStatus statusOf(String key) => statuses[key] ?? StateStatus.idle;
 
-  FlashcardCardModel? get currentCard =>
-      currentIndex < cards.length ? cards[currentIndex] : null;
+  FlashcardCardModel? get currentCard => currentIndex < cards.length ? cards[currentIndex] : null;
 
   FlashcardState copyWith({
     Map<String, StateStatus>? statuses,

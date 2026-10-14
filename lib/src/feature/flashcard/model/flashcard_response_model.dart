@@ -12,6 +12,7 @@ class FlashcardCardModel {
     this.options,
     this.correctOptionId,
     this.imageUrl,
+    this.backImageUrl,
   });
 
   factory FlashcardCardModel.fromJson(Map<String, Object?> json) => FlashcardCardModel(
@@ -24,15 +25,21 @@ class FlashcardCardModel {
         .toList(),
     correctOptionId: _nonEmptyString(json['correct_option_id']),
     imageUrl: _nonEmptyString(json['image_url']) ?? _nonEmptyString(json['photo_url']),
+    backImageUrl: _nonEmptyString(json['back_image_url']) ?? _nonEmptyString(json['answer_image_url']),
   );
 
   final String id;
+
+  /// Front/back text may contain LaTeX (`\frac{...}`, `x^2`, …) — rendered by
+  /// `LatexTextWidget`. Images (`imageUrl` = question side, `backImageUrl` =
+  /// answer side) are optional and resolved by `QuestionImageWidget`.
   final String front;
   final String back;
   final String? explanation;
   final List<FlashcardOptionModel>? options;
   final String? correctOptionId;
   final String? imageUrl;
+  final String? backImageUrl;
 }
 
 class FlashcardOptionModel {
@@ -65,7 +72,8 @@ class FlashcardResponseModel {
       title: data['title']?.toString() ?? data['name']?.toString() ?? '',
       source: data['source']?.toString() ?? 'custom',
       total: (data['total'] as num?)?.toInt() ?? 0,
-      cards: (data['cards'] as List<Object?>?)
+      cards:
+          (data['cards'] as List<Object?>?)
               ?.map((e) => FlashcardCardModel.fromJson(e as Map<String, Object?>))
               .toList() ??
           const [],

@@ -9,13 +9,22 @@ import 'package:flutter_math_fork/flutter_math.dart';
 ///   wrapped in [FittedBox] to prevent overflow.
 /// - If the text is plain (no LaTeX), renders using a normal [Text] widget.
 class LatexTextWidget extends StatelessWidget {
-  const LatexTextWidget({required this.text, this.style, this.textColor, this.maxLines, this.overflow, super.key});
+  const LatexTextWidget({
+    required this.text,
+    this.style,
+    this.textColor,
+    this.maxLines,
+    this.overflow,
+    this.textAlign,
+    super.key,
+  });
 
   final String text;
   final TextStyle? style;
   final Color? textColor;
   final int? maxLines;
   final TextOverflow? overflow;
+  final TextAlign? textAlign;
 
   /// Matches strings that are entirely `\text{...}` with nothing else.
   static final _pureTextPattern = RegExp(r'^\\text\{([^{}]*)\}$', dotAll: true);
@@ -51,29 +60,37 @@ class LatexTextWidget extends StatelessWidget {
     // If the entire string is just \text{...}, render as plain Text
     final pureText = _extractPureText(text);
     if (pureText != null) {
-      return Text(pureText, style: style, maxLines: maxLines, overflow: overflow);
+      return Text(pureText, style: style, maxLines: maxLines, overflow: overflow, textAlign: textAlign);
     }
 
     // If no real math content, render as plain Text
     if (!_hasMathContent(text)) {
-      return Text(text, style: style, maxLines: maxLines, overflow: overflow);
+      return Text(text, style: style, maxLines: maxLines, overflow: overflow, textAlign: textAlign);
     }
 
     // Render as LaTeX math, wrapped to prevent overflow
     final effectiveStyle = style ?? DefaultTextStyle.of(context).style;
     final effectiveColor = textColor ?? effectiveStyle.color ?? Theme.of(context).textTheme.bodyLarge?.color;
 
+    final alignment = textAlign == TextAlign.center
+        ? Alignment.center
+        : (textAlign == TextAlign.end ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart);
     return Align(
-      alignment: AlignmentDirectional.centerStart,
+      alignment: alignment,
       child: FittedBox(
         fit: BoxFit.scaleDown,
-        alignment: AlignmentDirectional.centerStart,
+        alignment: alignment,
         child: Math.tex(
           text,
           textStyle: effectiveStyle.copyWith(color: effectiveColor),
           mathStyle: MathStyle.display,
-          onErrorFallback: (error) =>
-              Text(_stripTextWrappers(text), style: style, maxLines: maxLines, overflow: overflow),
+          onErrorFallback: (error) => Text(
+            _stripTextWrappers(text),
+            style: style,
+            maxLines: maxLines,
+            overflow: overflow,
+            textAlign: textAlign,
+          ),
         ),
       ),
     );

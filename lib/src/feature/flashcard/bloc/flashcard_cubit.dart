@@ -20,11 +20,13 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
   static const _cardsKey = 'cards';
   static const _resultKey = 'result';
 
-  Future<void> loadCards(String testId, FlashcardConfig config) => handle<void>(
+  Future<void> loadCards(String testId, FlashcardConfig config, {String? title}) => handle<void>(
     (emit) async {
       emit(state.copyWithStatus(_cardsKey, StateStatus.loading));
       final request = FlashcardRequestModel(
         testId: testId,
+        start: config.rangeStart,
+        end: config.rangeEnd,
         count: config.cardCount,
         shuffle: config.shuffle,
       );
@@ -32,45 +34,58 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
 
       var cards = response.cards;
 
+      // Slice the selected range from the original deck order (before shuffling).
+      final start = config.rangeStart;
+      final end = config.rangeEnd;
+      if (start != null && end != null && start >= 0 && start < end && end <= cards.length) {
+        cards = cards.sublist(start, end);
+      } else {
+        final count = config.cardCount;
+        if (count != null && count > 0 && cards.length > count) {
+          cards = cards.sublist(0, count);
+        }
+      }
+
       if (config.direction == FlashcardDirection.answerFirst) {
-        cards = cards.map((c) => FlashcardCardModel(
-          id: c.id,
-          front: c.back,
-          back: c.front,
-          explanation: c.explanation,
-          options: c.options,
-          correctOptionId: c.correctOptionId,
-          imageUrl: c.imageUrl,
-        )).toList();
+        cards = cards
+            .map(
+              (c) => FlashcardCardModel(
+                id: c.id,
+                front: c.back,
+                back: c.front,
+                explanation: c.explanation,
+                options: c.options,
+                correctOptionId: c.correctOptionId,
+                imageUrl: c.backImageUrl,
+                backImageUrl: c.imageUrl,
+              ),
+            )
+            .toList();
       }
 
       if (config.shuffle) {
         cards = List.of(cards)..shuffle(Random());
       }
 
-      final count = config.cardCount;
-      if (count != null && cards.length > count) {
-        cards = cards.sublist(0, count);
-      }
-
-      emit(state.copyWith(
-        statuses: <String, StateStatus>{...state.statuses, _cardsKey: StateStatus.success},
-        cards: cards,
-        currentIndex: 0,
-        isFlipped: false,
-        knownIds: <String>{},
-        unknownIds: <String>{},
-        config: config,
-        testId: testId,
-        testTitle: response.title,
-        startedAt: DateTime.now(),
-        selectedOptionId: null,
-        isOptionChecked: false,
-      ));
+      emit(
+        state.copyWith(
+          statuses: <String, StateStatus>{...state.statuses, _cardsKey: StateStatus.success},
+          cards: cards,
+          currentIndex: 0,
+          isFlipped: false,
+          knownIds: <String>{},
+          unknownIds: <String>{},
+          config: config,
+          testId: testId,
+          testTitle: (title != null && title.isNotEmpty) ? title : response.title,
+          startedAt: DateTime.now(),
+          selectedOptionId: null,
+          isOptionChecked: false,
+        ),
+      );
     },
     errorHandler: (emit, error, _) {
-      emit(state.copyWithStatus(_cardsKey, StateStatus.error,
-          errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+      emit(state.copyWithStatus(_cardsKey, StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 
@@ -107,12 +122,9 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
     } else {
       final unknownIds = <String>{...state.unknownIds, card.id};
       final knownIds = <String>{...state.knownIds}..remove(card.id);
-      emit(state.copyWith(
-        selectedOptionId: optionId,
-        isOptionChecked: true,
-        knownIds: knownIds,
-        unknownIds: unknownIds,
-      ));
+      emit(
+        state.copyWith(selectedOptionId: optionId, isOptionChecked: true, knownIds: knownIds, unknownIds: unknownIds),
+      );
     }
   }
 
@@ -130,6 +142,26 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
     }
   }
 
+  /// Reverses the last grade: brings the previous card back and clears its
+  /// known/unknown classification (also restores a finished session).
+  void undo() {
+    final finished = state.isSessionFinished;
+    final targetIndex = finished ? state.cards.length - 1 : state.currentIndex - 1;
+    if (targetIndex < 0) return;
+    final card = state.cards[targetIndex];
+    emit(
+      state.copyWith(
+        currentIndex: targetIndex,
+        knownIds: <String>{...state.knownIds}..remove(card.id),
+        unknownIds: <String>{...state.unknownIds}..remove(card.id),
+        isFlipped: false,
+        isSessionFinished: false,
+        selectedOptionId: null,
+        isOptionChecked: false,
+      ),
+    );
+  }
+
   void next() {
     if (state.currentIndex < state.cards.length - 1) {
       emit(state.copyWith(currentIndex: state.currentIndex + 1, isFlipped: false));
@@ -145,26 +177,26 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
   void retryUnknown() {
     if (state.unknownIds.isEmpty) return;
     final unknownCards = state.cards.where((c) => state.unknownIds.contains(c.id)).toList();
-    emit(state.copyWith(
-      cards: unknownCards,
-      currentIndex: 0,
-      isFlipped: false,
-      knownIds: <String>{},
-      unknownIds: <String>{},
-      isSessionFinished: false,
-      startedAt: DateTime.now(),
-      selectedOptionId: null,
-      isOptionChecked: false,
-    ));
+    emit(
+      state.copyWith(
+        cards: unknownCards,
+        currentIndex: 0,
+        isFlipped: false,
+        knownIds: <String>{},
+        unknownIds: <String>{},
+        isSessionFinished: false,
+        startedAt: DateTime.now(),
+        selectedOptionId: null,
+        isOptionChecked: false,
+      ),
+    );
   }
 
   Future<void> submitResult() => handle<void>(
     (emit) async {
       emit(state.copyWithStatus(_resultKey, StateStatus.loading));
       final startedAt = state.startedAt;
-      final durationSec = startedAt != null
-          ? DateTime.now().difference(startedAt).inSeconds
-          : 0;
+      final durationSec = startedAt != null ? DateTime.now().difference(startedAt).inSeconds : 0;
       final request = FlashcardResultRequestModel(
         mode: state.config.mode.name,
         direction: state.config.direction.name,
@@ -177,8 +209,7 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
       emit(state.copyWithStatus(_resultKey, StateStatus.success));
     },
     errorHandler: (emit, error, _) {
-      emit(state.copyWithStatus(_resultKey, StateStatus.error,
-          errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
+      emit(state.copyWithStatus(_resultKey, StateStatus.error, errorMessage: ErrorUtil.toUserFriendlyMessage(error)));
     },
   );
 }

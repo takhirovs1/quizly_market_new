@@ -34,7 +34,7 @@ import '../../feature/flashcard/data/flashcard_repository.dart';
 import '../../feature/flashcard/model/flashcard_config.dart';
 import '../../feature/flashcard/screens/flashcard_result_screen.dart';
 import '../../feature/flashcard/screens/flashcard_screen.dart';
-import '../../feature/tests/screens/test_flashcard_mode.dart';
+import '../../feature/flashcard/screens/flashcard_setup_screen.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
 import '../../feature/tests/screens/test_result_screen.dart';
@@ -175,7 +175,12 @@ enum Routes with OctopusRoute {
       child: const TestUniversityModeScreen(),
     ),
     .testGroupMode => const TestGroupModeScreen(),
-    .testFlashcardMode => TestFlashcardMode(testId: node.arguments['id'] ?? node.arguments['testId'] ?? ''),
+    .testFlashcardMode => BlocProvider(
+      create: (context) =>
+          TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient))
+            ..getTestDetail(node.arguments['id'] ?? node.arguments['testId'] ?? '', const TestDetailRequest()),
+      child: FlashcardSetupScreen(testId: node.arguments['id'] ?? node.arguments['testId'] ?? ''),
+    ),
     .testResult => BlocProvider(
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient)),
@@ -238,9 +243,12 @@ enum Routes with OctopusRoute {
     .flashcardSession => BlocProvider(
       create: (context) {
         final config = FlashcardConfig.fromArguments(node.arguments);
+        // Flashcards are built from the real test-questions API; see docs/flashcard.md.
         return FlashcardCubit(
-          repository: FlashcardRepositoryImpl(apiClient: context.x.dependencies.apiClient),
-        )..loadCards(node.arguments['testId'] ?? '', config);
+          repository: FlashcardRepositoryImpl(
+            testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient),
+          ),
+        )..loadCards(node.arguments['testId'] ?? '', config, title: node.arguments['testName']);
       },
       child: const FlashcardScreen(),
     ),

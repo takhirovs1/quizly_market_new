@@ -92,13 +92,13 @@ sealed class Pubspec {
   static const PubspecVersion version = (
     /// Non-canonical string representation of the version as provided
     /// in the pubspec.yaml file.
-    representation: r'1.0.4+304',
+    representation: r'1.0.4+307',
 
     /// Returns a 'canonicalized' representation
     /// of the application version.
     /// This represents the version string in accordance with
     /// Semantic Versioning (SemVer) standards.
-    canonical: r'1.0.4+304',
+    canonical: r'1.0.4+307',
 
     /// MAJOR version when you make incompatible API changes.
     /// The major version number: 1 in "1.2.3".
@@ -117,19 +117,19 @@ sealed class Pubspec {
     preRelease: <String>[],
 
     /// The build identifier: "foo" in "1.2.3+foo".
-    build: <String>[r'304'],
+    build: <String>[r'307'],
   );
 
   /// Build date and time (UTC)
   static final DateTime timestamp = DateTime.utc(
     2026,
-    9,
-    30,
-    3,
-    58,
-    49,
-    161,
-    214,
+    10,
+    14,
+    7,
+    36,
+    44,
+    406,
+    363,
   );
 
   /// Name
@@ -422,7 +422,7 @@ sealed class Pubspec {
     'math_keyboard': <String, Object>{
       'path': r'packages/math_keyboard',
     },
-    'intl': r'0.20.2',
+    'intl': r'^0.20.2',
     'meta': r'any',
     'collection': r'any',
     'async': r'any',
@@ -461,6 +461,7 @@ sealed class Pubspec {
     'crypto': r'^3.0.5',
     'flutter_local_notifications': r'^20.1.0',
     'cupertino_icons': r'^1.0.8',
+    'shared_preferences': r'^2.5.3',
     'octopus': r'^0.0.9',
     'telegram_web_app': r'^0.3.3',
     'expandable_page_view': r'^1.2.1',

@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/opt/homebrew/share/flutter"
+export "FLUTTER_ROOT=/Users/samandar/fvm/versions/3.41.0"
 export "FLUTTER_APPLICATION_PATH=/Users/samandar/Documents/Private/quizly_market_new/packages/math_keyboard/example"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"

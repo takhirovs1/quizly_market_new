@@ -1,12 +1,16 @@
 class FlashcardRequestModel {
-  const FlashcardRequestModel({required this.testId, this.count, this.shuffle, this.source});
+  const FlashcardRequestModel({required this.testId, this.start, this.end, this.count, this.shuffle, this.source});
 
   final String testId;
+  final int? start;
+  final int? end;
   final int? count;
   final bool? shuffle;
   final String? source;
 
   Map<String, Object?> toQueryParams() => {
+    if (start != null) 'start': start,
+    if (end != null) 'end': end,
     if (count != null) 'count': count,
     if (shuffle != null) 'shuffle': shuffle,
     if (source != null) 'source': source,
