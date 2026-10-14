@@ -240,7 +240,7 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
         getAppVersion: () => dependencies.metadata.appVersion,
         getScreenName: () => authNavigatorInstance?.state.children.lastOrNull?.name ?? '',
         onRefreshToken: (refreshToken) async {
-          l.i('ApiClient | Refreshing token via /api/auth/refresh');
+          l.i('ApiClient | Refreshing token via /api/auth/refresh (token ${refreshToken.length} chars)');
           final response = await http.post(
             .parse('${Config.apiBaseUrl}/api/auth/refresh'),
             headers: <String, String>{
@@ -254,22 +254,35 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
               'X-Screen-Name': authNavigatorInstance?.state.children.lastOrNull?.name ?? '',
               'X-Function-Name': 'ApiClient.onRefreshToken',
             },
-            body: '{"refresh_token":"$refreshToken"}',
+            body: jsonEncode(<String, String>{'refresh_token': refreshToken}),
           );
           l.i('ApiClient | Refresh response: ${response.statusCode} body: ${response.body}');
           if (response.statusCode > 204) {
-            throw ApiResponseException(statusCode: response.statusCode, message: 'HTTP ${response.statusCode}');
+            l.w('ApiClient | Refresh request failed with status ${response.statusCode}');
+            throw ApiResponseException(
+              statusCode: response.statusCode,
+              message: 'Refresh failed: HTTP ${response.statusCode}',
+              body: response.body.isNotEmpty ? jsonDecode(response.body) : null,
+            );
           }
           final json = jsonDecode(response.body) as Map<String, Object?>;
           final tokenResponse = AuthTokenResponse.fromJson(json);
+          if (tokenResponse.accessToken.isEmpty) {
+            l.w('ApiClient | Refresh returned empty access token!');
+            throw const ApiResponseException(
+              statusCode: 500,
+              message: 'Refresh returned empty access token',
+            );
+          }
           await dependencies.repository.authenticationRepository.updateTokens(
             accessToken: tokenResponse.accessToken,
             refreshToken: tokenResponse.refreshToken,
           );
-          l.i('ApiClient | Tokens updated successfully');
+          l.i('ApiClient | Tokens updated successfully (new access: ${tokenResponse.accessToken.length} chars)');
         },
         onSignOut: () async {
-          l.w('ApiClient | Unrecoverable 401 — signing out');
+          l.w('ApiClient | Unrecoverable auth failure — signing out');
+          l.w('ApiClient | SignOut triggered from: ${StackTrace.current}');
           try {
             await dependencies.authenticationController.signOut();
           } on Object catch (e, s) {

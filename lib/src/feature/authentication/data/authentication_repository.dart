@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:local_source/local_source.dart';
@@ -152,6 +153,15 @@ class AuthenticationRepositoryImpl implements IAuthenticationRepository {
 
     final json = await apiClient.post(endpoint, body: dataBuilder(serviceResponse.idToken));
     final tokenResponse = AuthTokenResponse.fromJson(json);
+
+    dev.log(
+      'AuthRepo | _signIn $endpoint — '
+      'accessToken=${tokenResponse.accessToken.length} chars, '
+      'refreshToken=${tokenResponse.refreshToken.length} chars, '
+      'refreshToken.isEmpty=${tokenResponse.refreshToken.isEmpty}, '
+      'userId=${tokenResponse.userId}',
+      name: 'AuthRepo',
+    );
 
     await Future.wait([
       localSource.setAccessToken(tokenResponse.accessToken),

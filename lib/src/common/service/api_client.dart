@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -252,9 +253,15 @@ class ApiClient {
     try {
       return await fn(false);
     } on ApiResponseException catch (e) {
+      final action = _authAction(e);
+      dev.log(
+        'ApiClient | _withRetry caught ${e.statusCode}, '
+        'code=${_authCode(e)}, action=$action',
+        name: 'ApiClient',
+      );
       // Branch on the auth `code` (docs/session-auth.md §5), never on the HTTP
       // status alone or the message text.
-      switch (_authAction(e)) {
+      switch (action) {
         case .refresh:
           // token_expired: rotate the pair once, then retry the request once.
           await _refreshTokens(e);
@@ -263,7 +270,14 @@ class ApiClient {
           } on ApiResponseException catch (retryErr) {
             // A repeat auth failure after a successful refresh means the session
             // is truly gone → sign out. A 5xx is transient → leave the user in.
-            if (_isAuthFailure(retryErr)) await _safeSignOut();
+            if (_isAuthFailure(retryErr)) {
+              dev.log(
+                'ApiClient | Retry after refresh still failed '
+                '(${retryErr.statusCode}) — signing out',
+                name: 'ApiClient',
+              );
+              await _safeSignOut();
+            }
             rethrow;
           }
         case .sessionExpired:
@@ -277,6 +291,10 @@ class ApiClient {
           rethrow;
         case .signOut:
           // missing_token / refresh_invalid, or a bare 401 with no token to use.
+          dev.log(
+            'ApiClient | _withRetry signOut action — code=${_authCode(e)}',
+            name: 'ApiClient',
+          );
           await _safeSignOut();
           rethrow;
         case .none:
@@ -445,14 +463,32 @@ class ApiClient {
   /// rethrows if there is no refresh token or the refresh itself fails.
   Future<void> _refreshTokens(ApiResponseException e) async {
     final refreshToken = getRefreshToken?.call() ?? '';
+    dev.log(
+      'ApiClient | _refreshTokens called — '
+      'hasRefreshToken=${refreshToken.isNotEmpty} '
+      '(${refreshToken.length} chars), '
+      'hasCallback=${onRefreshToken != null}',
+      name: 'ApiClient',
+    );
     if (refreshToken.isEmpty || onRefreshToken == null) {
+      dev.log(
+        'ApiClient | _refreshTokens — no refresh token or callback, signing out. '
+        'refreshToken.isEmpty=${refreshToken.isEmpty}, '
+        'onRefreshToken==null: ${onRefreshToken == null}',
+        name: 'ApiClient',
+      );
       await _safeSignOut();
       throw e;
     }
 
     try {
       await (_refreshFuture ??= onRefreshToken!(refreshToken).whenComplete(() => _refreshFuture = null));
-    } on Object {
+      dev.log('ApiClient | _refreshTokens — refresh succeeded', name: 'ApiClient');
+    } on Object catch (refreshError) {
+      dev.log(
+        'ApiClient | _refreshTokens — refresh FAILED: $refreshError',
+        name: 'ApiClient',
+      );
       _refreshFuture = null;
       await _safeSignOut();
       rethrow;
