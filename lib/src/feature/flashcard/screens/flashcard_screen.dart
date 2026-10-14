@@ -8,6 +8,7 @@ import '../widgets/flashcard_deck_view.dart';
 import '../widgets/flashcard_edge_glow.dart';
 import '../widgets/flashcard_footer.dart';
 import '../widgets/flashcard_progress_bar.dart';
+import '../widgets/flashcard_shimmer.dart';
 import '../widgets/flashcard_test_card.dart';
 
 class FlashcardScreen extends StatefulWidget {
@@ -31,7 +32,13 @@ class _FlashcardScreenState extends FlashcardScreenState {
       if (status.isLoading) {
         return Scaffold(
           backgroundColor: colors.scaffoldBackground,
-          body: const Center(child: CircularProgressIndicator(strokeCap: StrokeCap.round)),
+          appBar: QuizAppBar(
+            telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
+            title: context.x.l10n.flashcardModeTitle,
+            showBackButton: true,
+            onBackPressed: onBackPressed,
+          ),
+          body: const SafeArea(top: false, child: FlashcardShimmer()),
         );
       }
 
@@ -71,7 +78,7 @@ class _FlashcardScreenState extends FlashcardScreenState {
           ),
           body: status.isSuccess
               ? Center(child: Text(context.x.l10n.noTestsFound, style: context.x.textStyle.sfW400s16))
-              : const Center(child: CircularProgressIndicator(strokeCap: StrokeCap.round)),
+              : const SafeArea(top: false, child: FlashcardShimmer()),
         );
       }
 
