@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common/constant/config.dart';
+import '../../../common/extension/context_extension.dart';
 
 /// A reusable image widget for displaying question or option images.
 ///
@@ -149,7 +150,15 @@ class _ImagePreviewPage extends StatelessWidget {
           child: Align(
             alignment: Alignment.topRight,
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              // Also clear Telegram's top inset (header/controls): the OS
+              // SafeArea is 0 inside the Telegram web app, so the button would
+              // otherwise sit under Telegram's chrome — matches QuizAppBar.
+              padding: EdgeInsets.only(
+                top: 8 + context.telegramWebApp.safeAreaInset.top.toDouble(),
+                right: 8,
+                left: 8,
+                bottom: 8,
+              ),
               child: IconButton(
                 icon: const Icon(CupertinoIcons.xmark_circle_fill, color: Colors.white, size: 30),
                 onPressed: () => Navigator.of(context).pop(),

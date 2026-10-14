@@ -118,43 +118,43 @@ class _FlashcardScreenState extends FlashcardScreenState {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 560),
                     child: Column(
-                  children: [
-                    FlashcardProgressBar(
-                      current: state.currentIndex + 1,
-                      total: state.cards.length,
-                      canUndo: state.currentIndex > 0,
-                      onUndo: onUndo,
-                    ),
-                    Expanded(
-                      child: isTestMode
-                          ? Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              child: FlashcardTestCard(
-                                card: card,
-                                selectedOptionId: state.selectedOptionId,
-                                isChecked: state.isOptionChecked,
-                                onSelect: (option) => onSelectOption(card, option),
-                              ),
-                            )
-                          : FlashcardDeckView(
-                              key: deckKey,
-                              card: card,
-                              isFlipped: state.isFlipped,
-                              hasNext: state.currentIndex < state.cards.length - 1,
-                              onFlip: onFlip,
-                              onKnown: onMarkKnown,
-                              onUnknown: onMarkUnknown,
-                              swipeProgress: swipeProgress,
-                            ),
-                    ),
-                    if (!isTestMode)
-                      FlashcardFooter(
-                        knownCount: state.knownIds.length,
-                        unknownCount: state.unknownIds.length,
-                        onKnown: onPressKnownButton,
-                        onUnknown: onPressUnknownButton,
-                        swipeProgress: swipeProgress,
-                      ),
+                      children: [
+                        FlashcardProgressBar(
+                          current: state.currentIndex + 1,
+                          total: state.cards.length,
+                          canUndo: state.currentIndex > 0,
+                          onUndo: onUndo,
+                        ),
+                        Expanded(
+                          child: isTestMode
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  child: FlashcardTestCard(
+                                    card: card,
+                                    selectedOptionId: state.selectedOptionId,
+                                    isChecked: state.isOptionChecked,
+                                    onSelect: (option) => onSelectOption(card, option),
+                                  ),
+                                )
+                              : FlashcardDeckView(
+                                  key: deckKey,
+                                  card: card,
+                                  isFlipped: state.isFlipped,
+                                  hasNext: state.currentIndex < state.cards.length - 1,
+                                  onFlip: onFlip,
+                                  onKnown: onMarkKnown,
+                                  onUnknown: onMarkUnknown,
+                                  swipeProgress: swipeProgress,
+                                ),
+                        ),
+                        if (!isTestMode)
+                          FlashcardFooter(
+                            knownCount: state.knownIds.length,
+                            unknownCount: state.unknownIds.length,
+                            onKnown: onPressKnownButton,
+                            onUnknown: onPressUnknownButton,
+                            swipeProgress: swipeProgress,
+                          ),
                       ],
                     ),
                   ),
