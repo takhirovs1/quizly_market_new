@@ -174,13 +174,15 @@ class _EditProfileScreenState extends EditProfileState {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CustomButton(
-                    title: context.x.l10n.deleteAccount,
-                    onTap: onDeleteAccountPressed,
-                    color: colors.error,
-                    isOutline: true,
-                  ),
-                  const SizedBox(height: 8),
+                  if (user?.premium == true) ...[
+                    CustomButton(
+                      title: context.x.l10n.deleteAccount,
+                      onTap: onDeleteAccountPressed,
+                      color: colors.error,
+                      isOutline: true,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                   CustomButton(title: context.x.l10n.save, onTap: onSavePressed, isLoading: isSaving),
                 ],
               ),
