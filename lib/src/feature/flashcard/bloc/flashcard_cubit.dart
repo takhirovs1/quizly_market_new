@@ -1,5 +1,3 @@
-import 'dart:math' show Random;
-
 import 'package:equatable/equatable.dart';
 
 import '../../../common/util/error_util.dart';
@@ -27,24 +25,12 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
         testId: testId,
         start: config.rangeStart,
         end: config.rangeEnd,
-        count: config.cardCount,
+        count: (config.rangeStart == null && config.rangeEnd == null) ? config.cardCount : null,
         shuffle: config.shuffle,
       );
       final response = await repository.getCards(request);
 
       var cards = response.cards;
-
-      // Slice the selected range from the original deck order (before shuffling).
-      final start = config.rangeStart;
-      final end = config.rangeEnd;
-      if (start != null && end != null && start >= 0 && start < end && end <= cards.length) {
-        cards = cards.sublist(start, end);
-      } else {
-        final count = config.cardCount;
-        if (count != null && count > 0 && cards.length > count) {
-          cards = cards.sublist(0, count);
-        }
-      }
 
       if (config.direction == FlashcardDirection.answerFirst) {
         cards = cards
@@ -61,10 +47,6 @@ class FlashcardCubit extends SequentialCubit<FlashcardState> {
               ),
             )
             .toList();
-      }
-
-      if (config.shuffle) {
-        cards = List.of(cards)..shuffle(Random());
       }
 
       emit(

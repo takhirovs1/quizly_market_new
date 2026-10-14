@@ -21,6 +21,7 @@ class QuestionCardWidget extends StatelessWidget {
     final hasQuestionText = question.text != null && question.text!.isNotEmpty;
 
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       child: Column(
         crossAxisAlignment: .start,
         children: [
@@ -32,8 +33,6 @@ class QuestionCardWidget extends StatelessWidget {
             LatexTextWidget(
               text: question.text!,
               style: context.x.textStyle.sfW500s16.copyWith(fontSize: 16, height: 1.4, color: colors.text),
-              maxLines: 4,
-              overflow: .ellipsis,
             ),
           const SizedBox(height: 12),
           if (question.options != null)

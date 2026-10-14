@@ -243,12 +243,9 @@ enum Routes with OctopusRoute {
     .flashcardSession => BlocProvider(
       create: (context) {
         final config = FlashcardConfig.fromArguments(node.arguments);
-        // Flashcards are built from the real test-questions API; see docs/flashcard.md.
-        return FlashcardCubit(
-          repository: FlashcardRepositoryImpl(
-            testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient),
-          ),
-        )..loadCards(node.arguments['testId'] ?? '', config, title: node.arguments['testName']);
+        // Flashcards are built from the dedicated flashcards API; see docs/flashcards.md.
+        return FlashcardCubit(repository: FlashcardRepositoryImpl(apiClient: context.x.dependencies.apiClient))
+          ..loadCards(node.arguments['testId'] ?? '', config, title: node.arguments['testName']);
       },
       child: const FlashcardScreen(),
     ),

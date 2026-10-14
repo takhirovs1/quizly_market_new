@@ -5,7 +5,6 @@ import 'package:octopus/octopus.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
-import '../../tests/model/test_route_arguments.dart';
 import '../bloc/flashcard_cubit.dart';
 import '../model/flashcard_response_model.dart';
 import '../screens/flashcard_screen.dart';
@@ -86,17 +85,20 @@ abstract class FlashcardScreenState extends State<FlashcardScreen> {
     final startedAt = state.startedAt;
     final durationSec = startedAt != null ? DateTime.now().difference(startedAt).inSeconds : 0;
     final total = state.cards.length;
-    // Map the flashcard tally onto the shared test-result screen:
-    // known → correct, unknown → wrong, no skipped cards.
-    final arguments = TestResultArguments(
-      testId: state.testId,
-      correct: state.knownIds.length,
-      wrong: state.unknownIds.length,
-      total: total,
-      time: durationSec,
-      testName: state.testTitle,
-      questionCount: total,
-    ).toArguments();
-    context.octopus.push(Routes.testResult, arguments: arguments);
+
+    // Submit result to backend via POST /api/flashcards/{testId}/result (fire and forget)
+    cubit.submitResult();
+
+    context.octopus.pushReplacement(
+      Routes.flashcardResult,
+      arguments: <String, String>{
+        'testId': state.testId,
+        'knownCount': state.knownIds.length.toString(),
+        'unknownCount': state.unknownIds.length.toString(),
+        'total': total.toString(),
+        'durationSec': durationSec.toString(),
+        'mode': state.config.mode.name,
+      },
+    );
   }
 }

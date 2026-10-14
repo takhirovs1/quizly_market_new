@@ -1,8 +1,6 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../bloc/flashcard_cubit.dart';
 import '../state/flashcard_result_screen_state.dart';
 import '../widgets/flashcard_accuracy_ring.dart';
 import '../widgets/flashcard_stat_row.dart';
@@ -97,13 +95,7 @@ class _FlashcardResultScreenState extends FlashcardResultScreenState {
                     child: Column(
                       children: [
                         if (widget.unknownCount > 0) ...[
-                          BlocBuilder<FlashcardCubit, FlashcardState>(
-                            builder: (context, state) => CustomButton(
-                              onTap: onRetryUnknown,
-                              title: l10n.flashcardRetryUnknown,
-                              borderRadius: 14,
-                            ),
-                          ),
+                          CustomButton(onTap: onRetryUnknown, title: l10n.flashcardRetryUnknown, borderRadius: 14),
                           const SizedBox(height: 10),
                         ],
                         CustomButton(

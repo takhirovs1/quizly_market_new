@@ -291,10 +291,7 @@ class ApiClient {
           rethrow;
         case .signOut:
           // missing_token / refresh_invalid, or a bare 401 with no token to use.
-          dev.log(
-            'ApiClient | _withRetry signOut action — code=${_authCode(e)}',
-            name: 'ApiClient',
-          );
+          dev.log('ApiClient | _withRetry signOut action — code=${_authCode(e)}', name: 'ApiClient');
           await _safeSignOut();
           rethrow;
         case .none:
@@ -485,10 +482,7 @@ class ApiClient {
       await (_refreshFuture ??= onRefreshToken!(refreshToken).whenComplete(() => _refreshFuture = null));
       dev.log('ApiClient | _refreshTokens — refresh succeeded', name: 'ApiClient');
     } on Object catch (refreshError) {
-      dev.log(
-        'ApiClient | _refreshTokens — refresh FAILED: $refreshError',
-        name: 'ApiClient',
-      );
+      dev.log('ApiClient | _refreshTokens — refresh FAILED: $refreshError', name: 'ApiClient');
       _refreshFuture = null;
       await _safeSignOut();
       rethrow;

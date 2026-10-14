@@ -11,9 +11,9 @@ class FlashcardRequestModel {
   Map<String, Object?> toQueryParams() => {
     if (start != null) 'start': start,
     if (end != null) 'end': end,
-    if (count != null) 'count': count,
-    if (shuffle != null) 'shuffle': shuffle,
-    if (source != null) 'source': source,
+    if (count != null && start == null && end == null) 'count': count,
+    if (shuffle == true) 'shuffle': true,
+    if (source != null && source!.isNotEmpty) 'source': source,
   };
 }
 

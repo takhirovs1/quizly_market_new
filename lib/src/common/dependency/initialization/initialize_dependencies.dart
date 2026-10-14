@@ -269,10 +269,7 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
           final tokenResponse = AuthTokenResponse.fromJson(json);
           if (tokenResponse.accessToken.isEmpty) {
             l.w('ApiClient | Refresh returned empty access token!');
-            throw const ApiResponseException(
-              statusCode: 500,
-              message: 'Refresh returned empty access token',
-            );
+            throw const ApiResponseException(statusCode: 500, message: 'Refresh returned empty access token');
           }
           await dependencies.repository.authenticationRepository.updateTokens(
             accessToken: tokenResponse.accessToken,
