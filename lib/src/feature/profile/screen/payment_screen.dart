@@ -131,7 +131,7 @@ class _PaymentScreenState extends PaymentScreenState {
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(7),
-            UZSFormatter(),
+            UZSFormatter(suffix: context.x.l10n.paymentCurrencySom),
           ],
           onChanged: (value) => selectedAmount.value = value,
           hintText: context.x.l10n.enterAmount,

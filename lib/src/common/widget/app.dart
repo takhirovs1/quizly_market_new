@@ -106,7 +106,7 @@ class _AppState extends AppState {
                 left: 0,
                 right: 0,
                 child: ColoredBox(
-                  color: const Color(0xFF1C59F2),
+                  color: context.x.colors.brandBlue,
                   child: SafeArea(
                     child: Padding(
                       padding: const .symmetric(horizontal: 16, vertical: 10),
@@ -115,12 +115,15 @@ class _AppState extends AppState {
                           Expanded(
                             child: Text(
                               context.x.l10n.newVersionAvailable,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: context.x.colors.pureWhite),
                             ),
                           ),
                           TextButton(
                             onPressed: () => html.window.location.reload(),
-                            child: Text(context.x.l10n.updateButton, style: const TextStyle(color: Color(0xFF41D6FF))),
+                            child: Text(
+                              context.x.l10n.updateButton,
+                              style: TextStyle(color: context.x.colors.brandCyan),
+                            ),
                           ),
                         ],
                       ),

@@ -58,14 +58,14 @@ class _OptionRow extends StatelessWidget {
     final hasImage = option.image != null && option.image!.isNotEmpty;
     final hasText = option.text != null && option.text!.isNotEmpty;
 
-    final accent = isCorrect ? const Color(0xFF43C04D) : colors.bannerSecondaryText.withValues(alpha: 0.15);
+    final accent = isCorrect ? colors.answerCorrect : colors.bannerSecondaryText.withValues(alpha: 0.15);
     final letter = index < _letters.length ? _letters[index] : '${index + 1}';
 
     return Padding(
       padding: const .only(bottom: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: isCorrect ? const Color(0xFF43C04D).withValues(alpha: 0.08) : colors.cardBackground2,
+          color: isCorrect ? colors.answerCorrect.withValues(alpha: 0.08) : colors.cardBackground2,
           border: Border.all(color: accent, width: isCorrect ? 1.5 : 1),
           borderRadius: .circular(12),
         ),
@@ -80,11 +80,11 @@ class _OptionRow extends StatelessWidget {
                 height: 24,
                 alignment: .center,
                 decoration: BoxDecoration(
-                  color: isCorrect ? const Color(0xFF43C04D) : colors.primary.withValues(alpha: 0.12),
+                  color: isCorrect ? colors.answerCorrect : colors.primary.withValues(alpha: 0.12),
                   shape: .circle,
                 ),
                 child: isCorrect
-                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                    ? Icon(Icons.check, size: 14, color: colors.pureWhite)
                     : Text(letter, style: context.x.textStyle.sfW600s16.copyWith(color: colors.primary, fontSize: 12)),
               ),
               const SizedBox(width: 12),

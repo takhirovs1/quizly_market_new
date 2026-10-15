@@ -273,6 +273,23 @@ class _MoreRecommendationScreenState extends MoreRecommendationScreenState {
                     ),
                   ),
                 ),
+                // My-tests filter entry point. Full filter sheet (B2–B5) lands
+                // with the next task; for now it is a visible, no-op button.
+                if (widget.type == TestCategoryType.myTests)
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onFilterPressed,
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: context.x.colors.textFieldBackground,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.tune_rounded, color: context.x.colors.text),
+                    ),
+                  ),
                 TestViewModeToggle(notifier: viewModeNotifier),
               ],
             ),

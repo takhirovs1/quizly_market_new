@@ -126,11 +126,11 @@ class _SessionScreenState extends SessionState {
                                         width: 44,
                                         height: 44,
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: context.x.colors.pureWhite,
                                           borderRadius: BorderRadius.circular(12),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withValues(alpha: 0.03),
+                                              color: context.x.colors.pureBlack.withValues(alpha: 0.03),
                                               blurRadius: 4,
                                               offset: const Offset(0, 2),
                                             ),
@@ -199,7 +199,7 @@ class _SessionScreenState extends SessionState {
             // Loading blocker indicator
             if (isLoading)
               Container(
-                color: Colors.black.withValues(alpha: 0.25),
+                color: context.x.colors.pureBlack.withValues(alpha: 0.25),
                 child: const Center(child: CircularProgressIndicator()),
               ),
           ],

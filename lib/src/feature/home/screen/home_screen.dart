@@ -149,11 +149,14 @@ class _HomeScreenState extends HomeScreenState {
   @override
   Widget build(BuildContext context) => Theme(
     data: Theme.of(context).copyWith(
-      canvasColor: Colors.transparent,
-      shadowColor: Colors.transparent,
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(backgroundColor: Colors.transparent, elevation: 0),
-      navigationBarTheme: const NavigationBarThemeData(backgroundColor: Colors.transparent, elevation: 0),
-      colorScheme: Theme.of(context).colorScheme.copyWith(surfaceTint: Colors.transparent),
+      canvasColor: context.x.colors.transparent,
+      shadowColor: context.x.colors.transparent,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: context.x.colors.transparent,
+        elevation: 0,
+      ),
+      navigationBarTheme: NavigationBarThemeData(backgroundColor: context.x.colors.transparent, elevation: 0),
+      colorScheme: Theme.of(context).colorScheme.copyWith(surfaceTint: context.x.colors.transparent),
     ),
     child: Scaffold(
       extendBody: !context.x.isMobile,

@@ -207,7 +207,11 @@ class _MetaStep extends StatelessWidget {
         focusNode: state.priceFocus,
         hint: l10n.priceHint,
         keyboardType: .number,
-        formatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9), UZSFormatter()],
+        formatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(9),
+          UZSFormatter(l10n.paymentCurrencySom),
+        ],
       ),
       const SizedBox(height: 6),
       BlocBuilder<UploadPricingCubit, UploadPricingState>(

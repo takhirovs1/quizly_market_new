@@ -57,9 +57,9 @@ abstract class ProfileScreenState extends State<ProfileScreen> {
       currentLocale.languageCode == locale.languageCode && currentLocale.scriptCode == locale.scriptCode;
 
   String themeLabel(ThemeMode mode) => switch (mode) {
-    .system => 'System',
-    .dark => 'Dark',
-    .light => 'Light',
+    .system => context.x.l10n.profileThemeSystem,
+    .dark => context.x.l10n.dark,
+    .light => context.x.l10n.light,
   };
 
   ThemeMode get currentThemeMode => SettingsScope.settingsOf(context, listen: true).themeMode;

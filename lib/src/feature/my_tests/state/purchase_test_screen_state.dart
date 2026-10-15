@@ -3,8 +3,8 @@ import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../common/extension/context_extension.dart';
 import '../../../common/constant/constant.dart';
+import '../../../common/extension/context_extension.dart';
 import '../../../common/extension/number_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../../common/util/app_enum.dart';

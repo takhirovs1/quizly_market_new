@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
 
@@ -35,7 +35,7 @@ class FlashcardProgressBar extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(color: colors.textFieldBackground, borderRadius: BorderRadius.circular(18)),
-                child: Icon(Icons.undo_rounded, size: 18, color: colors.gray),
+                child: Center(child: QuizLottieIcon(QuizLottie.revert, size: 20, repeat: false, color: colors.gray)),
               ),
             ),
           ),

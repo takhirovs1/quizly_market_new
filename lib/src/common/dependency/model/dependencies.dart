@@ -5,7 +5,9 @@ import 'package:ui/ui.dart';
 
 import '../../../feature/authentication/data/authentication_repository.dart';
 import '../../../feature/authentication/state/authentication_controller.dart';
+import '../../../feature/friends/data/friends_repository.dart';
 import '../../../feature/main/data/main_repository.dart';
+import '../../../feature/my_tests/data/home_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
 import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
@@ -65,6 +67,8 @@ final class RepositoryContainer {
     required this.authenticationRepository,
     required this.mainRepository,
     required this.myTestRepository,
+    required this.homeRepository,
+    required this.friendsRepository,
     required this.profileRepository,
     required this.uploadRepository,
   });
@@ -77,6 +81,12 @@ final class RepositoryContainer {
 
   /// [IMyTestRepository] for my tests
   final IMyTestRepository myTestRepository;
+
+  /// [IHomeRepository] for the Home screen sections
+  final IHomeRepository homeRepository;
+
+  /// [IFriendsRepository] for the Friends feature
+  final IFriendsRepository friendsRepository;
 
   /// [IProfileRepository] for profile / current user
   final IProfileRepository profileRepository;

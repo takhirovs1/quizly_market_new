@@ -18,7 +18,7 @@ class _TestGroupModeScreenState extends TestGroupModeScreenState {
     backgroundColor: context.x.colors.scaffoldBackground,
     appBar: QuizAppBar(
       telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
-      title: 'Group Mode',
+      title: context.x.l10n.groupModeTitle,
     ),
     body: Padding(
       padding: const .all(16),
@@ -27,7 +27,7 @@ class _TestGroupModeScreenState extends TestGroupModeScreenState {
         children: [
           TestDescriptionWidget(test: test, onPressLike: onPressLike, onPressShare: onPressShare),
           const SizedBox(height: 16),
-          Text('Group rejim uchun testni sozlang:', style: context.x.textStyle.sfW500s22),
+          Text(context.x.l10n.groupModeSetup, style: context.x.textStyle.sfW500s22),
           const SizedBox(height: 16),
           Row(
             spacing: 12,
@@ -54,7 +54,7 @@ class _TestGroupModeScreenState extends TestGroupModeScreenState {
                 ),
               ),
               Text(
-                'Do’stlarni taklif qilish',
+                context.x.l10n.homeReferralTitle,
                 style: context.x.textStyle.sfW700s16.copyWith(color: context.x.colors.primary),
               ),
             ],
@@ -81,7 +81,10 @@ class _TestGroupModeScreenState extends TestGroupModeScreenState {
                     ],
                   ),
                   const Spacer(),
-                  Text('Joined', style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.success)),
+                  Text(
+                    context.x.l10n.groupMemberJoined,
+                    style: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.success),
+                  ),
                 ],
               ),
               separatorBuilder: (context, index) => Padding(
@@ -97,7 +100,7 @@ class _TestGroupModeScreenState extends TestGroupModeScreenState {
     bottomNavigationBar: SafeArea(
       child: Padding(
         padding: const .only(left: 20, right: 20, bottom: 16),
-        child: CustomButton(onTap: () {}, title: 'Testni boshlash', borderRadius: 10),
+        child: CustomButton(onTap: () {}, title: context.x.l10n.startTestButton, borderRadius: 10),
       ),
     ),
   );

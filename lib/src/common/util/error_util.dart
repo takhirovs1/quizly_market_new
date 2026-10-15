@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show BuildContext, ScaffoldMessenger, SnackBar, Text, Colors;
+import 'package:flutter/material.dart' show BuildContext, ScaffoldMessenger, SnackBar, Text;
 import 'package:logbook/logbook.dart';
 
 import '../extension/context_extension.dart';
@@ -51,6 +51,8 @@ sealed class ErrorUtil {
     } else {
       displayMessage = localizeError(context, toUserFriendlyMessage(message));
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(displayMessage), backgroundColor: Colors.red));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(displayMessage), backgroundColor: context.x.colors.error));
   }
 }

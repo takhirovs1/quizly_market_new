@@ -28,6 +28,9 @@ extension type Build(BuildContext context) {
   /// [ThemeColors] extension
   ThemeColors get colors => theme.appColors;
 
+  /// [HomeColors] extension — Home-screen design tokens
+  HomeColors get homeColors => theme.appHomeColors;
+
   /// [AppTypography] extension
   AppTypography get textStyle => theme.appTextStyles;
 
@@ -73,7 +76,7 @@ extension type Build(BuildContext context) {
     context: context,
     pageBuilder: (context, _, _) => dialog,
     barrierLabel: '',
-    barrierColor: Colors.black26,
+    barrierColor: colors.pureBlack.withValues(alpha: 0.26),
     barrierDismissible: barrierDismissible,
     transitionBuilder: (ctx, anim1, anim2, child) => RepaintBoundary(
       key: const ValueKey('custom_dialog'),
@@ -233,6 +236,19 @@ extension TelegramWebAppX on BuildContext {
         ? '${Constant.miniAppUrl}?startapp=$code'
         : '${Constant.miniAppUrl}?startapp=1234567';
     final message = x.l10n.shareTestCopy(title, description, questionAmount, link);
+    if (telegramWebApp.isSupported) {
+      final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
+      telegramWebApp.openTelegramLink(shareLink);
+    } else {
+      SharePlus.instance.share(ShareParams(text: message));
+    }
+  }
+
+  /// Share the user's referral link. [code] is the referral code; the deep link
+  /// mirrors the referral screen (`?startapp=r<code>`). No money in the copy.
+  void shareReferral(String code) {
+    final link = '${Constant.miniAppUrl}?startapp=r$code';
+    final message = x.l10n.homeReferralShareMessage(link);
     if (telegramWebApp.isSupported) {
       final shareLink = 'https://t.me/share/url?url=${Uri.encodeComponent(message)}';
       telegramWebApp.openTelegramLink(shareLink);

@@ -40,18 +40,18 @@ class _SplashScreenState extends SplashController {
       child: Directionality(
         textDirection: .ltr,
         child: Scaffold(
-          backgroundColor: const Color(0xff1C58F2),
+          backgroundColor: theme.appColors.brandBlue,
           body: Column(
             children: [
               Expanded(
                 child: Center(child: SizedBox(width: 180, height: 180, child: _buildLogo())),
               ),
-              const Padding(
-                padding: .only(bottom: 32),
+              Padding(
+                padding: const .only(bottom: 32),
                 child: SizedBox(
                   width: 24,
                   height: 24,
-                  child: CircularProgressIndicator.adaptive(strokeWidth: 2, backgroundColor: Colors.white),
+                  child: CircularProgressIndicator.adaptive(strokeWidth: 2, backgroundColor: theme.appColors.pureWhite),
                 ),
               ),
             ],

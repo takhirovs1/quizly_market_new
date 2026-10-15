@@ -13,6 +13,7 @@ import '../../my_tests/models/demo_test_model.dart';
 import '../../my_tests/models/test_init_enum.dart' hide TestMode;
 import '../bloc/test_view.dart';
 import '../model/test_request_response_models.dart';
+import '../model/test_route_arguments.dart';
 import '../screens/test_solving_screen.dart';
 
 abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
@@ -46,8 +47,14 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
   ValueNotifier<DemoOption?> selectedOption = ValueNotifier(null);
   ValueNotifier<bool> isAnswerChecked = ValueNotifier(false);
 
-  int correctAnswers = 0;
-  int wrongAnswers = 0;
+  /// Correctness per answered question (key = question id, or index when the
+  /// API omits one). One entry per question, so re-visiting a question can't
+  /// double-count, and unanswered / timed-out questions stay "skipped" — the
+  /// same rule the backend uses for `skip_count`.
+  final Map<String, bool> _answerResults = {};
+
+  int get correctAnswers => _answerResults.values.where((isCorrect) => isCorrect).length;
+  int get wrongAnswers => _answerResults.values.where((isCorrect) => !isCorrect).length;
 
   late final DateTime startTime;
 
@@ -247,7 +254,6 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
     if (!mounted) return;
     context.telegramWebApp.hapticNotification(TelegramHapticNotification.error);
     isAnswerChecked.value = true;
-    wrongAnswers++;
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) _nextQuestion();
     });
@@ -268,11 +274,11 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
       selectedAnswers[currentQuestion.id!] = option.id!;
     }
 
-    if (option.isCorrect ?? false) {
-      correctAnswers++;
+    final isCorrect = option.isCorrect ?? false;
+    _answerResults[currentQuestion.id ?? 'index_${currentQuestionIndex.value}'] = isCorrect;
+    if (isCorrect) {
       context.telegramWebApp.hapticNotification(.success);
     } else {
-      wrongAnswers++;
       context.telegramWebApp.hapticNotification(.error);
     }
 
@@ -363,14 +369,16 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
       'answersCount=${answersList.length}, timeSpent=$timeSpentSec, skipCount=$skipCount',
     );
 
+    int? xp;
     if (widget.attemptId.isNotEmpty) {
       try {
         log_util.info('Calling finishAttempt API...');
-        await cubit.finishAttempt(
+        final response = await cubit.finishAttempt(
           widget.testId,
           widget.attemptId,
           FinishAttemptRequest(answers: answersList, timeSpentSec: timeSpentSec, skipCount: skipCount),
         );
+        xp = response.xpTotal;
         log_util.info('finishAttempt API call completed.');
       } on Object catch (e, s) {
         log_util.severe('Error calling finishAttempt: $e', s);
@@ -385,6 +393,8 @@ abstract class TestSolvingScreenState extends State<TestSolvingScreen> {
         Routes.testResult,
         arguments: {
           'id': widget.testId,
+          'mode': TestResultMode.fromTestMode(widget.arguments.mode).value,
+          'xp': ?xp?.toString(),
           if (widget.attemptId.isNotEmpty) 'attemptId': widget.attemptId,
           'correct': correctAnswers.toString(),
           'wrong': wrongAnswers.toString(),

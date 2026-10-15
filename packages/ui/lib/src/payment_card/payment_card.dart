@@ -42,13 +42,13 @@ class PaymentCard extends StatelessWidget {
         boxShadow: hasShadow
             ? [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: .08),
+                  color: context.x.colors.pureBlack.withValues(alpha: .08),
                   offset: const Offset(0, 12),
                   blurRadius: 56,
                   spreadRadius: 0,
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: .05),
+                  color: context.x.colors.pureBlack.withValues(alpha: .05),
                   offset: Offset.zero,
                   blurRadius: 3,
                   spreadRadius: 0,

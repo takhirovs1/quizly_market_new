@@ -53,14 +53,11 @@ class _SupportChatScreenState extends SupportChatState {
     final isMobile = context.x.isMobile;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final headerBg = isDark ? const Color(0xFF17212B) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF1E2936) : const Color(0xFFEBEDF2);
-
     return BlocBuilder<SupportChatCubit, SupportChatCubitState>(
       buildWhen: (prev, curr) => prev.isAdminTyping != curr.isAdminTyping,
       builder: (context, chatState) => Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: headerBg,
+        backgroundColor: colors.chatSurface,
         appBar: QuizAppBar(
           title: context.x.l10n.supportChatTitle,
           telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
@@ -101,7 +98,7 @@ class _SupportChatScreenState extends SupportChatState {
               }
             },
             builder: (context, state) {
-              final content = _buildChatContent(context, state, colors, textStyle, isDark, borderColor);
+              final content = _buildChatContent(context, state, colors, textStyle, isDark);
               if (isMobile) return content;
               return Center(
                 child: ConstrainedBox(
@@ -132,17 +129,16 @@ class _SupportChatScreenState extends SupportChatState {
     ThemeColors colors,
     AppTypography textStyle,
     bool isDark,
-    Color borderColor,
   ) => Column(
     children: [
       // Pinned banner
-      if (pinnedMessage != null) _buildPinnedBanner(colors, textStyle, isDark, borderColor),
+      if (pinnedMessage != null) _buildPinnedBanner(colors, textStyle),
 
       // Messages area
       Expanded(child: _buildMessagesList(context, state, colors, textStyle, isDark)),
 
       // Input bar
-      _buildInputBar(context, state, colors, textStyle, isDark, borderColor),
+      _buildInputBar(context, state, colors, textStyle),
     ],
   );
 
@@ -161,12 +157,12 @@ class _SupportChatScreenState extends SupportChatState {
       Image(
         image: Assets.lib.images.wallhaven7pzqz3.provider(package: 'ui'),
         fit: BoxFit.cover,
-        color: isDark ? Colors.black.withValues(alpha: 0.45) : Colors.white.withValues(alpha: 0.15),
+        color: colors.chatWallpaperOverlay,
         colorBlendMode: isDark ? BlendMode.darken : BlendMode.lighten,
       ),
 
       if (state.status.isLoading)
-        _buildShimmerLoading(isDark)
+        _buildShimmerLoading(colors)
       else
         NotificationListener<ScrollNotification>(
           onNotification: (n) {
@@ -193,7 +189,7 @@ class _SupportChatScreenState extends SupportChatState {
                 itemComparator: (a, b) => a.createdAt.compareTo(b.createdAt),
                 groupSeparatorBuilder: (date) => _buildInlineDate(context, date),
                 groupStickyHeaderBuilder: (msg) => _buildStickyHeader(context, msg),
-                itemBuilder: (context, msg) => _buildMessage(context, msg, colors, textStyle, isDark),
+                itemBuilder: (context, msg) => _buildMessage(context, msg, colors, textStyle),
                 order: GroupedListOrder.DESC,
                 reverse: true,
                 controller: scrollController,
@@ -213,13 +209,13 @@ class _SupportChatScreenState extends SupportChatState {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.25),
+                          color: colors.pureBlack.withValues(alpha: 0.25),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const SizedBox(
+                        child: SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(color: colors.pureWhite, strokeWidth: 2),
                         ),
                       ),
                     ),
@@ -230,9 +226,9 @@ class _SupportChatScreenState extends SupportChatState {
         ),
     ],
   );
-  Widget _buildShimmerLoading(bool isDark) {
-    final baseColor = isDark ? const Color(0xFF1C2733) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF2C3947) : const Color(0xFFF1F5F9);
+  Widget _buildShimmerLoading(ThemeColors colors) {
+    final baseColor = colors.chatShimmerBase;
+    final highlightColor = colors.chatShimmerHighlight;
 
     Widget shimmerWrapper(Widget child) =>
         Shimmer.fromColors(baseColor: baseColor, highlightColor: highlightColor, child: child);
@@ -310,10 +306,13 @@ class _SupportChatScreenState extends SupportChatState {
       filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.28), borderRadius: .circular(12)),
+        decoration: BoxDecoration(
+          color: context.x.colors.pureBlack.withValues(alpha: 0.28),
+          borderRadius: .circular(12),
+        ),
         child: Text(
           label,
-          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.x.colors.pureWhite, fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ),
     ),
@@ -321,78 +320,65 @@ class _SupportChatScreenState extends SupportChatState {
 
   // ─── Pinned message banner ─────────────────────────────────────────────────
 
-  Widget _buildPinnedBanner(ThemeColors colors, AppTypography textStyle, bool isDark, Color borderColor) {
-    final bg = isDark ? const Color(0xFF17212B) : Colors.white;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-      decoration: BoxDecoration(
-        color: bg,
-        border: Border(bottom: BorderSide(color: borderColor)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 36,
-            decoration: BoxDecoration(color: const Color(0xFF3B82F6), borderRadius: .circular(2)),
+  Widget _buildPinnedBanner(ThemeColors colors, AppTypography textStyle) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+    decoration: BoxDecoration(
+      color: colors.chatSurface,
+      border: Border(bottom: BorderSide(color: colors.chatBorder)),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 3,
+          height: 36,
+          decoration: BoxDecoration(color: colors.chatAccent, borderRadius: .circular(2)),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            mainAxisSize: .min,
+            children: [
+              Text(
+                context.x.l10n.pinnedMessage,
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.chatAccent),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                pinnedMessage!.text ?? '',
+                style: textStyle.sfW400s12.copyWith(color: colors.gray),
+                maxLines: 1,
+                overflow: .ellipsis,
+              ),
+            ],
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              mainAxisSize: .min,
-              children: [
-                Text(
-                  context.x.l10n.pinnedMessage,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF3B82F6)),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  pinnedMessage!.text ?? '',
-                  style: textStyle.sfW400s12.copyWith(color: colors.gray),
-                  maxLines: 1,
-                  overflow: .ellipsis,
-                ),
-              ],
-            ),
+        ),
+        GestureDetector(
+          onTap: () => setPinned(null),
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Icon(Icons.close, size: 18, color: colors.gray),
           ),
-          GestureDetector(
-            onTap: () => setPinned(null),
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: Icon(Icons.close, size: 18, color: colors.gray),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
   // ─── Single message bubble ─────────────────────────────────────────────────
 
-  Widget _buildMessage(
-    BuildContext context,
-    SupportMessageModel msg,
-    ThemeColors colors,
-    AppTypography textStyle,
-    bool isDark,
-  ) {
+  Widget _buildMessage(BuildContext context, SupportMessageModel msg, ThemeColors colors, AppTypography textStyle) {
     final isUser = msg.isUser;
 
-    Color bubbleBg = isUser
-        ? (isDark ? const Color(0xFF182533) : Colors.white)
-        : (isDark ? const Color(0xFF2B5278) : const Color(0xFFEEFFDE));
+    Color bubbleBg = isUser ? colors.chatBubbleUser : colors.chatBubbleAdmin;
     if (msg.isPending) {
       bubbleBg = bubbleBg.withValues(alpha: 0.6);
     }
 
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor = colors.dialogText;
 
-    final timeColor = isUser
-        ? (isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF64748B))
-        : (isDark ? Colors.white.withValues(alpha: 0.7) : const Color(0xFF5E8F57));
+    final timeColor = isUser ? colors.chatTimeUser : colors.chatTimeAdmin;
 
-    final checkColor = isDark ? Colors.white.withValues(alpha: 0.7) : const Color(0xFF5E8F57);
+    final checkColor = colors.chatTimeAdmin;
 
     final borderRadius = BorderRadius.only(
       topLeft: const Radius.circular(16),
@@ -411,9 +397,7 @@ class _SupportChatScreenState extends SupportChatState {
     return AnimatedContainer(
       key: key,
       duration: const Duration(milliseconds: 300),
-      color: isHighlighted
-          ? (isDark ? Colors.blue.withValues(alpha: 0.18) : Colors.blue.withValues(alpha: 0.1))
-          : Colors.transparent,
+      color: isHighlighted ? colors.chatHighlight : colors.transparent,
       width: double.infinity,
       child: GestureDetector(
         onLongPressStart: (details) => _showMessageActions(context, msg, colors, textStyle, details.globalPosition),
@@ -430,7 +414,7 @@ class _SupportChatScreenState extends SupportChatState {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Photos (outside bubble, Telegram-style)
-                  if (hasPhotos) _buildPhotos(context, msg, isUser, isDark, borderRadius),
+                  if (hasPhotos) _buildPhotos(context, msg, isUser, borderRadius),
 
                   // Text bubble (only if there's text)
                   if (hasText || msg.replyTo != null)
@@ -445,7 +429,7 @@ class _SupportChatScreenState extends SupportChatState {
                             : borderRadius,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: colors.pureBlack.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 1),
                           ),
@@ -457,7 +441,7 @@ class _SupportChatScreenState extends SupportChatState {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           // Reply preview
-                          if (msg.replyTo != null) _buildReplyPreview(msg.replyTo!, colors, textStyle, isUser, isDark),
+                          if (msg.replyTo != null) _buildReplyPreview(msg.replyTo!, colors, textStyle, isUser),
 
                           // Text
                           if (hasText) Text(msg.text!, style: TextStyle(fontSize: 13.5, color: textColor, height: 1.5)),
@@ -474,7 +458,7 @@ class _SupportChatScreenState extends SupportChatState {
                                 if (msg.isPending)
                                   Icon(Icons.access_time_rounded, size: 10, color: timeColor)
                                 else if (msg.isFailed)
-                                  const Icon(Icons.error_outline_rounded, size: 12, color: Colors.redAccent)
+                                  Icon(Icons.error_outline_rounded, size: 12, color: colors.chatDanger)
                                 else
                                   _MessageStatusCheck(color: checkColor, viewed: msg.viewed),
                               ],
@@ -494,13 +478,7 @@ class _SupportChatScreenState extends SupportChatState {
 
   // ─── Photos (tappable → custom fullscreen viewer) ────────────────────────
 
-  Widget _buildPhotos(
-    BuildContext context,
-    SupportMessageModel msg,
-    bool isUser,
-    bool isDark,
-    BorderRadius bubbleRadius,
-  ) {
+  Widget _buildPhotos(BuildContext context, SupportMessageModel msg, bool isUser, BorderRadius bubbleRadius) {
     final photos = msg.photos;
     final urls = photos.map((p) => p.url).toList();
     final hasText = msg.text != null && msg.text!.isNotEmpty;
@@ -522,7 +500,7 @@ class _SupportChatScreenState extends SupportChatState {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    _buildNetworkImage(imageUrl: p.url, fit: BoxFit.cover, isDark: isDark),
+                    _buildNetworkImage(imageUrl: p.url, fit: BoxFit.cover),
                     if (showTimeOnImage && i == photos.length - 1) _buildImageTimeOverlay(msg, isUser),
                   ],
                 ),
@@ -543,22 +521,22 @@ class _SupportChatScreenState extends SupportChatState {
         filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          color: Colors.black.withValues(alpha: 0.45),
+          color: context.x.colors.pureBlack.withValues(alpha: 0.45),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 msg.formattedTime,
-                style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 9, color: context.x.colors.pureWhite, fontWeight: FontWeight.w500),
               ),
               if (isUser) ...[
                 const SizedBox(width: 3),
                 if (msg.isPending)
-                  const Icon(Icons.access_time_rounded, size: 10, color: Colors.white)
+                  Icon(Icons.access_time_rounded, size: 10, color: context.x.colors.pureWhite)
                 else if (msg.isFailed)
-                  const Icon(Icons.error_outline_rounded, size: 12, color: Colors.redAccent)
+                  Icon(Icons.error_outline_rounded, size: 12, color: context.x.colors.chatDanger)
                 else
-                  _MessageStatusCheck(color: Colors.white.withValues(alpha: 0.9), viewed: msg.viewed),
+                  _MessageStatusCheck(color: context.x.colors.pureWhite.withValues(alpha: 0.9), viewed: msg.viewed),
               ],
             ],
           ),
@@ -571,7 +549,7 @@ class _SupportChatScreenState extends SupportChatState {
     Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: false,
-        barrierColor: Colors.transparent,
+        barrierColor: context.x.colors.transparent,
         pageBuilder: (_, _, _) => _ChatImageViewer(urls: urls, initialIndex: initialIndex),
         transitionsBuilder: (_, anim, _, child) => FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 220),
@@ -580,13 +558,7 @@ class _SupportChatScreenState extends SupportChatState {
   }
 
   // Reply preview inside bubble
-  Widget _buildReplyPreview(
-    SupportReplyToModel reply,
-    ThemeColors colors,
-    AppTypography textStyle,
-    bool isUser,
-    bool isDark,
-  ) {
+  Widget _buildReplyPreview(SupportReplyToModel reply, ThemeColors colors, AppTypography textStyle, bool isUser) {
     SupportMessageModel? repliedMsg;
     for (final m in _cubit.state.messages) {
       if (m.id == reply.id) {
@@ -596,36 +568,10 @@ class _SupportChatScreenState extends SupportChatState {
     }
     final photoUrl = repliedMsg != null && repliedMsg.photos.isNotEmpty ? repliedMsg.photos.first.url : null;
 
-    final Color lineColor;
-    final Color bgColor;
-    final Color titleColor;
-    final Color subtitleColor;
-
-    if (isUser) {
-      if (isDark) {
-        lineColor = Colors.white;
-        bgColor = Colors.white.withValues(alpha: 0.1);
-        titleColor = Colors.white;
-        subtitleColor = Colors.white.withValues(alpha: 0.85);
-      } else {
-        lineColor = const Color(0xFF3B82F6);
-        bgColor = const Color(0xFF3B82F6).withValues(alpha: 0.06);
-        titleColor = const Color(0xFF3B82F6);
-        subtitleColor = const Color(0xFF64748B);
-      }
-    } else {
-      if (isDark) {
-        lineColor = const Color(0xFF3B82F6);
-        bgColor = const Color(0xFF3B82F6).withValues(alpha: 0.1);
-        titleColor = const Color(0xFF3B82F6);
-        subtitleColor = Colors.white.withValues(alpha: 0.85);
-      } else {
-        lineColor = const Color(0xFF3B82F6);
-        bgColor = const Color(0xFF3B82F6).withValues(alpha: 0.06);
-        titleColor = const Color(0xFF3B82F6);
-        subtitleColor = const Color(0xFF64748B);
-      }
-    }
+    final lineColor = isUser ? colors.chatReplyUserAccent : colors.chatAccent;
+    final bgColor = isUser ? colors.chatReplyUserBackground : colors.chatReplyAdminBackground;
+    final titleColor = lineColor;
+    final subtitleColor = colors.chatReplySubtitle;
 
     String senderName;
     if (reply.sender == 'user') {
@@ -637,7 +583,7 @@ class _SupportChatScreenState extends SupportChatState {
       } on Object catch (_) {}
       senderName = profileName ?? context.x.l10n.you;
     } else if (reply.sender == 'admin') {
-      senderName = 'Quizly Support';
+      senderName = context.x.l10n.chatSupportSenderName;
     } else {
       senderName = reply.sender;
     }
@@ -666,24 +612,23 @@ class _SupportChatScreenState extends SupportChatState {
                   width: 36,
                   height: 36,
                   fit: BoxFit.cover,
-                  isDark: isDark,
                   placeholder: (context, url) => Container(
                     width: 36,
                     height: 36,
-                    color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-                    child: const Center(
+                    color: colors.chatImagePlaceholder,
+                    child: Center(
                       child: SizedBox(
                         width: 12,
                         height: 12,
-                        child: CircularProgressIndicator(strokeWidth: 1.5, color: Color(0xFF3B82F6)),
+                        child: CircularProgressIndicator(strokeWidth: 1.5, color: colors.chatAccent),
                       ),
                     ),
                   ),
                   errorWidget: (context, url, error) => Container(
                     width: 36,
                     height: 36,
-                    color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-                    child: const Icon(Icons.broken_image, size: 16, color: Colors.grey),
+                    color: colors.chatImagePlaceholder,
+                    child: Icon(Icons.broken_image, size: 16, color: colors.chatImageErrorIcon),
                   ),
                 ),
               ),
@@ -730,10 +675,9 @@ class _SupportChatScreenState extends SupportChatState {
       Offset.zero & MediaQuery.sizeOf(context),
     );
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final menuBg = isDark ? const Color(0xFF1E2C3A) : Colors.white;
-    final textThemeColor = isDark ? Colors.white : const Color(0xFF202732);
-    final iconColor = isDark ? Colors.white70 : const Color(0xFF8A9BB0);
+    final menuBg = colors.chatMenuBackground;
+    final textThemeColor = colors.text;
+    final iconColor = colors.chatMenuIcon;
 
     final isUserMessage = msg.sender == 'user';
 
@@ -751,9 +695,9 @@ class _SupportChatScreenState extends SupportChatState {
             height: 38,
             child: Row(
               children: [
-                Icon(Icons.refresh_rounded, color: Colors.blueAccent, size: 20),
+                Icon(Icons.refresh_rounded, color: colors.chatRetry, size: 20),
                 const SizedBox(width: 12),
-                const Text('Retry', style: TextStyle(color: Colors.blueAccent, fontSize: 14)),
+                Text(context.x.l10n.retry, style: TextStyle(color: colors.chatRetry, fontSize: 14)),
               ],
             ),
           ),
@@ -762,9 +706,9 @@ class _SupportChatScreenState extends SupportChatState {
             height: 38,
             child: Row(
               children: [
-                const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                QuizLottieIcon(QuizLottie.delete, size: 20, color: colors.chatDanger),
                 const SizedBox(width: 12),
-                Text(context.x.l10n.delete, style: const TextStyle(color: Colors.redAccent, fontSize: 14)),
+                Text(context.x.l10n.delete, style: TextStyle(color: colors.chatDanger, fontSize: 14)),
               ],
             ),
           ),
@@ -788,7 +732,7 @@ class _SupportChatScreenState extends SupportChatState {
                 children: [
                   Icon(Icons.push_pin_outlined, color: iconColor, size: 20),
                   const SizedBox(width: 12),
-                  Text('Pin', style: TextStyle(color: textThemeColor, fontSize: 14)),
+                  Text(context.x.l10n.pin, style: TextStyle(color: textThemeColor, fontSize: 14)),
                 ],
               ),
             ),
@@ -822,9 +766,9 @@ class _SupportChatScreenState extends SupportChatState {
               height: 38,
               child: Row(
                 children: [
-                  const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                  QuizLottieIcon(QuizLottie.delete, size: 20, color: colors.chatDanger),
                   const SizedBox(width: 12),
-                  Text(context.x.l10n.delete, style: const TextStyle(color: Colors.redAccent, fontSize: 14)),
+                  Text(context.x.l10n.delete, style: TextStyle(color: colors.chatDanger, fontSize: 14)),
                 ],
               ),
             ),
@@ -874,16 +818,15 @@ class _SupportChatScreenState extends SupportChatState {
     SupportChatCubitState state,
     ThemeColors colors,
     AppTypography textStyle,
-    bool isDark,
-    Color borderColor,
   ) {
     const kButtonSize = 44.0; // uniform height for all buttons
-    final barBg = isDark ? const Color(0xFF17212B) : Colors.white;
+    final barBg = colors.chatSurface;
+    final borderColor = colors.chatBorder;
     final safeBottom = context.telegramWebApp.isSupported
         ? context.telegramWebApp.safeAreaInset.bottom.toDouble() + 12
         : MediaQuery.paddingOf(context).bottom;
-    final inputBg = isDark ? const Color(0xFF1E2936) : const Color(0xFFF0F2F5);
-    final inputBorder = isDark ? const Color(0xFF2A3347) : const Color(0xFFDEE2E9);
+    final inputBg = colors.chatInputBackground;
+    final inputBorder = colors.chatInputBorder;
 
     return TextFieldTapRegion(
       child: GestureDetector(
@@ -897,7 +840,7 @@ class _SupportChatScreenState extends SupportChatState {
               Container(
                 padding: const EdgeInsets.fromLTRB(0, 8, 12, 8),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF13172A) : const Color(0xFFF5F7FB),
+                  color: colors.chatBannerBackground,
                   border: Border(top: BorderSide(color: borderColor)),
                 ),
                 child: Row(
@@ -906,8 +849,8 @@ class _SupportChatScreenState extends SupportChatState {
                       width: 3,
                       height: 40,
                       margin: const EdgeInsets.only(left: 12, right: 10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF3B82F6),
+                      decoration: BoxDecoration(
+                        color: colors.chatAccent,
                         borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
                       ),
                     ),
@@ -919,7 +862,6 @@ class _SupportChatScreenState extends SupportChatState {
                           width: 36,
                           height: 36,
                           fit: BoxFit.cover,
-                          isDark: isDark,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -931,7 +873,7 @@ class _SupportChatScreenState extends SupportChatState {
                         children: [
                           Text(
                             replyToMessage!.isUser ? context.x.l10n.replyToYou : context.x.l10n.replyToSupport,
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF3B82F6)),
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.chatAccent),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -960,7 +902,7 @@ class _SupportChatScreenState extends SupportChatState {
               Container(
                 padding: const EdgeInsets.fromLTRB(0, 8, 12, 8),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF13172A) : const Color(0xFFF5F7FB),
+                  color: colors.chatBannerBackground,
                   border: Border(top: BorderSide(color: borderColor)),
                 ),
                 child: Row(
@@ -969,8 +911,8 @@ class _SupportChatScreenState extends SupportChatState {
                       width: 3,
                       height: 40,
                       margin: const EdgeInsets.only(left: 12, right: 10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF10B981),
+                      decoration: BoxDecoration(
+                        color: colors.chatEditAccent,
                         borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
                       ),
                     ),
@@ -981,7 +923,7 @@ class _SupportChatScreenState extends SupportChatState {
                         children: [
                           Text(
                             context.x.l10n.edit,
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF10B981)),
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.chatEditAccent),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -1017,13 +959,9 @@ class _SupportChatScreenState extends SupportChatState {
                   // ── Attach button ─────────────────────────────────────────
                   _barButton(
                     size: kButtonSize,
-                    isDark: isDark,
+                    colors: colors,
                     onTap: () => _showAttachmentBottomSheet(context),
-                    child: Icon(
-                      Icons.attach_file_rounded,
-                      color: isDark ? Colors.white.withValues(alpha: 0.55) : const Color(0xFF8A9BB0),
-                      size: 21,
-                    ),
+                    child: Icon(Icons.attach_file_rounded, color: colors.chatAttachIcon, size: 21),
                   ),
 
                   const SizedBox(width: 8),
@@ -1042,19 +980,12 @@ class _SupportChatScreenState extends SupportChatState {
                           controller: messageController,
                           focusNode: messageFocusNode,
                           onSubmitted: (_) => sendMessage(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDark ? Colors.white : const Color(0xFF202732),
-                            height: 1.4,
-                          ),
+                          style: TextStyle(fontSize: 14, color: colors.text, height: 1.4),
                           maxLines: null,
                           textInputAction: TextInputAction.newline,
                           decoration: InputDecoration(
                             hintText: context.x.l10n.messageInputHint,
-                            hintStyle: TextStyle(
-                              fontSize: 14,
-                              color: isDark ? Colors.white.withValues(alpha: 0.35) : const Color(0xFFA0A9BA),
-                            ),
+                            hintStyle: TextStyle(fontSize: 14, color: colors.chatInputHint),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             border: InputBorder.none,
                             isDense: true,
@@ -1071,19 +1002,17 @@ class _SupportChatScreenState extends SupportChatState {
                     valueListenable: isSendActive,
                     builder: (context, active, _) => _barButton(
                       size: kButtonSize,
-                      isDark: isDark,
+                      colors: colors,
                       onTap: active && !state.isSending ? sendMessage : null,
                       filled: active,
                       child: state.isSending
-                          ? const Padding(
-                              padding: EdgeInsets.all(12),
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          ? Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: CircularProgressIndicator(color: colors.pureWhite, strokeWidth: 2),
                             )
                           : Icon(
                               Icons.send_rounded,
-                              color: active
-                                  ? Colors.white
-                                  : (isDark ? Colors.white.withValues(alpha: 0.3) : const Color(0xFFA0A9BA)),
+                              color: active ? colors.pureWhite : colors.chatSendInactive,
                               size: 20,
                             ),
                     ),
@@ -1100,7 +1029,7 @@ class _SupportChatScreenState extends SupportChatState {
   /// Uniform square button used for attach & send
   Widget _barButton({
     required double size,
-    required bool isDark,
+    required ThemeColors colors,
     required Widget child,
     VoidCallback? onTap,
     bool filled = false,
@@ -1111,11 +1040,9 @@ class _SupportChatScreenState extends SupportChatState {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: filled ? const Color(0xFF3B82F6) : Colors.transparent,
+        color: filled ? colors.chatAccent : colors.transparent,
         shape: BoxShape.circle,
-        border: filled
-            ? null
-            : Border.all(color: isDark ? const Color(0xFF2A3347) : const Color(0xFFDEE2E9), width: 1.5),
+        border: filled ? null : Border.all(color: colors.chatInputBorder, width: 1.5),
       ),
       child: child,
     ),
@@ -1159,7 +1086,7 @@ class _ChatImageViewerState extends State<_ChatImageViewer> {
     final safeTop = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: _bgOpacity),
+      backgroundColor: context.x.colors.pureBlack.withValues(alpha: _bgOpacity),
       body: Stack(
         children: [
           // ── PageView of images ─────────────────────────────────────────────
@@ -1190,14 +1117,18 @@ class _ChatImageViewerState extends State<_ChatImageViewer> {
                     child: _buildNetworkImage(
                       imageUrl: widget.urls[index],
                       fit: BoxFit.contain,
-                      isDark: true,
-                      placeholder: (context, url) => const SizedBox(
+                      placeholder: (context, url) => SizedBox(
                         width: 48,
                         height: 48,
-                        child: Center(child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
+                        child: Center(
+                          child: CircularProgressIndicator(color: context.x.colors.pureWhite, strokeWidth: 2.5),
+                        ),
                       ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.broken_image_outlined, color: Colors.white54, size: 64),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.broken_image_outlined,
+                        color: context.x.colors.pureWhite.withValues(alpha: 0.54),
+                        size: 64,
+                      ),
                     ),
                   ),
                 ),
@@ -1216,20 +1147,20 @@ class _ChatImageViewerState extends State<_ChatImageViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withValues(alpha: 0.55), Colors.transparent],
+                  colors: [context.x.colors.pureBlack.withValues(alpha: 0.55), context.x.colors.transparent],
                 ),
               ),
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 24),
+                    icon: Icon(Icons.close, color: context.x.colors.pureWhite, size: 24),
                     onPressed: _dismiss,
                   ),
                   const Spacer(),
                   if (widget.urls.length > 1)
                     Text(
                       '${_current + 1} / ${widget.urls.length}',
-                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.x.colors.pureWhite, fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                 ],
               ),
@@ -1244,7 +1175,6 @@ class _ChatImageViewerState extends State<_ChatImageViewer> {
 Widget _buildNetworkImage({
   required String imageUrl,
   required BoxFit fit,
-  required bool isDark,
   double? width,
   double? height,
   Widget Function(BuildContext, String)? placeholder,
@@ -1262,8 +1192,8 @@ Widget _buildNetworkImage({
         return Container(
           width: width,
           height: height,
-          color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-          child: const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6), strokeWidth: 2)),
+          color: context.x.colors.chatImagePlaceholder,
+          child: Center(child: CircularProgressIndicator(color: context.x.colors.chatAccent, strokeWidth: 2)),
         );
       },
       errorBuilder: (context, error, stackTrace) {
@@ -1271,8 +1201,8 @@ Widget _buildNetworkImage({
         return Container(
           width: width,
           height: height,
-          color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-          child: const Center(child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 32)),
+          color: context.x.colors.chatImagePlaceholder,
+          child: Center(child: Icon(Icons.broken_image_outlined, color: context.x.colors.chatImageErrorIcon, size: 32)),
         );
       },
     );
@@ -1285,14 +1215,16 @@ Widget _buildNetworkImage({
       placeholder: placeholder != null
           ? (context, url) => placeholder(context, url)
           : (context, url) => Container(
-              color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-              child: const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6), strokeWidth: 2)),
+              color: context.x.colors.chatImagePlaceholder,
+              child: Center(child: CircularProgressIndicator(color: context.x.colors.chatAccent, strokeWidth: 2)),
             ),
       errorWidget: errorWidget != null
           ? (context, url, error) => errorWidget(context, url, error)
           : (context, url, error) => Container(
-              color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE8EDF5),
-              child: const Center(child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 32)),
+              color: context.x.colors.chatImagePlaceholder,
+              child: Center(
+                child: Icon(Icons.broken_image_outlined, color: context.x.colors.chatImageErrorIcon, size: 32),
+              ),
             ),
     );
   }

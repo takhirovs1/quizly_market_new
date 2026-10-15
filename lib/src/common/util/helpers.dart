@@ -29,8 +29,12 @@ sealed class Helpers {
     return textPainter.width + extraWidth;
   }
 
-  static LinearGradient get shimmerGradient => const LinearGradient(
-    colors: [Color(0xFFEBEBF4), Color(0xFFF4F4F4), Color(0xFFEBEBF4)],
+  static LinearGradient shimmerGradient(BuildContext context) => LinearGradient(
+    colors: [
+      context.x.colors.shimmerGradientBase,
+      context.x.colors.shimmerGradientHighlight,
+      context.x.colors.shimmerGradientBase,
+    ],
     stops: [0.1, 0.3, 0.5],
     begin: Alignment(-1, -0.7),
     end: Alignment(1, 0.7),

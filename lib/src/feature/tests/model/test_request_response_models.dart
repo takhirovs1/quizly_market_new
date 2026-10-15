@@ -42,7 +42,15 @@ class FinishAttemptRequest {
 }
 
 class FinishAttemptResponse {
-  const FinishAttemptResponse();
+  const FinishAttemptResponse({this.xpTotal});
 
-  factory FinishAttemptResponse.fromJson(Map<String, Object?> json) => const FinishAttemptResponse();
+  /// XP earned by this attempt (server-side, docs §4.5). Accepts `xp_total`
+  /// (sessions API) or `xp_gained`/`xp`, top-level or under `data`.
+  factory FinishAttemptResponse.fromJson(Map<String, Object?> json) {
+    final data = json['data'] is Map<String, Object?> ? json['data']! as Map<String, Object?> : json;
+    final xp = data['xp_total'] ?? data['xp_gained'] ?? data['xp'];
+    return FinishAttemptResponse(xpTotal: xp is num ? xp.toInt() : int.tryParse('${xp ?? ''}'));
+  }
+
+  final int? xpTotal;
 }

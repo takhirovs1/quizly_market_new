@@ -3,6 +3,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:localization/localization.dart';
+
+import '../theme/colors.dart';
 
 /// {@template pin_code}
 /// PinCode widget.
@@ -55,23 +58,32 @@ class _PinCodeState extends State<PinCode> {
     _internalFocus = widget.focusNode;
 
     _controller = widget.controller..addListener(_onValueChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final colors = ThemeColors.of(context);
     _painter = _PinPainter(
       controller: _controller,
       length: widget.length,
       focusNode: _internalFocus,
       textPainter: TextPainter(textDirection: TextDirection.ltr, textScaler: TextScaler.noScaling, maxLines: 1),
-      textStyle:
-          widget.textStyle?.copyWith(height: 1) ??
-          const TextStyle(
-            height: 1,
-            fontSize: 24,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'OpenSans',
-            package: 'ui',
-          ),
+      textStyle: widget.textStyle?.copyWith(height: 1) ?? _defaultTextStyle(colors),
+      unfocusedBoxColor: colors.pinCodeBorder,
+      focusedBoxColor: colors.pinCodeFocused,
+      fallbackFocusedTextColor: colors.pureBlack.withValues(alpha: .45),
     );
   }
+
+  static TextStyle _defaultTextStyle(ThemeColors colors) => TextStyle(
+    height: 1,
+    fontSize: 24,
+    color: colors.pureBlack,
+    fontWeight: FontWeight.w600,
+    fontFamily: 'OpenSans',
+    package: 'ui',
+  );
 
   @override
   void didUpdateWidget(covariant PinCode oldWidget) {
@@ -84,16 +96,7 @@ class _PinCodeState extends State<PinCode> {
     }
     if (!identical(widget.textStyle, oldWidget.textStyle)) {
       _painter = _painter.copyWith(
-        textStyle:
-            widget.textStyle?.copyWith(height: 1) ??
-            const TextStyle(
-              height: 1,
-              fontSize: 24,
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'OpenSans',
-              package: 'ui',
-            ),
+        textStyle: widget.textStyle?.copyWith(height: 1) ?? _defaultTextStyle(ThemeColors.of(context)),
       );
     }
   }
@@ -116,6 +119,7 @@ class _PinCodeState extends State<PinCode> {
   void _showMenu(BuildContext context, Offset position) {
     final localizations = MaterialLocalizations.of(context);
     final messenger = ScaffoldMessenger.maybeOf(context);
+    final l10n = AppLocalization.of(context);
     showMenu<String>(
       context: context,
       positionBuilder: (context, constraints) => RelativeRect.fromLTRB(
@@ -155,7 +159,7 @@ class _PinCodeState extends State<PinCode> {
           if (text == null) {
             messenger
               ?..clearSnackBars()
-              ..showSnackBar(const SnackBar(content: Text('Clipboard is empty'), duration: Duration(seconds: 5)));
+              ..showSnackBar(SnackBar(content: Text(l10n.clipboardEmpty), duration: const Duration(seconds: 5)));
             return;
           }
           final numbers = int.tryParse(text);
@@ -164,7 +168,7 @@ class _PinCodeState extends State<PinCode> {
               ?..clearSnackBars()
               ..showSnackBar(
                 SnackBar(
-                  content: Text('Must contain only ${widget.length} numbers'),
+                  content: Text(l10n.pinCodeMustContainDigits(widget.length)),
                   duration: const Duration(seconds: 5),
                 ),
               );
@@ -209,8 +213,8 @@ class _PinCodeState extends State<PinCode> {
                   canRequestFocus: true,
                   focusNode: _internalFocus,
                   controller: widget.controller,
-                  cursorColor: Colors.transparent,
-                  style: const TextStyle(fontSize: 10, height: 1, color: Colors.transparent),
+                  cursorColor: ThemeColors.of(context).transparent,
+                  style: TextStyle(fontSize: 10, height: 1, color: ThemeColors.of(context).transparent),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   enableInteractiveSelection: false,
@@ -229,10 +233,10 @@ class _PinCodeState extends State<PinCode> {
                   onChanged: widget.onChanged,
                   onEditingComplete: widget.onEditingComplete,
                   onSubmitted: widget.onSubmitted,
-                  decoration: const InputDecoration(
-                    constraints: BoxConstraints(maxWidth: 338, maxHeight: 48),
+                  decoration: InputDecoration(
+                    constraints: const BoxConstraints(maxWidth: 338, maxHeight: 48),
                     filled: false,
-                    fillColor: Colors.transparent,
+                    fillColor: ThemeColors.of(context).transparent,
                     maintainHintSize: false,
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
@@ -305,6 +309,9 @@ class _PinPainter extends CustomPainter {
     required this.length,
     required this.textPainter,
     required this.textStyle,
+    required this.unfocusedBoxColor,
+    required this.focusedBoxColor,
+    required this.fallbackFocusedTextColor,
   }) : super(repaint: controller);
 
   final TextEditingController controller;
@@ -312,21 +319,24 @@ class _PinPainter extends CustomPainter {
   final int length;
   final TextPainter textPainter;
   final TextStyle textStyle;
+  final Color unfocusedBoxColor;
+  final Color focusedBoxColor;
+  final Color fallbackFocusedTextColor;
 
-  final Paint _unfocusedBoxPaint = Paint()
-    ..color = Colors.grey
+  late final Paint _unfocusedBoxPaint = Paint()
+    ..color = unfocusedBoxColor
     ..style = PaintingStyle.stroke
     ..strokeWidth = 1.3
     ..isAntiAlias = true
     ..blendMode = BlendMode.src;
-  final Paint _focusedBoxPaint = Paint()
-    ..color = const Color(0xFF1C60E8)
+  late final Paint _focusedBoxPaint = Paint()
+    ..color = focusedBoxColor
     ..style = PaintingStyle.stroke
     ..strokeWidth = 1.5
     ..isAntiAlias = true
     ..blendMode = BlendMode.src;
-  final Paint _cursorPaint = Paint()
-    ..color = const Color(0xFF1C60E8)
+  late final Paint _cursorPaint = Paint()
+    ..color = focusedBoxColor
     ..strokeWidth = 2.0
     ..isAntiAlias = true
     ..blendMode = BlendMode.srcOver;
@@ -337,12 +347,18 @@ class _PinPainter extends CustomPainter {
     TextPainter? textPainter,
     TextStyle? textStyle,
     int? length,
+    Color? unfocusedBoxColor,
+    Color? focusedBoxColor,
+    Color? fallbackFocusedTextColor,
   }) => _PinPainter(
     controller: controller ?? this.controller,
     focusNode: focusNode ?? this.focusNode,
     textPainter: textPainter ?? this.textPainter,
     textStyle: textStyle ?? this.textStyle,
     length: length ?? this.length,
+    unfocusedBoxColor: unfocusedBoxColor ?? this.unfocusedBoxColor,
+    focusedBoxColor: focusedBoxColor ?? this.focusedBoxColor,
+    fallbackFocusedTextColor: fallbackFocusedTextColor ?? this.fallbackFocusedTextColor,
   );
 
   @override
@@ -379,7 +395,7 @@ class _PinPainter extends CustomPainter {
         ..text = TextSpan(
           text: controller.text[i],
           style: focused
-              ? textStyle.copyWith(color: textStyle.color?.withValues(alpha: .45) ?? Colors.black45)
+              ? textStyle.copyWith(color: textStyle.color?.withValues(alpha: .45) ?? fallbackFocusedTextColor)
               : textStyle,
         )
         ..layout(maxWidth: size.width / length)
@@ -395,7 +411,10 @@ class _PinPainter extends CustomPainter {
       !identical(oldDelegate.controller, controller) ||
       !identical(oldDelegate.focusNode, focusNode) ||
       !identical(oldDelegate.textPainter, textPainter) ||
-      !identical(oldDelegate.textStyle, textStyle);
+      !identical(oldDelegate.textStyle, textStyle) ||
+      oldDelegate.unfocusedBoxColor != unfocusedBoxColor ||
+      oldDelegate.focusedBoxColor != focusedBoxColor ||
+      oldDelegate.fallbackFocusedTextColor != fallbackFocusedTextColor;
 
   @override
   bool shouldRebuildSemantics(_PinPainter oldDelegate) => false;

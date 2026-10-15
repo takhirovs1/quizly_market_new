@@ -62,7 +62,7 @@ abstract class PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
       (match) => '${match[1]},',
     );
-    final amountText = '${isPositive ? '+' : '-'}$amountFormatted UZS';
+    final amountText = '${isPositive ? '+' : '-'}$amountFormatted ${context.x.l10n.uzs}';
 
     final hour = transaction.createdAt.hour.toString().padLeft(2, '0');
     final minute = transaction.createdAt.minute.toString().padLeft(2, '0');

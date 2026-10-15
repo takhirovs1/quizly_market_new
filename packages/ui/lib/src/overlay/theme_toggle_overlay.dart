@@ -185,7 +185,7 @@ class _ThemeToggleOverlayState extends ThemeToggleOverlayState {
         scale: _isDragging ? 1.15 : 1.0,
         duration: _$animationDuration,
         child: Material(
-          color: Colors.transparent,
+          color: Theme.of(context).appColors.transparent,
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: Theme.of(context).appColors.onSecondary.withAlpha(70),

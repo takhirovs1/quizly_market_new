@@ -100,9 +100,12 @@ class _PaymentHistoryScreenState extends PaymentHistoryScreenState {
 
                     final (statusText, statusColor) = switch (transaction.type) {
                       'referral' => (context.x.l10n.referralLabel, context.x.colors.primary),
-                      'refund' => (context.x.l10n.refundLabel, Colors.orange.shade600),
+                      'refund' => (context.x.l10n.refundLabel, context.x.colors.paymentOrange),
                       _ when isPositive => (context.x.l10n.incomeLabel, context.x.colors.success),
-                      _ => (context.x.l10n.expenseLabel, isPremium ? Colors.orange.shade600 : context.x.colors.error),
+                      _ => (
+                        context.x.l10n.expenseLabel,
+                        isPremium ? context.x.colors.paymentOrange : context.x.colors.error,
+                      ),
                     };
 
                     Widget leadingIcon;
@@ -151,15 +154,15 @@ class _PaymentHistoryScreenState extends PaymentHistoryScreenState {
                         height: 44,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.orange.shade600, width: 1.5),
-                          color: Colors.orange.shade50,
+                          border: Border.all(color: context.x.colors.paymentOrange, width: 1.5),
+                          color: context.x.colors.paymentOrangeTint,
                         ),
                         alignment: Alignment.center,
                         child: Assets.lib.icon.strong.svg(
                           package: 'ui',
                           width: 22,
                           height: 22,
-                          colorFilter: ColorFilter.mode(Colors.orange.shade600, BlendMode.srcIn),
+                          colorFilter: ColorFilter.mode(context.x.colors.paymentOrange, BlendMode.srcIn),
                         ),
                       );
                     } else {
@@ -281,10 +284,9 @@ class _PaymentHistoryShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: isDark ? const Color(0x20FFFFFF) : const Color(0xFFE2E8F0),
-      highlightColor: isDark ? const Color(0x40FFFFFF) : const Color(0xFFF1F5F9),
+      baseColor: context.x.colors.shimmerBaseSoft,
+      highlightColor: context.x.colors.shimmerHighlightSoft,
       child: ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -301,7 +303,7 @@ class _PaymentHistoryShimmer extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: context.x.colors.pureWhite),
               ),
               const SizedBox(width: 12),
               // Title and Date/Time placeholders
@@ -312,13 +314,19 @@ class _PaymentHistoryShimmer extends StatelessWidget {
                     Container(
                       width: 100,
                       height: 16,
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                      decoration: BoxDecoration(
+                        color: context.x.colors.pureWhite,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Container(
                       width: 140,
                       height: 12,
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                      decoration: BoxDecoration(
+                        color: context.x.colors.pureWhite,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
                   ],
                 ),
@@ -331,13 +339,19 @@ class _PaymentHistoryShimmer extends StatelessWidget {
                   Container(
                     width: 80,
                     height: 18,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                    decoration: BoxDecoration(
+                      color: context.x.colors.pureWhite,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     width: 60,
                     height: 12,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                    decoration: BoxDecoration(
+                      color: context.x.colors.pureWhite,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ],
               ),

@@ -66,7 +66,7 @@ class CustomButton2 extends StatelessWidget {
                   : rightButtonType == ButtonType.error
                   ? context.x.colors.error
                   : rightButtonType == ButtonType.success
-                  ? const Color(0xFF43C04D)
+                  ? context.x.colors.answerCorrect
                   : context.x.colors.gray.withValues(alpha: 0.1),
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
               fixedSize: Size(width, 50),

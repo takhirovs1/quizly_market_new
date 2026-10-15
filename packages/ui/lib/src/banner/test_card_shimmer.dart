@@ -7,9 +7,8 @@ class TestCardShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -76,9 +75,8 @@ class MiniTestCardShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 200, minHeight: 180),
@@ -138,7 +136,10 @@ class ShimmerBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(radius))),
+    decoration: BoxDecoration(
+      color: context.x.colors.pureWhite,
+      borderRadius: BorderRadius.all(Radius.circular(radius)),
+    ),
     child: SizedBox(width: width, height: height),
   );
 }

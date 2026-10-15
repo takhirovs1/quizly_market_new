@@ -25,6 +25,18 @@ class MyTestState extends Equatable {
     this.purchaseData,
     this.purchaseErrorMessage,
     this.exampleTestDetail,
+    // --- Home sections (parallel, independent per-section status) ---
+    this.statuses = const <String, StateStatus>{},
+    this.sectionErrors = const <String, String?>{},
+    this.continueResponse,
+    this.homeActions,
+    this.myTestsPreview,
+    this.homeActivity,
+    this.friendsRating,
+    this.referralSummary,
+    this.adsResponse,
+    this.recommendations,
+    this.dismissedAdIds = const <String>{},
   });
 
   final StateStatus status;
@@ -51,6 +63,45 @@ class MyTestState extends Equatable {
   final String? purchaseErrorMessage;
   final DemoTestDetail? exampleTestDetail;
 
+  // --- Home sections ---------------------------------------------------------
+  /// Per-section load status, keyed by [HomeEndpoints] ('continue', 'actions',
+  /// 'myTests', 'activity', 'friends', 'referral', 'ads', 'recommendations').
+  final Map<String, StateStatus> statuses;
+
+  /// Per-section user-friendly error message (same keys as [statuses]).
+  final Map<String, String?> sectionErrors;
+
+  final HomeContinueResponse? continueResponse;
+  final HomeActionsResponse? homeActions;
+  final MyTestsPreviewResponse? myTestsPreview;
+  final HomeActivityResponse? homeActivity;
+  final FriendsRatingResponse? friendsRating;
+  final ReferralSummaryResponse? referralSummary;
+  final AdsResponse? adsResponse;
+  final RecommendationsResponse? recommendations;
+
+  /// Ad ids the user dismissed this session (server also persists via /dismiss).
+  final Set<String> dismissedAdIds;
+
+  /// Status for a Home section; defaults to idle when not yet requested.
+  StateStatus statusOf(String key) => statuses[key] ?? StateStatus.idle;
+
+  /// Error message for a Home section (null when none).
+  String? sectionError(String key) => sectionErrors[key];
+
+  /// The Continue hero card payload (null when 204 / no in-progress session).
+  ContinueCardData? get continueCard => continueResponse?.data;
+
+  /// Active ads with locally-dismissed ones removed.
+  List<AdItem> get visibleAds =>
+      (adsResponse?.items ?? const <AdItem>[]).where((ad) => !dismissedAdIds.contains(ad.id)).toList();
+
+  /// Returns a copy with one section's [status] (and optional [error]) updated.
+  MyTestState copyWithStatus(String key, StateStatus status, {String? error}) => copyWith(
+    statuses: <String, StateStatus>{...statuses, key: status},
+    sectionErrors: <String, String?>{...sectionErrors, key: error},
+  );
+
   MyTestState copyWith({
     StateStatus? status,
     String? errorMessage,
@@ -75,6 +126,17 @@ class MyTestState extends Equatable {
     TestPurchaseData? purchaseData,
     String? purchaseErrorMessage,
     DemoTestDetail? exampleTestDetail,
+    Map<String, StateStatus>? statuses,
+    Map<String, String?>? sectionErrors,
+    HomeContinueResponse? continueResponse,
+    HomeActionsResponse? homeActions,
+    MyTestsPreviewResponse? myTestsPreview,
+    HomeActivityResponse? homeActivity,
+    FriendsRatingResponse? friendsRating,
+    ReferralSummaryResponse? referralSummary,
+    AdsResponse? adsResponse,
+    RecommendationsResponse? recommendations,
+    Set<String>? dismissedAdIds,
   }) => MyTestState(
     status: status ?? this.status,
     errorMessage: errorMessage ?? this.errorMessage,
@@ -99,6 +161,17 @@ class MyTestState extends Equatable {
     purchaseData: purchaseData ?? this.purchaseData,
     purchaseErrorMessage: purchaseErrorMessage ?? this.purchaseErrorMessage,
     exampleTestDetail: exampleTestDetail ?? this.exampleTestDetail,
+    statuses: statuses ?? this.statuses,
+    sectionErrors: sectionErrors ?? this.sectionErrors,
+    continueResponse: continueResponse ?? this.continueResponse,
+    homeActions: homeActions ?? this.homeActions,
+    myTestsPreview: myTestsPreview ?? this.myTestsPreview,
+    homeActivity: homeActivity ?? this.homeActivity,
+    friendsRating: friendsRating ?? this.friendsRating,
+    referralSummary: referralSummary ?? this.referralSummary,
+    adsResponse: adsResponse ?? this.adsResponse,
+    recommendations: recommendations ?? this.recommendations,
+    dismissedAdIds: dismissedAdIds ?? this.dismissedAdIds,
   );
 
   @override
@@ -126,5 +199,16 @@ class MyTestState extends Equatable {
     purchaseData,
     purchaseErrorMessage,
     exampleTestDetail,
+    statuses,
+    sectionErrors,
+    continueResponse,
+    homeActions,
+    myTestsPreview,
+    homeActivity,
+    friendsRating,
+    referralSummary,
+    adsResponse,
+    recommendations,
+    dismissedAdIds,
   ];
 }

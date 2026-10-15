@@ -11,9 +11,8 @@ class TestModeShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = context.x.isMobile || context.x.isTablet;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     Widget shimmerWrapper(Widget child) =>
         Shimmer.fromColors(baseColor: baseColor, highlightColor: highlightColor, child: child);
@@ -135,10 +134,10 @@ class TestModeShimmer extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.15),
+                                      color: context.x.colors.pureWhite.withValues(alpha: 0.15),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
+                                    child: Icon(Icons.school_rounded, color: context.x.colors.pureWhite, size: 22),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -223,9 +222,8 @@ class TestCustomModeShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = context.x.isMobile || context.x.isTablet;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     Widget shimmerWrapper(Widget child) =>
         Shimmer.fromColors(baseColor: baseColor, highlightColor: highlightColor, child: child);
@@ -294,7 +292,7 @@ class TestCustomModeShimmer extends StatelessWidget {
               Expanded(
                 child: Container(
                   height: 6,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(3)),
+                  decoration: BoxDecoration(color: context.x.colors.pureWhite, borderRadius: BorderRadius.circular(3)),
                 ),
               ),
               const ShimmerBox(width: 30, height: 16, radius: 4),
@@ -376,10 +374,10 @@ class TestCustomModeShimmer extends StatelessWidget {
                                         width: 44,
                                         height: 44,
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.15),
+                                          color: context.x.colors.pureWhite.withValues(alpha: 0.15),
                                           shape: BoxShape.circle,
                                         ),
-                                        child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
+                                        child: Icon(Icons.school_rounded, color: context.x.colors.pureWhite, size: 22),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -453,9 +451,8 @@ class HistoryAttemptShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == .dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     return Shimmer.fromColors(
       baseColor: baseColor,
@@ -510,9 +507,8 @@ class TestSolvingShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = context.x.isMobile || context.x.isTablet;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     Widget shimmerWrapper(Widget child) =>
         Shimmer.fromColors(baseColor: baseColor, highlightColor: highlightColor, child: child);
@@ -577,12 +573,7 @@ class TestSolvingShimmer extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: context.x.colors.cardBackground2,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? const Color(0x0F000000)
-                        : const Color(0x1FFFFFFF),
-                    width: 1,
-                  ),
+                  border: Border.all(color: context.x.colors.solvingWebCardBorder, width: 1),
                 ),
                 padding: const EdgeInsets.all(32),
                 child: questionContentShimmer(),
@@ -602,9 +593,8 @@ class TestQuestionContentShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
 
     Widget shimmerWrapper(Widget child) =>
         Shimmer.fromColors(baseColor: baseColor, highlightColor: highlightColor, child: child);

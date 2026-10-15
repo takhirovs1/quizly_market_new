@@ -7,6 +7,14 @@ extension ObjectJsonInt on Object? {
     if (v is num) return v.toInt();
     return int.tryParse(v.toString());
   }
+
+  /// JSON / dynamic map values → double, defaulting to 0 when null/unparseable.
+  double get toDoubleOrZero {
+    final v = this;
+    if (v == null) return 0;
+    if (v is num) return v.toDouble();
+    return double.tryParse(v.toString()) ?? 0;
+  }
 }
 
 extension NumberExtension on num {

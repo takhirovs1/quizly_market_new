@@ -22,9 +22,8 @@ class QuestionsCarouselShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.shimmerBase;
+    final highlightColor = context.x.colors.shimmerHighlight;
     final colors = context.x.colors;
 
     return Column(

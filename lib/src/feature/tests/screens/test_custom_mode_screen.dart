@@ -48,12 +48,8 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                         child: Shimmer.fromColors(
-                          baseColor: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFE2E8F0),
-                          highlightColor: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF475569)
-                              : const Color(0xFFF1F5F9),
+                          baseColor: context.x.colors.shimmerBase,
+                          highlightColor: context.x.colors.shimmerHighlight,
                           child: const ShimmerBox(width: double.infinity, height: 48, radius: 10),
                         ),
                       ),
@@ -438,12 +434,10 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                         return Wrap(
                           spacing: 28,
                           runSpacing: 16,
-                          children: attempts.map((attempt) {
-                            return SizedBox(
+                          children: attempts.map((attempt) => SizedBox(
                               width: cardWidth,
                               child: _AttemptItemWidget(attempt: attempt),
-                            );
-                          }).toList(),
+                            )).toList(),
                         );
                       },
                     ),
@@ -505,17 +499,17 @@ class _AttemptItemWidget extends StatelessWidget {
             _ResultInfoRow(
               leadingIcon: Assets.lib.images.correctIcon.image(package: 'ui'),
               leadingTitle: context.x.l10n.correctLabel,
-              trailingTitle: '$correct ta',
+              trailingTitle: context.x.l10n.countTaText(correct),
             ),
             _ResultInfoRow(
               leadingIcon: Assets.lib.images.wrongIcon.image(package: 'ui'),
               leadingTitle: context.x.l10n.wrongLabel,
-              trailingTitle: '$wrong ta',
+              trailingTitle: context.x.l10n.countTaText(wrong),
             ),
             _ResultInfoRow(
               leadingIcon: Assets.lib.images.timerIcon.image(package: 'ui'),
               leadingTitle: context.x.l10n.skippedLabel,
-              trailingTitle: '$skipped ta',
+              trailingTitle: context.x.l10n.countTaText(skipped),
             ),
             _ResultInfoRow(
               leadingIcon: Assets.lib.images.timer2Icon.image(package: 'ui'),
@@ -597,8 +591,11 @@ class _WebInfoCard extends StatelessWidget {
                 Container(
                   width: 44,
                   height: 44,
-                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), shape: BoxShape.circle),
-                  child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
+                  decoration: BoxDecoration(
+                    color: context.x.colors.pureWhite.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.school_rounded, color: context.x.colors.pureWhite, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -609,7 +606,7 @@ class _WebInfoCard extends StatelessWidget {
                       Text(
                         'QuizlyMarket',
                         style: context.x.textStyle.sfW600s16.copyWith(
-                          color: Colors.white,
+                          color: context.x.colors.pureWhite,
                           fontSize: 11,
                           letterSpacing: 0.8,
                         ),
@@ -617,7 +614,7 @@ class _WebInfoCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         context.x.l10n.enterTest,
-                        style: context.x.textStyle.sfW600s16.copyWith(color: Colors.white, fontSize: 13),
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.pureWhite, fontSize: 13),
                       ),
                     ],
                   ),

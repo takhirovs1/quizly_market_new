@@ -184,6 +184,11 @@ abstract class FileUploadState extends State<FileUploadScreen> {
 }
 
 class UZSFormatter extends TextInputFormatter {
+  UZSFormatter(this.currency);
+
+  /// Localized currency suffix appended after the formatted digits.
+  final String currency;
+
   final f = NumberFormat('#,###', 'uz');
 
   @override
@@ -191,11 +196,11 @@ class UZSFormatter extends TextInputFormatter {
     final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
     if (digits.isEmpty) return TextEditingValue.empty;
 
-    final text = "${f.format(int.parse(digits)).replaceAll(',', ' ')} so'm";
+    final text = '${f.format(int.parse(digits)).replaceAll(',', ' ')} $currency';
 
     return TextEditingValue(
       text: text,
-      selection: .collapsed(offset: text.length - 5),
+      selection: .collapsed(offset: text.length - currency.length - 1),
     );
   }
 }

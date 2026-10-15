@@ -103,7 +103,7 @@ class CustomNotification extends StatefulWidget {
     overlayEntry = OverlayEntry(
       builder: (context) => CustomNotification(
         message: message,
-        iconBackgroundColor: iconBackgroundColor ?? const Color(0xff040A14).withValues(alpha: 0.12),
+        iconBackgroundColor: iconBackgroundColor ?? context.x.colors.notificationIconBackground.withValues(alpha: 0.12),
         textStyle: textStyle ?? context.x.textStyle.w500s12.copyWith(color: context.x.colors.white),
         duration: duration ?? const Duration(seconds: 3),
         leadingIcon: leadingIcon,
@@ -184,16 +184,18 @@ class _CustomNotificationState extends State<CustomNotification> with SingleTick
                 child: SizedBox(
                   width: double.infinity,
                   child: Material(
-                    color: Colors.transparent,
+                    color: context.x.colors.transparent,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: widget.isError ? const Color(0xFFD92D20) : const Color(0xFF14C732),
+                        color: widget.isError
+                            ? context.x.colors.notificationError
+                            : context.x.colors.notificationSuccess,
                         borderRadius: widget.radius,
                         boxShadow: <BoxShadow>[
                           BoxShadow(
                             color: widget.isError
-                                ? const Color(0xFFD92D20).withValues(alpha: 0.24)
-                                : const Color(0xFF14C732).withValues(alpha: 0.24),
+                                ? context.x.colors.notificationError.withValues(alpha: 0.24)
+                                : context.x.colors.notificationSuccess.withValues(alpha: 0.24),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),

@@ -191,7 +191,11 @@ class _ManualUploadScreenState extends ManualUploadState {
         hintStyle: textStyle.sfW400s16.copyWith(color: colors.bannerSecondaryText),
         style: textStyle.sfW500s16.copyWith(color: colors.text),
         keyboardType: .number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9), UZSFormatter()],
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(9),
+          UZSFormatter(l10n.paymentCurrencySom),
+        ],
         fillColor: isDark ? colors.cardBackground2 : colors.buttonFill,
         enabledBorderColor: colors.transparent,
         borderColor: colors.primary,

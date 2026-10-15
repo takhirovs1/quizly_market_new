@@ -8,103 +8,218 @@ import 'package:ui/ui.dart';
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
 import '../../../common/util/error_util.dart';
+import '../../../common/util/helpers.dart';
+import '../../home/screen/home_screen.dart';
+import '../../sessions/data/session_repository.dart';
+import '../../sessions/widget/mistakes_picker_sheet.dart';
+import '../../sessions/widget/random_test_sheet.dart';
 import '../bloc/my_test_cubit.dart';
+import '../models/home/ads_model.dart';
+import '../models/home/home_continue_model.dart';
+import '../models/home/home_enums.dart';
+import '../models/home/my_tests_preview_model.dart';
+import '../models/home/recommendations_model.dart';
 import '../models/test_model.dart';
 import '../screen/my_tests_screen.dart';
+import '../widgets/home/flashcard_picker_sheet.dart';
 
 abstract class MyTestsScreenState extends State<MyTestsScreen> {
+  /// The free example test (reused from the existing demo flow).
+  static const String exampleTestId = 'a1d49775-0a29-435a-b145-93824979ab9f';
+
   static bool isSessionThunderEnabled = false;
-  Timer? _holdTimer;
 
   late final MyTestCubit myTestCubit;
   late final ScrollController scrollController;
-  late final TextEditingController searchController;
-  Timer? _debounceTimer;
-  var _isLoadingMore = false;
 
-  /// Max card width for list view mode (in logical pixels).
-  static const double maxCardWidth = 360;
+  /// Selected status for the "Mening testlarim" chips. `null` = "Barchasi".
+  /// Local, view-only filter over the loaded preview — tapping a chip never
+  /// navigates (the full list is reached via the "Barchasi ›" header link).
+  final ValueNotifier<MyTestStatus?> myTestsFilterNotifier = ValueNotifier<MyTestStatus?>(null);
 
-  /// Horizontal padding (left + right) applied to the grid/list.
-  static const double horizontalPadding = 32; // 16 * 2
-
-  /// Computes the adaptive layout for the list view mode.
-  ({int crossAxisCount, double mainAxisExtent}) computeListLayout(double screenWidth) {
-    final availableWidth = screenWidth - horizontalPadding;
-    final crossAxisCount = (availableWidth / maxCardWidth).floor().clamp(1, 10);
-    const mainAxisExtent = 185.0;
-    return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
-  }
+  Timer? _holdTimer;
 
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController()..addListener(_onScroll);
+    scrollController = ScrollController();
     myTestCubit = context.read<MyTestCubit>()
-      ..initialize()
-      ..getExampleTest('a1d49775-0a29-435a-b145-93824979ab9f');
-    searchController = TextEditingController()..addListener(_onSearchChanged);
-  }
-
-  void _onSearchChanged() {
-    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    final query = searchController.text.trim();
-    if (query.isNotEmpty && query.length <= 3) return;
-
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      myTestCubit.initialize(search: query);
-    });
-  }
-
-  void _onScroll() {
-    if (_isLoadingMore || !scrollController.hasClients) return;
-    final maxScroll = scrollController.position.maxScrollExtent;
-    final currentScroll = scrollController.position.pixels;
-    if (maxScroll - currentScroll <= 200) {
-      _isLoadingMore = true;
-      myTestCubit.getMyTests(loadMore: true).whenComplete(() => _isLoadingMore = false);
-    }
+      ..loadHome()
+      ..getExampleTest(exampleTestId);
   }
 
   @override
   void dispose() {
     _holdTimer?.cancel();
-    searchController.dispose();
-    _debounceTimer?.cancel();
     scrollController.dispose();
+    myTestsFilterNotifier.dispose();
     super.dispose();
-  }
-
-  void onBuyTestPressed(TestModel test) {
-    if (test.id == 'a1d49775-0a29-435a-b145-93824979ab9f' || test.isPurchased == true) {
-      context.octopus.push(Routes.testMode, arguments: <String, String>{'id': test.id?.toString() ?? ''});
-    } else {
-      context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': test.id?.toString() ?? ''});
-    }
   }
 
   Future<void> onRefresh() async {
     context.telegramWebApp.hapticImpact(.light);
-    await myTestCubit.initialize(search: searchController.text);
+    await myTestCubit.loadHome();
+    await myTestCubit.getExampleTest(exampleTestId);
   }
 
-  void onShareTestPressed(TestModel test) {
+  void onRetrySection(String sectionKey) => myTestCubit.retrySection(sectionKey);
+
+  // ── Navigation ─────────────────────────────────────────────────────────────
+  void _openPurchasedTest(String id) => context.octopus.push(Routes.testMode, arguments: <String, String>{'id': id});
+
+  void _openMarketTest(String id) => context.octopus.push(Routes.purchaseTest, arguments: <String, String>{'id': id});
+
+  void onContinue(ContinueCardData card) {
     context.telegramWebApp.hapticImpact(.light);
-    context.shareTest(
-      test.name ?? '',
-      (test.universityName?.isNotEmpty == true ? test.universityName : test.categoryName) ?? '',
-      test.description ?? '',
-      test.price?.toString() ?? '0',
-      test.questionCount?.toString() ?? '0',
-      code: test.code,
+    // The Continue hero is a test/exam/flashcard attempt (random/mistakes
+    // sessions are never surfaced here), so resuming re-opens the test's mode.
+    _openPurchasedTest(card.testId);
+  }
+
+  void onOpenPreviewTest(MyTestPreviewItem item) => _openPurchasedTest(item.testId);
+
+  void onExampleStart() {
+    context.telegramWebApp.hapticImpact(.light);
+    _openPurchasedTest(exampleTestId);
+  }
+
+  void onGoToMarket() {
+    // Switch the bottom-nav to the Market tab (RecommendationScreen = index 1).
+    final home = HomeScreen.maybeOf(context);
+    if (home != null) {
+      home.onTap(1);
+    } else {
+      context.octopus.push(Routes.moreRecommendation, arguments: <String, String>{'type': 'topTests'});
+    }
+  }
+
+  void onSeeAllMyTests() => context.octopus.push(Routes.allTests);
+
+  /// Select a "Mening testlarim" status chip. Toggling the active chip clears
+  /// back to "Barchasi". Local filter only — no navigation.
+  void onMyTestsFilter(MyTestStatus? status) {
+    context.telegramWebApp.hapticImpact(.light);
+    myTestsFilterNotifier.value = myTestsFilterNotifier.value == status ? null : status;
+  }
+
+  // ── Actions row ────────────────────────────────────────────────────────────
+  /// Figma "D · Random test flow": pick 10/20/30 questions in a sheet, then run
+  /// a `random` session over all purchased tests. Locked state leads to market.
+  void onRandomTest() {
+    context.telegramWebApp.hapticImpact(.light);
+    showRandomTestSheet(
+      context,
+      hasPurchased: myTestCubit.state.homeActions?.hasPurchasedTests ?? false,
+      onStart: (count) => context.octopus.push(
+        Routes.sessionRun,
+        arguments: <String, String>{'mode': 'random', 'count': '$count'},
+      ),
+      onGoToMarket: onGoToMarket,
     );
   }
 
-  void onLikeTestPressed(TestModel test) {
+  /// Figma "E · Mistakes flow": pick all mistakes or one test's in a sheet, then
+  /// run a `mistakes` session. Empty state when there is nothing to practise.
+  void onMistakes() {
     context.telegramWebApp.hapticImpact(.light);
-    myTestCubit.toggleLikeTest(test);
+    showMistakesPickerSheet(
+      context,
+      repository: SessionRepositoryImpl(apiClient: context.x.dependencies.apiClient),
+      onStart: (testId) => context.octopus.push(
+        Routes.sessionRun,
+        arguments: <String, String>{'mode': 'mistakes', 'testId': ?testId},
+      ),
+      onGoToMarket: onGoToMarket,
+    );
   }
 
+  /// Figma "F · Flashcard action": pick one of the user's tests in a sheet,
+  /// then continue into the existing flashcard setup for it. With no tests the
+  /// sheet shows an empty state that leads to the market.
+  void onFlashcard() {
+    context.telegramWebApp.hapticImpact(.light);
+    FlashcardPickerSheet.show(
+      context,
+      loadTests: _loadFlashcardTests,
+      onPick: (test) {
+        context.telegramWebApp.hapticImpact(.light);
+        context.octopus.push(Routes.testFlashcardMode, arguments: <String, String>{'id': test.id ?? ''});
+      },
+      onGoToMarket: onGoToMarket,
+    );
+  }
+
+  Future<List<TestModel>> _loadFlashcardTests() async {
+    final result = await myTestCubit.myTestRepository.getMyTests(TestModelRequest(limit: 50, offset: 0));
+    return result.items.where((t) => (t.id ?? '').isNotEmpty).toList();
+  }
+
+  // ── Friends ──────────────────────────────────────────────────────────────────
+  /// The friends card (invite CTA or the whole card) opens the Friends screen,
+  /// where the user manages requests, search, leaderboard and groups.
+  void onOpenFriends() {
+    context.telegramWebApp.hapticImpact(.light);
+    context.octopus.push(
+      Routes.friends,
+      arguments: <String, String>{'code': myTestCubit.state.referralSummary?.inviteCode ?? ''},
+    );
+  }
+
+  // ── Referral ─────────────────────────────────────────────────────────────────
+  /// Tapping the referral card body opens the full referral screen.
+  void onOpenReferral() {
+    context.telegramWebApp.hapticImpact(.light);
+    context.octopus.push(Routes.referral);
+  }
+
+  /// The referral card's "Ulashish" button shares the referral deep link.
+  void onShareReferral() {
+    context.telegramWebApp.hapticImpact(.light);
+    final code = myTestCubit.state.referralSummary?.inviteCode ?? '';
+    context.shareReferral(code);
+  }
+
+  /// Claim one referred friend's bonus; shows the server toast on success.
+  Future<void> onClaimReferral(String friendId) async {
+    context.telegramWebApp.hapticImpact(.light);
+    final rewardText = await myTestCubit.claimReferralFriend(friendId);
+    if (!mounted) return;
+    if (rewardText != null && rewardText.isNotEmpty) {
+      ErrorUtil.showSnackBar(context, rewardText);
+    }
+  }
+
+  // ── Ads ────────────────────────────────────────────────────────────────────
+  void onAdTap(AdItem ad) {
+    myTestCubit.trackAdClick(ad.id);
+    if (ad.ctaUrl.isNotEmpty) Helpers.launchUrl(ad.ctaUrl);
+  }
+
+  void onAdDismiss(AdItem ad) {
+    context.telegramWebApp.hapticImpact(.light);
+    myTestCubit.dismissAd(ad.id);
+  }
+
+  void onAdImpression(AdItem ad) => myTestCubit.trackAdImpression(ad.id);
+
+  // ── Recommendations ────────────────────────────────────────────────────────
+  void onRecommendationTap(RecommendationItem item) => _openMarketTest(item.testId);
+
+  void onToggleFavorite(RecommendationItem item) {
+    context.telegramWebApp.hapticImpact(.light);
+    myTestCubit.toggleRecommendationFavorite(item.testId);
+  }
+
+  void onOpenRating(String testId, {String name = '', String organizationName = ''}) {
+    context.telegramWebApp.hapticImpact(.light);
+    context.octopus.push(
+      Routes.testRating,
+      arguments: <String, String>{'id': testId, 'name': name, 'org': organizationName},
+    );
+  }
+
+  // ── Debug: title interactions ──────────────────────────────────────────────
+  // Holding the title for 5s opens the engineer password dialog.
   void onTitlePointerDown(PointerDownEvent event) {
     _holdTimer?.cancel();
     _holdTimer = Timer(const Duration(seconds: 5), () {
@@ -116,17 +231,11 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   void onTitlePointerUp(PointerUpEvent event) {
     _holdTimer?.cancel();
     _holdTimer = null;
-    if (!context.x.dependencies.appDebugSettings.value.debuggerEnabled) {
-      isSessionThunderEnabled = false;
-    }
   }
 
   void onTitlePointerCancel(PointerCancelEvent event) {
     _holdTimer?.cancel();
     _holdTimer = null;
-    if (!context.x.dependencies.appDebugSettings.value.debuggerEnabled) {
-      isSessionThunderEnabled = false;
-    }
   }
 
   void _showPasswordDialog() {
@@ -144,7 +253,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
             crossAxisAlignment: .stretch,
             children: [
               Text(
-                'Password',
+                context.x.l10n.password,
                 textAlign: .center,
                 style: context.x.textStyle.sfW700s28.copyWith(fontSize: 20, color: context.x.colors.dialogText),
               ),
@@ -157,7 +266,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
                 cursorColor: context.x.colors.primary,
                 style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.dialogText),
                 decoration: InputDecoration(
-                  hintText: 'Enter password',
+                  hintText: context.x.l10n.enterPassword,
                   hintStyle: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
                   filled: true,
                   fillColor: context.x.colors.textFieldBackground,
@@ -203,7 +312,10 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
                         padding: const .symmetric(vertical: 14),
                       ),
                       onPressed: () => _submitPassword(dialogContext, passwordController.text),
-                      child: Text('OK', style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white)),
+                      child: Text(
+                        context.x.l10n.ok,
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -230,7 +342,7 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
         debuggerEnabled: false,
         thunderEnabled: false,
       );
-      ErrorUtil.showSnackBar(context, 'Xato parol!');
+      ErrorUtil.showSnackBar(context, context.x.l10n.wrongPassword);
     }
   }
 }

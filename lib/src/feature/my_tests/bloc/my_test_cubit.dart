@@ -4,19 +4,34 @@ import '../../../common/util/app_enum.dart';
 import '../../../common/util/error_util.dart';
 import '../../../common/util/sequential_cubit.dart';
 import '../../../common/util/state_status.dart';
+import '../data/home_repository.dart';
 import '../data/my_test_repository.dart';
 import '../models/demo_test_model.dart';
+import '../models/home/ad_event_model.dart';
+import '../models/home/ads_model.dart';
+import '../models/home/friends_rating_model.dart';
+import '../models/home/home_actions_model.dart';
+import '../models/home/home_activity_model.dart';
+import '../models/home/home_continue_model.dart';
+import '../models/home/my_tests_preview_model.dart';
+import '../models/home/recommendations_model.dart';
+import '../models/home/referral_claim_model.dart';
+import '../models/home/referral_summary_model.dart';
 import '../models/test_checkout_model.dart';
 import '../models/test_model.dart';
 import '../models/test_purchase_model.dart';
 import '../models/wallet_model.dart';
 
+part 'my_test_cubit_home.dart';
 part 'my_test_state.dart';
 
-class MyTestCubit extends SequentialCubit<MyTestState> {
-  MyTestCubit({required this.myTestRepository}) : super(const MyTestState());
+class MyTestCubit extends SequentialCubit<MyTestState> with MyTestCubitHome {
+  MyTestCubit({required this.myTestRepository, required this.homeRepository}) : super(const MyTestState());
 
   final IMyTestRepository myTestRepository;
+
+  @override
+  final IHomeRepository homeRepository;
 
   Future<void> initialize({String? search, int limit = 20}) => handle<void>(
     (emit) async {

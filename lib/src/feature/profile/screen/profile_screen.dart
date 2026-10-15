@@ -209,7 +209,7 @@ class _ProfileScreenState extends ProfileScreenState {
                                                   children: [
                                                     if (user.telegramChatId != null) ...[
                                                       Text(
-                                                        'Telegram ID: ${user.telegramChatId}',
+                                                        context.x.l10n.profileTelegramId('${user.telegramChatId}'),
                                                         style: context.x.textStyle.sfW400s14.copyWith(
                                                           fontSize: phoneSize(layout.width),
                                                           color: context.x.colors.gray,
@@ -301,7 +301,7 @@ class _ProfileScreenState extends ProfileScreenState {
                   children: [
                     if (user?.premium != true)
                       ProfilePaymentCard(
-                        balance: user?.balance?.formatUzs ?? '0 UZS',
+                        balance: user?.balance?.formatUzs ?? '0 ${context.x.l10n.uzs}',
                         cardNumber: user?.paymentCode ?? '',
                         onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
                         isLoading: isShimmer,
@@ -491,7 +491,7 @@ class _ProfileScreenState extends ProfileScreenState {
                             if (user?.premium != true) ...[
                               const SizedBox(height: 20),
                               ProfilePaymentCard(
-                                balance: user?.balance?.formatUzs ?? '0 UZS',
+                                balance: user?.balance?.formatUzs ?? '0 ${context.x.l10n.uzs}',
                                 cardNumber: user?.paymentCode ?? '',
                                 onCopyCardNumber: () => onCopyCardNumber(user?.paymentCode ?? ''),
                                 isLoading: isShimmer,
@@ -576,10 +576,9 @@ class ProfileShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == .dark;
     return Shimmer.fromColors(
-      baseColor: isDark ? const Color(0x20FFFFFF) : const Color(0xFFE2E8F0),
-      highlightColor: isDark ? const Color(0x40FFFFFF) : const Color(0xFFF1F5F9),
+      baseColor: context.x.colors.shimmerBaseSoft,
+      highlightColor: context.x.colors.shimmerHighlightSoft,
       child: child,
     );
   }

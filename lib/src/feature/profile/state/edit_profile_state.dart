@@ -174,14 +174,14 @@ abstract class EditProfileState extends State<EditProfileScreen> {
           ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
           : MediaQuery.paddingOf(context).top + 56;
 
-      context.x.showNotification(message: 'Muvaffaqiyatli yuklandi', top: safeAreaTop);
+      context.x.showNotification(message: context.x.l10n.profileUploadSuccess, top: safeAreaTop);
     } catch (e) {
       if (!mounted) return;
       final safeAreaTop = context.telegramWebApp.isSupported
           ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
           : MediaQuery.paddingOf(context).top + 56;
 
-      context.x.showNotification(message: 'Xatolik: ${e.toString()}', top: safeAreaTop);
+      context.x.showNotification(message: context.x.l10n.profileErrorWithDetails(e.toString()), top: safeAreaTop);
     }
   }
 
@@ -211,14 +211,14 @@ abstract class EditProfileState extends State<EditProfileScreen> {
           ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
           : MediaQuery.paddingOf(context).top + 56;
 
-      context.x.showNotification(message: 'Muvaffaqiyatli yuklandi', top: safeAreaTop);
+      context.x.showNotification(message: context.x.l10n.profileUploadSuccess, top: safeAreaTop);
     } catch (e) {
       if (!mounted) return;
       final safeAreaTop = context.telegramWebApp.isSupported
           ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
           : MediaQuery.paddingOf(context).top + 56;
 
-      context.x.showNotification(message: 'Xatolik: ${e.toString()}', top: safeAreaTop);
+      context.x.showNotification(message: context.x.l10n.profileErrorWithDetails(e.toString()), top: safeAreaTop);
     }
   }
 
@@ -295,7 +295,7 @@ abstract class EditProfileState extends State<EditProfileScreen> {
           ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
           : MediaQuery.paddingOf(context).top + 56;
 
-      context.x.showNotification(message: 'Muvaffaqiyatli saqlandi', top: safeAreaTop);
+      context.x.showNotification(message: context.x.l10n.profileSaveSuccess, top: safeAreaTop);
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
@@ -303,7 +303,7 @@ abstract class EditProfileState extends State<EditProfileScreen> {
           ? context.telegramWebApp.safeAreaInset.top.toDouble() + 56
           : MediaQuery.paddingOf(context).top + 56;
 
-      context.x.showNotification(message: 'Xatolik: ${e.toString()}', top: safeAreaTop);
+      context.x.showNotification(message: context.x.l10n.profileErrorWithDetails(e.toString()), top: safeAreaTop);
     } finally {
       if (mounted) {
         setState(() => isSaving = false);
@@ -345,7 +345,10 @@ abstract class EditProfileState extends State<EditProfileScreen> {
                     ? screenContext.telegramWebApp.safeAreaInset.top.toDouble() + 56
                     : MediaQuery.paddingOf(screenContext).top + 56;
 
-                screenContext.x.showNotification(message: 'Xatolik: ${e.toString()}', top: safeAreaTop);
+                screenContext.x.showNotification(
+                  message: screenContext.x.l10n.profileErrorWithDetails(e.toString()),
+                  top: safeAreaTop,
+                );
               }
             },
           ),

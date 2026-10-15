@@ -85,10 +85,13 @@ class QuestionImageWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(6),
             child: DecoratedBox(
-              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.45), shape: BoxShape.circle),
-              child: const Padding(
-                padding: EdgeInsets.all(5),
-                child: Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 14, color: Colors.white),
+              decoration: BoxDecoration(
+                color: context.x.colors.pureBlack.withValues(alpha: 0.45),
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 14, color: context.x.colors.pureWhite),
               ),
             ),
           ),
@@ -100,7 +103,7 @@ class QuestionImageWidget extends StatelessWidget {
   void _openPreview(BuildContext context) => Navigator.of(context, rootNavigator: true).push(
     PageRouteBuilder<void>(
       opaque: false,
-      barrierColor: Colors.black.withValues(alpha: 0.9),
+      barrierColor: context.x.colors.pureBlack.withValues(alpha: 0.9),
       transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (_, animation, _) => FadeTransition(
         opacity: animation,
@@ -127,7 +130,7 @@ class _ImagePreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Colors.transparent,
+    backgroundColor: context.x.colors.transparent,
     body: Stack(
       children: [
         // Tap anywhere outside the image to dismiss.
@@ -142,7 +145,7 @@ class _ImagePreviewPage extends StatelessWidget {
               url,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) =>
-                  const Icon(CupertinoIcons.photo, color: Colors.white54, size: 64),
+                  Icon(CupertinoIcons.photo, color: context.x.colors.pureWhite.withValues(alpha: 0.54), size: 64),
             ),
           ),
         ),
@@ -160,7 +163,7 @@ class _ImagePreviewPage extends StatelessWidget {
                 bottom: 8,
               ),
               child: IconButton(
-                icon: const Icon(CupertinoIcons.xmark_circle_fill, color: Colors.white, size: 30),
+                icon: Icon(CupertinoIcons.xmark_circle_fill, color: context.x.colors.pureWhite, size: 30),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),

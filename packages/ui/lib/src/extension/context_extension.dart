@@ -14,4 +14,10 @@ extension type Build(BuildContext context) {
 
   /// [AppTypography] extension
   AppTypography get textStyle => theme.appTextStyles;
+
+  /// [HomeColors] extension — Home-screen design tokens
+  HomeColors get homeColors => theme.appHomeColors;
+
+  /// [isDarkMode] extension
+  bool get isDarkMode => theme.brightness == Brightness.dark;
 }

@@ -32,7 +32,7 @@ class DependenciesScope extends StatelessWidget {
       systemNavigationBarContrastEnforced: false,
     ),
     child: Material(
-      color: Colors.white,
+      color: context.x.colors.pureWhite,
       child: FutureBuilder<Dependencies>(
         future: initialization,
         builder: (context, snapshot) => AnimatedSwitcher(

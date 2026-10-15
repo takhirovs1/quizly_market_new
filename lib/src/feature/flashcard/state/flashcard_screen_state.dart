@@ -5,6 +5,7 @@ import 'package:octopus/octopus.dart';
 
 import '../../../common/extension/context_extension.dart';
 import '../../../common/router/pages.dart';
+import '../../tests/model/test_route_arguments.dart';
 import '../bloc/flashcard_cubit.dart';
 import '../model/flashcard_response_model.dart';
 import '../screens/flashcard_screen.dart';
@@ -95,6 +96,7 @@ abstract class FlashcardScreenState extends State<FlashcardScreen> {
       Routes.testResult,
       arguments: <String, String>{
         'id': state.testId,
+        'mode': TestResultMode.flashcard.value,
         'correct': state.knownIds.length.toString(),
         'wrong': state.unknownIds.length.toString(),
         'total': total.toString(),

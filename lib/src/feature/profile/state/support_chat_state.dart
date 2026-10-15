@@ -150,7 +150,7 @@ abstract class SupportChatState extends State<SupportChatScreen> {
   void _showAttachmentBottomSheet(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.x.colors.transparent,
       isScrollControlled: true,
       builder: (sheetContext) {
         final colors = context.x.colors;

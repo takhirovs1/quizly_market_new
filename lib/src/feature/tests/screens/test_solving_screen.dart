@@ -10,9 +10,9 @@ import '../../my_tests/models/test_init_enum.dart' hide TestMode;
 import '../bloc/test_view.dart';
 import '../model/test_route_arguments.dart';
 import '../state/test_solving_screen_state.dart';
-import '../widgets/solving_option_item_widget.dart';
 import '../widgets/latex_text_widget.dart';
 import '../widgets/question_image_widget.dart';
+import '../widgets/solving_option_item_widget.dart';
 import '../widgets/test_mode_shimmer.dart';
 
 class TestSolvingScreen extends StatefulWidget {
@@ -122,9 +122,8 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
       builder: (context, state) {
         if (state.detail == null || questions.isEmpty) {
           final isMobile = context.x.isMobile || context.x.isTablet;
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-          final baseColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-          final highlightColor = isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9);
+          final baseColor = context.x.colors.shimmerBase;
+          final highlightColor = context.x.colors.shimmerHighlight;
 
           return Scaffold(
             backgroundColor: context.x.colors.scaffoldBackground,
@@ -155,13 +154,11 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: Theme.of(context).brightness == Brightness.light
-                        ? [const Color(0xFFF8FAFC), const Color(0xFFEEF2F6)]
-                        : [const Color(0xFF090D16), const Color(0xFF151B2C)],
+                    colors: [context.x.colors.solvingWebGradientStart, context.x.colors.solvingWebGradientEnd],
                   ),
                 ),
                 child: Scaffold(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: context.x.colors.transparent,
                   body: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                     child: Center(
@@ -171,12 +168,7 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
                           decoration: BoxDecoration(
                             color: context.x.colors.cardBackground2,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: Theme.of(context).brightness == Brightness.light
-                                  ? const Color(0x0F000000)
-                                  : const Color(0x1FFFFFFF),
-                              width: 1,
-                            ),
+                            border: Border.all(color: context.x.colors.solvingWebCardBorder, width: 1),
                             boxShadow: [
                               BoxShadow(
                                 color: context.x.colors.black.withValues(
@@ -565,9 +557,9 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
       builder: (context, selected, _) {
         final isCorrect = selected?.isCorrect ?? false;
         final buttonColor = checked
-            ? (isCorrect ? const Color(0xFF43C04D) : const Color(0xFFE53935))
+            ? (isCorrect ? context.x.colors.answerCorrect : context.x.colors.answerWrong)
             : context.x.colors.buttonFill;
-        final textColor = checked ? Colors.white : context.x.colors.gray;
+        final textColor = checked ? context.x.colors.pureWhite : context.x.colors.gray;
 
         return SizedBox(
           width: double.infinity,
@@ -725,13 +717,13 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
 
     final option = q.options?.firstWhereOrNull((o) => o.id == selectedOptionId);
     final isCorrect = option?.isCorrect ?? false;
-    return isCorrect ? const Color(0xFF43C04D) : const Color(0xFFE53935);
+    return isCorrect ? context.x.colors.answerCorrect : context.x.colors.answerWrong;
   }
 
   Color _getQuestionBackgroundColor(int index, Color statusColor) {
     final isCurrent = index == currentQuestionIndex.value;
     if (index >= questions.length) {
-      return isCurrent ? statusColor.withValues(alpha: 0.12) : Colors.transparent;
+      return isCurrent ? statusColor.withValues(alpha: 0.12) : context.x.colors.transparent;
     }
 
     final q = questions[index];
@@ -740,6 +732,6 @@ class _TestSolvingScreenState extends TestSolvingScreenState {
     if (isCurrent || isAnswered) {
       return statusColor.withValues(alpha: 0.12);
     }
-    return Colors.transparent;
+    return context.x.colors.transparent;
   }
 }

@@ -112,20 +112,25 @@ class _PreferredAppBarSize extends Size {
 }
 
 class AppBarTypingIndicator extends StatelessWidget {
-  const AppBarTypingIndicator({required this.text, this.color = Colors.white, super.key});
+  const AppBarTypingIndicator({required this.text, this.color, super.key});
   final String text;
-  final Color color;
+
+  /// Defaults to [ThemeColors.pureWhite].
+  final Color? color;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(text, style: TextStyle(color: color, fontSize: 11)),
-      const SizedBox(width: 3),
-      AppBarBouncingDots(color: color),
-    ],
-  );
+  Widget build(BuildContext context) {
+    final effectiveColor = color ?? context.x.colors.pureWhite;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(text, style: TextStyle(color: effectiveColor, fontSize: 11)),
+        const SizedBox(width: 3),
+        AppBarBouncingDots(color: effectiveColor),
+      ],
+    );
+  }
 }
 
 class AppBarBouncingDots extends StatefulWidget {

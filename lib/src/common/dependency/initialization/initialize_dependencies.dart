@@ -21,7 +21,9 @@ import '../../../../core/telegram/telegram_service.dart';
 import '../../../feature/authentication/data/authentication_repository.dart';
 import '../../../feature/authentication/model/auth_token_response.dart';
 import '../../../feature/authentication/state/authentication_controller.dart';
+import '../../../feature/friends/data/friends_repository.dart';
 import '../../../feature/main/data/main_repository.dart';
+import '../../../feature/my_tests/data/home_repository.dart';
 import '../../../feature/my_tests/data/my_test_repository.dart';
 import '../../../feature/profile/data/profile_repository.dart';
 import '../../../feature/settings/bloc/settings_bloc.dart';
@@ -311,6 +313,9 @@ List<(String, _InitializationStep)> get _initializationSteps => <(String, _Initi
         ),
         mainRepository: MainRepositoryImpl(apiClient: dependencies.apiClient),
         myTestRepository: MyTestRepositoryImpl(apiClient: dependencies.apiClient),
+        // Home sections and Friends — live on the real backend (client-integration-v5.md).
+        homeRepository: HomeRepositoryImpl(apiClient: dependencies.apiClient),
+        friendsRepository: FriendsRepositoryImpl(apiClient: dependencies.apiClient),
         profileRepository: ProfileRepositoryImpl(apiClient: dependencies.apiClient),
         uploadRepository: UploadRepositoryImpl(apiClient: dependencies.apiClient),
       );

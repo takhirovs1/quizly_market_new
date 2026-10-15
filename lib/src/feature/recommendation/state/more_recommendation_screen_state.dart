@@ -46,6 +46,13 @@ abstract class MoreRecommendationScreenState extends State<MoreRecommendationScr
     return (crossAxisCount: crossAxisCount, mainAxisExtent: mainAxisExtent);
   }
 
+  /// "Mening testlarim" filter button. The filter sheet + chips (B2–B5, backed
+  /// by GET /me/tests/filters and the /me/tests query params) are the next task.
+  // TODO(B2–B5): open the My-tests filter sheet and apply subject/org/status/sort.
+  void onFilterPressed() {
+    context.telegramWebApp.hapticImpact(.light);
+  }
+
   void onSortPressed() {
     context.telegramWebApp.hapticImpact(.medium);
     showModalBottomSheet<void>(

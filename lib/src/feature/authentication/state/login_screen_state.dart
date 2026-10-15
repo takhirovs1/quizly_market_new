@@ -222,7 +222,7 @@ abstract class LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: .stretch,
             children: [
               Text(
-                'Password',
+                context.x.l10n.password,
                 textAlign: .center,
                 style: context.x.textStyle.sfW700s28.copyWith(fontSize: 20, color: context.x.colors.dialogText),
               ),
@@ -235,7 +235,7 @@ abstract class LoginScreenState extends State<LoginScreen> {
                 cursorColor: context.x.colors.primary,
                 style: context.x.textStyle.sfW500s16.copyWith(color: context.x.colors.dialogText),
                 decoration: InputDecoration(
-                  hintText: 'Enter password',
+                  hintText: context.x.l10n.enterPassword,
                   hintStyle: context.x.textStyle.sfW400s16.copyWith(color: context.x.colors.bannerSecondaryText),
                   filled: true,
                   fillColor: context.x.colors.textFieldBackground,
@@ -281,7 +281,10 @@ abstract class LoginScreenState extends State<LoginScreen> {
                         padding: const .symmetric(vertical: 14),
                       ),
                       onPressed: () => _submitPassword(dialogContext, passwordController.text),
-                      child: Text('OK', style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white)),
+                      child: Text(
+                        context.x.l10n.ok,
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -306,7 +309,7 @@ abstract class LoginScreenState extends State<LoginScreen> {
         debuggerEnabled: false,
         thunderEnabled: false,
       );
-      ErrorUtil.showSnackBar(context, 'Xato parol!');
+      ErrorUtil.showSnackBar(context, context.x.l10n.wrongPassword);
     }
   }
 

@@ -19,6 +19,8 @@ class TestResultArguments {
     this.lastAttemptTime,
     this.lastAttemptDate,
     this.lastAttemptSkip,
+    this.mode = TestResultMode.test,
+    this.xp,
   });
 
   factory TestResultArguments.fromArguments(Map<String, String> args) => TestResultArguments(
@@ -38,6 +40,8 @@ class TestResultArguments {
     lastAttemptTime: int.tryParse(args['lastAttemptTime'] ?? args['last_attempt_time'] ?? ''),
     lastAttemptDate: args['lastAttemptDate'] ?? args['last_attempt_date'],
     lastAttemptSkip: int.tryParse(args['lastAttemptSkip'] ?? args['last_attempt_skip'] ?? ''),
+    mode: TestResultMode.fromValue(args['mode']),
+    xp: int.tryParse(args['xp'] ?? ''),
   );
 
   final String testId;
@@ -57,8 +61,29 @@ class TestResultArguments {
   final String? lastAttemptDate;
   final int? lastAttemptSkip;
 
+  /// Which flow produced the result — drives "Qayta ishlash" and XP rules.
+  final TestResultMode mode;
+
+  /// XP earned, as returned by the server. `null` → estimated from docs §4.5.
+  final int? xp;
+
+  int get skipped => (total - correct - wrong).clamp(0, total);
+
+  int get scorePercent => total == 0 ? 0 : (correct * 100 / total).round();
+
+  /// Server XP when available, otherwise the docs §4.5 estimate:
+  /// +10 per correct answer, +50 when every question was answered.
+  /// Flashcards are self-graded and give no XP.
+  int get earnedXp {
+    if (xp != null) return xp!;
+    if (!mode.givesXp) return 0;
+    return correct * 10 + (total > 0 && skipped == 0 ? 50 : 0);
+  }
+
   Map<String, String> toArguments() => {
     'id': testId,
+    'mode': mode.value,
+    'xp': ?xp?.toString(),
     'correct': correct.toString(),
     'wrong': wrong.toString(),
     'total': total.toString(),
@@ -74,6 +99,32 @@ class TestResultArguments {
     'lastAttemptTime': ?lastAttemptTime?.toString(),
     'lastAttemptDate': ?lastAttemptDate,
     'lastAttemptSkip': ?lastAttemptSkip?.toString(),
+  };
+}
+
+/// Flow that produced a [TestResultArguments].
+enum TestResultMode {
+  test('test'),
+  university('university'),
+  flashcard('flashcard'),
+  random('random');
+
+  const TestResultMode(this.value);
+
+  final String value;
+
+  bool get givesXp => this != flashcard;
+
+  static TestResultMode fromValue(String? value) => switch (value?.toLowerCase()) {
+    'university' => university,
+    'flashcard' => flashcard,
+    'random' => random,
+    _ => test,
+  };
+
+  static TestResultMode fromTestMode(TestMode mode) => switch (mode) {
+    TestMode.university => university,
+    TestMode.custom => test,
   };
 }
 

@@ -262,13 +262,12 @@ class _FlashcardSetupScreenState extends FlashcardSetupScreenState {
   TextStyle _promptStyle(BuildContext context) => context.x.textStyle.sfW400s14.copyWith(color: context.x.colors.gray);
 
   Widget _buildShimmerButton(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Shimmer.fromColors(
-          baseColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-          highlightColor: isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9),
+          baseColor: context.x.colors.shimmerBase,
+          highlightColor: context.x.colors.shimmerHighlight,
           child: const ShimmerBox(width: double.infinity, height: 48, radius: 10),
         ),
       ),
@@ -276,10 +275,9 @@ class _FlashcardSetupScreenState extends FlashcardSetupScreenState {
   }
 
   Widget _buildShimmer(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-      highlightColor: isDark ? const Color(0xFF475569) : const Color(0xFFF1F5F9),
+      baseColor: context.x.colors.shimmerBase,
+      highlightColor: context.x.colors.shimmerHighlight,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         child: Column(

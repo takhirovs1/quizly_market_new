@@ -152,7 +152,7 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
     final min = minTestPrice;
     final suggested = suggestedSalePrice;
     final controller = TextEditingController(
-      text: currentSalePrice != null ? "${currentSalePrice!.splitPerThree} so'm" : '',
+      text: currentSalePrice != null ? '${currentSalePrice!.splitPerThree} ${context.x.l10n.paymentCurrencySom}' : '',
     );
     final errorText = ValueNotifier<String?>(null);
 
@@ -202,12 +202,12 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
               children: [
                 CustomTextFiled(
                   controller: controller,
-                  hintText: "${suggested.splitPerThree} so'm",
+                  hintText: '${suggested.splitPerThree} ${sheetContext.x.l10n.paymentCurrencySom}',
                   keyboardType: .number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(9),
-                    UZSFormatter(),
+                    UZSFormatter(sheetContext.x.l10n.paymentCurrencySom),
                   ],
                   style: sheetContext.x.textStyle.sfW500s16.copyWith(color: sheetContext.x.colors.text),
                   fillColor: sheetContext.x.colors.buttonFill,
@@ -232,8 +232,8 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
                 GestureDetector(
                   onTap: () {
                     controller
-                      ..text = "${suggested.splitPerThree} so'm"
-                      ..selection = .collapsed(offset: controller.text.length - 5);
+                      ..text = '${suggested.splitPerThree} ${sheetContext.x.l10n.paymentCurrencySom}'
+                      ..selection = .collapsed(offset: controller.text.length - sheetContext.x.l10n.paymentCurrencySom.length - 1);
                     errorText.value = null;
                   },
                   behavior: .opaque,

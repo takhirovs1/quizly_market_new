@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 
 import '../gen/fonts.gen.dart';
 import 'colors.dart';
+import 'home_colors.dart';
 import 'typography.dart';
 
+export 'color_hex.dart';
 export 'colors.dart';
+export 'home_colors.dart';
 export 'typography.dart';
 
 /// {@template theme}
@@ -35,6 +38,12 @@ extension AutoThemeExtension on ThemeData {
         Brightness.light => AppTypography.textThemeLight,
         Brightness.dark => AppTypography.textThemeDark,
       };
+
+  /// Home-screen design tokens, selected by brightness.
+  HomeColors get appHomeColors => switch (brightness) {
+    Brightness.light => HomeColors.light,
+    Brightness.dark => HomeColors.dark,
+  };
 }
 
 // --- Light Theme --- //

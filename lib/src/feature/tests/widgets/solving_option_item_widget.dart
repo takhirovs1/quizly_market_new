@@ -25,18 +25,18 @@ class SolvingOptionItemWidget extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Default states
-    Color backgroundColor = isDark ? colors.scaffoldBackground : const Color(0xFFF8F9FA);
-    Color borderColor = isDark ? colors.divider : colors.gray.withValues(alpha: 0.2);
-    Color textColor = colors.text;
+    var backgroundColor = context.x.colors.optionBackground;
+    var borderColor = isDark ? colors.divider : colors.gray.withValues(alpha: 0.2);
+    var textColor = colors.text;
 
     // When the answer is checked (submitted)
     if (isChecked) {
       if (option.isCorrect ?? false) {
-        backgroundColor = isDark ? const Color(0xFF163C24) : const Color(0xFFE8F5E9);
-        borderColor = const Color(0xFF43C04D); // Success Green
+        backgroundColor = context.x.colors.optionCorrectBackground;
+        borderColor = context.x.colors.answerCorrect; // Success Green
       } else if (isSelected) {
-        backgroundColor = isDark ? const Color(0xFF3B1E1E) : const Color(0xFFFFEBEE);
-        borderColor = const Color(0xFFE53935); // Error Red
+        backgroundColor = context.x.colors.optionWrongBackground;
+        borderColor = context.x.colors.answerWrong; // Error Red
       }
     } else {
       // Selected state before check
@@ -52,7 +52,7 @@ class SolvingOptionItemWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       child: Material(
-        color: Colors.transparent,
+        color: context.x.colors.transparent,
         child: InkWell(
           onTap: isChecked ? null : onTap,
           borderRadius: BorderRadius.circular(12),
@@ -106,21 +106,21 @@ class SolvingOptionItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildIndicator(BuildContext context, dynamic colors, bool isDark) {
+  Widget _buildIndicator(BuildContext context, colors, bool isDark) {
     if (isChecked) {
       if (option.isCorrect ?? false) {
         return Container(
           width: 22,
           height: 22,
-          decoration: const BoxDecoration(color: Color(0xFF43C04D), shape: BoxShape.circle),
-          child: const Icon(Icons.check, color: Colors.white, size: 14),
+          decoration: BoxDecoration(color: context.x.colors.answerCorrect, shape: BoxShape.circle),
+          child: Icon(Icons.check, color: context.x.colors.pureWhite, size: 14),
         );
       } else if (isSelected) {
         return Container(
           width: 22,
           height: 22,
-          decoration: const BoxDecoration(color: Color(0xFFE53935), shape: BoxShape.circle),
-          child: const Icon(Icons.close, color: Colors.white, size: 14),
+          decoration: BoxDecoration(color: context.x.colors.answerWrong, shape: BoxShape.circle),
+          child: Icon(Icons.close, color: context.x.colors.pureWhite, size: 14),
         );
       }
     }
@@ -136,7 +136,7 @@ class SolvingOptionItemWidget extends StatelessWidget {
           color: isSelected ? context.x.colors.primary : context.x.colors.gray.withValues(alpha: 0.4),
           width: isSelected ? 6 : 2,
         ),
-        color: isSelected ? Colors.white : Colors.transparent,
+        color: isSelected ? context.x.colors.pureWhite : context.x.colors.transparent,
       ),
     );
   }

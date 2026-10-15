@@ -71,7 +71,7 @@ class CustomBottomSheet extends StatelessWidget {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => Navigator.of(context).maybePop(),
-            child: const ColoredBox(color: Colors.transparent),
+            child: ColoredBox(color: context.x.colors.transparent),
           ),
         ),
         Align(

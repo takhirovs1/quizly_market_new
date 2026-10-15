@@ -50,7 +50,8 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
   void onSelectAmount(String amount) {
     context.telegramWebApp.hapticImpact(TelegramHapticImpact.light);
     final digits = amount.replaceAll(RegExp(r'\D'), '');
-    final formatted = "${NumberFormat('#,###', 'uz').format(int.parse(digits)).replaceAll(',', ' ')} so'm";
+    final amountFormatted = NumberFormat('#,###', 'uz').format(int.parse(digits)).replaceAll(',', ' ');
+    final formatted = '$amountFormatted ${context.x.l10n.paymentCurrencySom}';
 
     amountController.text = formatted;
     selectedAmount.value = digits;
@@ -152,6 +153,11 @@ abstract class PaymentScreenState extends State<PaymentScreen> {
 }
 
 class UZSFormatter extends TextInputFormatter {
+  UZSFormatter({this.suffix = "so'm"});
+
+  /// Localized currency suffix appended after the formatted amount.
+  final String suffix;
+
   final f = NumberFormat('#,###', 'uz');
 
   @override
@@ -159,11 +165,11 @@ class UZSFormatter extends TextInputFormatter {
     final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
     if (digits.isEmpty) return .empty;
 
-    final text = "${f.format(int.parse(digits)).replaceAll(',', ' ')} so'm";
+    final text = '${f.format(int.parse(digits)).replaceAll(',', ' ')} $suffix';
 
     return TextEditingValue(
       text: text,
-      selection: .collapsed(offset: text.length - 5),
+      selection: .collapsed(offset: text.length - suffix.length - 1),
     );
   }
 }

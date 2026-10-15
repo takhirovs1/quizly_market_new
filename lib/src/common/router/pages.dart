@@ -6,10 +6,18 @@ import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/authentication/screen/session_screen.dart';
 import '../../feature/authentication/screen/verify_otp_screen.dart';
+import '../../feature/friends/bloc/friends_cubit.dart';
+import '../../feature/friends/screen/friends_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
+import '../../feature/my_tests/bloc/all_tests_cubit.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
+import '../../feature/my_tests/screen/all_tests_screen.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
+import '../../feature/sessions/bloc/session_cubit.dart';
+import '../../feature/sessions/data/session_repository.dart';
+import '../../feature/sessions/model/session_models.dart';
+import '../../feature/sessions/screen/session_runner_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
 import '../../feature/profile/bloc/support_chat_cubit.dart';
 import '../../feature/profile/data/support_chat_repository.dart';
@@ -24,6 +32,7 @@ import '../../feature/profile/screen/support_chat_screen.dart';
 import '../../feature/recommendation/bloc/recommendation_cubit.dart';
 import '../../feature/recommendation/data/recommendation_repository.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
+import '../../feature/tests/bloc/test_rating_cubit.dart';
 import '../../feature/tests/bloc/test_view.dart';
 import '../../feature/tests/data/test_view_repository.dart';
 import '../../feature/tests/model/test_request_response_models.dart';
@@ -37,6 +46,7 @@ import '../../feature/flashcard/screens/flashcard_screen.dart';
 import '../../feature/flashcard/screens/flashcard_setup_screen.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
+import '../../feature/tests/screens/test_rating_screen.dart';
 import '../../feature/tests/screens/test_result_screen.dart';
 import '../../feature/tests/screens/test_solving_screen.dart';
 import '../../feature/tests/screens/test_university_mode_screen.dart';
@@ -57,6 +67,7 @@ enum Routes with OctopusRoute {
   purchaseTest('purchaseTest', title: 'PurchaseTest'),
   payment('payment', title: 'Payment'),
   referral('referral', title: 'Referral'),
+  friends('friends', title: 'Friends'),
   appInfo('appInfo', title: 'App Info'),
   paymentHistory('paymentHistory', title: 'Payment History'),
   appDocuments('appDocuments', title: 'App Documents'),
@@ -68,6 +79,9 @@ enum Routes with OctopusRoute {
   flashcardSession('flashcardSession', title: 'Flashcard Session'),
   flashcardResult('flashcardResult', title: 'Flashcard Result'),
   testResult('testResult', title: 'Test Result'),
+  testRating('testRating', title: 'Test Rating'),
+  allTests('allTests', title: 'All Tests'),
+  sessionRun('sessionRun', title: 'Session'),
   supportChat('supportChat', title: 'Support Chat'),
   testSolving('testSolving', title: 'Test Solving'),
   archive('archive', title: 'Archive'),
@@ -101,7 +115,12 @@ enum Routes with OctopusRoute {
     ),
     Routes.home => MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository)),
+        BlocProvider(
+          create: (_) => MyTestCubit(
+            myTestRepository: context.x.dependencies.repository.myTestRepository,
+            homeRepository: context.x.dependencies.repository.homeRepository,
+          ),
+        ),
         BlocProvider(
           create: (_) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
         ),
@@ -123,7 +142,10 @@ enum Routes with OctopusRoute {
     .moreRecommendation => MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
+          create: (context) => MyTestCubit(
+            myTestRepository: context.x.dependencies.repository.myTestRepository,
+            homeRepository: context.x.dependencies.repository.homeRepository,
+          ),
         ),
         BlocProvider(
           create: (context) => RecommendationCubit(
@@ -136,7 +158,10 @@ enum Routes with OctopusRoute {
       ),
     ),
     .purchaseTest => BlocProvider(
-      create: (context) => MyTestCubit(myTestRepository: context.x.dependencies.repository.myTestRepository),
+      create: (context) => MyTestCubit(
+        myTestRepository: context.x.dependencies.repository.myTestRepository,
+        homeRepository: context.x.dependencies.repository.homeRepository,
+      ),
       child: PurchaseTestScreen(testId: node.arguments['id'] ?? ''),
     ),
     .payment => BlocProvider(
@@ -146,6 +171,10 @@ enum Routes with OctopusRoute {
     .referral => BlocProvider(
       create: (context) => ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository),
       child: const ReferralScreen(),
+    ),
+    .friends => BlocProvider(
+      create: (context) => FriendsCubit(repository: context.x.dependencies.repository.friendsRepository),
+      child: FriendsScreen(inviteCode: node.arguments['code'] ?? ''),
     ),
     .paymentHistory => BlocProvider(
       create: (context) =>
@@ -185,6 +214,31 @@ enum Routes with OctopusRoute {
       create: (context) =>
           TestView(testViewRepository: TestViewRepositoryImpl(apiClient: context.x.dependencies.apiClient)),
       child: TestResultScreen(arguments: TestResultArguments.fromArguments(node.arguments)),
+    ),
+    .testRating => BlocProvider(
+      create: (context) =>
+          TestRatingCubit(repository: context.x.dependencies.repository.homeRepository)
+            ..load(node.arguments['id'] ?? ''),
+      child: TestRatingScreen(
+        testName: node.arguments['name'] ?? '',
+        organizationName: node.arguments['org'] ?? '',
+      ),
+    ),
+    .allTests => BlocProvider(
+      create: (context) => AllTestsCubit(repository: context.x.dependencies.repository.homeRepository),
+      child: const AllTestsScreen(),
+    ),
+    .sessionRun => BlocProvider(
+      create: (context) {
+        final mode = node.arguments['mode'] ?? 'random';
+        final testId = node.arguments['testId'];
+        final request = mode == 'mistakes'
+            ? StartSessionRequest.mistakes(testId: (testId?.isNotEmpty ?? false) ? testId : null)
+            : StartSessionRequest.random(int.tryParse(node.arguments['count'] ?? '') ?? 20);
+        return SessionCubit(repository: SessionRepositoryImpl(apiClient: context.x.dependencies.apiClient))
+          ..start(request);
+      },
+      child: const SessionRunnerScreen(),
     ),
     .testSolving => BlocProvider(
       create: (context) {

@@ -107,6 +107,9 @@ class $LibIconGen {
   /// File path: lib/icon/close.svg
   SvgGenImage get close => const SvgGenImage('lib/icon/close.svg');
 
+  /// File path: lib/icon/close_sheet.svg
+  SvgGenImage get closeSheet => const SvgGenImage('lib/icon/close_sheet.svg');
+
   /// File path: lib/icon/copy_id.svg
   SvgGenImage get copyId => const SvgGenImage('lib/icon/copy_id.svg');
 
@@ -142,6 +145,15 @@ class $LibIconGen {
 
   /// File path: lib/icon/filter.svg
   SvgGenImage get filter => const SvgGenImage('lib/icon/filter.svg');
+
+  /// File path: lib/icon/flashcard_deco_1.svg
+  SvgGenImage get flashcardDeco1 => const SvgGenImage('lib/icon/flashcard_deco_1.svg');
+
+  /// File path: lib/icon/flashcard_deco_2.svg
+  SvgGenImage get flashcardDeco2 => const SvgGenImage('lib/icon/flashcard_deco_2.svg');
+
+  /// File path: lib/icon/flashcard_deco_3.svg
+  SvgGenImage get flashcardDeco3 => const SvgGenImage('lib/icon/flashcard_deco_3.svg');
 
   /// File path: lib/icon/flashcards.svg
   SvgGenImage get flashcards => const SvgGenImage('lib/icon/flashcards.svg');
@@ -194,6 +206,9 @@ class $LibIconGen {
   /// File path: lib/icon/market.svg
   SvgGenImage get market => const SvgGenImage('lib/icon/market.svg');
 
+  /// File path: lib/icon/mistakes.svg
+  SvgGenImage get mistakes => const SvgGenImage('lib/icon/mistakes.svg');
+
   /// File path: lib/icon/party.svg
   SvgGenImage get party => const SvgGenImage('lib/icon/party.svg');
 
@@ -223,6 +238,9 @@ class $LibIconGen {
 
   /// File path: lib/icon/share.svg
   SvgGenImage get share => const SvgGenImage('lib/icon/share.svg');
+
+  /// File path: lib/icon/shuffle.svg
+  SvgGenImage get shuffle => const SvgGenImage('lib/icon/shuffle.svg');
 
   /// File path: lib/icon/sort.svg
   SvgGenImage get sort => const SvgGenImage('lib/icon/sort.svg');
@@ -285,6 +303,7 @@ class $LibIconGen {
     checkTickIcon,
     chevronRight,
     close,
+    closeSheet,
     copyId,
     correct,
     desktop,
@@ -297,6 +316,9 @@ class $LibIconGen {
     feedback,
     fileIcon,
     filter,
+    flashcardDeco1,
+    flashcardDeco2,
+    flashcardDeco3,
     flashcards,
     google,
     group,
@@ -314,6 +336,7 @@ class $LibIconGen {
     like,
     logout,
     market,
+    mistakes,
     party,
     person,
     personSelected,
@@ -324,6 +347,7 @@ class $LibIconGen {
     search,
     setHome,
     share,
+    shuffle,
     sort,
     strong,
     successDialog,
@@ -493,96 +517,60 @@ class $LibImagesGen {
 class $LibLottieGen {
   const $LibLottieGen();
 
-  /// File path: lib/lottie/book.json
-  String get book => 'lib/lottie/book.json';
+  /// File path: lib/lottie/add_friends.json
+  String get addFriends => 'lib/lottie/add_friends.json';
 
-  /// File path: lib/lottie/circle_star.json
-  String get circleStar => 'lib/lottie/circle_star.json';
+  /// File path: lib/lottie/archive.json
+  String get archive => 'lib/lottie/archive.json';
 
-  /// File path: lib/lottie/clock.json
-  String get clock => 'lib/lottie/clock.json';
+  /// File path: lib/lottie/book_collection.json
+  String get bookCollection => 'lib/lottie/book_collection.json';
 
-  /// File path: lib/lottie/correct.json
-  String get correct => 'lib/lottie/correct.json';
+  /// File path: lib/lottie/check.json
+  String get check => 'lib/lottie/check.json';
 
-  /// File path: lib/lottie/correct2.json
-  String get correct2 => 'lib/lottie/correct2.json';
+  /// File path: lib/lottie/cup.json
+  String get cup => 'lib/lottie/cup.json';
 
-  /// File path: lib/lottie/diamond.json
-  String get diamond => 'lib/lottie/diamond.json';
+  /// File path: lib/lottie/delete.json
+  String get delete => 'lib/lottie/delete.json';
 
-  /// File path: lib/lottie/error.json
-  String get error => 'lib/lottie/error.json';
+  /// File path: lib/lottie/fire.json
+  String get fire => 'lib/lottie/fire.json';
 
-  /// File path: lib/lottie/error2.json
-  String get error2 => 'lib/lottie/error2.json';
+  /// File path: lib/lottie/lamp.json
+  String get lamp => 'lib/lottie/lamp.json';
 
-  /// File path: lib/lottie/filter.json
-  String get filter => 'lib/lottie/filter.json';
+  /// File path: lib/lottie/prise.json
+  String get prise => 'lib/lottie/prise.json';
 
-  /// File path: lib/lottie/fire_emoji.json
-  String get fireEmoji => 'lib/lottie/fire_emoji.json';
+  /// File path: lib/lottie/progress.json
+  String get progress => 'lib/lottie/progress.json';
 
-  /// File path: lib/lottie/hourglass.json
-  String get hourglass => 'lib/lottie/hourglass.json';
-
-  /// File path: lib/lottie/incorrect.json
-  String get incorrect => 'lib/lottie/incorrect.json';
-
-  /// File path: lib/lottie/laptop.json
-  String get laptop => 'lib/lottie/laptop.json';
-
-  /// File path: lib/lottie/linkcopy.json
-  String get linkcopy => 'lib/lottie/linkcopy.json';
-
-  /// File path: lib/lottie/loading.json
-  String get loading => 'lib/lottie/loading.json';
-
-  /// File path: lib/lottie/loading2.json
-  String get loading2 => 'lib/lottie/loading2.json';
-
-  /// File path: lib/lottie/money.json
-  String get money => 'lib/lottie/money.json';
-
-  /// File path: lib/lottie/party.json
-  String get party => 'lib/lottie/party.json';
-
-  /// File path: lib/lottie/phone.json
-  String get phone => 'lib/lottie/phone.json';
+  /// File path: lib/lottie/revert.json
+  String get revert => 'lib/lottie/revert.json';
 
   /// File path: lib/lottie/share.json
   String get share => 'lib/lottie/share.json';
 
-  /// File path: lib/lottie/strong.json
-  String get strong => 'lib/lottie/strong.json';
-
-  /// File path: lib/lottie/timer.json
-  String get timer => 'lib/lottie/timer.json';
+  /// File path: lib/lottie/urgent.json
+  String get urgent => 'lib/lottie/urgent.json';
 
   /// List of all assets
   List<String> get values => [
-    book,
-    circleStar,
-    clock,
-    correct,
-    correct2,
-    diamond,
-    error,
-    error2,
-    filter,
-    fireEmoji,
-    hourglass,
-    incorrect,
-    laptop,
-    linkcopy,
-    loading,
-    loading2,
-    money,
-    party,
-    phone,
+    addFriends,
+    archive,
+    bookCollection,
+    check,
+    cup,
+    delete,
+    fire,
+    lamp,
+    prise,
+    progress,
+    revert,
     share,
-    strong,
-    timer,
+    urgent,
   ];
 }
 

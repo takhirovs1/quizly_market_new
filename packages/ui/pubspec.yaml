@@ -11,6 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # workspace
+  localization:
+    path: ../localization
+
   intl: any
   meta: any
   collection: any

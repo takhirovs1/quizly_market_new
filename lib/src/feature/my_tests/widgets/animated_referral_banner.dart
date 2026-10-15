@@ -18,13 +18,16 @@ class AnimatedReferralBanner extends StatefulWidget {
 class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-  static const _gradientColors = [
-    Color(0xffD4FF00),
-    Color(0xff8FFF3A),
-    Color(0xff1BFF72),
-    Color(0xff8FFF3A),
-    Color(0xffD4FF00),
-  ];
+  List<Color> _gradientColors(BuildContext context) {
+    final colors = context.x.colors;
+    return [
+      colors.referralBannerLime,
+      colors.referralBannerGreen,
+      colors.referralBannerMint,
+      colors.referralBannerGreen,
+      colors.referralBannerLime,
+    ];
+  }
 
   @override
   void initState() {
@@ -56,7 +59,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
           return DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: _gradientColors,
+                colors: _gradientColors(context),
                 stops: stops,
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
@@ -80,7 +83,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                       Row(
                         spacing: 8,
                         children: [
-                          Lottie.asset(Assets.lib.lottie.fireEmoji, width: 36, height: 36, package: 'ui'),
+                          Lottie.asset(Assets.lib.lottie.fire, width: 36, height: 36, package: 'ui'),
                           Expanded(
                             child: Text(
                               context.x.l10n.referralBannerTitle,
@@ -104,7 +107,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                   ),
                 )
               else ...[
-                Lottie.asset(Assets.lib.lottie.fireEmoji, width: 36, height: 36, package: 'ui'),
+                Lottie.asset(Assets.lib.lottie.fire, width: 36, height: 36, package: 'ui'),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Column(

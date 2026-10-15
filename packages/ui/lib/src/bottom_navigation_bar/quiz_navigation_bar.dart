@@ -65,7 +65,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
     final effectiveShadow = isFloating
         ? [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: context.x.colors.pureBlack.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
               spreadRadius: 2,
@@ -73,7 +73,7 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
           ]
         : [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: context.x.colors.pureBlack.withValues(alpha: 0.08),
               blurRadius: 30,
               offset: const Offset(0, -10),
               spreadRadius: -5,
@@ -93,8 +93,8 @@ class _QuizNavigationBarState extends State<QuizNavigationBar> {
           selectedIndex: selectedIndex,
           onDestinationSelected: onItemTapped,
           backgroundColor: context.x.colors.dialogBackground,
-          indicatorColor: Colors.transparent,
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          indicatorColor: context.x.colors.transparent,
+          overlayColor: WidgetStateProperty.all(context.x.colors.transparent),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return context.x.textStyle.sfW500s14.copyWith(color: context.x.colors.bottomNavigationBarSelectedColor);

@@ -47,12 +47,8 @@ class _TestUniversityModeScreenState extends TestUniversityModeScreenState {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                         child: Shimmer.fromColors(
-                          baseColor: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFE2E8F0),
-                          highlightColor: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF475569)
-                              : const Color(0xFFF1F5F9),
+                          baseColor: context.x.colors.shimmerBase,
+                          highlightColor: context.x.colors.shimmerHighlight,
                           child: const ShimmerBox(width: double.infinity, height: 48, radius: 10),
                         ),
                       ),
@@ -383,8 +379,11 @@ class _WebInfoCard extends StatelessWidget {
                 Container(
                   width: 44,
                   height: 44,
-                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), shape: BoxShape.circle),
-                  child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
+                  decoration: BoxDecoration(
+                    color: context.x.colors.pureWhite.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.school_rounded, color: context.x.colors.pureWhite, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -395,7 +394,7 @@ class _WebInfoCard extends StatelessWidget {
                       Text(
                         'QuizlyMarket',
                         style: context.x.textStyle.sfW600s16.copyWith(
-                          color: Colors.white,
+                          color: context.x.colors.pureWhite,
                           fontSize: 11,
                           letterSpacing: 0.8,
                         ),
@@ -403,7 +402,7 @@ class _WebInfoCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         context.x.l10n.enterTest,
-                        style: context.x.textStyle.sfW600s16.copyWith(color: Colors.white, fontSize: 13),
+                        style: context.x.textStyle.sfW600s16.copyWith(color: context.x.colors.pureWhite, fontSize: 13),
                       ),
                     ],
                   ),

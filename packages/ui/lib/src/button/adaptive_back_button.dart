@@ -21,7 +21,7 @@ class _AdaptiveBackButtonState extends State<AdaptiveBackButton> {
       HapticsService.selectionClick();
       widget.onTap();
     },
-    tooltip: 'Back',
+    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
     // icon: Assets.lib.vectors.icChevronLeft.svg(
     //   package: 'ui',
     //   colorFilter: ColorFilter.mode(Theme.of(context).appColors.onSecondary, BlendMode.srcIn),

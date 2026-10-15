@@ -50,8 +50,11 @@ class TestDescriptionWidget extends StatelessWidget {
           if (onPressArchive != null)
             IconButton(
               onPressed: onPressArchive,
-              icon: Icon(
-                test.isArchived == true ? Icons.unarchive_outlined : Icons.archive_outlined,
+              icon: QuizLottieIcon(
+                test.isArchived == true ? QuizLottie.revert : QuizLottie.archive,
+                key: ValueKey(test.isArchived),
+                size: 24,
+                repeat: false,
                 color: context.x.colors.text,
               ),
             ),

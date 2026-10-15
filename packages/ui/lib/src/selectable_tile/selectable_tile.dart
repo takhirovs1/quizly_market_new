@@ -18,7 +18,7 @@ class SelectableTile extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
     child: DecoratedBox(
-      decoration: BoxDecoration(color: ThemeColors.light.white, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: ThemeColors.of(context).white, borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsetsGeometry.symmetric(horizontal: 24, vertical: 12),
         child: Row(

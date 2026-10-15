@@ -168,7 +168,7 @@ class _ArchiveTestCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
                 child: Text(
-                  'Delete',
+                  context.x.l10n.delete,
                   style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.text),
                 ),
               ),
@@ -181,7 +181,7 @@ class _ArchiveTestCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
                 child: Text(
-                  'Unarchive',
+                  context.x.l10n.archiveUnarchive,
                   style: context.x.textStyle.sfW500s16.copyWith(fontSize: 15, color: context.x.colors.white),
                 ),
               ),

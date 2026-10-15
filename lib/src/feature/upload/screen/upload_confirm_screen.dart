@@ -177,7 +177,7 @@ class _UploadConfirmScreenState extends UploadConfirmState {
                           style: textStyle.sfW500s14.copyWith(color: colors.text),
                         ),
                         TextSpan(
-                          text: "$perPrice so'm",
+                          text: '$perPrice ${l10n.paymentCurrencySom}',
                           style: textStyle.sfW500s14.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
                         ),
                       ],
@@ -381,7 +381,7 @@ class _UploadConfirmScreenState extends UploadConfirmState {
                                     style: textStyle.sfW500s14.copyWith(color: colors.text),
                                   ),
                                   TextSpan(
-                                    text: "$perPrice so'm",
+                                    text: '$perPrice ${l10n.paymentCurrencySom}',
                                     style: textStyle.sfW500s14.copyWith(
                                       color: colors.primary,
                                       fontWeight: FontWeight.w700,

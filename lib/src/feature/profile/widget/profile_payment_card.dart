@@ -21,9 +21,8 @@ class ProfilePaymentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == .dark;
-    final baseColor = isDark ? const Color(0x40FFFFFF) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0x60FFFFFF) : const Color(0xFFF1F5F9);
+    final baseColor = context.x.colors.paymentCardShimmerBase;
+    final highlightColor = context.x.colors.paymentCardShimmerHighlight;
 
     return Padding(
       padding: padding,
