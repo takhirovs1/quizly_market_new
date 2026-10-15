@@ -110,10 +110,8 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     showRandomTestSheet(
       context,
       hasPurchased: myTestCubit.state.homeActions?.hasPurchasedTests ?? false,
-      onStart: (count) => context.octopus.push(
-        Routes.sessionRun,
-        arguments: <String, String>{'mode': 'random', 'count': '$count'},
-      ),
+      onStart: (count) =>
+          context.octopus.push(Routes.sessionRun, arguments: <String, String>{'mode': 'random', 'count': '$count'}),
       onGoToMarket: onGoToMarket,
     );
   }
@@ -125,10 +123,8 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
     showMistakesPickerSheet(
       context,
       repository: SessionRepositoryImpl(apiClient: context.x.dependencies.apiClient),
-      onStart: (testId) => context.octopus.push(
-        Routes.sessionRun,
-        arguments: <String, String>{'mode': 'mistakes', 'testId': ?testId},
-      ),
+      onStart: (testId) =>
+          context.octopus.push(Routes.sessionRun, arguments: <String, String>{'mode': 'mistakes', 'testId': ?testId}),
       onGoToMarket: onGoToMarket,
     );
   }
@@ -155,14 +151,21 @@ abstract class MyTestsScreenState extends State<MyTestsScreen> {
   }
 
   // ── Friends ──────────────────────────────────────────────────────────────────
-  /// The friends card (invite CTA or the whole card) opens the Friends screen,
-  /// where the user manages requests, search, leaderboard and groups.
+  /// The friends card's invite CTA opens the Friends screen, where the user
+  /// manages requests, search, leaderboard and groups.
   void onOpenFriends() {
     context.telegramWebApp.hapticImpact(.light);
     context.octopus.push(
       Routes.friends,
       arguments: <String, String>{'code': myTestCubit.state.referralSummary?.inviteCode ?? ''},
     );
+  }
+
+  /// The friends card's "Reyting ›" opens the full weekly XP leaderboard
+  /// (Figma "G5 · Leaderboard", Do‘stlar / Umumiy tabs).
+  void onOpenLeaderboard() {
+    context.telegramWebApp.hapticImpact(.light);
+    context.octopus.push(Routes.leaderboard);
   }
 
   // ── Referral ─────────────────────────────────────────────────────────────────

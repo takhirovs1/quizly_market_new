@@ -76,10 +76,7 @@ class _AllTestsScreenState extends State<AllTestsScreen> {
             final searching = sel.search.isNotEmpty;
             return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: _searchRow(context, sel),
-                ),
+                Padding(padding: const EdgeInsets.fromLTRB(16, 12, 16, 8), child: _searchRow(context, sel)),
                 if (!searching)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -104,7 +101,11 @@ class _AllTestsScreenState extends State<AllTestsScreen> {
           child: Container(
             height: 44,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(color: hc.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: hc.border)),
+            decoration: BoxDecoration(
+              color: hc.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: hc.border),
+            ),
             child: Row(
               children: [
                 Icon(Icons.search_rounded, size: 20, color: hc.text3),
@@ -141,7 +142,11 @@ class _AllTestsScreenState extends State<AllTestsScreen> {
           child: Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(color: hc.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: hc.border)),
+            decoration: BoxDecoration(
+              color: hc.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: hc.border),
+            ),
             child: Stack(
               children: [
                 Center(child: Assets.lib.icon.filter.svg(width: 20, height: 20, package: 'ui')),
@@ -149,7 +154,11 @@ class _AllTestsScreenState extends State<AllTestsScreen> {
                   Positioned(
                     right: 8,
                     top: 8,
-                    child: Container(width: 8, height: 8, decoration: BoxDecoration(color: hc.primary, shape: BoxShape.circle)),
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(color: hc.primary, shape: BoxShape.circle),
+                    ),
                   ),
               ],
             ),
@@ -189,10 +198,18 @@ class _AllTestsScreenState extends State<AllTestsScreen> {
     final hc = context.x.homeColors;
     final l10n = context.x.l10n;
     final sel = state.selection;
-    String subjectName(String id) =>
-        state.options.subjects.firstWhere((s) => s.id == id, orElse: () => FilterOption(id: id, name: id, count: 0)).name;
-    String orgName(String id) =>
-        state.options.organizations.firstWhere((o) => o.id == id, orElse: () => FilterOption(id: id, name: id, count: 0)).name;
+    String subjectName(String id) => state.options.subjects
+        .firstWhere(
+          (s) => s.id == id,
+          orElse: () => FilterOption(id: id, name: id, count: 0),
+        )
+        .name;
+    String orgName(String id) => state.options.organizations
+        .firstWhere(
+          (o) => o.id == id,
+          orElse: () => FilterOption(id: id, name: id, count: 0),
+        )
+        .name;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Wrap(
@@ -200,7 +217,8 @@ class _AllTestsScreenState extends State<AllTestsScreen> {
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          for (final id in sel.subjectIds) _RemovableChip(label: subjectName(id), onRemove: () => _cubit.removeSubject(id)),
+          for (final id in sel.subjectIds)
+            _RemovableChip(label: subjectName(id), onRemove: () => _cubit.removeSubject(id)),
           for (final id in sel.orgIds) _RemovableChip(label: orgName(id), onRemove: () => _cubit.removeOrg(id)),
           GestureDetector(
             onTap: _cubit.clearSheetFilters,

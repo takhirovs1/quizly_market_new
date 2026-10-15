@@ -47,4 +47,7 @@ final class Urls {
   static const String meTestsFilters = '/api/me/tests/filters';
   static String testRating(String id) => '/api/tests/$id/rating';
   static const String xpRules = '/api/xp/rules';
+
+  /// Global weekly XP leaderboard (the "Umumiy" tab).
+  static const String leaderboard = '/api/leaderboard';
 }

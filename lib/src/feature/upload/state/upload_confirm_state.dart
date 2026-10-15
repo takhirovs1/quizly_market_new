@@ -233,7 +233,9 @@ abstract class UploadConfirmState extends State<UploadConfirmScreen> {
                   onTap: () {
                     controller
                       ..text = '${suggested.splitPerThree} ${sheetContext.x.l10n.paymentCurrencySom}'
-                      ..selection = .collapsed(offset: controller.text.length - sheetContext.x.l10n.paymentCurrencySom.length - 1);
+                      ..selection = .collapsed(
+                        offset: controller.text.length - sheetContext.x.l10n.paymentCurrencySom.length - 1,
+                      );
                     errorText.value = null;
                   },
                   behavior: .opaque,

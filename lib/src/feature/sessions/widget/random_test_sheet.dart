@@ -86,12 +86,7 @@ class _RandomSheetState extends State<_RandomSheet> {
         const SizedBox(height: 10),
         _Segmented(counts: _counts, selected: _count, onSelect: (c) => setState(() => _count = c)),
         const SizedBox(height: 20),
-        QuizButton(
-          label: l10n.randomStart,
-          size: QuizButtonSize.l,
-          expand: true,
-          onTap: () => widget.onStart(_count),
-        ),
+        QuizButton(label: l10n.randomStart, size: QuizButtonSize.l, expand: true, onTap: () => widget.onStart(_count)),
       ],
     );
   }

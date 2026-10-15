@@ -54,10 +54,11 @@ class _MistakesSheetState extends State<_MistakesSheet> {
   Future<void> _load() async {
     try {
       final summary = await widget.repository.mistakesSummary();
-      if (mounted) setState(() {
-        _summary = summary;
-        _loading = false;
-      });
+      if (mounted)
+        setState(() {
+          _summary = summary;
+          _loading = false;
+        });
     } on Object {
       if (mounted) setState(() => _loading = false);
     }
@@ -70,7 +71,6 @@ class _MistakesSheetState extends State<_MistakesSheet> {
     final summary = _summary;
     final isEmpty = !_loading && (summary == null || summary.total == 0);
     return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
       decoration: BoxDecoration(
         color: hc.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -90,17 +90,30 @@ class _MistakesSheetState extends State<_MistakesSheet> {
               const SizedBox(height: 12),
               Text(l10n.mistakesSheetTitle, style: quizText(17, wBold, hc.text)),
               const SizedBox(height: 16),
-              if (_loading)
-                const Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator.adaptive())
-              else if (isEmpty)
-                _empty(context)
-              else
-                _content(context, summary!),
+              // Open at a steady size, then grow smoothly once the summary loads
+              // instead of snapping from a tiny spinner to the full list.
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+                  child: _body(context, isEmpty: isEmpty, summary: summary),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _body(BuildContext context, {required bool isEmpty, required MistakesSummary? summary}) {
+    if (_loading) {
+      return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator.adaptive()));
+    }
+    if (isEmpty) return _empty(context);
+    return _content(context, summary!);
   }
 
   Widget _empty(BuildContext context) {
@@ -120,7 +133,13 @@ class _MistakesSheetState extends State<_MistakesSheet> {
         const SizedBox(height: 6),
         Text(l10n.mistakesEmptyDesc, textAlign: TextAlign.center, style: quizText(14, wRegular, hc.text3, height: 1.4)),
         const SizedBox(height: 20),
-        QuizButton(label: l10n.homeGoToMarket, type: QuizButtonType.tonal, size: QuizButtonSize.l, expand: true, onTap: widget.onGoToMarket),
+        QuizButton(
+          label: l10n.homeGoToMarket,
+          type: QuizButtonType.tonal,
+          size: QuizButtonSize.l,
+          expand: true,
+          onTap: widget.onGoToMarket,
+        ),
       ],
     );
   }
@@ -144,12 +163,7 @@ class _MistakesSheetState extends State<_MistakesSheet> {
           ),
         ),
         const SizedBox(height: 16),
-        QuizButton(
-          label: l10n.retryTest,
-          size: QuizButtonSize.l,
-          expand: true,
-          onTap: () => widget.onStart(_selected),
-        ),
+        QuizButton(label: l10n.retryTest, size: QuizButtonSize.l, expand: true, onTap: () => widget.onStart(_selected)),
       ],
     );
   }
@@ -172,12 +186,7 @@ class _MistakesSheetState extends State<_MistakesSheet> {
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: quizText(15, wSemibold, hc.text),
-              ),
+              child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(15, wSemibold, hc.text)),
             ),
             const SizedBox(width: 8),
             Text(l10n.mistakesCountLabel(count), style: quizText(13, wSemibold, colors.answerWrong)),

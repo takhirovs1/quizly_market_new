@@ -205,7 +205,10 @@ final class HomeRepositoryImpl implements IHomeRepository {
   @override
   Future<MyTestsPreviewResponse> getMyTests(MyTestsFilterSelection filter, {int page = 1, int limit = 20}) async {
     try {
-      final response = await apiClient.get(Urls.meTests, queryParameters: filter.toQuery(page: page, limit: limit));
+      final response = await apiClient.get(
+        Urls.meTests,
+        queryParameters: filter.toQuery(page: page, limit: limit),
+      );
       return MyTestsPreviewResponse.fromJson(response);
     } catch (e, s) {
       info('MY TESTS LIST API ERROR: $e $s');

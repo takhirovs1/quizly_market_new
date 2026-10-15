@@ -2,27 +2,20 @@ import 'package:ui/ui.dart';
 
 import '../../../../common/extension/context_extension.dart';
 import '../../models/home/referral_summary_model.dart';
-import 'home_time.dart';
 
-/// Home "Referral Card" — per-friend claimable bonuses (docs §4.9).
+/// Home "Referral Card" (Figma "G · Referral Card") — a compact summary of the
+/// user's referral progress toward the next milestone tier.
 ///
-/// Each friend who joined via the user's link is a separately-claimable bonus.
-/// Tapping the card body opens the full referral screen ([onOpenAll]); the
-/// "Ulashish" button shares the referral link ([onShare]); each friend row has
-/// its own "Olish" button ([onClaim]). All money comes from the API as display
-/// strings (never hardcoded; amount-free on iOS).
+/// The card body is milestone-based: a gift, the per-friend reward, a "Taklif"
+/// share button, and a segmented progress bar toward the next tier. Tapping the
+/// card opens the full referral screen ([onOpenAll]) where per-friend bonuses
+/// and milestones are actually claimed. All money arrives from the API as
+/// display strings (amount-free on iOS).
 class ReferralCard extends StatelessWidget {
-  const ReferralCard({
-    required this.data,
-    required this.onShare,
-    required this.onClaim,
-    required this.onOpenAll,
-    super.key,
-  });
+  const ReferralCard({required this.data, required this.onShare, required this.onOpenAll, super.key});
 
   final ReferralSummaryResponse data;
   final VoidCallback onShare;
-  final void Function(String friendId) onClaim;
   final VoidCallback onOpenAll;
 
   static LinearGradient _orangeGradient(ThemeColors c) => LinearGradient(
@@ -42,14 +35,9 @@ class ReferralCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hc = context.x.homeColors;
     final colors = context.x.colors;
-    final l10n = context.x.l10n;
     final isDark = context.x.isDarkMode;
-
-    final friends = data.friends;
-    final shown = friends.take(3).toList();
-    final unclaimed = data.unclaimedCount;
+    final milestone = data.currentMilestone;
 
     return GestureDetector(
       onTap: onOpenAll,
@@ -60,67 +48,106 @@ class ReferralCard extends StatelessWidget {
           gradient: isDark ? _darkGradient(colors) : _orangeGradient(colors),
           borderRadius: BorderRadius.circular(20),
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Row(
-              children: [
-                _GiftTile(),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        unclaimed > 0 ? l10n.homeReferralBonusReady(unclaimed) : l10n.homeReferralTitle,
-                        style: quizText(15, wBold, hc.text),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Flexible(child: Text(l10n.homeReferralPerFriend, style: quizText(13, wRegular, hc.text2))),
-                          const SizedBox(width: 4),
-                          Text(data.perFriendReward ?? '', style: quizText(13, wSemibold, hc.orangeAccent)),
-                        ],
-                      ),
-                    ],
+            // Figma "Glow" decoration → native radial highlight (top-left).
+            Positioned(
+              left: -30,
+              top: -40,
+              child: IgnorePointer(
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        colors.pureWhite.withValues(alpha: isDark ? 0.10 : 0.55),
+                        colors.pureWhite.withValues(alpha: 0),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                QuizButton(
-                  label: l10n.homeReferralShareCta,
-                  type: QuizButtonType.dark,
-                  leadingLottie: QuizLottie.share,
-                  size: QuizButtonSize.s,
-                  onTap: onShare,
-                ),
-              ],
+              ),
             ),
-            if (shown.isEmpty) ...[
-              const SizedBox(height: 12),
-              Text(l10n.homeReferralInviteHint, style: quizText(12, wRegular, hc.text3)),
-            ] else ...[
-              const SizedBox(height: 14),
-              for (var i = 0; i < shown.length; i++) ...[
-                if (i > 0) const SizedBox(height: 8),
-                _FriendRow(friend: shown[i], onClaim: onClaim),
-              ],
-              if (data.joinedCount > shown.length) ...[
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text(l10n.homeReferralSeeAll(data.joinedCount), style: quizText(13, wSemibold, hc.primary)),
-                    Icon(Icons.chevron_right_rounded, size: 18, color: hc.primary),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TopRow(data: data, onShare: onShare),
+                  if (milestone != null && milestone.required > 0) ...[
+                    const SizedBox(height: 14),
+                    _Milestone(milestone: milestone, joined: data.joinedCount),
+                  ] else ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      context.x.l10n.homeReferralInviteHint,
+                      style: quizText(12, wRegular, context.x.homeColors.text3),
+                    ),
                   ],
-                ),
-              ],
-            ],
+                ],
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TopRow extends StatelessWidget {
+  const _TopRow({required this.data, required this.onShare});
+  final ReferralSummaryResponse data;
+  final VoidCallback onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final hc = context.x.homeColors;
+    final l10n = context.x.l10n;
+    final reward = data.perFriendReward;
+    return Row(
+      children: [
+        _GiftTile(),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.homeReferralTitle,
+                style: quizText(15, wBold, hc.text),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      l10n.homeReferralPerFriend,
+                      style: quizText(13, wRegular, hc.text2),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (reward != null && reward.isNotEmpty) ...[
+                    const SizedBox(width: 4),
+                    Text(reward, style: quizText(13, wSemibold, hc.orangeAccent)),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        QuizButton(
+          label: l10n.homeReferralInviteShort,
+          type: QuizButtonType.dark,
+          size: QuizButtonSize.s,
+          onTap: onShare,
+        ),
+      ],
     );
   }
 }
@@ -150,50 +177,107 @@ class _GiftTile extends StatelessWidget {
   }
 }
 
-class _FriendRow extends StatelessWidget {
-  const _FriendRow({required this.friend, required this.onClaim});
-  final ReferralFriend friend;
-  final void Function(String friendId) onClaim;
+/// The milestone line ("2 / 5 do‘st · 5-chi do‘stga +X bonus") plus the
+/// segmented progress bar. When the tier is reached but unclaimed it swaps to a
+/// "goal reached" prompt; the card tap opens the full screen to claim.
+class _Milestone extends StatelessWidget {
+  const _Milestone({required this.milestone, required this.joined});
+  final ReferralMilestone milestone;
+  final int joined;
 
   @override
   Widget build(BuildContext context) {
     final hc = context.x.homeColors;
     final l10n = context.x.l10n;
-    final accent = colorFromHex(friend.color, fallback: hc.purple);
-    final subtitle = friend.joinedAt != null ? homeRelativeTime(context, friend.joinedAt) : friend.rewardText;
+    final required = milestone.required;
+    final filled = joined.clamp(0, required);
+    final reward = milestone.rewardText;
+    final rewardHasAmount = reward.contains(RegExp(r'\d'));
 
+    if (milestone.claimable) {
+      return Row(
+        children: [
+          const Text('🎉', style: TextStyle(fontSize: 15)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              l10n.homeReferralReachedTitle,
+              style: quizText(13, wSemibold, hc.text),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text('${l10n.homeReferralClaimCta} ›', style: quizText(13, wSemibold, hc.orangeAccent)),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(l10n.homeReferralMilestone(filled, required), style: quizText(12, wSemibold, hc.text2)),
+            const Spacer(),
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      l10n.homeReferralNextMilestone(required),
+                      style: quizText(12, wRegular, hc.text3),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (reward.isNotEmpty) ...[
+                    const SizedBox(width: 4),
+                    Text(reward, style: quizText(12, wSemibold, hc.orangeAccent)),
+                  ],
+                  if (rewardHasAmount) ...[
+                    const SizedBox(width: 4),
+                    Text(l10n.homeReferralBonusSuffix, style: quizText(12, wRegular, hc.text3)),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _Segments(total: required, filled: filled),
+      ],
+    );
+  }
+}
+
+class _Segments extends StatelessWidget {
+  const _Segments({required this.total, required this.filled});
+  final int total;
+  final int filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final fill = context.x.homeColors.orangeAccent;
+    final empty = colors.pureWhite.withValues(alpha: context.x.isDarkMode ? 0.14 : 0.7);
+
+    // Discrete segments, one per friend to the goal (Figma) — never a single
+    // bar. Tighter gap for larger tiers (10/25) so the segments stay crisp.
+    final count = total.clamp(1, 30);
+    final gap = count > 12 ? 2.0 : 4.0;
     return Row(
       children: [
-        QuizInitialAvatar(
-          initial: friend.name.isNotEmpty ? friend.name.substring(0, 1).toUpperCase() : '•',
-          color: accent,
-          background: accent.withValues(alpha: 0.15),
-          size: 40,
-          borderColor: hc.surface,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(friend.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(14, wSemibold, hc.text)),
-              const SizedBox(height: 2),
-              Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(12, wRegular, hc.text3)),
-            ],
+        for (var i = 0; i < count; i++) ...[
+          if (i > 0) SizedBox(width: gap),
+          Expanded(
+            child: Container(
+              height: 6,
+              decoration: BoxDecoration(color: i < filled ? fill : empty, borderRadius: BorderRadius.circular(3)),
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        if (friend.claimed)
-          QuizPill(text: '✓ ${l10n.homeReferralClaimedShort}', background: hc.successTint, foreground: hc.success)
-        else if (friend.claimable)
-          QuizButton(
-            label: l10n.homeReferralClaimShort,
-            type: QuizButtonType.success,
-            size: QuizButtonSize.s,
-            onTap: () => onClaim(friend.id),
-          )
-        else
-          Text(friend.rewardText, style: quizText(13, wSemibold, hc.text3)),
+        ],
       ],
     );
   }

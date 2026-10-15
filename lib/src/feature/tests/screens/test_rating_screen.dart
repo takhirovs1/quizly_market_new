@@ -113,7 +113,12 @@ class TestRatingScreen extends StatelessWidget {
         Row(
           children: [
             Flexible(
-              child: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(13, wRegular, hc.text3)),
+              child: Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: quizText(13, wRegular, hc.text3),
+              ),
             ),
             const SizedBox(width: 6),
             QuizPill(
@@ -180,7 +185,6 @@ class _PodiumPlace extends StatelessWidget {
   Widget build(BuildContext context) {
     final hc = context.x.homeColors;
     final colors = context.x.colors;
-    final l10n = context.x.l10n;
     final (Color top, Color bottom, double height) = switch (place) {
       1 => (colors.podiumGoldTop, colors.podiumGoldBottom, 84.0),
       2 => (colors.podiumSilverTop, colors.podiumSilverBottom, 60.0),
@@ -201,12 +205,7 @@ class _PodiumPlace extends StatelessWidget {
         else ...[
           _podiumAvatar(context, entry!, avatarSize, medal),
           const SizedBox(height: 6),
-          Text(
-            entry!.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: quizText(14, wSemibold, hc.text),
-          ),
+          Text(entry!.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(14, wSemibold, hc.text)),
           const SizedBox(height: 2),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -293,7 +292,10 @@ class _RatingRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(width: 28, child: Text('${entry.rank}', textAlign: TextAlign.center, style: quizText(15, wBold, rankColor))),
+          SizedBox(
+            width: 28,
+            child: Text('${entry.rank}', textAlign: TextAlign.center, style: quizText(15, wBold, rankColor)),
+          ),
           const SizedBox(width: 12),
           QuizInitialAvatar(
             initial: entry.initial,

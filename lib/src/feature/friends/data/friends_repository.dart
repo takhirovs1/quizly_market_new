@@ -1,6 +1,7 @@
 import '../../../common/constant/urls.dart';
 import '../../../common/service/api_client.dart';
 import '../../../common/util/logger.dart';
+import '../../tests/model/xp_rules_model.dart';
 import '../models/friend_requests_model.dart';
 import '../models/friends_discovery_model.dart';
 import '../models/friends_group_model.dart';
@@ -27,6 +28,13 @@ abstract interface class IFriendsRepository {
   Future<FriendsSuggestionsResponse> getSuggestions(FriendsSuggestionsRequest request);
   Future<FriendsSearchResponse> search(FriendsSearchRequest request);
   Future<FriendsLeaderboardResponse> getLeaderboard(FriendsLeaderboardRequest request);
+
+  /// GET /leaderboard — the global weekly XP board (the "Umumiy" tab).
+  Future<FriendsLeaderboardResponse> getGlobalLeaderboard();
+
+  /// GET /xp/rules — the "XP qanday yig'iladi?" sheet content.
+  Future<XpRulesResponse> getXpRules();
+
   Future<FriendsGroupsResponse> getGroups(FriendsGroupsRequest request);
   Future<SendFriendRequestResponse> sendRequest(SendFriendRequestRequest request);
   Future<FriendRequestActionResponse> acceptRequest(FriendRequestActionRequest request);
@@ -90,6 +98,20 @@ final class FriendsRepositoryImpl implements IFriendsRepository {
     'FRIENDS LEADERBOARD API ERROR',
     () async => FriendsLeaderboardResponse.fromJson(await apiClient.get(Urls.friendsLeaderboard)),
     const FriendsLeaderboardResponse(),
+  );
+
+  @override
+  Future<FriendsLeaderboardResponse> getGlobalLeaderboard() => _readOrEmpty(
+    'GLOBAL LEADERBOARD API ERROR',
+    () async => FriendsLeaderboardResponse.fromJson(await apiClient.get(Urls.leaderboard)),
+    const FriendsLeaderboardResponse(),
+  );
+
+  @override
+  Future<XpRulesResponse> getXpRules() => _readOrEmpty(
+    'XP RULES API ERROR',
+    () async => XpRulesResponse.fromJson(await apiClient.get(Urls.xpRules)),
+    const XpRulesResponse(),
   );
 
   @override

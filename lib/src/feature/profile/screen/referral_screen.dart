@@ -7,6 +7,7 @@ import '../../../common/extension/context_extension.dart';
 import '../../../common/util/state_status.dart';
 import '../bloc/profile_cubit.dart';
 import '../model/referral_model.dart';
+import '../model/referral_summary_model.dart';
 import '../state/referral_screen_state.dart';
 
 final NumberFormat _amountFormat = NumberFormat('#,###');
@@ -66,8 +67,7 @@ class _ReferralScreenState extends ReferralScreenState {
                           return _ReferralTab(
                             referralLink: '${Constant.miniAppUrl}?startapp=r${state.user?.referralCode ?? ''}',
                             onCopy: onLinkCopy,
-                            totalReferrals: summary.totalReferrals,
-                            totalEarned: summary.totalEarned,
+                            summary: summary,
                           );
                         },
                       ),
@@ -164,17 +164,11 @@ class _ReferralTabBar extends StatelessWidget {
 }
 
 class _ReferralTab extends StatelessWidget {
-  const _ReferralTab({
-    required this.referralLink,
-    required this.onCopy,
-    required this.totalReferrals,
-    required this.totalEarned,
-  });
+  const _ReferralTab({required this.referralLink, required this.onCopy, required this.summary});
 
   final String referralLink;
   final VoidCallback onCopy;
-  final int totalReferrals;
-  final int totalEarned;
+  final ReferralSummary summary;
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +177,12 @@ class _ReferralTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
-        // 1. Stats
+        // 1. Hero — gift, invite headline, per-friend reward and the segmented
+        // milestone progress (same design language as the home referral card).
+        _HeroCard(summary: summary),
+        const SizedBox(height: 16),
+
+        // 2. Stats
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -193,7 +192,7 @@ class _ReferralTab extends StatelessWidget {
                   icon: QuizLottie.addFriends,
                   accent: hc.primary,
                   tint: hc.primaryTint,
-                  value: '$totalReferrals',
+                  value: '${summary.totalReferrals}',
                   label: l10n.invitedFriends,
                 ),
               ),
@@ -203,7 +202,7 @@ class _ReferralTab extends StatelessWidget {
                   icon: QuizLottie.progress,
                   accent: hc.success,
                   tint: hc.successTint,
-                  value: '${_formatAmount(totalEarned)} so‘m',
+                  value: '${_formatAmount(summary.totalEarned)} so‘m',
                   label: l10n.earnedBonus,
                 ),
               ),
@@ -212,7 +211,7 @@ class _ReferralTab extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // 2. How it works
+        // 3. How it works
         _Card(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +239,7 @@ class _ReferralTab extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        // 3. Referral link
+        // 4. Referral link
         _FieldLabel(l10n.referralLinkLabel),
         Container(
           padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
@@ -268,7 +267,7 @@ class _ReferralTab extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        // 4. Share text preview
+        // 5. Share text preview
         _FieldLabel(l10n.shareTextLabel),
         _Card(
           child: Text.rich(
@@ -281,6 +280,234 @@ class _ReferralTab extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// Gradient hero mirroring the home referral card: gift, invite headline,
+/// per-friend reward and the segmented milestone progress.
+class _HeroCard extends StatelessWidget {
+  const _HeroCard({required this.summary});
+  final ReferralSummary summary;
+
+  static LinearGradient _orangeGradient(ThemeColors c) => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [c.referralGradientStart, c.referralGradientEnd],
+  );
+
+  static LinearGradient _darkGradient(ThemeColors c) {
+    Color tint(Color accent, double alpha) => Color.alphaBlend(accent.withValues(alpha: alpha), c.cardBackground);
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [tint(c.orange, 0.16), tint(c.error, 0.10)],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final hc = context.x.homeColors;
+    final l10n = context.x.l10n;
+    final isDark = context.x.isDarkMode;
+    final tier = summary.currentTier;
+    final reward = summary.perFriendReward;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        gradient: isDark ? _darkGradient(colors) : _orangeGradient(colors),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: -30,
+            top: -40,
+            child: IgnorePointer(
+              child: Container(
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      colors.pureWhite.withValues(alpha: isDark ? 0.10 : 0.55),
+                      colors.pureWhite.withValues(alpha: 0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isDark ? colors.cardBackground2 : hc.onAccent,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.referralGiftShadow.withValues(alpha: 0.2),
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const QuizLottieIcon(QuizLottie.prize, size: 36),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.homeReferralTitle,
+                            style: quizText(17, wBold, hc.text),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (reward != null && reward.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    l10n.homeReferralPerFriend,
+                                    style: quizText(13, wRegular, hc.text2),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(reward, style: quizText(13, wSemibold, hc.orangeAccent)),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (tier != null && tier.required > 0) ...[
+                  const SizedBox(height: 16),
+                  _Milestone(tier: tier, joined: summary.totalReferrals),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The milestone line ("2 / 5 do‘st · 5-chi do‘stga +X bonus") plus the
+/// segmented progress bar; swaps to a "goal reached" prompt when claimable.
+class _Milestone extends StatelessWidget {
+  const _Milestone({required this.tier, required this.joined});
+  final ReferralTier tier;
+  final int joined;
+
+  @override
+  Widget build(BuildContext context) {
+    final hc = context.x.homeColors;
+    final l10n = context.x.l10n;
+    final required = tier.required;
+    final filled = joined.clamp(0, required);
+    final reward = tier.rewardText;
+    final rewardHasAmount = reward.contains(RegExp(r'\d'));
+
+    if (tier.claimable) {
+      return Row(
+        children: [
+          const Text('🎉', style: TextStyle(fontSize: 15)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              l10n.homeReferralReachedTitle,
+              style: quizText(13, wSemibold, hc.text),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(l10n.homeReferralMilestone(filled, required), style: quizText(12, wSemibold, hc.text2)),
+            const Spacer(),
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      l10n.homeReferralNextMilestone(required),
+                      style: quizText(12, wRegular, hc.text3),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (reward.isNotEmpty) ...[
+                    const SizedBox(width: 4),
+                    Text(reward, style: quizText(12, wSemibold, hc.orangeAccent)),
+                  ],
+                  if (rewardHasAmount) ...[
+                    const SizedBox(width: 4),
+                    Text(l10n.homeReferralBonusSuffix, style: quizText(12, wRegular, hc.text3)),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _Segments(total: required, filled: filled),
+      ],
+    );
+  }
+}
+
+/// Discrete milestone segments, one per friend to the goal (never a single bar).
+class _Segments extends StatelessWidget {
+  const _Segments({required this.total, required this.filled});
+  final int total;
+  final int filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final fill = context.x.homeColors.orangeAccent;
+    final empty = colors.pureWhite.withValues(alpha: context.x.isDarkMode ? 0.14 : 0.7);
+    final count = total.clamp(1, 30);
+    final gap = count > 12 ? 2.0 : 4.0;
+    return Row(
+      children: [
+        for (var i = 0; i < count; i++) ...[
+          if (i > 0) SizedBox(width: gap),
+          Expanded(
+            child: Container(
+              height: 6,
+              decoration: BoxDecoration(color: i < filled ? fill : empty, borderRadius: BorderRadius.circular(3)),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -581,6 +808,32 @@ class _ReferralShimmer extends StatelessWidget {
     physics: const NeverScrollableScrollPhysics(),
     padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
     children: const [
+      _SkeletonCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ShimmerBox(width: 56, height: 56, radius: 18),
+                SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShimmerBox(width: 160, height: 16, radius: 6),
+                      SizedBox(height: 8),
+                      ShimmerBox(width: 120, height: 12, radius: 6),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 18),
+            ShimmerBox(width: double.infinity, height: 6, radius: 3),
+          ],
+        ),
+      ),
+      SizedBox(height: 16),
       Row(
         children: [
           Expanded(child: _StatSkeleton()),

@@ -78,27 +78,18 @@ class MyTestsFilterSelection {
 
   int get sheetCount => subjectIds.length + orgIds.length;
 
-  MyTestsFilterSelection copyWith({
-    Set<String>? subjectIds,
-    Set<String>? orgIds,
-    String? search,
-    String? sort,
-  }) => MyTestsFilterSelection(
-    subjectIds: subjectIds ?? this.subjectIds,
-    orgIds: orgIds ?? this.orgIds,
-    search: search ?? this.search,
-    status: status,
-    sort: sort ?? this.sort,
-  );
+  MyTestsFilterSelection copyWith({Set<String>? subjectIds, Set<String>? orgIds, String? search, String? sort}) =>
+      MyTestsFilterSelection(
+        subjectIds: subjectIds ?? this.subjectIds,
+        orgIds: orgIds ?? this.orgIds,
+        search: search ?? this.search,
+        status: status,
+        sort: sort ?? this.sort,
+      );
 
   /// copyWith that can also clear [status] (pass `clearStatus: true`).
-  MyTestsFilterSelection withStatus(String? status) => MyTestsFilterSelection(
-    subjectIds: subjectIds,
-    orgIds: orgIds,
-    search: search,
-    status: status,
-    sort: sort,
-  );
+  MyTestsFilterSelection withStatus(String? status) =>
+      MyTestsFilterSelection(subjectIds: subjectIds, orgIds: orgIds, search: search, status: status, sort: sort);
 
   Map<String, Object?> toQuery({int? page, int? limit}) => <String, Object?>{
     if (subjectIds.isNotEmpty) 'subject_ids': subjectIds.join(','),

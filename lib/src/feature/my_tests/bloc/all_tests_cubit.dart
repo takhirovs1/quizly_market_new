@@ -92,15 +92,12 @@ class AllTestsCubit extends Cubit<AllTestsState> {
     _reload();
   }
 
-  void removeSubject(String id) => applyFilters(
-    state.selection.copyWith(subjectIds: {...state.selection.subjectIds}..remove(id)),
-  );
+  void removeSubject(String id) =>
+      applyFilters(state.selection.copyWith(subjectIds: {...state.selection.subjectIds}..remove(id)));
 
-  void removeOrg(String id) =>
-      applyFilters(state.selection.copyWith(orgIds: {...state.selection.orgIds}..remove(id)));
+  void removeOrg(String id) => applyFilters(state.selection.copyWith(orgIds: {...state.selection.orgIds}..remove(id)));
 
   /// Clears the sheet filters (subject/org), keeping search and status.
-  void clearSheetFilters() => applyFilters(
-    state.selection.copyWith(subjectIds: const <String>{}, orgIds: const <String>{}),
-  );
+  void clearSheetFilters() =>
+      applyFilters(state.selection.copyWith(subjectIds: const <String>{}, orgIds: const <String>{}));
 }

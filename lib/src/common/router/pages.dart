@@ -6,18 +6,22 @@ import '../../feature/authentication/cubit/auth_cubit.dart';
 import '../../feature/authentication/screen/login_screen.dart';
 import '../../feature/authentication/screen/session_screen.dart';
 import '../../feature/authentication/screen/verify_otp_screen.dart';
+import '../../feature/flashcard/bloc/flashcard_cubit.dart';
+import '../../feature/flashcard/data/flashcard_repository.dart';
+import '../../feature/flashcard/model/flashcard_config.dart';
+import '../../feature/flashcard/screens/flashcard_result_screen.dart';
+import '../../feature/flashcard/screens/flashcard_screen.dart';
+import '../../feature/flashcard/screens/flashcard_setup_screen.dart';
 import '../../feature/friends/bloc/friends_cubit.dart';
 import '../../feature/friends/screen/friends_screen.dart';
 import '../../feature/home/screen/home_screen.dart';
+import '../../feature/leaderboard/bloc/leaderboard_cubit.dart';
+import '../../feature/leaderboard/screen/leaderboard_screen.dart';
 import '../../feature/main/bloc/main_cubit.dart';
 import '../../feature/my_tests/bloc/all_tests_cubit.dart';
 import '../../feature/my_tests/bloc/my_test_cubit.dart';
 import '../../feature/my_tests/screen/all_tests_screen.dart';
 import '../../feature/my_tests/screen/purchase_test_screen.dart';
-import '../../feature/sessions/bloc/session_cubit.dart';
-import '../../feature/sessions/data/session_repository.dart';
-import '../../feature/sessions/model/session_models.dart';
-import '../../feature/sessions/screen/session_runner_screen.dart';
 import '../../feature/profile/bloc/profile_cubit.dart';
 import '../../feature/profile/bloc/support_chat_cubit.dart';
 import '../../feature/profile/data/support_chat_repository.dart';
@@ -32,18 +36,16 @@ import '../../feature/profile/screen/support_chat_screen.dart';
 import '../../feature/recommendation/bloc/recommendation_cubit.dart';
 import '../../feature/recommendation/data/recommendation_repository.dart';
 import '../../feature/recommendation/screen/more_recommendation_screen.dart';
+import '../../feature/sessions/bloc/session_cubit.dart';
+import '../../feature/sessions/data/session_repository.dart';
+import '../../feature/sessions/model/session_models.dart';
+import '../../feature/sessions/screen/session_runner_screen.dart';
 import '../../feature/tests/bloc/test_rating_cubit.dart';
 import '../../feature/tests/bloc/test_view.dart';
 import '../../feature/tests/data/test_view_repository.dart';
 import '../../feature/tests/model/test_request_response_models.dart';
 import '../../feature/tests/model/test_route_arguments.dart';
 import '../../feature/tests/screens/test_custom_mode_screen.dart';
-import '../../feature/flashcard/bloc/flashcard_cubit.dart';
-import '../../feature/flashcard/data/flashcard_repository.dart';
-import '../../feature/flashcard/model/flashcard_config.dart';
-import '../../feature/flashcard/screens/flashcard_result_screen.dart';
-import '../../feature/flashcard/screens/flashcard_screen.dart';
-import '../../feature/flashcard/screens/flashcard_setup_screen.dart';
 import '../../feature/tests/screens/test_group_mode_screen.dart';
 import '../../feature/tests/screens/test_mode_screen.dart';
 import '../../feature/tests/screens/test_rating_screen.dart';
@@ -68,6 +70,7 @@ enum Routes with OctopusRoute {
   payment('payment', title: 'Payment'),
   referral('referral', title: 'Referral'),
   friends('friends', title: 'Friends'),
+  leaderboard('leaderboard', title: 'Leaderboard'),
   appInfo('appInfo', title: 'App Info'),
   paymentHistory('paymentHistory', title: 'Payment History'),
   appDocuments('appDocuments', title: 'App Documents'),
@@ -176,6 +179,10 @@ enum Routes with OctopusRoute {
       create: (context) => FriendsCubit(repository: context.x.dependencies.repository.friendsRepository),
       child: FriendsScreen(inviteCode: node.arguments['code'] ?? ''),
     ),
+    .leaderboard => BlocProvider(
+      create: (context) => LeaderboardCubit(repository: context.x.dependencies.repository.friendsRepository),
+      child: const LeaderboardScreen(),
+    ),
     .paymentHistory => BlocProvider(
       create: (context) =>
           ProfileCubit(profileRepository: context.x.dependencies.repository.profileRepository)..getTransactions(),
@@ -219,10 +226,7 @@ enum Routes with OctopusRoute {
       create: (context) =>
           TestRatingCubit(repository: context.x.dependencies.repository.homeRepository)
             ..load(node.arguments['id'] ?? ''),
-      child: TestRatingScreen(
-        testName: node.arguments['name'] ?? '',
-        organizationName: node.arguments['org'] ?? '',
-      ),
+      child: TestRatingScreen(testName: node.arguments['name'] ?? '', organizationName: node.arguments['org'] ?? ''),
     ),
     .allTests => BlocProvider(
       create: (context) => AllTestsCubit(repository: context.x.dependencies.repository.homeRepository),

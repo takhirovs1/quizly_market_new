@@ -67,14 +67,20 @@ class FriendsRatingCard extends StatelessWidget {
             GestureDetector(
               onTap: onOpenRating,
               behavior: HitTestBehavior.opaque,
-              child: Row(
-                children: [
-                  _AvatarCluster(avatars: data.topAvatars),
-                  const SizedBox(width: 12),
-                  Expanded(child: _RankLines(data: data)),
-                  const SizedBox(width: 8),
-                  Text('${l10n.homeFriendsRatingLink} ›', style: quizText(14, wSemibold, hc.primary)),
-                ],
+              // Figma: the standings body sits in the same tinted box as the
+              // no-friends invite box, so both states read as one card.
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: hc.surface2, borderRadius: BorderRadius.circular(14)),
+                child: Row(
+                  children: [
+                    _AvatarCluster(avatars: data.topAvatars),
+                    const SizedBox(width: 12),
+                    Expanded(child: _RankLines(data: data)),
+                    const SizedBox(width: 8),
+                    Text('${l10n.homeFriendsRatingLink} ›', style: quizText(14, wSemibold, hc.primary)),
+                  ],
+                ),
               ),
             ),
         ],
@@ -103,7 +109,7 @@ class _RankLines extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(line1, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(15, wSemibold, hc.text)),
+        Text(line1, maxLines: 2, overflow: TextOverflow.ellipsis, style: quizText(15, wSemibold, hc.text)),
         const SizedBox(height: 2),
         Text(line2, maxLines: 1, overflow: TextOverflow.ellipsis, style: quizText(13, wRegular, line2Color)),
       ],

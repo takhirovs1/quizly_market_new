@@ -34,8 +34,7 @@ class _FilterSheetState extends State<_FilterSheet> {
   late Set<String> _orgs = {...widget.selection.orgIds};
   late String _sort = widget.selection.sort;
 
-  MyTestsFilterSelection get _draft =>
-      widget.selection.copyWith(subjectIds: _subjects, orgIds: _orgs, sort: _sort);
+  MyTestsFilterSelection get _draft => widget.selection.copyWith(subjectIds: _subjects, orgIds: _orgs, sort: _sort);
 
   @override
   Widget build(BuildContext context) {
@@ -72,29 +71,21 @@ class _FilterSheetState extends State<_FilterSheet> {
               shrinkWrap: true,
               children: [
                 if (widget.options.subjects.isNotEmpty) ...[
-                  _section(
-                    context,
-                    l10n.filterSubject,
-                    [
-                      for (final s in widget.options.subjects)
-                        _chip(context, '${s.name} · ${s.count}', _subjects.contains(s.id), () {
-                          setState(() => _subjects.contains(s.id) ? _subjects.remove(s.id) : _subjects.add(s.id));
-                        }),
-                    ],
-                  ),
+                  _section(context, l10n.filterSubject, [
+                    for (final s in widget.options.subjects)
+                      _chip(context, '${s.name} · ${s.count}', _subjects.contains(s.id), () {
+                        setState(() => _subjects.contains(s.id) ? _subjects.remove(s.id) : _subjects.add(s.id));
+                      }),
+                  ]),
                   const SizedBox(height: 20),
                 ],
                 if (widget.options.organizations.isNotEmpty) ...[
-                  _section(
-                    context,
-                    l10n.filterOrganization,
-                    [
-                      for (final o in widget.options.organizations)
-                        _chip(context, '${o.name} · ${o.count}', _orgs.contains(o.id), () {
-                          setState(() => _orgs.contains(o.id) ? _orgs.remove(o.id) : _orgs.add(o.id));
-                        }),
-                    ],
-                  ),
+                  _section(context, l10n.filterOrganization, [
+                    for (final o in widget.options.organizations)
+                      _chip(context, '${o.name} · ${o.count}', _orgs.contains(o.id), () {
+                        setState(() => _orgs.contains(o.id) ? _orgs.remove(o.id) : _orgs.add(o.id));
+                      }),
+                  ]),
                   const SizedBox(height: 20),
                 ],
                 _sortSection(context),

@@ -20,11 +20,15 @@ class ReferralSummaryResponse {
     this.perFriendRewardAmount,
     this.inviteCode,
     this.friends = const <ReferralFriend>[],
+    this.currentMilestone,
+    this.nextMilestone,
   });
 
   factory ReferralSummaryResponse.fromJson(Map<String, Object?> json) {
     final root = json['data'] is Map<String, Object?> ? json['data']! as Map<String, Object?> : json;
     final list = root['friends'] as List<Object?>? ?? const <Object?>[];
+    final current = root['current_milestone'];
+    final next = root['next_milestone'];
     return ReferralSummaryResponse(
       joinedCount: (root['joined_count'] as num?)?.toInt() ?? 0,
       unclaimedCount: (root['unclaimed_count'] as num?)?.toInt() ?? 0,
@@ -32,6 +36,8 @@ class ReferralSummaryResponse {
       perFriendRewardAmount: (root['per_friend_reward_amount'] ?? root['per_friend_reward']).toIntOrNull,
       inviteCode: root['invite_code'] as String?,
       friends: list.whereType<Map<String, Object?>>().map(ReferralFriend.fromJson).toList(),
+      currentMilestone: current is Map<String, Object?> ? ReferralMilestone.fromJson(current) : null,
+      nextMilestone: next is Map<String, Object?> ? ReferralMilestone.fromJson(next) : null,
     );
   }
 
@@ -61,6 +67,13 @@ class ReferralSummaryResponse {
   /// Friends who joined via the link, each a separately-claimable bonus.
   final List<ReferralFriend> friends;
 
+  /// The tier the user is working toward (lowest unclaimed), driving the home
+  /// card's progress bar. Null when the backend sends no milestone data.
+  final ReferralMilestone? currentMilestone;
+
+  /// The tier after [currentMilestone]; null at the top tier.
+  final ReferralMilestone? nextMilestone;
+
   ReferralSummaryResponse copyWith({int? joinedCount, int? unclaimedCount, List<ReferralFriend>? friends}) =>
       ReferralSummaryResponse(
         joinedCount: joinedCount ?? this.joinedCount,
@@ -69,7 +82,47 @@ class ReferralSummaryResponse {
         perFriendRewardAmount: perFriendRewardAmount,
         inviteCode: inviteCode,
         friends: friends ?? this.friends,
+        currentMilestone: currentMilestone,
+        nextMilestone: nextMilestone,
       );
+}
+
+/// One referral tier (migration 081: 5/10/25 joined friends by default). The
+/// user reaches it by inviting [required] friends, then claims [rewardText]
+/// (amount-free on iOS). Powers the home card's milestone progress.
+class ReferralMilestone {
+  const ReferralMilestone({
+    required this.id,
+    required this.required,
+    required this.rewardText,
+    this.reward,
+    this.claimable = false,
+    this.claimed = false,
+  });
+
+  factory ReferralMilestone.fromJson(Map<String, Object?> json) => ReferralMilestone(
+    id: json['id']?.toString() ?? '',
+    required: (json['required'] as num?)?.toInt() ?? 0,
+    rewardText: ReferralSummaryResponse.money(json['reward_text']) ?? '',
+    reward: (json['reward'] as num?)?.toInt(),
+    claimable: json['claimable'] as bool? ?? false,
+    claimed: json['claimed'] as bool? ?? false,
+  );
+
+  final String id;
+
+  /// Joined friends needed to reach this tier.
+  final int required;
+
+  /// Display-only bonus for reaching the tier (e.g. "+5 000 UZS"; "Bonus" on iOS).
+  final String rewardText;
+
+  /// Numeric reward in so'm (v5); null on iOS. Display uses [rewardText].
+  final int? reward;
+
+  /// Reached, active and not yet claimed.
+  final bool claimable;
+  final bool claimed;
 }
 
 /// One referred friend. `claimable && !claimed` → a "Claim" button; `claimed` →

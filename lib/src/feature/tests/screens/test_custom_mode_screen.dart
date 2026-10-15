@@ -434,10 +434,14 @@ class _TestCustomModeScreenState extends TestCustomModeScreenState {
                         return Wrap(
                           spacing: 28,
                           runSpacing: 16,
-                          children: attempts.map((attempt) => SizedBox(
-                              width: cardWidth,
-                              child: _AttemptItemWidget(attempt: attempt),
-                            )).toList(),
+                          children: attempts
+                              .map(
+                                (attempt) => SizedBox(
+                                  width: cardWidth,
+                                  child: _AttemptItemWidget(attempt: attempt),
+                                ),
+                              )
+                              .toList(),
                         );
                       },
                     ),

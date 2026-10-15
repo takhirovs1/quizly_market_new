@@ -161,10 +161,7 @@ class _SessionRunnerScreenState extends State<SessionRunnerScreen> {
                   onTap: () => context.read<SessionCubit>().check(q.options[i].id),
                 ),
               ],
-              if (state.isChecked) ...[
-                const SizedBox(height: 16),
-                _FeedbackBanner(state: state),
-              ],
+              if (state.isChecked) ...[const SizedBox(height: 16), _FeedbackBanner(state: state)],
             ],
           ),
         ),
@@ -236,7 +233,11 @@ class _OptionTile extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16), border: Border.all(color: border)),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: border),
+        ),
         child: Row(
           children: [
             Container(
@@ -328,9 +329,7 @@ class _ResultView extends StatelessWidget {
         ? l10n.resultTitleGood
         : l10n.resultTitleKeepGoing;
     final isMistakes = result.mode == SessionRunMode.mistakes;
-    final subtitle = isMistakes
-        ? l10n.resultMistakesSubtitle(result.total)
-        : l10n.resultRandomSubtitle(result.total);
+    final subtitle = isMistakes ? l10n.resultMistakesSubtitle(result.total) : l10n.resultRandomSubtitle(result.total);
     final ringColor = result.scorePercent >= 50 ? colors.answerCorrect : hc.warning;
 
     return Column(
@@ -425,7 +424,11 @@ class _StatCard extends StatelessWidget {
     final hc = context.x.homeColors;
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: hc.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: hc.border)),
+      decoration: BoxDecoration(
+        color: hc.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: hc.border),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

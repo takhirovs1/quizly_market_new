@@ -50,6 +50,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
     return Scaffold(
       backgroundColor: hc.bg,
       appBar: QuizAppBar(
+        showBackButton: false,
         title: context.x.l10n.myTests,
         telegramWebAppSafeAreaInsetTop: context.telegramWebApp.safeAreaInset.top.toDouble(),
         onTitlePointerDown: onTitlePointerDown,
@@ -217,7 +218,8 @@ class _MyTestsScreenState extends MyTestsScreenState {
                     ratingRank: item.ratingRank,
                     ratingTotalParticipants: item.ratingTotalParticipants,
                     onTap: () => onOpenPreviewTest(item),
-                    onRatingTap: () => onOpenRating(item.testId, name: item.name, organizationName: item.organizationName),
+                    onRatingTap: () =>
+                        onOpenRating(item.testId, name: item.name, organizationName: item.organizationName),
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -305,7 +307,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
     skeleton: const HomeCardSkeleton(),
     child: state.friendsRating == null
         ? const SizedBox.shrink()
-        : FriendsRatingCard(data: state.friendsRating!, onInvite: onOpenFriends, onOpenRating: onOpenFriends),
+        : FriendsRatingCard(data: state.friendsRating!, onInvite: onOpenFriends, onOpenRating: onOpenLeaderboard),
   );
 
   // ── Referral ─────────────────────────────────────────────────────────────────
@@ -316,12 +318,7 @@ class _MyTestsScreenState extends MyTestsScreenState {
     skeleton: const HomeCardSkeleton(),
     child: state.referralSummary == null
         ? const SizedBox.shrink()
-        : ReferralCard(
-            data: state.referralSummary!,
-            onShare: onShareReferral,
-            onClaim: onClaimReferral,
-            onOpenAll: onOpenReferral,
-          ),
+        : ReferralCard(data: state.referralSummary!, onShare: onShareReferral, onOpenAll: onOpenReferral),
   );
 
   // ── Sponsor ads (hidden when none) ───────────────────────────────────────────
