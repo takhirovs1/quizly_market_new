@@ -13,7 +13,8 @@ class AdsResponse {
 
   factory AdsResponse.fromJson(Map<String, Object?> json) {
     final root = json['data'] is Map<String, Object?> ? json['data']! as Map<String, Object?> : json;
-    final list = (root['items'] ?? json['data']) as List<Object?>? ?? const <Object?>[];
+    final raw = root['items'] ?? (json['data'] is List ? json['data'] : null);
+    final list = raw as List<Object?>? ?? const <Object?>[];
     return AdsResponse(items: list.whereType<Map<String, Object?>>().map(AdItem.fromJson).toList());
   }
 

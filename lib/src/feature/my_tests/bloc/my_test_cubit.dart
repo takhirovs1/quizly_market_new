@@ -28,6 +28,7 @@ part 'my_test_state.dart';
 class MyTestCubit extends SequentialCubit<MyTestState> with MyTestCubitHome {
   MyTestCubit({required this.myTestRepository, required this.homeRepository}) : super(const MyTestState());
 
+  @override
   final IMyTestRepository myTestRepository;
 
   @override

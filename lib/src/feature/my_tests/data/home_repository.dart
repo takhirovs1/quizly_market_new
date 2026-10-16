@@ -146,7 +146,9 @@ final class HomeRepositoryImpl implements IHomeRepository {
   Future<AdsResponse> getAds(AdsRequest request) async {
     try {
       final response = await apiClient.get(Urls.ads, queryParameters: request.toJson());
-      return AdsResponse.fromJson(response);
+      final result = AdsResponse.fromJson(response);
+      info('ADS parsed: ${result.items.length} items');
+      return result;
     } catch (e, s) {
       info('ADS API ERROR: $e $s');
       rethrow;

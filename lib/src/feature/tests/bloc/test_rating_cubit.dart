@@ -25,8 +25,10 @@ class TestRatingCubit extends Cubit<TestRatingState> {
   TestRatingCubit({required this.repository}) : super(const TestRatingState());
 
   final IHomeRepository repository;
+  String _testId = '';
 
   Future<void> load(String testId) async {
+    _testId = testId;
     emit(state.copyWith(status: StateStatus.loading, error: null));
     try {
       final data = await repository.getTestRating(testId);
@@ -36,4 +38,6 @@ class TestRatingCubit extends Cubit<TestRatingState> {
       emit(state.copyWith(status: StateStatus.error, error: e.toString()));
     }
   }
+
+  Future<void> refresh() => load(_testId);
 }

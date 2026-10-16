@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lottie/lottie.dart';
 import 'package:octopus/octopus.dart';
 import 'package:ui/ui.dart';
 
@@ -83,7 +82,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                       Row(
                         spacing: 8,
                         children: [
-                          Lottie.asset(Assets.lib.lottie.fire, width: 36, height: 36, package: 'ui'),
+                          const QuizLottieIcon(QuizLottie.fire, size: 36),
                           Expanded(
                             child: Text(
                               context.x.l10n.referralBannerTitle,
@@ -107,7 +106,7 @@ class _AnimatedReferralBannerState extends State<AnimatedReferralBanner> with Si
                   ),
                 )
               else ...[
-                Lottie.asset(Assets.lib.lottie.fire, width: 36, height: 36, package: 'ui'),
+                const QuizLottieIcon(QuizLottie.fire, size: 36),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Column(

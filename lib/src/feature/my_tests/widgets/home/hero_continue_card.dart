@@ -38,63 +38,93 @@ class HeroContinueCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [BoxShadow(color: context.x.colors.homeHeroShadow, blurRadius: 28, offset: const Offset(0, 12))],
         ),
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Row(
-              children: [
-                _GlassPill(text: '⏱  ${l10n.homeContinueBadge}', color: white),
-                const Spacer(),
-                _GlassPill(text: modeLabel, color: white),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Text(card.testName, maxLines: 2, overflow: TextOverflow.ellipsis, style: quizText(22, wBold, white)),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    card.organizationName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: quizText(13, wMedium, white85),
+            // Glass glow — top-right decorative overlay
+            Positioned(
+              right: -50,
+              top: -60,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: .circle,
+                  gradient: RadialGradient(
+                    colors: [white.withValues(alpha: 0.12), Colors.transparent],
+                    stops: const [0.4, 1.0],
                   ),
                 ),
-                if (card.organizationVerified) ...[
-                  const SizedBox(width: 4),
-                  Icon(Icons.verified_rounded, size: 14, color: white),
-                ],
-              ],
+              ),
             ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Text(l10n.homeProgressLabel(card.answered, card.total), style: quizText(12, wMedium, white90)),
-                const Spacer(),
-                Text('${card.percent}%', style: quizText(13, wSemibold, white)),
-              ],
+            // Glass ring — right-center decorative outline
+            Positioned(
+              right: -35,
+              top: 100,
+              child: Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  shape: .circle,
+                  border: Border.all(color: white.withValues(alpha: 0.18), width: 1.5),
+                ),
+              ),
             ),
-            const SizedBox(height: 8),
-            _Segments(percent: card.percent, color: white),
-            if (relative.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              Row(
+            // Main content
+            Padding(
+              padding: const .all(18),
+              child: Column(
+                crossAxisAlignment: .start,
                 children: [
-                  QuizLottieIcon(QuizLottie.urgent, size: 16, color: white),
-                  const SizedBox(width: 4),
-                  Text(l10n.homeLastActivity(relative), style: quizText(12, wMedium, white85)),
+                  Row(
+                    children: [
+                      _GlassPill(text: '⏱  ${l10n.homeContinueBadge}', color: white),
+                      const Spacer(),
+                      _GlassPill(text: modeLabel, color: white),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Text(card.testName, maxLines: 2, overflow: .ellipsis, style: quizText(22, wBold, white)),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          card.organizationName,
+                          maxLines: 1,
+                          overflow: .ellipsis,
+                          style: quizText(13, wMedium, white85),
+                        ),
+                      ),
+                      if (card.organizationVerified) ...[
+                        const SizedBox(width: 4),
+                        Icon(Icons.verified_rounded, size: 14, color: white),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Text(l10n.homeProgressLabel(card.answered, card.total), style: quizText(12, wMedium, white90)),
+                      const Spacer(),
+                      Text('${card.percent}%', style: quizText(13, wSemibold, white)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _Segments(percent: card.percent, color: white),
+                  if (relative.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Icon(Icons.access_time_rounded, size: 14, color: white85),
+                        const SizedBox(width: 4),
+                        Text(l10n.homeLastActivity(relative), style: quizText(12, wMedium, white85)),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  QuizButton(label: l10n.homeContinueCta, type: .light, size: .l, expand: true, onTap: onContinue),
                 ],
               ),
-            ],
-            const SizedBox(height: 14),
-            QuizButton(
-              label: l10n.homeContinueCta,
-              type: QuizButtonType.light,
-              size: QuizButtonSize.l,
-              expand: true,
-              onTap: onContinue,
             ),
           ],
         ),
@@ -110,10 +140,10 @@ class _GlassPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    padding: const .symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.18),
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: .circular(100),
       border: Border.all(color: color.withValues(alpha: 0.35)),
     ),
     child: Text(text, style: quizText(12, wSemibold, color)),
@@ -139,7 +169,7 @@ class _Segments extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 color: color.withValues(alpha: i < filled ? 1 : (i == filled && hasPartial ? 0.55 : 0.22)),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: .circular(4),
               ),
             ),
           ),

@@ -66,7 +66,7 @@ class _XpRulesSheet extends StatelessWidget {
                         )
                       else
                         for (final r in rules) _RuleRow(rule: r),
-                      for (final cap in caps) ...[const SizedBox(height: 8), _CapNote(text: cap)],
+                      for (final cap in caps) ...[const SizedBox(height: 8), _CapNote(text: _capLabel(cap))],
                     ],
                   ),
                 ),
@@ -93,8 +93,8 @@ class _RuleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hc = context.x.homeColors;
-    final (emoji, tint) = _iconFor(context, rule.type);
-    final label = rule.text.isNotEmpty ? rule.text : rule.title;
+    final (icon, tint, iconColor) = _iconFor(context, rule.type);
+    final label = rule.text.isNotEmpty ? rule.text : (rule.title.isNotEmpty ? rule.title : rule.description);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -104,7 +104,7 @@ class _RuleRow extends StatelessWidget {
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(12)),
-            child: Text(emoji, style: const TextStyle(fontSize: 18)),
+            child: Icon(icon, size: 20, color: iconColor),
           ),
           const SizedBox(width: 12),
           Expanded(child: Text(label, style: quizText(15, wMedium, hc.text))),
@@ -119,19 +119,18 @@ class _RuleRow extends StatelessWidget {
     );
   }
 
-  /// Emoji + tint for a rule type. The backend sends a type string; unknown
-  /// types fall back to a neutral sparkle on the primary tint.
-  (String, Color) _iconFor(BuildContext context, String type) {
+  /// Icon + tint background + icon color for a rule type.
+  (IconData, Color, Color) _iconFor(BuildContext context, String type) {
     final hc = context.x.homeColors;
     return switch (type) {
-      'correct_answer' || 'correct' => ('✅', hc.successTint),
-      'streak' || 'daily_streak' => ('🔥', hc.warningTint),
-      'test_complete' || 'complete' || 'finish' || 'test' => ('🎯', hc.primaryTint),
-      'perfect' || 'perfect_score' => ('💯', hc.purpleTint),
-      'first_attempt' || 'first_try' || 'first' => ('⭐', hc.warningTint),
-      'daily' || 'daily_goal' || 'goal' => ('📅', hc.tealTint),
-      'referral' || 'invite' => ('🎁', hc.successTint),
-      _ => ('✨', hc.primaryTint),
+      'correct_answer' || 'correct' => (Icons.check_circle_rounded, hc.successTint, hc.success),
+      'streak' || 'daily_streak' => (Icons.local_fire_department_rounded, hc.warningTint, hc.warning),
+      'test_complete' || 'complete' || 'finish' || 'test' => (Icons.emoji_events_rounded, hc.primaryTint, hc.primary),
+      'perfect' || 'perfect_score' => (Icons.workspace_premium_rounded, hc.purpleTint, hc.purple),
+      'first_attempt' || 'first_try' || 'first' => (Icons.star_rounded, hc.warningTint, hc.warning),
+      'daily' || 'daily_goal' || 'goal' => (Icons.calendar_today_rounded, hc.tealTint, hc.teal),
+      'referral' || 'invite' => (Icons.card_giftcard_rounded, hc.successTint, hc.success),
+      _ => (Icons.bolt_rounded, hc.primaryTint, hc.primary),
     };
   }
 }
@@ -146,13 +145,22 @@ class _CapNote extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('ⓘ', style: quizText(13, wSemibold, hc.text3)),
+        Icon(Icons.info_outline_rounded, size: 15, color: hc.text3),
         const SizedBox(width: 8),
         Expanded(child: Text(text, style: quizText(13, wRegular, hc.text3, height: 1.35))),
       ],
     );
   }
 }
+
+String _capLabel(String cap) => switch (cap) {
+  'once_per_question_per_day' => 'Har bir savolga kuniga 1 marta',
+  'once_per_session' => 'Har bir sessiyada 1 marta',
+  'once_per_day' => 'Kuniga 1 marta',
+  'once_per_week' => 'Haftada 1 marta',
+  'once_per_test' => 'Har bir testda 1 marta',
+  _ => cap.replaceAll('_', ' '),
+};
 
 class _CloseButton extends StatelessWidget {
   const _CloseButton({required this.onTap});

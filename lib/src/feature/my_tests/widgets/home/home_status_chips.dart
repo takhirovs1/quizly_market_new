@@ -24,6 +24,7 @@ class HomeStatusChips extends StatelessWidget {
     final l10n = context.x.l10n;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      padding: const .symmetric(horizontal: 16),
       child: Row(
         children: [
           _Chip(

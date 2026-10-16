@@ -200,7 +200,20 @@ class _MyTestsScreenState extends MyTestsScreenState {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HomeStatusChips(counts: preview.counts, selected: selected, onSelect: onMyTestsFilter),
+              LayoutBuilder(
+                builder: (_, c) => SizedBox(
+                  height: 56,
+                  child: OverflowBox(
+                    alignment: .centerLeft,
+                    maxWidth: c.maxWidth + _hPad.horizontal,
+                    maxHeight: 56,
+                    child: Transform.translate(
+                      offset: Offset(-_hPad.left, 0),
+                      child: HomeStatusChips(counts: preview.counts, selected: selected, onSelect: onMyTestsFilter),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 12),
               if (items.isEmpty)
                 _myTestsFilterEmpty()

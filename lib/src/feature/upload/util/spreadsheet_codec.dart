@@ -33,7 +33,7 @@ class SpreadsheetDecodeException implements Exception {
 /// backend template importer is never called).
 ///
 /// xlsx is decoded directly (zip + XML) on top of `archive`/`xml`, because the
-/// pub xlsx packages pin `archive ^3` which conflicts with the app's `lottie`.
+/// pub xlsx packages pin `archive ^3`.
 abstract final class SpreadsheetCodec {
   /// Decodes [bytes] by file extension. Returns non-empty sheets.
   static List<SheetData> decode(List<int> bytes, String fileName) {

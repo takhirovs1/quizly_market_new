@@ -29,9 +29,6 @@ class $LibGen {
   /// Directory path: lib/images
   $LibImagesGen get images => const $LibImagesGen();
 
-  /// Directory path: lib/lottie
-  $LibLottieGen get lottie => const $LibLottieGen();
-
   /// Directory path: lib/vectors
   $LibVectorsGen get vectors => const $LibVectorsGen();
 }
@@ -221,6 +218,45 @@ class $LibIconGen {
   /// File path: lib/icon/profile.svg
   SvgGenImage get profile => const SvgGenImage('lib/icon/profile.svg');
 
+  /// File path: lib/icon/q_add_friends.svg
+  SvgGenImage get qAddFriends => const SvgGenImage('lib/icon/q_add_friends.svg');
+
+  /// File path: lib/icon/q_archive.svg
+  SvgGenImage get qArchive => const SvgGenImage('lib/icon/q_archive.svg');
+
+  /// File path: lib/icon/q_book_collection.svg
+  SvgGenImage get qBookCollection => const SvgGenImage('lib/icon/q_book_collection.svg');
+
+  /// File path: lib/icon/q_check.svg
+  SvgGenImage get qCheck => const SvgGenImage('lib/icon/q_check.svg');
+
+  /// File path: lib/icon/q_cup.svg
+  SvgGenImage get qCup => const SvgGenImage('lib/icon/q_cup.svg');
+
+  /// File path: lib/icon/q_delete.svg
+  SvgGenImage get qDelete => const SvgGenImage('lib/icon/q_delete.svg');
+
+  /// File path: lib/icon/q_fire.svg
+  SvgGenImage get qFire => const SvgGenImage('lib/icon/q_fire.svg');
+
+  /// File path: lib/icon/q_lamp.svg
+  SvgGenImage get qLamp => const SvgGenImage('lib/icon/q_lamp.svg');
+
+  /// File path: lib/icon/q_prize.svg
+  SvgGenImage get qPrize => const SvgGenImage('lib/icon/q_prize.svg');
+
+  /// File path: lib/icon/q_progress.svg
+  SvgGenImage get qProgress => const SvgGenImage('lib/icon/q_progress.svg');
+
+  /// File path: lib/icon/q_revert.svg
+  SvgGenImage get qRevert => const SvgGenImage('lib/icon/q_revert.svg');
+
+  /// File path: lib/icon/q_share.svg
+  SvgGenImage get qShare => const SvgGenImage('lib/icon/q_share.svg');
+
+  /// File path: lib/icon/q_urgent.svg
+  SvgGenImage get qUrgent => const SvgGenImage('lib/icon/q_urgent.svg');
+
   /// File path: lib/icon/question_mark.svg
   SvgGenImage get questionMark => const SvgGenImage('lib/icon/question_mark.svg');
 
@@ -341,6 +377,19 @@ class $LibIconGen {
     person,
     personSelected,
     profile,
+    qAddFriends,
+    qArchive,
+    qBookCollection,
+    qCheck,
+    qCup,
+    qDelete,
+    qFire,
+    qLamp,
+    qPrize,
+    qProgress,
+    qRevert,
+    qShare,
+    qUrgent,
     questionMark,
     referral,
     revoke,
@@ -511,66 +560,6 @@ class $LibImagesGen {
     wrongIcon,
     xazna,
     zoomRobot,
-  ];
-}
-
-class $LibLottieGen {
-  const $LibLottieGen();
-
-  /// File path: lib/lottie/add_friends.json
-  String get addFriends => 'lib/lottie/add_friends.json';
-
-  /// File path: lib/lottie/archive.json
-  String get archive => 'lib/lottie/archive.json';
-
-  /// File path: lib/lottie/book_collection.json
-  String get bookCollection => 'lib/lottie/book_collection.json';
-
-  /// File path: lib/lottie/check.json
-  String get check => 'lib/lottie/check.json';
-
-  /// File path: lib/lottie/cup.json
-  String get cup => 'lib/lottie/cup.json';
-
-  /// File path: lib/lottie/delete.json
-  String get delete => 'lib/lottie/delete.json';
-
-  /// File path: lib/lottie/fire.json
-  String get fire => 'lib/lottie/fire.json';
-
-  /// File path: lib/lottie/lamp.json
-  String get lamp => 'lib/lottie/lamp.json';
-
-  /// File path: lib/lottie/prise.json
-  String get prise => 'lib/lottie/prise.json';
-
-  /// File path: lib/lottie/progress.json
-  String get progress => 'lib/lottie/progress.json';
-
-  /// File path: lib/lottie/revert.json
-  String get revert => 'lib/lottie/revert.json';
-
-  /// File path: lib/lottie/share.json
-  String get share => 'lib/lottie/share.json';
-
-  /// File path: lib/lottie/urgent.json
-  String get urgent => 'lib/lottie/urgent.json';
-
-  /// List of all assets
-  List<String> get values => [
-    addFriends,
-    archive,
-    bookCollection,
-    check,
-    cup,
-    delete,
-    fire,
-    lamp,
-    prise,
-    progress,
-    revert,
-    share,
-    urgent,
   ];
 }
 

@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
-import '../../../common/util/state_status.dart';
 import '../bloc/test_rating_cubit.dart';
 import '../model/test_rating_model.dart';
 
@@ -27,68 +26,110 @@ class TestRatingScreen extends StatelessWidget {
       body: SafeArea(
         top: false,
         child: BlocBuilder<TestRatingCubit, TestRatingState>(
-          builder: (context, state) => switch (state.status) {
-            StateStatus.success => _content(context, state.data!),
-            StateStatus.error => _error(context),
-            _ => const Center(child: CircularProgressIndicator.adaptive()),
-          },
+          builder: (context, state) => RefreshIndicator.adaptive(
+            onRefresh: () => context.read<TestRatingCubit>().refresh(),
+            child: _body(context, state),
+          ),
         ),
       ),
     );
   }
 
-  Widget _error(BuildContext context) {
-    final hc = context.x.homeColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(context.x.l10n.errorOccurred, textAlign: TextAlign.center, style: quizText(14, wMedium, hc.text3)),
-            const SizedBox(height: 12),
-            QuizButton(
-              label: context.x.l10n.retry,
-              size: QuizButtonSize.s,
-              onTap: () => context.read<TestRatingCubit>().load(''),
-            ),
-          ],
+  Widget _body(BuildContext context, TestRatingState state) {
+    if (state.status.isLoading || state.status.isIdle) return _loading();
+    if (state.status.isError) return _error(context);
+    return _content(context, state.data!);
+  }
+
+  Widget _loading() => CustomScrollView(
+    physics: const AlwaysScrollableScrollPhysics(),
+    slivers: [
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        sliver: SliverList.separated(
+          itemCount: 6,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (_, _) => const ShimmerBox(height: 64, width: double.infinity, radius: 16),
         ),
       ),
+    ],
+  );
+
+  Widget _error(BuildContext context) {
+    final hc = context.x.homeColors;
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    context.x.l10n.errorOccurred,
+                    textAlign: TextAlign.center,
+                    style: quizText(14, wMedium, hc.text3),
+                  ),
+                  const SizedBox(height: 12),
+                  QuizButton(
+                    label: context.x.l10n.retry,
+                    size: QuizButtonSize.s,
+                    onTap: () => context.read<TestRatingCubit>().refresh(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _content(BuildContext context, TestRatingResponse data) {
     final entries = data.entries;
-    // Rows below the podium start at rank 4 (index 3).
     final listRows = entries.length > 3 ? entries.sublist(3) : const <RatingEntry>[];
     final me = data.me;
-    // Pin "me" only when not already visible among the podium / list.
     final meVisible = me == null || entries.any((e) => e.isMe);
     final showMe = me != null && !meVisible;
 
     return Stack(
       children: [
-        ListView(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, showMe || data.canJoin ? 120 : 24),
-          children: [
-            _header(context, data),
-            const SizedBox(height: 16),
-            if (entries.isNotEmpty) ...[
-              _Podium(
-                first: entries.isNotEmpty ? entries[0] : null,
-                second: entries.length > 1 ? entries[1] : null,
-                third: entries.length > 2 ? entries[2] : null,
+        CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 0), child: _header(context, data)),
+            ),
+            if (entries.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: _Podium(
+                    first: entries.isNotEmpty ? entries[0] : null,
+                    second: entries.length > 1 ? entries[1] : null,
+                    third: entries.length > 2 ? entries[2] : null,
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-            ],
-            if (listRows.isNotEmpty)
-              for (var i = 0; i < listRows.length; i++) ...[
-                if (i > 0) const SizedBox(height: 8),
-                _RatingRow(entry: listRows[i]),
-              ]
-            else if (entries.isEmpty)
-              _EmptyBoard(onStart: () => Navigator.of(context).maybePop()),
+            if (entries.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: _EmptyBoard(onStart: () => Navigator.of(context).maybePop()),
+              )
+            else if (listRows.isNotEmpty)
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, showMe || data.canJoin ? 120 : 24),
+                sliver: SliverList.separated(
+                  itemCount: listRows.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
+                  itemBuilder: (context, i) => _RatingRow(entry: listRows[i]),
+                ),
+              )
+            else
+              SliverToBoxAdapter(child: SizedBox(height: showMe || data.canJoin ? 120 : 24)),
           ],
         ),
         if (showMe)
@@ -136,7 +177,7 @@ class TestRatingScreen extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('ℹ︎', style: quizText(13, wBold, hc.primary)),
+              Icon(Icons.info_outline_rounded, size: 15, color: hc.primary),
               const SizedBox(width: 6),
               Expanded(child: Text(l10n.ratingRule, style: quizText(12, wMedium, hc.primary, height: 1.3))),
             ],
@@ -293,8 +334,13 @@ class _RatingRow extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 28,
-            child: Text('${entry.rank}', textAlign: TextAlign.center, style: quizText(15, wBold, rankColor)),
+            width: 36,
+            child: Text(
+              '${entry.rank}',
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: quizText(15, wBold, rankColor),
+            ),
           ),
           const SizedBox(width: 12),
           QuizInitialAvatar(
@@ -355,7 +401,7 @@ class _JoinCard extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(color: hc.primaryTint, borderRadius: BorderRadius.circular(12)),
                 alignment: Alignment.center,
-                child: const Text('🏁', style: TextStyle(fontSize: 22)),
+                child: Icon(Icons.flag_rounded, size: 22, color: hc.primary),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -389,7 +435,7 @@ class _EmptyBoard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: QuizEmptyState(
-        emoji: '🏁',
+        illustration: const Icon(Icons.emoji_events_outlined, size: 60),
         title: l10n.ratingEmptyTitle,
         description: l10n.ratingEmptyDesc,
         buttonLabel: l10n.ratingJoinCta,

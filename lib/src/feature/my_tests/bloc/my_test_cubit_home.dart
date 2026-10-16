@@ -7,6 +7,9 @@ mixin MyTestCubitHome on SequentialCubit<MyTestState> {
   /// Repository for the Home sections — provided by [MyTestCubit].
   IHomeRepository get homeRepository;
 
+  /// Repository for test actions (like/unlike) — provided by [MyTestCubit].
+  IMyTestRepository get myTestRepository;
+
   /// Loads every Home section in parallel. One failing section only flips its
   /// own status to error — the others still render (Figma A5 partial-error).
   Future<void> loadHome() => handle<void>((emit) async {
@@ -193,15 +196,30 @@ mixin MyTestCubitHome on SequentialCubit<MyTestState> {
 
   Future<void> trackAdClick(String adId) => homeRepository.trackAdClick(AdClickRequest(adId: adId));
 
-  /// Optimistic favorite toggle on a recommendation card (local only — no
-  /// wishlist endpoint in the spec yet).
-  // MOCK: wire to a real favorites endpoint when one exists.
-  Future<void> toggleRecommendationFavorite(String testId) => handle<void>((emit) {
-    final current = state.recommendations;
-    if (current == null) return;
-    final updated = current.items
-        .map((item) => item.testId == testId ? item.copyWith(isFavorite: !item.isFavorite) : item)
-        .toList();
-    emit(state.copyWith(recommendations: current.copyWith(items: updated)));
-  });
+  /// Optimistic favorite toggle on a recommendation card.
+  /// Calls POST/DELETE /api/tests/:id/like; reverts on error.
+  Future<void> toggleRecommendationFavorite(String testId) => handle<void>(
+    (emit) async {
+      final current = state.recommendations;
+      if (current == null) return;
+      final item = current.items.firstWhere((i) => i.testId == testId, orElse: () => throw StateError('not found'));
+      final wasFavorite = item.isFavorite;
+      final updated = current.items.map((i) => i.testId == testId ? i.copyWith(isFavorite: !wasFavorite) : i).toList();
+      emit(state.copyWith(recommendations: current.copyWith(items: updated)));
+      if (wasFavorite) {
+        await myTestRepository.unlikeTest(testId);
+      } else {
+        await myTestRepository.likeTest(testId);
+      }
+    },
+    errorHandler: (emit, error, stackTrace) {
+      final current = state.recommendations;
+      if (current == null) return;
+      final reverted = current.items.map((i) {
+        if (i.testId != testId) return i;
+        return i.copyWith(isFavorite: !i.isFavorite);
+      }).toList();
+      emit(state.copyWith(recommendations: current.copyWith(items: reverted)));
+    },
+  );
 }

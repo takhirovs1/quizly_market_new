@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
@@ -147,47 +148,85 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 }
 
-/// Segmented Do‘stlar / Umumiy control in the app's tab-bar language.
-class _Tabs extends StatelessWidget {
+/// Segmented Do’stlar / Umumiy control styled like upload_screen.dart’s TabBar.
+class _Tabs extends StatefulWidget {
   const _Tabs({required this.tab, required this.onChanged});
   final LeaderboardTab tab;
   final ValueChanged<LeaderboardTab> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final hc = context.x.homeColors;
-    final l10n = context.x.l10n;
+  State<_Tabs> createState() => _TabsState();
+}
 
-    Widget seg(String label, LeaderboardTab value) {
-      final selected = tab == value;
-      return Expanded(
-        child: GestureDetector(
-          onTap: () => onChanged(value),
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            height: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: selected ? hc.surface : context.x.colors.transparent,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: selected ? [hc.softShadow] : null,
-            ),
-            child: Text(label, style: quizText(15, selected ? wSemibold : wMedium, selected ? hc.text : hc.text3)),
-          ),
-        ),
-      );
+class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
+  late final TabController _controller;
+
+  static const _values = [LeaderboardTab.friends, LeaderboardTab.global];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(length: 2, vsync: this, initialIndex: _values.indexOf(widget.tab));
+  }
+
+  @override
+  void didUpdateWidget(_Tabs old) {
+    super.didUpdateWidget(old);
+    if (widget.tab != old.tab) {
+      _controller.animateTo(_values.indexOf(widget.tab));
     }
+  }
 
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(color: hc.track, borderRadius: BorderRadius.circular(12)),
-      child: Row(
-        children: [
-          seg(l10n.friendsTitle, LeaderboardTab.friends),
-          const SizedBox(width: 3),
-          seg(l10n.leaderboardTabGlobal, LeaderboardTab.global),
-        ],
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.x.colors;
+    final textStyle = context.x.textStyle;
+    final l10n = context.x.l10n;
+    return DecoratedBox(
+      decoration: BoxDecoration(color: colors.bannerBackground, borderRadius: .circular(10)),
+      child: SizedBox(
+        height: 45,
+        child: TabBar(
+          controller: _controller,
+          padding: const .all(4),
+          indicatorSize: .tab,
+          splashFactory: NoSplash.splashFactory,
+          dividerColor: colors.transparent,
+          isScrollable: false,
+          physics: const NeverScrollableScrollPhysics(),
+          labelPadding: .zero,
+          indicatorPadding: .zero,
+          onTap: (i) {
+            if (context.telegramWebApp.isSupported) {
+              context.telegramWebApp.hapticImpact(.light);
+            } else {
+              HapticFeedback.lightImpact();
+            }
+            widget.onChanged(_values[i]);
+          },
+          overlayColor: WidgetStatePropertyAll(colors.transparent),
+          indicator: BoxDecoration(
+            color: colors.white,
+            borderRadius: .circular(8),
+            boxShadow: [
+              BoxShadow(color: colors.black.withValues(alpha: .06), blurRadius: 10, offset: const Offset(0, 3)),
+            ],
+          ),
+          labelColor: colors.black,
+          labelStyle: textStyle.sfW600s16,
+          unselectedLabelColor: colors.bannerSecondaryText,
+          unselectedLabelStyle: textStyle.sfW400s16,
+          tabs: [
+            Tab(text: l10n.friendsTitle),
+            Tab(text: l10n.leaderboardTabGlobal),
+          ],
+        ),
       ),
     );
   }
@@ -270,9 +309,10 @@ class _LbTile extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 28,
+            width: 36,
             child: Text(
               '${entry.rank}',
+              maxLines: 1,
               textAlign: TextAlign.center,
               style: quizText(15, wBold, isMe ? hc.primary : hc.text3),
             ),

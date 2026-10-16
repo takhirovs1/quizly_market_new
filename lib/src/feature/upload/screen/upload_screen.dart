@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../../../common/extension/context_extension.dart';
@@ -49,6 +50,13 @@ class UploadScreen extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             labelPadding: .zero,
                             indicatorPadding: .zero,
+                            onTap: (_) {
+                              if (context.telegramWebApp.isSupported) {
+                                context.telegramWebApp.hapticImpact(.light);
+                              } else {
+                                HapticFeedback.lightImpact();
+                              }
+                            },
                             overlayColor: WidgetStatePropertyAll(colors.transparent),
                             indicator: BoxDecoration(
                               color: colors.white,

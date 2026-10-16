@@ -25,7 +25,6 @@ dependencies:
   # vector graphics
   flutter_svg: ^2.2.3
   vector_graphics: ^1.1.19
-  lottie: ^3.0.0
   shimmer: ^3.0.0
 
 dev_dependencies:
@@ -44,7 +43,6 @@ flutter:
   assets:
     - lib/images/
     - lib/vectors/
-    - lib/lottie/
     - lib/audio/
     - lib/icon/
     - lib/file/

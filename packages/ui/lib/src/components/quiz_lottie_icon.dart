@@ -1,73 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-import '../gen/assets.gen.dart';
-
-/// Animated icons backed by the Lottie files in `lib/lottie`.
+/// SVG icons backed by the files in `lib/icon` (prefixed `q_`).
 ///
 /// The emoji-style ones ([fire], [lamp], [cup], [prize]) are multi-coloured and
-/// should be shown as-is; the line-style menu icons are single-colour and are
+/// should be shown as-is; the line-style ones are single-colour and are
 /// meant to be tinted via [QuizLottieIcon.color].
 enum QuizLottie {
-  fire,
-  lamp,
-  cup,
-  prize,
-  addFriends,
-  archive,
-  bookCollection,
-  check,
-  delete,
-  progress,
-  revert,
-  share,
-  urgent;
+  fire('q_fire'),
+  lamp('q_lamp'),
+  cup('q_cup'),
+  prize('q_prize'),
+  addFriends('q_add_friends'),
+  archive('q_archive'),
+  bookCollection('q_book_collection'),
+  check('q_check'),
+  delete('q_delete'),
+  progress('q_progress'),
+  revert('q_revert'),
+  share('q_share'),
+  urgent('q_urgent');
 
-  String get asset => switch (this) {
-    QuizLottie.fire => Assets.lib.lottie.fire,
-    QuizLottie.lamp => Assets.lib.lottie.lamp,
-    QuizLottie.cup => Assets.lib.lottie.cup,
-    QuizLottie.prize => Assets.lib.lottie.prise,
-    QuizLottie.addFriends => Assets.lib.lottie.addFriends,
-    QuizLottie.archive => Assets.lib.lottie.archive,
-    QuizLottie.bookCollection => Assets.lib.lottie.bookCollection,
-    QuizLottie.check => Assets.lib.lottie.check,
-    QuizLottie.delete => Assets.lib.lottie.delete,
-    QuizLottie.progress => Assets.lib.lottie.progress,
-    QuizLottie.revert => Assets.lib.lottie.revert,
-    QuizLottie.share => Assets.lib.lottie.share,
-    QuizLottie.urgent => Assets.lib.lottie.urgent,
-  };
+  const QuizLottie(this._name);
+
+  final String _name;
+
+  String get asset => 'lib/icon/$_name.svg';
 }
 
 class QuizLottieIcon extends StatelessWidget {
+  // [repeat] is kept for call-site compatibility; SVG icons are static.
   const QuizLottieIcon(this.icon, {this.size = 16, this.repeat = true, this.color, super.key});
 
   final QuizLottie icon;
   final double size;
   final bool repeat;
 
-  /// Tints every fill and stroke of the animation. `null` keeps the original colours.
+  /// Tints the whole icon. `null` keeps the original colours.
   final Color? color;
 
   @override
   Widget build(BuildContext context) => SizedBox.square(
     dimension: size,
-    child: Lottie.asset(
+    child: SvgPicture.asset(
       icon.asset,
       package: 'ui',
       width: size,
       height: size,
-      repeat: repeat,
       fit: BoxFit.contain,
-      delegates: color == null
-          ? null
-          : LottieDelegates(
-              values: [
-                ValueDelegate.color(const ['**'], value: color),
-                ValueDelegate.strokeColor(const ['**'], value: color),
-              ],
-            ),
+      colorFilter: color == null ? null : ColorFilter.mode(color!, BlendMode.srcIn),
     ),
   );
 }
